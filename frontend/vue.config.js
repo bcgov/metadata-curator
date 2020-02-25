@@ -1,6 +1,18 @@
 const path = require('path');
 module.exports = {
     productionSourceMap: false,
+    
+    devServer: {
+        proxy: {
+            '/api': {
+                target: 'http://localhost:9090/',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/api': "/api"
+                }
+            }
+        }
+    },
 
     configureWebpack: {
         optimization: {

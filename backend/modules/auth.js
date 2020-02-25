@@ -12,24 +12,23 @@ auth.isTokenExpired = function(token){
     let exp = new Date(0);
     exp.setUTCSeconds(jwtObj.exp);
 
+    console.log("TOK EXP?", (currDate>exp), currDate, exp )
+
     return (currDate > exp);
 }
 
 auth.isRenewable = function(token){
 
-    //tokens haven't had exp in them lately
-    return true;
-    // let currDate = new Date();
-    //
-    // let base64Url = token.split('.')[1];
-    // let base64 = base64Url.replace('-', '+').replace('_', '/');
-    // let jwtObj = JSON.parse(atob(base64));
-    // let exp = new Date(0);
-    // exp.setUTCSeconds(jwtObj.exp);
-    //
-    // console.log("Refresh Token expires at ", exp, jwtObj);
-    //
-    // return (exp > currDate);
+    //tokens haven't had exp in them lately    
+    let currDate = new Date();
+    
+    let base64Url = token.split('.')[1];
+    let base64 = base64Url.replace('-', '+').replace('_', '/');
+    let jwtObj = JSON.parse(atob(base64));
+    let exp = new Date(0);
+    exp.setUTCSeconds(jwtObj.exp);
+
+     return ( (exp > currDate) || (jwtObj.exp === 0) );
 }
 
 
