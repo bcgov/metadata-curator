@@ -9,4 +9,3 @@ addDecorator(withA11y)
 addDecorator(withKnobs)
 addDecorator(withTemplate)
 addDecorator(withVuetify)
-
