@@ -1,0 +1,25 @@
+{
+    "name": "WebCurator",
+    "version": "0.1.0",
+    "author": "Brandon Sharratt",
+    "description": "Web Curator is a simple web app to edit csvs and to help describe, validate and share usable open data",
+    "repository": "",
+    "scripts": {
+        "start": "node ./bin/www",
+        "serve": "nodemon ./bin/www"
+    },
+    "dependencies": {
+        "atob": "^2.1.2",
+        "bent": "^7.1.0",
+        "config": "^3.2.6",
+        "connect-history-api-fallback": "^1.6.0",
+        "cookie-parser": "^1.4.4",
+        "express": "^4.17.1",
+        "express-session": "^1.17.0",
+        "morgan": "^1.9.1",
+        "nodemon": "^2.0.2",
+        "npmlog": "^4.1.2",
+        "passport": "^0.4.1",
+        "passport-openidconnect": "0.0.2"
+    }
+}

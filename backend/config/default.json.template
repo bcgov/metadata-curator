@@ -1,0 +1,14 @@
+{
+    "sessionSecret": "totally secure",
+    "frontend": "http://localhost:8080",
+    "oidc": {
+        "issuer": "https://{yourdomain}/oauth2/default",
+        "authorizationURL": "https://{yourdomain}/oauth2/default/v1/authorize",
+        "tokenURL": "https://{yourdomain}/oauth2/default/v1/token",
+        "userInfoURL": "https://{yourdomain}/oauth2/default/v1/userinfo",
+        "clientID": "{ClientID}",
+        "clientSecret": "{ClientSecret}",
+        "callbackURL": "http://localhost:3000/api/callback",
+        "scope": "openid profile offline_access"
+    }
+}
