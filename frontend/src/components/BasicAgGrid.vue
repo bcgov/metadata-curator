@@ -1,9 +1,10 @@
 <template>
     <ag-grid-vue style="width: 500px; height: 500px;"
                  class="ag-theme-balham"
-                 :gridOptions="gridOptions"
->
-    </ag-grid-vue>
+                 :columnDefs="gridColDefs"
+                 :rowData="gridRowData"
+                 @grid-ready="onGridReady"
+    ></ag-grid-vue>
 </template>
 
 <script>
@@ -11,47 +12,56 @@
 
     export default {
         name: 'BasicAgGrid',
+        props: {
+            columnDefs: {
+                type: Array,
+                required: true,
+                default: () => []
+            },
+            rowData: {
+                type: Array,
+                required: true,
+                default: () => []
+            },
+        },
         data() {
             return {
-                // columnDefs: null,
-                // rowData: null
-                gridOptions: null
+                gridColDefs: null,
+                gridRowData: null,
+                gridApi: null,
+                columnApi: null,
             }
         },
         components: {
             AgGridVue
         },
+        methods: {
+          onGridReady(params) {
+              // console.log("ongrid ready: ", params);
+              this.gridApi = params.api;
+              this.columnApi = params.columnApi;
+          }
+        },
         beforeMount() {
-            // this.columnDefs = [
-            //     {headerName: 'Make', field: 'make'},
-            //     {headerName: 'Model', field: 'model'},
-            //     {headerName: 'Price', field: 'price'}
-            // ];
-
-            // this.rowData = [
-            //     {make: 'Toyota', model: 'Celica', price: 35000},
-            //     {make: 'Ford', model: 'Mondeo', price: 32000},
-            //     {make: 'Porsche', model: 'Boxter', price: 72000}
-            // ];
-
-            this.gridOptions = {
-                columnDefs: [
-                    {headerName: 'Make', field: 'make', editable: true},
-                    {headerName: 'Model', field: 'model', editable: true},
-                    {headerName: 'Price', field: 'price', editable: true}
-                ],
-                rowData: [
-                    {make: 'Toyota', model: 'Celica', price: 35000},
-                    {make: 'Ford', model: 'Mondeo', price: 32000},
-                    {make: 'Porsche', model: 'Boxter', price: 72000}
-                ],
-
-            };
+            this.gridColDefs = this.columnDefs;
+            this.gridRowData = this.rowData;
+        },
+        watch: {
+            columnDefs: function (newVal, oldVal) {
+                // console.log('columnDefs prop changed: ', newVal, ' | was: ', oldVal);
+                this.gridApi.setColumnDefs(newVal);
+                // console.log("this.gridColDefs: ", this.gridColDefs);
+            },
+            rowData: function (newVal, oldVal) {
+                // console.log('rowdata prop changed: ', newVal, ' | was: ', oldVal);
+                this.gridRowData = newVal;
+                // console.log("this.gridRowData: ", this.gridRowData);
+                this.gridApi.refreshCells();
+            }
 
         }
     }
 </script>
-
 
 
 <style src="../../node_modules/ag-grid-community/dist/styles/ag-grid.css"></style>
