@@ -1,17 +1,14 @@
 <template>
     <div>
-        <Title name="Web Curator"/>
-        <User></User>
+        <FileReader></FileReader>
     </div>
 </template>
 <script>
-import Title from '../Title';
-import User from '../User';
+import FileReader from '../FileReader';
 
 export default {
     components:{
-        Title,
-        User
+        FileReader,
     }
 }
 </script>
