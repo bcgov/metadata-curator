@@ -43,7 +43,6 @@ export default makeDecorator({
       },
       methods: {
         setDark: function(makeDark){
-            console.log("set dark", makeDark);
             this.$vuetify.theme.dark = makeDark;  
             this.key = this.key+1;
             return () => channel.off('DARK_MODE', setDark);

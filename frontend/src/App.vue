@@ -1,6 +1,6 @@
 <template>
   <v-app id="app">
-    <Header></Header>
+    <Header title="Web Curator"></Header>
     <router-view v-show="loggedIn"/>
   </v-app>
 </template>

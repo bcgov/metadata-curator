@@ -5,7 +5,8 @@ const state = {
     user: {},
     loggedIn: false,
     userPermissions: {},
-    loading: true
+    loading: true,
+    useDark: false
 };
 
 const getters = {
@@ -88,6 +89,9 @@ const mutations = {
     },
     setLoggedIn(state, { loggedIn }){
         state.loggedIn = loggedIn;
+    },
+    setUseDark(state, { useDark }){
+        state.useDark = useDark;
     }
 }
 
