@@ -1,11 +1,17 @@
 <template>
-    <Title name="Web Curator"/>
+    <div>
+        <Title name="Web Curator"/>
+        <User></User>
+    </div>
 </template>
 <script>
 import Title from '../Title';
+import User from '../User';
+
 export default {
     components:{
-        Title
+        Title,
+        User
     }
 }
 </script>

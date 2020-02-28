@@ -1,7 +1,7 @@
 <template>
   <v-app id="app">
     <Header></Header>
-    <router-view :style="'display: ' + ((loggedIn) ? 'block' : 'none')"/>
+    <router-view v-show="loggedIn"/>
   </v-app>
 </template>
 

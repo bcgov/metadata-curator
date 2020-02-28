@@ -10,8 +10,8 @@ import router from './router';
 Vue.config.productionTip = false;
 
 new Vue({
+    vuetify: vuetify,
     render: h => h(App),
-    store,
     router,
-    vuetify,
+    store,
 }).$mount('#app');

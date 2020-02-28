@@ -1,5 +1,5 @@
 <template>
-    <v-btn height="auto" block>
+    <v-btn height="auto" block color="primary">
         <v-row dense>
             <v-col v-if="icon !== ''" cols=12>
                 <v-icon>{{icon}}</v-icon>

@@ -1,43 +1,44 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify'
+import 'vuetify/dist/vuetify.min.css';
 import '@fortawesome/fontawesome-free/css/all.css'
 
 Vue.use(Vuetify)
 
-const opts = {
-    icons: {
-      iconfont: 'fa', // 'md' || 'mdi' || 'fa' || 'fa'
-    },
-    theme: {
-        dark: false,
-        options: {
-          customProperties: true
+export const opts = {
+  icons: {
+    iconfont: 'fa', // 'md' || 'mdi' || 'fa' || 'fa'
+  },
+  theme: {
+      dark: false,
+      options: {
+        customProperties: true
+      },
+      themes:{
+        dark: {
+          primary: '#070707',
+          secondary: '#5475a7',
+          tertiary: '#0050a1',
+          highlight: '#a5d8ff',
+          accent: '#8c9eff',
+          caution: "#fcba19",
+          error: '#b71c1c',
+          text: "#ffffff",
+          data: '#F4F4F4',
         },
-        themes:{
-          dark: {
-            primary: '#003366',
-            secondary: '#5475a7',
-            tertiary: '#0050a1',
-            highlight: '#a5d8ff',
-            accent: '#8c9eff',
-            caution: "#fcba19",
-            error: '#b71c1c',
-            text: "#ffffff",
-            data: '#F4F4F4',
-          },
-          light: {
-            primary: '#003366',
-            secondary: '#5475a7',
-            tertiary: '#0050a1',
-            highlight: '#a5d8ff',
-            accent: '#8c9eff',
-            caution: "#fcba19",
-            error: '#b71c1c',
-            text: "#ffffff",
-            data: '#F4F4F4',
-          }
+        light: {
+          primary: '#F8F8F8',
+          secondary: '#5475a7',
+          tertiary: '#0050a1',
+          highlight: '#a5d8ff',
+          accent: '#8c9eff',
+          caution: "#fcba19",
+          error: '#b71c1c',
+          text: "#000000",
+          data: '#F4F4F4',
         }
-    }
-  };
+      }
+  }
+};
 
 export default new Vuetify(opts)
