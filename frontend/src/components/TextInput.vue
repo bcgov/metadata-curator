@@ -1,7 +1,8 @@
 <template>
-        <ValidationProvider :rules="validate" v-slot="{ errors }" :name="label ? label : name">
+    <div style="width:350px;">
+        <ValidationProvider :rules="validationRules" v-slot="{ errors }" :name="label ? label : name">
             <v-text-field
-                :label="label"
+                :label="displayLabel"
                 :placeholder="placeholder"
                 :name="name"
                 v-model="val"
@@ -9,6 +10,7 @@
                 outlined
             ></v-text-field>
         </ValidationProvider>
+    </div>
 </template>
 
 <script>
@@ -33,6 +35,11 @@
                 required: false,
                 default: () => ''
             },
+            validationRules: {
+                type: String,
+                required: false,
+                default: () => ''
+            },
             value: {
                 type: String,
                 required: false,
@@ -42,8 +49,14 @@
         data() {
             return {
                 val: this.value,
-                // validate: ((this.field.required)? 'required' : ''),
-                validate: 'required'
+            }
+        },
+        computed: {
+            displayLabel: function(){
+                if (this.validationRules.toLowerCase().indexOf("required") >= 0) {
+                    return this.label + ' *';
+                }
+                return this.label;
             }
         },
         watch: {
@@ -56,4 +69,5 @@
 </script>
 
 <style scoped>
+
 </style>
