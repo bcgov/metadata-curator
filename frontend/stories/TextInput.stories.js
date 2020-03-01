@@ -16,12 +16,14 @@ export const textInputData = {
     label: 'First Name',
     placeholder: 'Placeholder',
     value: '',
+    validationRules: ''
 }
 
 
 const template = `<TextInput :name="name" 
                             :label="label"
                             :placeholder="placeholder"
+                            :validationRules="validationRules"
                              :value="value"/>`;
 
 export const Default = () => ({
@@ -40,6 +42,9 @@ export const Default = () => ({
         },
         placeholder: {
             default: text('placeholder', textInputData.placeholder)
+        },
+        validationRules: {
+            default: text('validationRules', textInputData.validationRules)
         },
     },
     template: template,
@@ -63,6 +68,35 @@ export const NoPlaceholderProp = () => ({
         },
         placeholder: {
             default: text('placeholder', '')
+        },
+        validationRules: {
+            default: text('validationRules', textInputData.validationRules)
+        },
+    },
+    template: template,
+    methods: actionsData
+});
+
+
+export const WithRequiredValidationRule = () => ({
+    components: {
+        TextInput
+    },
+    props: {
+        name: {
+            default: text('name', textInputData.name)
+        },
+        label: {
+            default: text('label', textInputData.label)
+        },
+        value: {
+            default: text('value', textInputData.value)
+        },
+        placeholder: {
+            default: text('placeholder', textInputData.placeholder)
+        },
+        validationRules: {
+            default: text('validationRules', 'required')
         },
     },
     template: template,
