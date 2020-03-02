@@ -23,15 +23,28 @@
                    :validation-rules="fldRdfType.validationRules"
                    :value="fldRdfType.value"/>
 
+        <TextArea class="column-prop-textarea"
+                   :name="fldDesc.name"
+                   :label="fldDesc.label"
+                   :placeholder="fldDesc.placeholder"
+                   :autogrow="fldDesc.autogrow"
+                   :validation-rules="fldDesc.validationRules"
+                   :value="fldDesc.value"/>
+
     </div>
 </template>
 
 <script>
 
     import TextInput from "./TextInput";
+    import TextArea from "./TextArea";
 
     export default {
         name: 'ColumnProperties',
+        components: {
+            TextInput,
+            TextArea
+        },
         props: {
             fieldData: {
                 type: Array,
@@ -56,6 +69,14 @@
                     value: null,
                     validationRules: ''
                 },
+                fldDesc: {
+                    name: 'desc',
+                    label: 'Description',
+                    placeholder: 'description',
+                    autogrow: true,
+                    value: null,
+                    validationRules: ''
+                },
                 fldRdfType: {
                     name: 'rdfType',
                     label: 'RDF Type',
@@ -63,11 +84,7 @@
                     value: null,
                     validationRules: ''
                 },
-
             }
-        },
-        components: {
-            TextInput
         },
         methods: {
 
@@ -79,6 +96,10 @@
 <style scoped>
 
     .column-prop-input {
+        margin-bottom: 7px;
+    }
+
+    .column-prop-textarea {
         margin-bottom: 7px;
     }
 
