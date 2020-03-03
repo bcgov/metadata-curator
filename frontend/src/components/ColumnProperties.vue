@@ -16,13 +16,6 @@
                    :validation-rules="fldTitle.validationRules"
                    :value="fldTitle.value"/>
 
-        <TextInput class="column-prop-input"
-                   :name="fldRdfType.name"
-                   :label="fldRdfType.label"
-                   :placeholder="fldRdfType.placeholder"
-                   :validation-rules="fldRdfType.validationRules"
-                   :value="fldRdfType.value"/>
-
         <TextArea class="column-prop-textarea"
                    :name="fldDesc.name"
                    :label="fldDesc.label"
@@ -31,6 +24,29 @@
                    :validation-rules="fldDesc.validationRules"
                    :value="fldDesc.value"/>
 
+        <Select :name="fldType.name"
+                :label="fldType.label"
+                :validationRules="fldType.validationRules"
+                :items="fldType.items"
+                :itemText="fldType.itemText"
+                :itemValue="fldType.itemValue"
+                :select="fldType.select"/>
+
+        <Select :name="fldFormat.name"
+                :label="fldFormat.label"
+                :validationRules="fldFormat.validationRules"
+                :items="fldFormat.items"
+                :itemText="fldFormat.itemText"
+                :itemValue="fldFormat.itemValue"
+                :select="fldFormat.select"/>
+
+        <TextInput class="column-prop-input"
+                   :name="fldRdfType.name"
+                   :label="fldRdfType.label"
+                   :placeholder="fldRdfType.placeholder"
+                   :validation-rules="fldRdfType.validationRules"
+                   :value="fldRdfType.value"/>
+
     </div>
 </template>
 
@@ -38,12 +54,14 @@
 
     import TextInput from "./TextInput";
     import TextArea from "./TextArea";
+    import Select from "./Select";
 
     export default {
         name: 'ColumnProperties',
         components: {
             TextInput,
-            TextArea
+            TextArea,
+            Select
         },
         props: {
             fieldData: {
@@ -84,6 +102,34 @@
                     value: null,
                     validationRules: ''
                 },
+                fldType: {
+                    name: 'type',
+                    label: 'Type',
+                    items: [
+                        {text: 'string', value: 'STR'},
+                        {text: 'number', value: 'NUM'},
+                        {text: 'integer', value: 'INT'},
+                        {text: 'boolean', value: 'BOOL'},
+                    ],
+                    itemText: 'text',
+                    itemValue: 'value',
+                    select: 'STR'
+                },
+                fldFormat: {
+                    name: 'format',
+                    label: 'Format',
+                    items: [
+                        {text: 'email', value: '1'},
+                        {text: 'uri', value: '2'},
+                        {text: 'binary', value: '3'},
+                        {text: 'uuid', value: '4'},
+                        {text: 'default', value: '5'},
+                    ],
+                    itemText: 'text',
+                    itemValue: 'value',
+                    select: '5'
+                },
+
             }
         },
         methods: {
