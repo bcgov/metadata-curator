@@ -36,4 +36,24 @@ router.use('/token', auth.removeExpired, function(req, res){
     }
 });
 
+router.use('/v1/publickey', auth.removeExpired, function(req, res){
+    var config = require('config');
+    var atob = require('atob');
+    if (!config.has('base64EncodedPGPPublicKey')){
+        return res.json({error: "Not configured"});
+    }
+    let key = atob(config.get('base64EncodedPGPPublicKey'));
+    return res.json({key: key});
+});
+
+router.use('/v1/uploadurl', auth.removeExpired, function(req, res){
+    var config = require('config');
+    if (!config.has('uploadUrl')){
+        return res.json({error: "Not configured"});
+    }
+    let url = config.get('uploadUrl');
+    return res.json({url: url});
+});
+
+
 module.exports = router;

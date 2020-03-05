@@ -21,7 +21,6 @@ export default new Vuex.Store({
       'user.loggedIn',
       'user.loading',
       'user.useDark',
-      'file.content',
       'file.fileName'
     ]
   })],

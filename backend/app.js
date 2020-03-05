@@ -8,7 +8,7 @@ let passport = require('passport');
 let OidcStrategy = require('passport-openidconnect').Strategy;
 let history = require('connect-history-api-fallback');
 
-let authRouter = require('./routes/auth');
+let backendRouter = require('./routes/backendRouter');
 
 let app = express();
 
@@ -55,7 +55,7 @@ var strategy = new OidcStrategy(config.get('oidc'), function(issuer, sub, profil
 passport.use('oidc', strategy);
 
 
-app.use('/api', authRouter);
+app.use('/api', backendRouter);
 
 app.use(history({
   index: 'dist/index.html'
