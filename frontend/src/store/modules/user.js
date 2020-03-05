@@ -6,7 +6,8 @@ const state = {
     loggedIn: false,
     userPermissions: {},
     loading: true,
-    useDark: false
+    useDark: false,
+    jwt: ""
 };
 
 const getters = {
@@ -35,11 +36,13 @@ const actions = {
                 await authServ.getToken().then((data) => {
                     if ((typeof (data.error) === "undefined") && (typeof (data) === "object")) {
                         commit('setUser', { user: data });
+                        commit('setJWT', { jwt: data.jwt });
                         commit('setLoggedIn', {loggedIn: true});
                         user = data;
                         loggedIn = true;
                     } else {
                         commit('setUser', {user: null});
+                        commit('setJWT', { jwt: "" });
                         commit('setLoggedIn', {loggedIn: false});
                         user = {};
                         loggedIn = false;
@@ -50,11 +53,13 @@ const actions = {
             await authServ.getToken().then((data) => {
                 if ((typeof (data.error) === "undefined") && (typeof (data) === "object")) {
                     commit('setUser', { user: data });
+                    commit('setJWT', { jwt: data.jwt });
                     commit('setLoggedIn', {loggedIn: true});
                     user = data;
                     loggedIn = true;
                 }else{
                     commit('setUser', { user: null });
+                    commit('setJWT', { jwt: "" });
                     commit('setLoggedIn', {loggedIn: false});
                     user = null;
                     loggedIn = false;
@@ -92,6 +97,9 @@ const mutations = {
     },
     setUseDark(state, { useDark }){
         state.useDark = useDark;
+    },
+    setJWT(state, { jwt }){
+        state.jwt = jwt;
     }
 }
 
