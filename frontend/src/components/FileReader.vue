@@ -111,7 +111,7 @@ export default {
                         let u2 = new tus.Upload(this.blob[i], uploadOptions);
                         u2.start();
                         uploads.push(u2);
-                    }else if (i == this.blob.length){
+                    }else if ( (i !== 1) && (i == this.blob.length) ){
                         let joinIds = [];
                         for (let j=0; j<uploads.length; j++){
                             joinIds.push(uploads[j].url);
@@ -123,6 +123,9 @@ export default {
                         u2.start();
                     }
                 },
+            }
+            if (this.blob.length === 1){
+                uploadOptions.headers = {};
             }
             let u = new tus.Upload(this.blob[i], uploadOptions);
             uploads.push(u);

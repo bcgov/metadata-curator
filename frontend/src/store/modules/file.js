@@ -39,6 +39,7 @@ const actions = {
         var TextEncoder = textEncoding.TextEncoder;
         for (let i=0; i<state.content.length; i+=CHUNK_SIZE){
             let uint8 = new TextEncoder("utf-8").encode(state.content.substring(i, i+CHUNK_SIZE));
+            // let uint8 = new TextEncoder("utf-8").encode(state.content);
             // eslint-disable-next-line
             // console.log("uint8 size", uint8.length);
             var cipherText = await openpgp.encrypt({
