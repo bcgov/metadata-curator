@@ -27,7 +27,7 @@ export const opts = {
           data: '#F4F4F4',
         },
         light: {
-          primary: '#F8F8F8',
+          primary: '#779af8',
           secondary: '#5475a7',
           tertiary: '#0050a1',
           highlight: '#a5d8ff',
