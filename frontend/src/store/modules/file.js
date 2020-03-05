@@ -40,7 +40,7 @@ const actions = {
         for (let i=0; i<state.content.length; i+=CHUNK_SIZE){
             let uint8 = new TextEncoder("utf-8").encode(state.content.substring(i, i+CHUNK_SIZE));
             // eslint-disable-next-line
-            console.log("uint8 size", uint8.length);
+            // console.log("uint8 size", uint8.length);
             var cipherText = await openpgp.encrypt({
                 message: await openpgp.message.fromBinary(uint8), // input as Message object
                 publicKeys: (await openpgp.key.readArmored(state.key)).keys,
@@ -49,12 +49,13 @@ const actions = {
                 
             })//.then( async (cipherText) => {
                 // eslint-disable-next-line
-                console.log("encrypted text", cipherText.data)
+                //console.log("encrypted text", cipherText.data)
                 //commit('setBlob', {content: cipherText.data} );
                 
-                // while (cipherText.data.length < CHUNK_SIZE){
-                //     cipherText.data+=" ";
-                // }
+                while (cipherText.data.length < CHUNK_SIZE){
+                    cipherText.data+= (cipherText.data.length === CHUNK_SIZE-1) ? "\n" : " ";
+                }
+    
                 
                 commit('addBlob', {blob: new Blob([cipherText.data])} );
 
@@ -96,10 +97,6 @@ const mutations = {
     },
     addBlob(state, { blob }){
         state.blob.push(blob);
-        if (state.blob.length > 1){
-            // eslint-disable-next-line
-            console.log ("blob eq? ", state.blob[state.blob.length-1]===state.blob[state.blob.length-2]);
-        }
     },
     clearBlob(state){
         state.blob = [];
