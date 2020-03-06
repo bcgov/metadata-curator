@@ -50,13 +50,13 @@ export default {
                 var self = this;
                 reader.onload = function(e){
                     if (this.mutateVuex !== ""){
-                        self.$store.commit('file/setContent', { content: e.target.result})
+                        self.$store.commit('file/setContent', { content: new Uint8Array(e.target.result)})
                         self.$store.commit('file/setFileName', { fileName: self.file.name})
                     }else{
                         self.fileContent = e.target.result;
                     }
                 }
-                reader.readAsText(this.file);
+                reader.readAsArrayBuffer(this.file);
             }
         }
     },

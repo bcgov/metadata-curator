@@ -15,6 +15,11 @@ const state = {
 };
 
 const getters = {
+    getStringContent: (state) => {
+        var textEncoding = require('text-encoding'); 
+        var TextDecoder = textEncoding.TextDecoder;
+        return new TextDecoder("utf-8").decode(state.content);
+    }
 }
 
 const actions = { 
@@ -35,19 +40,19 @@ const actions = {
             commit('setUploadUrl', {uploadUrl: data.url});
         }
         commit('clearBlob');
-        var textEncoding = require('text-encoding'); 
-        var TextEncoder = textEncoding.TextEncoder;
+        // var textEncoding = require('text-encoding'); 
+        // var TextEncoder = textEncoding.TextEncoder;
         for (let i=0; i<state.content.length; i+=CHUNK_SIZE){
-            let uint8 = new TextEncoder("utf-8").encode(state.content.substring(i, i+CHUNK_SIZE));
+            //let uint8 = new TextEncoder("utf-8").encode(state.content.substring(i, i+CHUNK_SIZE));
             // let uint8 = new TextEncoder("utf-8").encode(state.content);
             // eslint-disable-next-line
             // console.log("uint8 size", uint8.length);
             var cipherText = await openpgp.encrypt({
-                message: await openpgp.message.fromBinary(uint8), // input as Message object
+                message: await openpgp.message.fromBinary(state.content.slice(i, i+CHUNK_SIZE)), // input as Message object
                 publicKeys: (await openpgp.key.readArmored(state.key)).keys,
                 compression: openpgp.enums.compression.zip,
                 format: 'binary',
-                
+            
             })//.then( async (cipherText) => {
                 // eslint-disable-next-line
                 //console.log("encrypted text", cipherText.data)
