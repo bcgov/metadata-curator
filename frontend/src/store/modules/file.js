@@ -15,14 +15,14 @@ const state = {
 };
 
 const getters = {
-    getStringContent: (state) => {
-        var textEncoding = require('text-encoding'); 
+    getStringContent: (state) => () => {
+        var textEncoding = require('text-encoding');
         var TextDecoder = textEncoding.TextDecoder;
         return new TextDecoder("utf-8").decode(state.content);
     }
 }
 
-const actions = { 
+const actions = {
     async encryptContent({commit, state}){
         await openpgp.initWorker({ path: '/js/openpgp.worker.min.js' }, 3); // set the relative web worker path
 
@@ -40,7 +40,7 @@ const actions = {
             commit('setUploadUrl', {uploadUrl: data.url});
         }
         commit('clearBlob');
-        // var textEncoding = require('text-encoding'); 
+        // var textEncoding = require('text-encoding');
         // var TextEncoder = textEncoding.TextEncoder;
         for (let i=0; i<state.content.length; i+=CHUNK_SIZE){
             //let uint8 = new TextEncoder("utf-8").encode(state.content.substring(i, i+CHUNK_SIZE));
@@ -52,17 +52,17 @@ const actions = {
                 publicKeys: (await openpgp.key.readArmored(state.key)).keys,
                 compression: openpgp.enums.compression.zip,
                 format: 'binary',
-            
+
             })//.then( async (cipherText) => {
                 // eslint-disable-next-line
                 //console.log("encrypted text", cipherText.data)
                 //commit('setBlob', {content: cipherText.data} );
-                
+
                 while (cipherText.data.length < CHUNK_SIZE){
                     cipherText.data+= (cipherText.data.length === CHUNK_SIZE-1) ? "\n" : " ";
                 }
-    
-                
+
+
                 commit('addBlob', {blob: new Blob([cipherText.data])} );
 
                 // openpgp.decrypt({
@@ -76,9 +76,9 @@ const actions = {
             //});
         }
         commit('setEncrypted', { encrypted: true });
-            
 
-        
+
+
     },
 }
 
@@ -112,6 +112,18 @@ const mutations = {
     },
     setUploadUrl(state, { uploadUrl }){
         state.uploadUrl = uploadUrl;
+    },
+    // eslint-disable-next-line no-unused-vars
+    resetState(state){
+        console.log("file.js resetState");
+        state =  {
+            content: "",
+            fileName: "",
+            encrypted: false,
+            blob: [],
+            key: null,
+            uploadUrl: "",
+        };
     },
 }
 
