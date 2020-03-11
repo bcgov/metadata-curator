@@ -1,0 +1,52 @@
+### validateTableSchema - default flow
+POST {{base-url}}/schemas
+Content-Type: application/json
+
+{
+  "fields" :
+  [
+    {
+      "name" : "fname",
+      "type" : "string"
+    },
+    {
+      "name" : "lname",
+      "type" : "string"
+    },
+    {
+      "name" : "age",
+      "type" : "integer"
+    }
+  ]
+}
+
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+%}
+
+###
+
+#{
+#  "name" : "fname"
+#}
+
+#{
+#  "fields" :
+#  [
+#    {
+#      "name" : "fname",
+#      "type" : "string"
+#    },
+#    {
+#      "name" : "lname",
+#      "type" : "string"
+#    },
+#    {
+#      "name" : "age",
+#      "type" : "integer"
+#    }
+#  ]
+#}

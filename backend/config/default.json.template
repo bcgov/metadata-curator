@@ -1,4 +1,12 @@
 {
+
+    "database": {
+        "host": "localhost",
+        "username": "{username}",
+        "password": "{pwd}",
+        "dbName": "{dbName}"
+    },
+
     "sessionSecret": "totally secure",
     "frontend": "http://localhost:8080",
     "oidc": {

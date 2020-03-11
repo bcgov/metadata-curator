@@ -1,8 +1,10 @@
 let passport = require('passport');
-
+let db = require('./db/db');
 let express = require('express');
 let router = express.Router();
 let auth = require('../modules/auth');
+const {Package} = require('datapackage');
+const {Table, Schema, validate} = require('tableschema');
 
 router.use('/login', function(req, res, next){
     req.session.r = req.query.r;
@@ -55,5 +57,167 @@ router.use('/v1/uploadurl', auth.removeExpired, function(req, res){
     return res.json({url: url});
 });
 
+
+router.put('/v1/validateDataPackage', async (req, res, next) => {
+    const descriptor = {
+        resources: [
+            {
+                name: 'example',
+                profile: 'tabular-data-resource',
+                data: [
+                //     ['height', 'age', 'name'],
+                //     ['180', '18', 'Tony'],
+                //     ['192', '32', 'Jacob'],
+                ],
+                schema:  {
+                    fields: [
+                        {name: 'height', type: 'integder'},
+                        {name: 'age', type: 'integer'},
+                        {name: 'name', type: 'string'},
+                    ],
+                }
+            }
+        ]
+    };
+    console.log("req.body: ", req.body);
+
+    // const dataPackage = await Package.load(req.body);
+    const dataPackage = await Package.load(descriptor, strict = true);
+    // const resource = dataPackage.getResource('example');
+    // const result = await resource.read();
+    // console.log("result: ", result);
+    console.log("dataPackage.valid: " + dataPackage.valid);
+    console.log("dataPackage.errors: ", JSON.stringify(dataPackage.errors));
+    for (const error of dataPackage.errors) {
+        // inspect Error objects
+         console.log("error: ", error.message);
+    }
+
+    // const {valid, errors} = await validate(descriptor);
+    // console.log("valid: ", valid);
+    // console.log("errors: ", JSON.stringify(errors));
+    // for (const error of errors) {
+    //     // inspect Error objects
+    //     console.log("error: ", JSON.stringify(error));
+    // }
+
+    // profile = await Profile.load('tabular-data-resource')
+    // profile.name // data-package
+    // profile.jsonschema // JSON Schema contents
+
+    // result = { test: "ajskfj"};
+    // res.json(result);
+    res.status(400);
+    res.json({error: "No need to withdraw a request that hasn't been submitted"});
+
+});
+
+// router.put('/v1/validateTableSchema', async (req, res, next) => {
+//     // console.log("req.body: ", req.body);
+//
+//     // const {valid, errors} = await validate(descriptor);
+//     // console.log("valid: " + valid); // false
+//     // for (const error of errors) {
+//     //     // inspect Error objects
+//     //     console.log("error: ", error);
+//     // }
+//
+//     let errs = [];
+//     const schema = await Schema.load(req.body);
+//     // console.log("schema.valid: " + schema.valid); // false
+//     // console.log("schema.errors: ", schema.errors);
+//     for (const error of schema.errors) {
+//         // inspect Error objects
+//         // console.log("error: ", error);
+//         let errorSections = error.message.split("\n");
+//         errorSections = errorSections.map(item => item.replace(/\s\s+/g, " ").trim());
+//         errorSections = errorSections.map(item => item.replace(/\"/g, ""));
+//
+//         let msg = errorSections.join(" ");
+//         const err = {
+//             message: msg,
+//             validationErrorDetails: {
+//                 desc: errorSections[0],
+//                 field: errorSections[1],
+//                 validationRule: errorSections[2]
+//             }
+//         };
+//         // console.log("err: ", err);
+//         errs.push(err);
+//     }
+//
+//     if(!schema.valid) {
+//         res.status(400);
+//         res.json({errors: errs});
+//         return;
+//     }
+//
+//     res.json({message: "Schema validated successfully."});
+//
+// });
+
+router.post('/v1/schemas', async (req, res, next) => {
+    console.log("req.body: ", req.body);
+
+    let errs = [];
+    const schema = await Schema.load(req.body);
+    if(!schema.valid) {
+        for (const error of schema.errors) {
+            // inspect Error objects
+            // console.log("error: ", error);
+            let errorSections = error.message.split("\n");
+            errorSections = errorSections.map(item => item.replace(/\s\s+/g, " ").trim());
+            errorSections = errorSections.map(item => item.replace(/\"/g, ""));
+
+            let msg = errorSections.join(" ");
+            const err = {
+                error: msg,
+                validationErrorDetails: {
+                    desc: errorSections[0],
+                    field: errorSections[1],
+                    validationRule: errorSections[2]
+                }
+            };
+            // console.log("err: ", err);
+            errs.push(err);
+        }
+
+        res.status(400);
+        res.json({
+            status: 400,
+            error: {
+                message: "Unable to save schema.  Failed validation.",
+                validationErrors: errs
+            }
+        });
+        return;
+    }
+
+    const mdcSchema = new db.MdcSchema;
+    console.log("1");
+    // mdcSchema.name = req.body.name;
+    mdcSchema.fields = req.body.fields;
+
+    console.log("2");
+    mdcSchema.save(function (err) {
+        if (err) {
+            console.log("err: ", err);
+            // log.debug(err);
+            res.status(500);
+            res.json({
+                status: 500,
+                error: err.message
+            });
+        } else {
+            console.log("3");
+            res.status(201);
+            res.json({
+                status: 201,
+                message: 'Schema saved successfully.'
+            });
+        }
+    });
+    console.log("4");
+});
 
 module.exports = router;

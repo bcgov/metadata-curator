@@ -7,6 +7,7 @@ let session = require('express-session');
 let passport = require('passport');
 let OidcStrategy = require('passport-openidconnect').Strategy;
 let history = require('connect-history-api-fallback');
+require('./db/db').init();
 
 let backendRouter = require('./routes/backendRouter');
 

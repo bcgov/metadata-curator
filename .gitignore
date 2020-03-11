@@ -6,6 +6,6 @@
 .idea/
 *.iml
 *.iws
-
+/backend/test/http-requests/http-client.private.env.json
 
 tmp
