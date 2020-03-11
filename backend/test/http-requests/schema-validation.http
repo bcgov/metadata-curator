@@ -1,0 +1,164 @@
+
+### validateDataPackage - default flow
+PUT {{base-url}}/validateDataPackage
+Content-Type: application/json
+
+{
+  "resources" : [
+    {
+      "name" : "example",
+      "profile" : "tabular-data-resource",
+      "schema" : {
+        "fielsds" : [
+          {
+            "name" : "height",
+            "type" : "integer"
+          },
+          {
+            "name" : "age",
+            "type" : "integer"
+          },
+          {
+            "name" : "name",
+            "type" : "string"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+
+### validateTableSchema - default flow
+PUT {{base-url}}/validateTableSchema
+Content-Type: application/json
+
+{
+  "fields" :
+  [
+    {
+      "name" : "height",
+      "type" : "integer"
+    },
+    {
+      "name" : "age",
+      "type" : "integer"
+    },
+    {
+      "name" : "name",
+      "type" : "string"
+    }
+  ]
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+### validateTableSchema - mispelled "fields" property
+PUT {{base-url}}/validateTableSchema
+Content-Type: application/json
+
+{
+  "fieljkjlkds" :
+  [
+    {
+      "name" : "height",
+      "type" : "integer"
+    },
+    {
+      "name" : "age",
+      "type" : "integer"
+    },
+    {
+      "name" : "name",
+      "type" : "string"
+    }
+  ]
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 400, "Response status is not 400");
+    });
+%}
+
+### validateTableSchema - empty field array
+PUT {{base-url}}/validateTableSchema
+Content-Type: application/json
+
+{
+  "fields" : []
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 400, "Response status is not 400");
+    });
+%}
+
+### validateTableSchema - mispelled required column def "name" attribute
+PUT {{base-url}}/validateTableSchema
+Content-Type: application/json
+
+{
+  "fields" :
+  [
+    {
+      "name" : "height",
+      "type" : "integer"
+    },
+    {
+      "nasdfdsfme" : "age",
+      "type" : "integer"
+    },
+    {
+      "name" : "name",
+      "type" : "string"
+    }
+  ]
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 400, "Response status is not 400");
+    });
+%}
+
+### validateTableSchema - missing required column def "name" attribute
+PUT {{base-url}}/validateTableSchema
+Content-Type: application/json
+
+{
+  "fields" :
+  [
+    {
+      "name" : "height",
+      "type" : "integer"
+    },
+    {
+      "nassme" : "age",
+      "type" : "integer"
+    },
+    {
+      "type" : "string"
+    }
+  ]
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 400, "Response status is not 400");
+    });
+%}
+
+###
+

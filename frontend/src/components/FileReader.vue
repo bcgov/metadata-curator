@@ -1,13 +1,14 @@
 <template>
     <span>
         <v-file-input v-model="file" counter show-size label="File input"></v-file-input>
-        <v-btn @click="encrypt">Encrypt</v-btn>
-        <v-btn @click="upload">Upload</v-btn>
+        <v-btn v-if="showEncryptButton" @click="encrypt">Encrypt</v-btn>
+        <v-btn v-if="showUploadButton" @click="upload">Upload</v-btn>
+        <v-btn v-if="showImportButton" @click="onImportButtonClicked">Import</v-btn>
     </span>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 
 export default {
 
@@ -23,8 +24,19 @@ export default {
         mutateVuex: {
             type: Boolean,
             default: true
-        }
-        
+        },
+        showEncryptButton: {
+            type: Boolean,
+            default: true
+        },
+        showUploadButton: {
+            type: Boolean,
+            default: true
+        },
+        showImportButton: {
+            type: Boolean,
+            default: false
+        },
     },
 
     data() {
@@ -40,23 +52,32 @@ export default {
             encrypted: state => state.file.encrypted,
             jwt: state => state.user.jwt,
             uploadUrl: state => state.file.uploadUrl
-        })
+        }),
+        ...mapGetters({
+            getStringContent: 'file/getStringContent'
+        }),
+
     },
 
     watch: {
         file(){
+
             if (this.readFile){
                 var reader = new FileReader();
                 var self = this;
                 reader.onload = function(e){
                     if (this.mutateVuex !== ""){
+                        // console.log("watch filename: " + self.file.name);
                         self.$store.commit('file/setContent', { content: new Uint8Array(e.target.result)})
                         self.$store.commit('file/setFileName', { fileName: self.file.name})
+                        // const content = self.getStringContent();
+                        // self.$emit('file-content-read', content);
                     }else{
                         self.fileContent = e.target.result;
                     }
                 }
                 reader.readAsArrayBuffer(this.file);
+
             }
         }
     },
@@ -105,9 +126,9 @@ export default {
                     i += 1;
                     // eslint-disable-next-line
                     console.log("Upload " + (i) + "/" + (this.blob.length) +"finished",);
-                    
+
                     if (i<this.blob.length){
-                        
+
                         let u2 = new tus.Upload(this.blob[i], uploadOptions);
                         u2.start();
                         uploads.push(u2);
@@ -130,9 +151,14 @@ export default {
             let u = new tus.Upload(this.blob[i], uploadOptions);
             uploads.push(u);
             u.start();
-        }
+        },
+        onImportButtonClicked: function(){
+            // console.log("onImportButtonClicked");
+            const content = this.getStringContent();
+            this.$emit('import-button-clicked', content);
+        },
     }
-    
+
 }
 </script>
 

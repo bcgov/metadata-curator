@@ -5,6 +5,7 @@ import createPersistedState from 'vuex-persistedstate';
 
 import user from './modules/user'
 import file from './modules/file'
+import schemaImport from './modules/schemaImport'
 
 
 Vue.use(Vuex)
@@ -12,7 +13,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   modules: {
     user,
-    file
+    file,
+    schemaImport
   },
   plugins: [createPersistedState({
     paths: [

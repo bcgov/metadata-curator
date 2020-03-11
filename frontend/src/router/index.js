@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 const home = () => import(/* webpackChunkName: "home" */ "../components/pages/home");
+const importSchema = () => import(/* webpackChunkName: "import" */ "../components/pages/importSchema");
 const NotFound = () => import(/* webpackChunkName: "NotFound" */ "../components/pages/404");
 
 Vue.use(Router)
@@ -17,7 +18,7 @@ let r = new Router({
           requiresAuth: true
       }
     },
-    { 
+    {
       path: '/login',
       name: 'login',
       component: home,
@@ -26,13 +27,22 @@ let r = new Router({
         requiresNoUser: true
       }
     },
-    { 
+    {
       path: '/logout',
       name: 'logout',
       component: home,
       meta: {
         title: "Logout",
         requiresAuth: true
+      }
+    },
+    {
+      path: '/import',
+      name: 'import',
+      component: importSchema,
+      meta: {
+          title: "Import",
+          requiresNoUser: true
       }
     },
     {
@@ -47,18 +57,18 @@ let r = new Router({
 
 
 r.beforeEach((to, from, next) => {
-  
+
   if (to.path === "/login"){
     window.location.href = "/api/login";
   }else if (to.path === "/logout"){
       window.location.href = "/api/logout";
   }else{
-  
+
     //document.title = i18n.tc(to.meta.title);
     document.title = "Metadata Generation Tool - " + to.meta.title;
     next();
   }
-  
+
 
 });
 
