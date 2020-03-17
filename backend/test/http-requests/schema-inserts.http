@@ -1,4 +1,4 @@
-### validateTableSchema - default flow
+### POST /schemas - default flow
 POST {{base-url}}/schemas
 Content-Type: application/json
 
@@ -29,24 +29,3 @@ Content-Type: application/json
 
 ###
 
-#{
-#  "name" : "fname"
-#}
-
-#{
-#  "fields" :
-#  [
-#    {
-#      "name" : "fname",
-#      "type" : "string"
-#    },
-#    {
-#      "name" : "lname",
-#      "type" : "string"
-#    },
-#    {
-#      "name" : "age",
-#      "type" : "integer"
-#    }
-#  ]
-#}
