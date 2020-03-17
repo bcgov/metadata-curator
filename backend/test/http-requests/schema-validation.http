@@ -35,7 +35,7 @@ Content-Type: application/json
 %}
 
 
-### validateTableSchema - default flow
+### POST /schemas - default flow
 POST {{base-url}}/schemas
 Content-Type: application/json
 
@@ -63,7 +63,7 @@ Content-Type: application/json
     });
 %}
 
-### validateTableSchema - mispelled "fields" property
+### POST /schemas - mispelled "fields" property
 POST {{base-url}}/schemas
 Content-Type: application/json
 
@@ -91,7 +91,7 @@ Content-Type: application/json
     });
 %}
 
-### validateTableSchema - empty field array
+### POST /schemas - empty field array
 POST {{base-url}}/schemas
 Content-Type: application/json
 
@@ -105,7 +105,7 @@ Content-Type: application/json
     });
 %}
 
-### validateTableSchema - mispelled required column def "name" attribute
+### POST /schemas - mispelled required column def "name" attribute
 POST {{base-url}}/schemas
 Content-Type: application/json
 
@@ -133,7 +133,34 @@ Content-Type: application/json
     });
 %}
 
-### validateTableSchema - missing required column def "name" attribute
+### POST /schemas - missing required column def "name" attribute
+POST {{base-url}}/schemas
+Content-Type: application/json
+
+{
+  "fields" :
+  [
+    {
+      "name" : "height",
+      "type" : "integer"
+    },
+    {
+      "name" : "age",
+      "type" : "integer"
+    },
+    {
+      "type" : "string"
+    }
+  ]
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 400, "Response status is not 400");
+    });
+%}
+
+### POST /schemas - multiple invalid column defs
 POST {{base-url}}/schemas
 Content-Type: application/json
 
@@ -161,4 +188,3 @@ Content-Type: application/json
 %}
 
 ###
-

@@ -126,8 +126,10 @@ router.post('/v1/schemas', async (req, res, next) => {
 
             let msg = errorSections.join(" ");
             const err = {
-                error: msg,
-                validationErrorDetails: {
+                message: msg,
+                //potentially useful if there is a need to make the validation errors returned by frictionless library
+                //to be more humanly understandable
+                validationErrorBySections: {
                     desc: errorSections[0],
                     field: errorSections[1],
                     validationRule: errorSections[2]
@@ -160,7 +162,6 @@ router.post('/v1/schemas', async (req, res, next) => {
                 error: err.message
             });
         } else {
-            console.log("3");
             res.status(201);
             res.json({
                 status: 201,
@@ -168,7 +169,6 @@ router.post('/v1/schemas', async (req, res, next) => {
             });
         }
     });
-
 });
 
 module.exports = router;
