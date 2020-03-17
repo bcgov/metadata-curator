@@ -70,8 +70,6 @@ export default {
                         // console.log("watch filename: " + self.file.name);
                         self.$store.commit('file/setContent', { content: new Uint8Array(e.target.result)})
                         self.$store.commit('file/setFileName', { fileName: self.file.name})
-                        // const content = self.getStringContent();
-                        // self.$emit('file-content-read', content);
                     }else{
                         self.fileContent = e.target.result;
                     }

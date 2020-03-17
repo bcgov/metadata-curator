@@ -36,7 +36,7 @@ Content-Type: application/json
 
 
 ### validateTableSchema - default flow
-PUT {{base-url}}/validateTableSchema
+POST {{base-url}}/schemas
 Content-Type: application/json
 
 {
@@ -59,12 +59,12 @@ Content-Type: application/json
 
 > {%
     client.test("Request executed successfully", function() {
-        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.status === 201, "Response status is not 201");
     });
 %}
 
 ### validateTableSchema - mispelled "fields" property
-PUT {{base-url}}/validateTableSchema
+POST {{base-url}}/schemas
 Content-Type: application/json
 
 {
@@ -92,7 +92,7 @@ Content-Type: application/json
 %}
 
 ### validateTableSchema - empty field array
-PUT {{base-url}}/validateTableSchema
+POST {{base-url}}/schemas
 Content-Type: application/json
 
 {
@@ -106,7 +106,7 @@ Content-Type: application/json
 %}
 
 ### validateTableSchema - mispelled required column def "name" attribute
-PUT {{base-url}}/validateTableSchema
+POST {{base-url}}/schemas
 Content-Type: application/json
 
 {
@@ -134,7 +134,7 @@ Content-Type: application/json
 %}
 
 ### validateTableSchema - missing required column def "name" attribute
-PUT {{base-url}}/validateTableSchema
+POST {{base-url}}/schemas
 Content-Type: application/json
 
 {
