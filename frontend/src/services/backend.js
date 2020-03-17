@@ -18,11 +18,6 @@ export class Backend {
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 
-    // putValidateSchema(schema) {
-    //     const url = '/api/v1/validateTableSchema'
-    //     return axios.put(url, schema,{withCredentials: true,}).then(response => response.data);
-    // }
-
     postSchema(schema) {
         const url = '/api/v1/schemas'
         // console.log("postSchema: ", schema);

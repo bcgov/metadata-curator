@@ -29,7 +29,7 @@
 </template>
 <script>
 import FileReader from '../FileReader';
-import {mapState, mapActions, mapGetters, mapMutations} from 'vuex';
+import {mapActions, mapMutations} from 'vuex';
 
 export default {
     components:{
@@ -57,43 +57,12 @@ export default {
             this.setSchema({ schema: content});
             this.saveSchema();
         },
-        // validateSchema() {
-        //     // console.log("validate schema");
-        //
-        //     const be = new Backend();
-        //
-        //     const schema = {
-        //         "fields" :
-        //             [
-        //                 {
-        //                     "name" : "fname",
-        //                     "type" : "string"
-        //                 },
-        //                 {
-        //                     "name" : "lname",
-        //                     "type" : "string"
-        //                 },
-        //                 {
-        //                     "name" : "age",
-        //                     "type" : "integer"
-        //                 }
-        //             ]
-        //     };
-        //     let response = be.putValidateSchema(schema);
-        //     console.log("response: ", response);
-        // },
         saveSchema() {
             // console.log("save schema");
             this.createSchema();
         }
     },
     computed: {
-        ...mapState({
-            // blob: state => state.file.blob,
-        }),
-        ...mapGetters({
-            // getStringContent: 'file/getStringContent'
-        })
     },
 }
 </script>

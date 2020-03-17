@@ -112,50 +112,6 @@ router.put('/v1/validateDataPackage', async (req, res, next) => {
 
 });
 
-// router.put('/v1/validateTableSchema', async (req, res, next) => {
-//     // console.log("req.body: ", req.body);
-//
-//     // const {valid, errors} = await validate(descriptor);
-//     // console.log("valid: " + valid); // false
-//     // for (const error of errors) {
-//     //     // inspect Error objects
-//     //     console.log("error: ", error);
-//     // }
-//
-//     let errs = [];
-//     const schema = await Schema.load(req.body);
-//     // console.log("schema.valid: " + schema.valid); // false
-//     // console.log("schema.errors: ", schema.errors);
-//     for (const error of schema.errors) {
-//         // inspect Error objects
-//         // console.log("error: ", error);
-//         let errorSections = error.message.split("\n");
-//         errorSections = errorSections.map(item => item.replace(/\s\s+/g, " ").trim());
-//         errorSections = errorSections.map(item => item.replace(/\"/g, ""));
-//
-//         let msg = errorSections.join(" ");
-//         const err = {
-//             message: msg,
-//             validationErrorDetails: {
-//                 desc: errorSections[0],
-//                 field: errorSections[1],
-//                 validationRule: errorSections[2]
-//             }
-//         };
-//         // console.log("err: ", err);
-//         errs.push(err);
-//     }
-//
-//     if(!schema.valid) {
-//         res.status(400);
-//         res.json({errors: errs});
-//         return;
-//     }
-//
-//     res.json({message: "Schema validated successfully."});
-//
-// });
-
 router.post('/v1/schemas', async (req, res, next) => {
     console.log("req.body: ", req.body);
 
@@ -163,7 +119,6 @@ router.post('/v1/schemas', async (req, res, next) => {
     const schema = await Schema.load(req.body);
     if(!schema.valid) {
         for (const error of schema.errors) {
-            // inspect Error objects
             // console.log("error: ", error);
             let errorSections = error.message.split("\n");
             errorSections = errorSections.map(item => item.replace(/\s\s+/g, " ").trim());
@@ -181,7 +136,6 @@ router.post('/v1/schemas', async (req, res, next) => {
             // console.log("err: ", err);
             errs.push(err);
         }
-
         res.status(400);
         res.json({
             status: 400,
@@ -194,11 +148,8 @@ router.post('/v1/schemas', async (req, res, next) => {
     }
 
     const mdcSchema = new db.MdcSchema;
-    console.log("1");
-    // mdcSchema.name = req.body.name;
     mdcSchema.fields = req.body.fields;
 
-    console.log("2");
     mdcSchema.save(function (err) {
         if (err) {
             console.log("err: ", err);
@@ -217,7 +168,7 @@ router.post('/v1/schemas', async (req, res, next) => {
             });
         }
     });
-    console.log("4");
+
 });
 
 module.exports = router;
