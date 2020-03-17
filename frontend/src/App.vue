@@ -26,10 +26,9 @@
 
 <script>
 import Header from './components/Header';
-
 import { mapState } from 'vuex'
-// import Tabs from "./components/Tabs";
-// import { mdiImport } from '@mdi/js';
+import '@mdi/font/css/materialdesignicons.css'
+
 export default {
 
   components: {
