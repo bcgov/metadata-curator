@@ -19,7 +19,7 @@
                  text
                  prominent
                  type="error"
-                 icon="mdi-cloud-alert">{{errorMsg}} dis one</v-alert>
+                 icon="mdi-cloud-alert">{{errorMsg}}</v-alert>
 
         <v-alert v-if="validationErrorsMsgs" style="margin-left: 10px; margin-bottom: 12px; width:65%;"
                  text
@@ -31,24 +31,6 @@
                 <li v-for="error in validationErrorsMsgs" :key="error">{{error}}</li>
             </ul>
         </v-alert>
-
-<!--        <p>aklsdjfkljsdf ajsdfjsdf alksdfjlsdlf alksdjflsdjf alksjfkljdkslf</p>-->
-<!--        <p>aklsdjfkljsdf ajsdfjsdf alksdfjlsdlf alksdjflsdjf alksjfkljdkslf</p>-->
-<!--        <p>aklsdjfkljsdf ajsdfjsdf alksdfjlsdlf alksdjflsdjf alksjfkljdkslf</p>-->
-<!--        <p>aklsdjfkljsdf ajsdfjsdf alksdfjlsdlf alksdjflsdjf alksjfkljdkslf</p>-->
-<!--        <p>aklsdjfkljsdf ajsdfjsdf alksdfjlsdlf alksdjflsdjf alksjfkljdkslf</p>-->
-<!--        <p>aklsdjfkljsdf ajsdfjsdf alksdfjlsdlf alksdjflsdjf alksjfkljdkslf</p>-->
-<!--        <p>aklsdjfkljsdf ajsdfjsdf alksdfjlsdlf alksdjflsdjf alksjfkljdkslf</p>-->
-<!--        <p>aklsdjfkljsdf ajsdfjsdf alksdfjlsdlf alksdjflsdjf alksjfkljdkslf</p>-->
-<!--        <p>aklsdjfkljsdf ajsdfjsdf alksdfjlsdlf alksdjflsdjf alksjfkljdkslf</p>-->
-<!--        <p>aklsdjfkljsdf ajsdfjsdf alksdfjlsdlf alksdjflsdjf alksjfkljdkslf</p>-->
-<!--        <p>aklsdjfkljsdf ajsdfjsdf alksdfjlsdlf alksdjflsdjf alksjfkljdkslf</p>-->
-<!--        <p>aklsdjfkljsdf ajsdfjsdf alksdfjlsdlf alksdjflsdjf alksjfkljdkslf</p>-->
-<!--        <p>aklsdjfkljsdf ajsdfjsdf alksdfjlsdlf alksdjflsdjf alksjfkljdkslf</p>-->
-<!--        <p>aklsdjfkljsdf ajsdfjsdf alksdfjlsdlf alksdjflsdjf alksjfkljdkslf</p>-->
-<!--        <p>aklsdjfkljsdf ajsdfjsdf alksdfjlsdlf alksdjflsdjf alksjfkljdkslf</p>-->
-<!--        <p>aklsdjfkljsdf ajsdfjsdf alksdfjlsdlf alksdjflsdjf alksjfkljdkslf</p>-->
-
     </div>
 </template>
 <script>
