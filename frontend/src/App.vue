@@ -1,6 +1,6 @@
 <template>
   <v-app id="app">
-    <Header title="Web Curator"></Header>
+    <Header title="Metadata Curator"></Header>
       <div>
           <v-tabs v-model="activeTab"
                   background-color="accent-4"
