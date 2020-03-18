@@ -1,26 +1,23 @@
 <template>
   <v-app id="app">
     <Header title="Web Curator"></Header>
-      <v-tabs
-          background-color="accent-4"
-          centered
-          dark
-          icons-and-text>
-          <v-tabs-slider></v-tabs-slider>
-          <v-tab to="/">
-              Home
-              <v-icon>mdi-phone</v-icon>
-          </v-tab>
-          <v-tab to="/import">
-              Import
-              <v-icon>mdi-import</v-icon>
-          </v-tab>
-          <v-tab to="/">
-              Guess
-              <v-icon>mdi-phone</v-icon>
-          </v-tab>
-      </v-tabs>
-      <router-view v-show="loggedIn"/>
+      <div>
+          <v-tabs v-model="activeTab"
+                  background-color="accent-4"
+                  icons-and-text
+                  centered
+                  dark
+                  grow>
+              <v-tab v-for="tab of tabs" :key="tab.id" :to="tab.route" exact>
+                  {{ tab.name }}
+                  <v-icon>{{tab.icon}}</v-icon>
+              </v-tab>
+
+              <v-tab-item v-for="tab of tabs" :key="tab.id" :value="tab.route">
+                  <router-view></router-view>
+              </v-tab-item>
+          </v-tabs>
+      </div>
   </v-app>
 </template>
 
@@ -33,13 +30,23 @@ export default {
 
   components: {
     Header,
-    // Tabs
   },
   data () {
-    return {
-        tab: null,
-        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-    }
+      return {
+          activeTab: null,
+          tabs: [
+              { id: 1, name: "Home", route: `/`, icon: 'mdi-home'},
+              { id: 2, name: "Import", route: `/import`, icon: 'mdi-import' },
+              { id: 3, name: "Guess", route: `/infer`, icon: 'mdi-file-question-outline'},
+              { id: 4, name: "Column", route: `/column`, icon: 'mdi-view-column' },
+              { id: 5, name: "Table", route: `/table`, icon: 'mdi-table' },
+              { id: 6, name: "Provenance", route: `/provenance`, icon: 'mdi-file-document' },
+              { id: 7, name: "Package", route: `/package`, icon: 'mdi-package-variant-closed' },
+              { id: 8, name: "Validate", route: `/validate`, icon: 'mdi-checkbox-marked-circle' },
+              { id: 9, name: "Find & Replace", route: `/findreplace`, icon: 'mdi-file-find' },
+              { id: 10, name: "Submit", route: `/submit`, icon: 'mdi-send' },
+          ]
+      };
   },
   computed: {
       ...mapState({
