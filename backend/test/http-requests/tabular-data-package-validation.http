@@ -1,0 +1,454 @@
+
+### /datapackageschemas - default flow
+POST {{base-url}}/datapackageschemas
+Content-Type: application/json
+
+{
+  "profile": "tabular-data-package",
+  "name": "my-dataset",
+  "resources" : [
+    {
+      "name" : "resource_1",
+      "profile" : "tabular-data-resource",
+      "data": [],
+      "schema" : {
+        "fields" : [
+          {
+            "name" : "height",
+            "type" : "integer"
+          },
+          {
+            "name" : "age",
+            "type" : "integer"
+          },
+          {
+            "name" : "name",
+            "type" : "string"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+### /datapackageschemas - multiple valid resources
+POST {{base-url}}//datapackageschemas
+Content-Type: application/json
+
+{
+  "profile": "tabular-data-package",
+  "name": "my-dataset",
+  "resources" : [
+    {
+      "name" : "resource_1",
+      "profile" : "tabular-data-resource",
+      "data": [],
+      "schema" : {
+        "fields" : [
+          {
+            "name" : "height",
+            "type" : "integer"
+          },
+          {
+            "name" : "age",
+            "type" : "integer"
+          },
+          {
+            "name" : "name",
+            "type" : "string"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "resource_2",
+      "profile" : "tabular-data-resource",
+      "data": [],
+      "schema" : {
+        "fields" : [
+          {
+            "name" : "height",
+            "type" : "integer"
+          },
+          {
+            "name" : "age",
+            "type" : "integer"
+          },
+          {
+            "name" : "name",
+            "type" : "string"
+          },
+          {
+            "name" : "fname",
+            "type" : "string"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+
+### /datapackageschemas - missing name field
+POST {{base-url}}//datapackageschemas
+Content-Type: application/json
+
+{
+  "profile": "tabular-data-package",
+  "resources" : [
+    {
+      "name" : "resource_1",
+      "profile" : "tabular-data-resource",
+      "data": [],
+      "schema" : {
+        "fields" : [
+          {
+            "name" : "height",
+            "type" : "integer"
+          },
+          {
+            "name" : "age",
+            "type" : "integer"
+          },
+          {
+            "name" : "name",
+            "type" : "string"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+
+### /datapackageschemas - missing profile value of "tabular-data-resource"
+POST {{base-url}}//datapackageschemas
+Content-Type: application/json
+
+{
+  "name": "my-dataset",
+  "resources" : [
+    {
+      "name" : "resource_1",
+      "profile" : "tabular-data-resource",
+      "data": [],
+      "schema" : {
+        "fields" : [
+          {
+            "name" : "height",
+            "type" : "integer"
+          },
+          {
+            "name" : "age",
+            "type" : "integer"
+          },
+          {
+            "name" : "name",
+            "type" : "string"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+
+### /datapackageschemas - missing resources field
+POST {{base-url}}//datapackageschemas
+Content-Type: application/json
+
+{
+  "profile": "tabular-data-package",
+  "name": "my-dataset"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 400, "Response status is not 400");
+    });
+%}
+
+
+### /datapackageschemas - resources field assigned empty array
+POST {{base-url}}//datapackageschemas
+Content-Type: application/json
+
+{
+  "profile": "tabular-data-package",
+  "name": "my-dataset",
+  "resources" : []
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 400, "Response status is not 400");
+    });
+%}
+
+### /datapackageschemas - missing data field in resource entry
+POST {{base-url}}//datapackageschemas
+Content-Type: application/json
+
+{
+  "profile": "tabular-data-package",
+  "name": "my-dataset",
+  "resources" : [
+    {
+      "name" : "resource_1",
+      "profile" : "tabular-data-resource",
+      "schema" : {
+        "fields" : [
+          {
+            "name" : "height",
+            "type" : "integer"
+          },
+          {
+            "name" : "age",
+            "type" : "integer"
+          },
+          {
+            "name" : "name",
+            "type" : "string"
+          }
+        ]
+      }
+    }
+  ]
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 400, "Response status is not 400");
+    });
+%}
+
+### /datapackageschemas - missing schema field in resource entry
+POST {{base-url}}//datapackageschemas
+Content-Type: application/json
+
+{
+  "profile": "tabular-data-package",
+  "name": "my-dataset",
+  "resources" : [
+    {
+      "name" : "resource_1",
+      "profile" : "tabular-data-resource",
+      "data": []
+    }
+  ]
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 400, "Response status is not 400");
+    });
+%}
+
+
+### /datapackageschemas - missing schema and data fields in resource entry
+POST {{base-url}}//datapackageschemas
+Content-Type: application/json
+
+{
+  "profile": "tabular-data-package",
+  "name": "my-dataset",
+  "resources" : [
+    {
+      "name" : "resource_1",
+      "profile" : "tabular-data-resource"
+    }
+  ]
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 400, "Response status is not 400");
+    });
+%}
+
+
+
+### /datapackageschemas - missing "fields" field
+POST {{base-url}}//datapackageschemas
+Content-Type: application/json
+
+{
+  "profile": "tabular-data-package",
+  "name": "my-dataset",
+  "resources" : [
+    {
+      "name" : "resource_1",
+      "profile" : "tabular-data-resource",
+      "data": [],
+      "schema" : {
+      }
+    }
+  ]
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 400, "Response status is not 400");
+    });
+%}
+
+### /datapackageschemas - empty fields array
+POST {{base-url}}//datapackageschemas
+Content-Type: application/json
+
+{
+  "profile": "tabular-data-package",
+  "name": "my-dataset",
+  "resources" : [
+    {
+      "name" : "resource_1",
+      "profile" : "tabular-data-resource",
+      "data": [],
+      "schema" : {
+        "fields" : [
+        ]
+      }
+    }
+  ]
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 400, "Response status is not 400");
+    });
+%}
+
+### /datapackageschemas - missing name field
+POST {{base-url}}//datapackageschemas
+Content-Type: application/json
+
+{
+  "profile": "tabular-data-package",
+  "name": "my-dataset",
+  "resources" : [
+    {
+      "name" : "resource_1",
+      "profile" : "tabular-data-resource",
+      "data": [],
+      "schema" : {
+        "fields" : [
+          {
+            "type" : "integer"
+          },
+          {
+            "type" : "integer"
+          },
+          {
+            "name" : "name",
+            "type" : "string"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "resource_2",
+      "profile" : "tabular-data-resource",
+      "data": [],
+      "schema" : {
+        "fields" : [
+          {
+            "type" : "integer"
+          },
+          {
+            "name" : "age",
+            "type" : "integer"
+          },
+          {
+            "type" : "string"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 400, "Response status is not 400");
+    });
+%}
+
+### /datapackageschemas - mispelled/missing name field on multiple resources
+POST {{base-url}}//datapackageschemas
+Content-Type: application/json
+
+{
+  "profile": "tabular-data-package",
+  "name": "my-dataset",
+  "resources" : [
+    {
+      "name" : "resource_1",
+      "profile" : "tabular-data-resource",
+      "data": [],
+      "schema" : {
+        "fields" : [
+          {
+            "type" : "integer"
+          },
+          {
+            "type" : "integer"
+          },
+          {
+            "name" : "name",
+            "type" : "string"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "resource_2",
+      "profile" : "tabular-data-resource",
+      "data": [],
+      "schema" : {
+        "fields" : [
+          {
+            "type" : "integer"
+          },
+          {
+            "names" : "age",
+            "type" : "integer"
+          },
+          {
+            "type" : "string"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 400, "Response status is not 400");
+    });
+%}
+
+###
+
+
