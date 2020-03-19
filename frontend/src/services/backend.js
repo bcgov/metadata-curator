@@ -18,8 +18,8 @@ export class Backend {
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 
-    postSchema(schema) {
-        const url = '/api/v1/schemas'
+    postTableSchema(schema) {
+        const url = '/api/v1/tableschemas'
         // console.log("postSchema: ", schema);
         const headers = {
             'Content-Type': 'application/json'
@@ -27,6 +27,17 @@ export class Backend {
         return axios.post(url, schema,
             {withCredentials: true, headers: headers}
             ).then(response => response.data);
+    }
+
+    postDataPackageSchema(schema) {
+        const url = '/api/v1/datapackageschemas'
+        // console.log("postTabDataPackage: ", tabDataPackage);
+        const headers = {
+            'Content-Type': 'application/json'
+        }
+        return axios.post(url, schema,
+            {withCredentials: true, headers: headers}
+        ).then(response => response.data)
     }
 
 }

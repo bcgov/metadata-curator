@@ -3,7 +3,7 @@ let db = require('./db/db');
 let express = require('express');
 let router = express.Router();
 let auth = require('../modules/auth');
-const {Package} = require('datapackage');
+const {Package, Profile, Resource, validate:dataPackageValidate} = require('datapackage');
 const {Table, Schema, validate} = require('tableschema');
 
 router.use('/login', function(req, res, next){
@@ -58,65 +58,146 @@ router.use('/v1/uploadurl', auth.removeExpired, function(req, res){
 });
 
 
-router.put('/v1/validateDataPackage', async (req, res, next) => {
-    const descriptor = {
-        resources: [
-            {
-                name: 'example',
-                profile: 'tabular-data-resource',
-                data: [
-                //     ['height', 'age', 'name'],
-                //     ['180', '18', 'Tony'],
-                //     ['192', '32', 'Jacob'],
-                ],
-                schema:  {
-                    fields: [
-                        {name: 'height', type: 'integder'},
-                        {name: 'age', type: 'integer'},
-                        {name: 'name', type: 'string'},
-                    ],
-                }
-            }
-        ]
-    };
+router.post('/v1/datapackageschemas', async (req, res, next) => {
+    let errs = [];
+    let resourceErrsMap = new Map();
+    let err = {};
     console.log("req.body: ", req.body);
 
-    // const dataPackage = await Package.load(req.body);
-    const dataPackage = await Package.load(descriptor, strict = true);
-    // const resource = dataPackage.getResource('example');
-    // const result = await resource.read();
-    // console.log("result: ", result);
-    console.log("dataPackage.valid: " + dataPackage.valid);
-    console.log("dataPackage.errors: ", JSON.stringify(dataPackage.errors));
-    for (const error of dataPackage.errors) {
-        // inspect Error objects
-         console.log("error: ", error.message);
+    let descriptor = {...req.body};
+    descriptor.profile = "tabular-data-package";
+
+    const dataPackage = await Package.load(descriptor, {strict: false});
+    console.log('valid: ' + dataPackage.valid);
+
+
+    if(!dataPackage.valid) {
+
+        if(descriptor.resources && descriptor.resources.length > 0) {
+            console.log("resources property exists");
+
+            for (const resource of descriptor.resources) {
+                const rsrc = Resource.load(resource);
+                const rsrcValid = (await rsrc).valid;
+                const rsrcErrors = (await rsrc).errors;
+
+                console.log("rsrc valid: ", rsrcValid);
+                for (const error of rsrcErrors) {
+                    // console.log("error: ", error);
+                    let errorSections = error.message.split("\n");
+                    errorSections = errorSections.map(item => item.replace(/\s\s+/g, " ").trim());
+                    errorSections = errorSections.map(item => item.replace(/\"/g, ""));
+
+                    let msg = errorSections.join(" ");
+                    const err = {
+                        resourceName: resource.name,
+                        message: msg,
+                        //potentially useful if there is a need to make the validation errors returned by frictionless library
+                        //to be more humanly understandable
+                        validationErrorBySections: {
+                            desc: errorSections[0],
+                            field: errorSections[1],
+                            validationRule: errorSections[2]
+                        }
+                    };
+
+                    console.log("rsrc err: ", err);
+                    let val = resourceErrsMap.get(resource.name);
+                    if(val) {
+                        val.push(err);
+                        resourceErrsMap.set(resource.name, val);
+                    }
+                    else {
+                        console.log("else...")
+                        let newVal = [];
+                        newVal.push(err);
+                        resourceErrsMap.set(resource.name, newVal);
+                    }
+                }
+            }
+            console.log("resourceErrsMap: ", resourceErrsMap);
+        }
+        else {
+            console.log("resources property does not exist");
+            for (const error of dataPackage.errors) {
+                // console.log("error: ", error);
+                let errorSections = error.message.split("\n");
+                errorSections = errorSections.map(item => item.replace(/\s\s+/g, " ").trim());
+                errorSections = errorSections.map(item => item.replace(/\"/g, ""));
+
+                let msg = errorSections.join(" ");
+                err = {
+                    message: msg,
+                    //potentially useful if there is a need to make the validation errors returned by frictionless library
+                    //to be more humanly understandable
+                    validationErrorBySections: {
+                        desc: errorSections[0],
+                        field: errorSections[1],
+                        validationRule: errorSections[2]
+                    }
+                };
+                // console.log("err: ", err);
+                errs.push(err);
+            }
+
+        }
+
+        res.status(400);
+        res.json({
+            status: 400,
+            error: {
+                message: "Unable to save tabular data package.  Failed validation.",
+                validationErrors: errs,
+                validationErrorsByResource: [...resourceErrsMap]
+            }
+        });
+        return;
+
     }
 
-    // const {valid, errors} = await validate(descriptor);
-    // console.log("valid: ", valid);
-    // console.log("errors: ", JSON.stringify(errors));
-    // for (const error of errors) {
-    //     // inspect Error objects
-    //     console.log("error: ", JSON.stringify(error));
-    // }
+    let dataPackageSchema = new db.DataPackageSchema;
+    let resources = [...descriptor.resources];
 
-    // profile = await Profile.load('tabular-data-resource')
-    // profile.name // data-package
-    // profile.jsonschema // JSON Schema contents
+    console.log("resources: ", resources);
+    resources = resources.map(item => {
+        let newItem = {...item, tableSchema: {...item.schema}};
+        console.log("newItem: ", newItem);
+        return newItem;
+    });
 
-    // result = { test: "ajskfj"};
-    // res.json(result);
-    res.status(400);
-    res.json({error: "No need to withdraw a request that hasn't been submitted"});
+    dataPackageSchema.profile = descriptor.profile;
+    dataPackageSchema.resources = resources;
+
+    dataPackageSchema.save(function (err) {
+        if (err) {
+            console.log("err: ", err);
+            // log.debug(err);
+            res.status(500);
+            res.json({
+                status: 500,
+                error: err.message
+            });
+        } else {
+            res.status(201);
+            res.json({
+                status: 201,
+                message: 'Successfully saved tabular data package'
+            });
+        }
+    });
+
+    // res.status(200);
+    // res.json({message: "Successfully validated tabular data package"});
 
 });
 
-router.post('/v1/schemas', async (req, res, next) => {
-    console.log("req.body: ", req.body);
+router.post('/v1/tableschemas', async (req, res, next) => {
+    console.log("req.bodys: ", req.body);
 
     let errs = [];
-    const schema = await Schema.load(req.body);
+    let schemaDescriptor = {...req.body};
+
+    const schema = await Schema.load(schemaDescriptor);
     if(!schema.valid) {
         for (const error of schema.errors) {
             // console.log("error: ", error);
@@ -149,10 +230,19 @@ router.post('/v1/schemas', async (req, res, next) => {
         return;
     }
 
-    const mdcSchema = new db.MdcSchema;
-    mdcSchema.fields = req.body.fields;
+    const dataPackageSchema = new db.DataPackageSchema;
+    // console.log("schemaDescriptor: ", schemaDescriptor);
 
-    mdcSchema.save(function (err) {
+    dataPackageSchema.profile = "tabular-data-package";
+    dataPackageSchema.resources = [
+        {
+            profile: "tabular-data-resource",
+            data: [],
+            tableSchema: schemaDescriptor
+        }
+    ];
+
+    dataPackageSchema.save(function (err) {
         if (err) {
             console.log("err: ", err);
             // log.debug(err);

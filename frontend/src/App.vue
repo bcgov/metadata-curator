@@ -1,7 +1,7 @@
 <template>
   <v-app id="app">
     <Header title="Metadata Curator"></Header>
-      <div>
+      <div v-show="loggedIn">
           <v-tabs v-model="activeTab"
                   background-color="accent-4"
                   icons-and-text
