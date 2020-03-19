@@ -2,8 +2,8 @@ import { Backend } from '../../services/backend';
 const backend = new Backend();
 
 const state = {
-    schema: null,
-    schemaValidated: false,
+    tableSchema: null,
+    dataPackageSchema: null,
     imported: false,
     error: null,
     successMsg: null
@@ -13,13 +13,11 @@ const getters = {
     errorMsg: ({error}) => {
       if(error) {
           return error.message;
-          // if(error.validationErrors) { return error.message; }
-          // return error;
       }
       return null;
     },
     validationErrorMsgs: ({error}) => {
-        console.log("getters.validationErrorsDetails error: ", error);
+        console.log("getters.validationErrorMsgs error: ", error);
         // let errorMsgs = [];
 
         if(error && error.validationErrors && error.validationErrors.length > 0) {
@@ -28,36 +26,64 @@ const getters = {
             // console.log("found error: ", error.validationErrors[0].message);
             // return error.validationErrors[0].message;
         }
-        return null;
+        return [];
+    },
+    validationErrorsByResource: ({error}) => {
+        console.log("getters.validationErrorsByResource error: ", error);
+
+        if(error && error.validationErrorsByResource && error.validationErrorsByResource.length > 0) {
+            return error.validationErrorsByResource;
+        }
+        return [];
     }
 }
 
 
 const actions = {
-    createSchema({ commit, state }) {
-        // console.log("createSchema action: ", state.schema);
+    createTableSchema({ commit, state }) {
+        // console.log("createSchema action: ", state.tableSchema);
         commit('clearSuccessMsg');
         commit('clearError');
 
-        backend.postSchema(state.schema).then(() => {
-            commit('clearSchema');
-            commit('setSuccessMsg', {message: "Successfully saved schema"});
+        backend.postTableSchema(state.tableSchema).then(() => {
+            commit('clearTableSchema');
+            commit('setSuccessMsg', {message: "Successfully saved table schema"});
         }).catch((e) => {
-            console.log("create schema error: ", e);
+            console.log("create table schema error: ", e);
+            commit('setError', {error: e.response.data.error});
+        });
+    },
+    createDataPackageSchema({ commit, state }) {
+        // console.log("createSchema action: ", state.tableSchema);
+        commit('clearSuccessMsg');
+        commit('clearError');
+
+        backend.postDataPackageSchema(state.dataPackageSchema).then(() => {
+            commit('clearDataPackageSchema');
+            commit('setSuccessMsg', {message: "Successfully saved data package schema"});
+        }).catch((e) => {
+            console.log("create data package schema error: ", e);
             commit('setError', {error: e.response.data.error});
         });
     },
 
-
 }
 
+
 const mutations = {
-    setSchema(state, {schema}){
+    setTableSchema(state, {schema}){
         // console.log("setSchema: ", schema);
-        state.schema = schema;
+        state.tableSchema = schema;
     },
-    clearSchema(state){
-        state.schema = null;
+    clearTableSchema(state){
+        state.tableSchema = null;
+    },
+    setDataPackageSchema(state, {schema}){
+        // console.log("setSchema: ", schema);
+        state.dataPackageSchema = schema;
+    },
+    clearDataPackageSchema(state){
+        state.dataPackageSchema = null;
     },
     setSuccessMsg(state, {message}){
         console.log("setSuccessMsg: ", message);
@@ -75,8 +101,8 @@ const mutations = {
     // eslint-disable-next-line no-unused-vars
     resetState(state) {
         state = {
-            schema: null,
-            schemaValidated: false,
+            tableSchema: null,
+            dataPackageSchema: null,
             imported: false,
             error: null,
             successMsg: null

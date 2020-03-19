@@ -1,6 +1,15 @@
 <template>
     <div style="vertical-align: top !important;">
         <h2 style="margin-left: 10px; margin-bottom: 15px;">Import</h2>
+
+        <v-container fluid>
+            <p>Please select type of metadata to import:</p>
+            <v-radio-group v-model="metadataType" row>
+                <v-radio label="Table Schema" value="table-schema"></v-radio>
+                <v-radio label="Tabular Data Package" value="tabular-data-package"></v-radio>
+            </v-radio-group>
+        </v-container>
+
         <div style="width:350px; margin-left: 10px; margin-bottom: 12px;">
             <FileReader :show-encrypt-button="false"
                         :show-upload-button="false"
@@ -15,13 +24,13 @@
             type="success"
             icon="mdi-cloud-check">{{successMsg}}</v-alert>
 
-        <v-alert v-if="errorMsg && !validationErrorsMsgs"  style="margin-left: 10px; margin-bottom: 12px; width:65%;"
+        <v-alert v-if="errorMsg && !validationErrorsMsgs && validationErrorsMsgs.length > 0"  style="margin-left: 10px; margin-bottom: 12px; width:65%;"
                  text
                  prominent
                  type="error"
                  icon="mdi-cloud-alert">{{errorMsg}}</v-alert>
 
-        <v-alert v-if="validationErrorsMsgs" style="margin-left: 10px; margin-bottom: 12px; width:65%;"
+        <v-alert v-if="validationErrorsMsgs && validationErrorsMsgs.length > 0" style="margin-left: 10px; margin-bottom: 12px; width:65%;"
                  text
                  prominent
                  type="error"
@@ -31,6 +40,21 @@
                 <li v-for="error in validationErrorsMsgs" :key="error">{{error}}</li>
             </ul>
         </v-alert>
+
+        <v-alert v-if="validationErrorsByResource && validationErrorsByResource.length > 0" style="margin-left: 10px; margin-bottom: 12px; width:65%;"
+                 text
+                 prominent
+                 type="error"
+                 icon="mdi-cloud-alert">
+            <h4 style="margin-bottom: 10px; margin-left: 5px;">{{errorMsg}}</h4>
+            <ul v-for="resourceErrorGroup in validationErrorsByResource" :key="resourceErrorGroup">
+                Resource name: {{resourceErrorGroup[0]}}
+                <li v-for="resourceError in resourceErrorGroup[1]" :key="resourceError.name" style="margin-left: 45px;">
+                    {{resourceError.message}}
+                </li>
+            </ul>
+        </v-alert>
+
     </div>
 </template>
 <script>
@@ -43,6 +67,7 @@ export default {
     },
     data () {
         return {
+            metadataType: 'table-schema'
         }
     },
     created() {
@@ -51,22 +76,34 @@ export default {
     },
     methods: {
         ...mapActions({
-            createSchema: 'schemaImport/createSchema'
+            createTableSchema: 'schemaImport/createTableSchema',
+            createDataPackageSchema: 'schemaImport/createDataPackageSchema'
         }),
         ...mapMutations({
             resetFileState: 'file/resetState',
-            setSchema: 'schemaImport/setSchema',
+            setTableSchema: 'schemaImport/setTableSchema',
+            setDataPackageSchema: 'schemaImport/setDataPackageSchema',
             resetSchemaImportState: 'schemaImport/resetState',
         }),
         importButtonClicked(content) {
             console.log("importButtonClicked");
             // console.log("schema: ", content);
-            this.setSchema({ schema: content});
-            this.saveSchema();
+            if(this.metadataType == 'table-schema') {
+                this.setTableSchema({schema: content});
+                this.saveTableSchema();
+            }
+            else {
+                this.setDataPackageSchema({schema: content});
+                this.saveDataPackageSchema();
+            }
         },
-        saveSchema() {
+        saveTableSchema() {
             // console.log("save schema");
-            this.createSchema();
+            this.createTableSchema();
+        },
+        saveDataPackageSchema() {
+            // console.log("save schema");
+            this.createDataPackageSchema();
         }
     },
     computed: {
@@ -75,7 +112,8 @@ export default {
         }),
         ...mapGetters({
             errorMsg: 'schemaImport/errorMsg',
-            validationErrorsMsgs: 'schemaImport/validationErrorMsgs'
+            validationErrorsMsgs: 'schemaImport/validationErrorMsgs',
+            validationErrorsByResource: 'schemaImport/validationErrorsByResource'
         }),
     },
 }

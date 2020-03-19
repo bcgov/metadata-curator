@@ -30,7 +30,8 @@ db.init = function () {
     db.db.once('open', function () {
         // logger.debug('DB connection established');
     });
-    db.MdcSchema = require('./model/mdcSchema');
+    db.TableSchema = require('./model/tableSchema');
+    db.DataPackageSchema = require('./model/dataPackageSchema');
 };
 
 module.exports = db;

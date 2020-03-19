@@ -1,5 +1,5 @@
 ### POST /schemas - default flow
-POST {{base-url}}/schemas
+POST {{base-url}}/tableschemas
 Content-Type: application/json
 
 {
