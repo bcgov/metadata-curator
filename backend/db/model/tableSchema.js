@@ -12,4 +12,7 @@ var tableSchema = new Schema({
 
 var model = mongoose.model('tableSchema', tableSchema, 'tableSchema');
 
-module.exports = model;
+module.exports = {
+    model,
+    tableSchema
+};

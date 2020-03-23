@@ -1,14 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-
-var fieldSchema = new Schema({
-    name: {type: String, required: true},
-    type: {type: String, required: true},
-});
-
-var tableSchema = new Schema({
-   fields: {type: [fieldSchema], required: true}
-});
+let {tableSchema} = require('./tableSchema');
 
 var resourceSchema = new Schema({
    profile: {type: String, required: true},
