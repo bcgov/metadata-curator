@@ -30,7 +30,7 @@ db.init = function () {
     db.db.once('open', function () {
         // logger.debug('DB connection established');
     });
-    db.TableSchema = require('./model/tableSchema');
+    db.TableSchema = require('./model/tableSchema').model;
     db.DataPackageSchema = require('./model/dataPackageSchema');
 };
 
