@@ -1,6 +1,6 @@
 <template>
-    <div style="vertical-align: top !important;">
-        <h2 style="margin-left: 10px; margin-bottom: 15px;">Import</h2>
+    <div style="vertical-align: top !important; margin-top: 25px;">
+<!--        <h2 style="margin-left: 10px; margin-bottom: 15px;">Import</h2>-->
 
         <v-container fluid>
             <p>Please select type of metadata to import:</p>
