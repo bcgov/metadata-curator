@@ -1,0 +1,58 @@
+
+### /datauploads - default flow
+POST {{base-url}}/repobranches
+Content-Type: application/json
+
+{
+  "repo_id": "5e7a48acd49496d387315b13",
+  "type": "standard",
+  "name": "edition/standard",
+  "description": "Dataset 1 - Upload 1 repo branch",
+  "revisions": []
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+### /datauploads - default flow
+POST {{base-url}}/repobranches
+Content-Type: application/json
+
+{
+  "repo_id": "5e7a4908d49496d387315b14",
+  "type": "standard",
+  "name": "edition/standard",
+  "description": "Dataset 1 - Upload 2 repo branch",
+  "revisions": []
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+### /datauploads - default flow
+POST {{base-url}}/repobranches
+Content-Type: application/json
+
+{
+  "repo_id": "5e7a4926d49496d387315b15",
+  "type": "standard",
+  "name": "edition/standard",
+  "description": "Dataset 2 - Upload 1 repo branch",
+  "revisions": []
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+###
+
+

@@ -32,6 +32,10 @@ db.init = function () {
     });
     db.TableSchema = require('./model/tableSchema').model;
     db.DataPackageSchema = require('./model/dataPackageSchema');
+    db.DataUploadSchema = require('./model/dataUpload');
+    db.RepoSchema = require('./model/repo');
+    db.RepoBranchSchema = require('./model/repoBranch');
+    db.MetadataRevisionSchema = require('./model/metadataRevision');
 };
 
 module.exports = db;

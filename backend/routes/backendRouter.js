@@ -261,4 +261,143 @@ router.post('/v1/tableschemas', async (req, res, next) => {
     });
 });
 
+
+router.post('/v1/datauploads', async (req, res, next) => {
+    console.log("req.body: ", req.body);
+    const dataUploadSchema = new db.DataUploadSchema;
+    dataUploadSchema.name = req.body.name;
+    dataUploadSchema.description = req.body.description;
+    dataUploadSchema.uploader = req.body.uploader;
+    dataUploadSchema.files = req.body.files;
+    dataUploadSchema.create_date = new Date();
+
+    dataUploadSchema.save(function (err) {
+        if (err) {
+            console.log("err: ", err);
+            // log.debug(err);
+            res.status(500);
+            res.json({
+                status: 500,
+                error: err.message
+            });
+        } else {
+            res.status(201);
+            res.json({
+                status: 201,
+                message: 'Data upload saved successfully.'
+            });
+        }
+    });
+
+});
+
+router.get('/v1/datauploads', async (req, res, next) => {
+
+    db.DataUploadSchema.find({}, function (err, result) {
+        if (err || !result) {
+            log.debug(err);
+            res.status(500);
+            res.json({
+                status: 500,
+                error: err.message
+            });
+        } else {
+            // res.json(result.map(function (e) { return e.name }));
+            console.log("result: ", result);
+            res.json(result);
+        }
+    });
+
+});
+
+
+
+router.post('/v1/repos', async (req, res, next) => {
+    console.log("req.body: ", req.body);
+    const repoSchema = new db.RepoSchema;
+    repoSchema.name = req.body.name;
+    repoSchema.created_date = new Date();
+    repoSchema.data_upload_id = req.body.data_upload_id;
+
+    repoSchema.save(function (err) {
+        if (err) {
+            console.log("err: ", err);
+            // log.debug(err);
+            res.status(500);
+            res.json({
+                status: 500,
+                error: err.message
+            });
+        } else {
+            res.status(201);
+            res.json({
+                status: 201,
+                message: 'Repo saved successfully.'
+            });
+        }
+    });
+
+});
+
+router.post('/v1/repobranches', async (req, res, next) => {
+    console.log("req.body: ", req.body);
+    const repoBranchSchema = new db.RepoBranchSchema;
+    repoBranchSchema.repo_id = req.body.repo_id;
+    repoBranchSchema.type = req.body.type;
+    repoBranchSchema.name = req.body.name;
+    repoBranchSchema.description = req.body.description;
+    repoBranchSchema.created_date = new Date();
+
+    repoBranchSchema.save(function (err) {
+        if (err) {
+            console.log("err: ", err);
+            // log.debug(err);
+            res.status(500);
+            res.json({
+                status: 500,
+                error: err.message
+            });
+        } else {
+            res.status(201);
+            res.json({
+                status: 201,
+                message: 'Repo branch saved successfully.'
+            });
+        }
+    });
+
+});
+
+router.post('/v1/metadatarevisions', async (req, res, next) => {
+    console.log("req.body: ", req.body);
+    const metadataRevisionSchema = new db.MetadataRevisionSchema;
+
+    metadataRevisionSchema.repo_branch_id = req.body.repo_branch_id;
+    metadataRevisionSchema.type = req.body.type;
+    metadataRevisionSchema.revision_number = req.body.revision_number;
+    metadataRevisionSchema.change_summary = req.body.change_summary;
+    metadataRevisionSchema.content = req.body.content;
+    metadataRevisionSchema.updater = req.body.updater;
+    metadataRevisionSchema.create_date = new Date();
+
+    metadataRevisionSchema.save(function (err) {
+        if (err) {
+            console.log("err: ", err);
+            // log.debug(err);
+            res.status(500);
+            res.json({
+                status: 500,
+                error: err.message
+            });
+        } else {
+            res.status(201);
+            res.json({
+                status: 201,
+                message: 'Metadata revision saved successfully.'
+            });
+        }
+    });
+
+});
+
 module.exports = router;

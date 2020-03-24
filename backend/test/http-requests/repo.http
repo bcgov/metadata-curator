@@ -1,0 +1,49 @@
+
+### /datauploads - default flow
+POST {{base-url}}/repos
+Content-Type: application/json
+
+{
+  "data_upload_id": "5e7a45e510abf3bbf5068f6f",
+  "name": "Dataset 1 - Upload 1 repo"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+### /datauploads - default flow
+POST {{base-url}}/repos
+Content-Type: application/json
+
+{
+  "data_upload_id": "5e7a45e510abf3bbf5068f72",
+  "name": "Dataset 1 - Upload 2 repo"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+
+### /datauploads - default flow
+POST {{base-url}}/repos
+Content-Type: application/json
+
+{
+  "data_upload_id": "5e7a45e510abf3bbf5068f74",
+  "name": "Dataset 2 - Upload 1 repo"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+###
+
