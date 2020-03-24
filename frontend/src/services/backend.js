@@ -40,4 +40,9 @@ export class Backend {
         ).then(response => response.data)
     }
 
+    getDataUploads(){
+        const url = '/api/v1/datauploads'
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
 }

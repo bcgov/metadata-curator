@@ -1,0 +1,173 @@
+
+#####################################################################################################################
+#
+#   Dataset 1 - Upload 1
+#
+#####################################################################################################################
+
+### /metadatarevisions - default flow
+POST {{base-url}}/metadatarevisions
+Content-Type: application/json
+
+{
+  "repo_branch_id": "5e7a5a4cd753d25b044b3d67",
+  "type": "tabular_data_package",
+  "revision_number": 1,
+  "change_summary": "Initial commit",
+  "updater": "Jane Doe",
+  "content": {}
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+
+### /metadatarevisions - default flow
+POST {{base-url}}/metadatarevisions
+Content-Type: application/json
+
+{
+  "repo_branch_id": "5e7a5a4cd753d25b044b3d67",
+  "type": "tabular_data_package",
+  "revision_number": 2,
+  "change_summary": "Added column",
+  "updater": "Jane Doe",
+  "content": {}
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+### /metadatarevisions - default flow
+POST {{base-url}}/metadatarevisions
+Content-Type: application/json
+
+{
+  "repo_branch_id": "5e7a5a4cd753d25b044b3d67",
+  "type": "tabular_data_package",
+  "revision_number": 3,
+  "change_summary": "Removed column, change column type",
+  "updater": "Jane Doe",
+  "content": {}
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+### /metadatarevisions - default flow
+POST {{base-url}}/metadatarevisions
+Content-Type: application/json
+
+{
+  "repo_branch_id": "5e7a5a4cd753d25b044b3d67",
+  "type": "tabular_data_package",
+  "revision_number": 4,
+  "change_summary": "Added columns, column constraints, removed columns",
+  "updater": "John Doe",
+  "content": {}
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+#####################################################################################################################
+#
+#   Dataset 1 - Upload 2
+#
+#####################################################################################################################
+
+### /metadatarevisions - default flow
+POST {{base-url}}/metadatarevisions
+Content-Type: application/json
+
+{
+  "repo_branch_id": "5e7a4908d49496d387315b14",
+  "type": "tabular_data_package",
+  "revision_number": 1,
+  "change_summary": "Initial commit",
+  "updater": "John Doe",
+  "content": {}
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+
+### /metadatarevisions - default flow
+POST {{base-url}}/metadatarevisions
+Content-Type: application/json
+
+{
+  "repo_branch_id": "5e7a4908d49496d387315b14",
+  "type": "tabular_data_package",
+  "revision_number": 2,
+  "change_summary": "Removed column, change column type",
+  "updater": "Jane Doe",
+  "content": {}
+}
+
+
+#####################################################################################################################
+#
+#   Dataset 2 - Upload 1
+#
+#####################################################################################################################
+
+### /metadatarevisions - default flow
+POST {{base-url}}/metadatarevisions
+Content-Type: application/json
+
+{
+  "repo_branch_id": "5e7a5a4cd753d25b044b3d67",
+  "type": "tabular_data_package",
+  "revision_number": 1,
+  "change_summary": "Added column",
+  "updater": "Jane Doe",
+  "content": {}
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+### /metadatarevisions - default flow
+POST {{base-url}}/metadatarevisions
+Content-Type: application/json
+
+{
+  "repo_branch_id": "5e7a5a4cd753d25b044b3d67",
+  "type": "tabular_data_package",
+  "revision_number": 2,
+  "change_summary": "Added column",
+  "updater": "Jane Doe",
+  "content": {}
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+###
+
+
+
+

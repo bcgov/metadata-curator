@@ -1,16 +1,20 @@
 <template>
     <div>
-        <FileReader></FileReader>
+<!--        <FileReader></FileReader>-->
+
+        <DataUploads></DataUploads>
     </div>
 </template>
 <script>
 
 import {mapMutations} from 'vuex';
-import FileReader from '../FileReader';
+// import FileReader from '../FileReader';
+import DataUploads from "../DataUploads";
 
 export default {
     components:{
-        FileReader,
+        DataUploads,
+        // FileReader,
     },
     created() {
         this.resetState();
