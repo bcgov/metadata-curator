@@ -6,6 +6,7 @@ import createPersistedState from 'vuex-persistedstate';
 import user from './modules/user'
 import file from './modules/file'
 import schemaImport from './modules/schemaImport'
+import dataUploads from "./modules/dataUploads";
 
 
 Vue.use(Vuex)
@@ -14,7 +15,8 @@ export default new Vuex.Store({
   modules: {
     user,
     file,
-    schemaImport
+    schemaImport,
+    dataUploads
   },
   plugins: [createPersistedState({
     paths: [
