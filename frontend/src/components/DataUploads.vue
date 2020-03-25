@@ -5,12 +5,6 @@
 
         <v-list three-line>
             <template v-for="(item, index) in dataUploadDisplayItems">
-<!--                <v-subheader-->
-<!--                    v-if="item.header"-->
-<!--                    :key="item.header"-->
-<!--                    v-text="item.header"-->
-<!--                ></v-subheader>-->
-
                 <v-divider
                     v-if="item.divider"
                     :key="index"

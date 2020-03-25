@@ -1,6 +1,6 @@
 <template>
     <span>
-        <v-file-input v-model="file" counter show-size label="File input"></v-file-input>
+        <v-file-input v-model="file" counter show-size label="File input" style="margin-top:0px;padding-top:0px;"></v-file-input>
         <v-btn v-if="showEncryptButton" @click="encrypt">Encrypt</v-btn>
         <v-btn v-if="showUploadButton" @click="upload">Upload</v-btn>
         <v-btn v-if="showImportButton" @click="onImportButtonClicked">Import</v-btn>
