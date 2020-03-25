@@ -1,7 +1,7 @@
 <template>
     <v-container fluid ma-0 pa-0>
         <v-app-bar dense>
-            <v-toolbar-title>{{title}}</v-toolbar-title>
+            <v-toolbar-title class="font-weight-light">{{title}}</v-toolbar-title>
 
             <v-spacer></v-spacer>
 

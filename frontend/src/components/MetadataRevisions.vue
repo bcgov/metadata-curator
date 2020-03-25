@@ -1,7 +1,7 @@
 <template>
     <div style="width: 85%;">
 
-        <h1 class="display-3" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Metadata Revision History</h1>
+        <h1 class="display-2 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Metadata Revision History</h1>
         <v-list three-line style="margin-bottom: 15px;">
             <template v-for="(item, index) in revisionDisplayItems">
 <!--                <v-subheader-->
