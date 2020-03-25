@@ -1,16 +1,17 @@
 <template>
-    <div style="width: 75%;">
+    <div style="width: 85%;">
 
-        <v-list three-line>
+        <h1 class="display-3" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Metadata Revision History</h1>
+        <v-list three-line style="margin-bottom: 15px;">
             <template v-for="(item, index) in revisionDisplayItems">
-                <v-subheader
-                    v-if="item.header"
-                    :key="item.header"
-                    v-text="item.header"
-                ></v-subheader>
+<!--                <v-subheader-->
+<!--                    v-if="item.header"-->
+<!--                    :key="item.header"-->
+<!--                    v-text="item.header"-->
+<!--                ></v-subheader>-->
 
                 <v-divider
-                    v-else-if="item.divider"
+                    v-if="item.divider"
                     :key="index"
                     :inset="item.inset"
                 ></v-divider>
@@ -19,19 +20,27 @@
                     v-else
                     :key="item.title"
                 >
-                    <v-btn icon class="mr-4">
-                        <v-icon>mdi-history</v-icon>
+<!--                    <v-btn icon class="mr-4">-->
+<!--                        <v-icon>mdi-history</v-icon>-->
+<!--                    </v-btn>-->
+
+                    <v-btn icon class="mr-4" @click="routeToHome()">
+                        R{{item.revision.revision_number}}
                     </v-btn>
 
                     <v-list-item-content>
-                        <v-list-item-title v-html="item.title"></v-list-item-title>
+                        <v-list-item-title v-html="item.content"></v-list-item-title>
 <!--                        <v-list-item-subtitle><span class='text&#45;&#45;primary'>Uploaded</span>: {{item.subtitle | formatDate}}</v-list-item-subtitle>-->
-                        <v-list-item-subtitle v-html="item.subtitle"></v-list-item-subtitle>
+<!--                        <v-list-item-content v-html="item.content"></v-list-item-content>-->
+<!--                        <v-list-item-content v-html="item.content"></v-list-item-content>-->
+                        <v-list-item-action-text v-html="item.subtitle"></v-list-item-action-text>
+
                     </v-list-item-content>
 
                 </v-list-item>
             </template>
         </v-list>
+        <v-btn @click="routeToHome()" style="margin-left:25px; ">Back</v-btn>
     </div>
 </template>
 
@@ -55,6 +64,10 @@
             //     // await this.getRevisions("5e7a45e510abf3bbf5068f6f");
             //     this.message = '';
             // },
+            routeToHome() {
+                console.log("routeToHome uploadId");
+                this.$router.push({ name: 'home' })
+            }
         },
         computed: {
             ...mapState({
@@ -62,11 +75,17 @@
             }),
             revisionDisplayItems: function(){
                 let items = [];
-                items.push({ header: 'Metadata Revision History' });
+                // items.push({ header: 'Metadata Revision History' });
                 this.revisions.forEach( (revision, index) => {
+
+                    const createDate = this.$options.filters.formatDate(revision.create_date);
                     const item = {
                         title: "Revision " + revision.revision_number,
-                        subtitle: revision.change_summary
+                        // title: "Revision " + revision.revision_number +
+                        //     " Updated: " + createDate,
+                        subtitle: "Updated on " + createDate + " by " + revision.updater,
+                        content: revision.change_summary,
+                        revision: revision
                     };
                     items.push(item);
                     if(index <= this.revisions.length - 1) {
