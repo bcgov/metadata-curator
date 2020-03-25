@@ -1,16 +1,14 @@
 <template>
-    <div style="vertical-align: top !important; margin-top: 25px;">
-<!--        <h2 style="margin-left: 10px; margin-bottom: 15px;">Import</h2>-->
-
-        <v-container fluid>
+    <div style="vertical-align: top !important; margin-top: 25px; margin-left:15px;">
+        <h1 class="display-3" style="margin-top:15px; margin-bottom:20px;">Import Metadata</h1>
+        <v-container fluid style="margin-left:5px; padding-bottom:0px; margin-bottom:7px;">
             <p>Please select type of metadata to import:</p>
-            <v-radio-group v-model="metadataType" row>
+            <v-radio-group v-model="metadataType" row style="margin-left:10px;">
                 <v-radio label="Table Schema" value="table-schema"></v-radio>
                 <v-radio label="Tabular Data Package" value="tabular-data-package"></v-radio>
             </v-radio-group>
         </v-container>
-
-        <div style="width:350px; margin-left: 10px; margin-bottom: 12px;">
+        <div style="width:350px; margin-left:15px; margin-bottom: 12px;">
             <FileReader :show-encrypt-button="false"
                         :show-upload-button="false"
                         :show-import-button="true"
