@@ -13,7 +13,8 @@
                   <v-icon>{{tab.icon}}</v-icon>
               </v-tab>
 
-              <v-tab-item v-for="tab of tabs" :key="tab.id" :value="tab.route">
+              <v-tab-item v-for="tab of tabs" :key="tab.id" :value="tab.route"
+                          :transition="false" :reverse-transition="false">
                   <router-view></router-view>
               </v-tab-item>
           </v-tabs>
