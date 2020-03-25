@@ -1,7 +1,7 @@
 <template>
     <div style="width: 85%;">
 
-        <h1 class="display-3" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Data Uploads</h1>
+        <h1 class="display-2 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Data Uploads</h1>
 
         <v-list three-line>
             <template v-for="(item, index) in dataUploadDisplayItems">
