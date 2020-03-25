@@ -13,15 +13,15 @@ const getters = {
 
 const actions = {
     async getDataUploads({ commit }) {
-        console.log("getDataUploads action");
+        // console.log("getDataUploads action");
 
         await backend.getDataUploads().then((data) => {
-            console.log("getDataUploads action: ", data);
+            // console.log("getDataUploads action: ", data);
             commit('clearDataUploads');
             commit('setDataUploads', {dataUploads: data});
 
         }).catch((e) => {
-            console.log("Retrieve data uploads error: ", e);
+            // console.log("Retrieve data uploads error: ", e);
             commit('setError', {error: e.response.data.error});
         });
     },
@@ -31,7 +31,7 @@ const actions = {
 
 const mutations = {
     setDataUploads(state, {dataUploads}){
-        console.log("setDataUploads: ", dataUploads);
+        // console.log("setDataUploads: ", dataUploads);
         state.dataUploads = dataUploads;
     },
     clearDataUploads(state){
