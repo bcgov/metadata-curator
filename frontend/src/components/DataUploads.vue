@@ -1,16 +1,18 @@
 <template>
-    <div style="width: 75%;">
+    <div style="width: 85%;">
+
+        <h1 class="display-3" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Data Uploads</h1>
 
         <v-list three-line>
             <template v-for="(item, index) in dataUploadDisplayItems">
-                <v-subheader
-                    v-if="item.header"
-                    :key="item.header"
-                    v-text="item.header"
-                ></v-subheader>
+<!--                <v-subheader-->
+<!--                    v-if="item.header"-->
+<!--                    :key="item.header"-->
+<!--                    v-text="item.header"-->
+<!--                ></v-subheader>-->
 
                 <v-divider
-                    v-else-if="item.divider"
+                    v-if="item.divider"
                     :key="index"
                     :inset="item.inset"
                 ></v-divider>
@@ -18,8 +20,9 @@
                 <v-list-item
                     v-else
                     :key="item.title"
+                    @click="routeToRevisionHistory(item.dataUploadId)"
                 >
-                    <v-btn icon class="mr-4" @click="routeToRevisionHistory(item.dataUploadId)">
+                    <v-btn icon class="mr-4" >
                         <v-icon>mdi-history</v-icon>
                     </v-btn>
 
@@ -67,7 +70,7 @@
             }),
             dataUploadDisplayItems: function(){
                 let items = [];
-                items.push({ header: 'Data Uploads' });
+                // items.push({ header: 'Data Uploads' });
                 this.dataUploads.forEach( (upload, index) => {
                    const item = {
                        title: upload.name,
