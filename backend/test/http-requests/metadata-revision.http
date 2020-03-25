@@ -13,7 +13,7 @@ Content-Type: application/json
   "repo_branch_id": "5e7a5a4cd753d25b044b3d67",
   "type": "tabular_data_package",
   "revision_number": 1,
-  "change_summary": "Initial commit",
+  "change_summary": "Initial upload",
   "updater": "Jane Doe",
   "content": {}
 }
@@ -93,10 +93,10 @@ POST {{base-url}}/metadatarevisions
 Content-Type: application/json
 
 {
-  "repo_branch_id": "5e7a4908d49496d387315b14",
+  "repo_branch_id": "5e7a5a4dd753d25b044b3d68",
   "type": "tabular_data_package",
   "revision_number": 1,
-  "change_summary": "Initial commit",
+  "change_summary": "Initial upload",
   "updater": "John Doe",
   "content": {}
 }
@@ -113,7 +113,7 @@ POST {{base-url}}/metadatarevisions
 Content-Type: application/json
 
 {
-  "repo_branch_id": "5e7a4908d49496d387315b14",
+  "repo_branch_id": "5e7a5a4dd753d25b044b3d68",
   "type": "tabular_data_package",
   "revision_number": 2,
   "change_summary": "Removed column, change column type",
@@ -133,10 +133,10 @@ POST {{base-url}}/metadatarevisions
 Content-Type: application/json
 
 {
-  "repo_branch_id": "5e7a5a4cd753d25b044b3d67",
+  "repo_branch_id": "5e7a5a4dd753d25b044b3d69",
   "type": "tabular_data_package",
   "revision_number": 1,
-  "change_summary": "Added column",
+  "change_summary": "Initial upload",
   "updater": "Jane Doe",
   "content": {}
 }
@@ -152,7 +152,7 @@ POST {{base-url}}/metadatarevisions
 Content-Type: application/json
 
 {
-  "repo_branch_id": "5e7a5a4cd753d25b044b3d67",
+  "repo_branch_id": "5e7a5a4dd753d25b044b3d69",
   "type": "tabular_data_package",
   "revision_number": 2,
   "change_summary": "Added column",
@@ -166,7 +166,18 @@ Content-Type: application/json
     });
 %}
 
+### /metadatarevisions - default flow
+GET {{base-url}}/metadatarevisions/5e7a45e510abf3bbf5068f6f
+Content-Type: application/json
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
 ###
+
 
 
 

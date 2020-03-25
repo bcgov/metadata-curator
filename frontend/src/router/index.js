@@ -3,6 +3,7 @@ import Router from 'vue-router'
 
 const home = () => import(/* webpackChunkName: "home" */ "../components/pages/home");
 const importSchema = () => import(/* webpackChunkName: "import" */ "../components/pages/importSchema");
+const dataUploadRevisions = () => import(/* webpackChunkName: "dataUploadRevisions" */ "../components/pages/dataUploadRevisions");
 const NotFound = () => import(/* webpackChunkName: "NotFound" */ "../components/pages/404");
 
 Vue.use(Router)
@@ -42,7 +43,16 @@ let r = new Router({
       component: importSchema,
       meta: {
           title: "Import",
-          requiresNoUser: true
+          requiresAuth: true
+      }
+    },
+    {
+      path: '/dataUploadRevisions/:id',
+      name: 'data-upload-revisions',
+      component: dataUploadRevisions,
+      meta: {
+          title: "Data Upload Revisions",
+          requiresAuth: true
       }
     },
     {

@@ -19,7 +19,7 @@
                     v-else
                     :key="item.title"
                 >
-                    <v-btn icon class="mr-4">
+                    <v-btn icon class="mr-4" @click="routeToRevisionHistory(item.dataUploadId)">
                         <v-icon>mdi-history</v-icon>
                     </v-btn>
 
@@ -56,6 +56,10 @@
                 await this.getDataUploads();
                 this.message = '';
             },
+            routeToRevisionHistory(dataUploadId) {
+                console.log("routeToRevisionHistory uploadId: " + dataUploadId);
+                this.$router.push({ name: 'data-upload-revisions', params: { id: dataUploadId } })
+            }
         },
         computed: {
             ...mapState({
@@ -67,8 +71,8 @@
                 this.dataUploads.forEach( (upload, index) => {
                    const item = {
                        title: upload.name,
-                       // subtitle: 'March 24, 2020'
-                       subtitle: upload.create_date
+                       subtitle: upload.create_date,
+                       dataUploadId: upload._id
                    };
                    items.push(item);
                     if(index <= this.dataUploads.length - 1) {
