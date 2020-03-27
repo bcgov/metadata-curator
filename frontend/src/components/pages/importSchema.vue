@@ -16,51 +16,34 @@
             </FileReader>
         </div>
 
-        <v-alert v-if="successMsg" style="margin-left: 10px; margin-bottom: 12px; width:65%;"
-            text
-            prominent
-            type="success"
-            icon="mdi-cloud-check">{{successMsg}}</v-alert>
+        <AlertSuccess v-if="successMsg" :message="successMsg"></AlertSuccess>
 
-        <v-alert v-if="errorMsg && !validationErrorsMsgs && validationErrorsMsgs.length > 0"  style="margin-left: 10px; margin-bottom: 12px; width:65%;"
-                 text
-                 prominent
-                 type="error"
-                 icon="mdi-cloud-alert">{{errorMsg}}</v-alert>
+        <AlertError v-if="errorMsg && !validationErrorsMsgs && validationErrorsMsgs.length > 0" :message="errorMsg"></AlertError>
 
-        <v-alert v-if="validationErrorsMsgs && validationErrorsMsgs.length > 0" style="margin-left: 10px; margin-bottom: 12px; width:65%;"
-                 text
-                 prominent
-                 type="error"
-                 icon="mdi-cloud-alert">
-            <h4 style="margin-bottom: 10px; margin-left: 5px;">{{errorMsg}}</h4>
-            <ul>
-                <li v-for="error in validationErrorsMsgs" :key="error">{{error}}</li>
-            </ul>
-        </v-alert>
+        <AlertValidationError v-if="validationErrorsMsgs && validationErrorsMsgs.length > 0"
+            :message="errorMsg"
+            :validation-error-messages="validationErrorsMsgs">
+        </AlertValidationError>
 
-        <v-alert v-if="validationErrorsByResource && validationErrorsByResource.length > 0" style="margin-left: 10px; margin-bottom: 12px; width:65%;"
-                 text
-                 prominent
-                 type="error"
-                 icon="mdi-cloud-alert">
-            <h4 style="margin-bottom: 10px; margin-left: 5px;">{{errorMsg}}</h4>
-            <ul v-for="resourceErrorGroup in validationErrorsByResource" :key="resourceErrorGroup">
-                Resource name: {{resourceErrorGroup[0]}}
-                <li v-for="resourceError in resourceErrorGroup[1]" :key="resourceError.name" style="margin-left: 45px;">
-                    {{resourceError.message}}
-                </li>
-            </ul>
-        </v-alert>
+        <AlertValidationError v-if="validationErrorsByResource && validationErrorsByResource.length > 0"
+                              :message="errorMsg"
+                              :validationErrorMessagesByGroup="validationErrorsByResource">
+        </AlertValidationError>
 
     </div>
 </template>
 <script>
 import FileReader from '../FileReader';
 import {mapState, mapActions, mapMutations, mapGetters} from 'vuex';
+import AlertSuccess from "../AlertSuccess";
+import AlertError from "../AlertError";
+import AlertValidationError from "../AlertValidationError";
 
 export default {
     components:{
+        AlertValidationError,
+        AlertError,
+        AlertSuccess,
         FileReader,
     },
     data () {
