@@ -1,6 +1,20 @@
 <template>
 
     <div>
+
+        <v-alert v-if="validationErrorMessages && validationErrorMessages.length == 0
+            && validationErrorMessagesByGroup.length == 0" style="margin-left: 10px; margin-bottom: 12px; width:65%;"
+                 text
+                 prominent
+                 type="error"
+                 icon="mdi-cloud-alert">
+
+            <h4 style="margin-bottom: 10px; margin-left: 5px;">{{message}}</h4>
+            <ul>
+                <li v-for="error in validationErrorMessages" :key="error">{{error}}</li>
+            </ul>
+        </v-alert>
+
         <v-alert v-if="validationErrorMessages && validationErrorMessages.length > 0" style="margin-left: 10px; margin-bottom: 12px; width:65%;"
                  text
                  prominent

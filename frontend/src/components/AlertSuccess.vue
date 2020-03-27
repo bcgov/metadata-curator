@@ -10,7 +10,10 @@
 
 <script>
 
+    import MaterialDesignIcons from "../mixins/MaterialDesignIcons";
+
     export default {
+        mixins: [MaterialDesignIcons],
         props: {
             message: {
                 type: String,
