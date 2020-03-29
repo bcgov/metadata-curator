@@ -61,38 +61,74 @@ router.use('/v1/uploadurl', auth.removeExpired, function(req, res){
 
 
 router.post('/v1/datapackageschemas', async (req, res, next) => {
-    let errs = [];
-    let resourceErrsMap = new Map();
-    let err = {};
-    console.log("req.body: ", req.body);
 
-    let descriptor = {...req.body};
-    descriptor.profile = "tabular-data-package";
+    try {
+        let errs = [];
+        let resourceErrsMap = new Map();
+        let err = {};
+        console.log("req.body: ", req.body);
 
-    const dataPackage = await Package.load(descriptor, {strict: false});
-    console.log('valid: ' + dataPackage.valid);
+        let descriptor = {...req.body};
+        descriptor.profile = "tabular-data-package";
+
+        const dataPackage = await Package.load(descriptor, {strict: false});
+        console.log('valid: ' + dataPackage.valid);
 
 
-    if(!dataPackage.valid) {
+        if (!dataPackage.valid) {
 
-        if(descriptor.resources && descriptor.resources.length > 0) {
-            console.log("resources property exists");
+            if (descriptor.resources && descriptor.resources.length > 0) {
+                console.log("resources property exists");
 
-            for (const resource of descriptor.resources) {
-                const rsrc = Resource.load(resource);
-                const rsrcValid = (await rsrc).valid;
-                const rsrcErrors = (await rsrc).errors;
+                for (const resource of descriptor.resources) {
+                    const rsrc = Resource.load(resource);
+                    const rsrcValid = (await rsrc).valid;
+                    const rsrcErrors = (await rsrc).errors;
 
-                console.log("rsrc valid: ", rsrcValid);
-                for (const error of rsrcErrors) {
+                    console.log("rsrc valid: ", rsrcValid);
+                    for (const error of rsrcErrors) {
+                        // console.log("error: ", error);
+                        let errorSections = error.message.split("\n");
+                        errorSections = errorSections.map(item => item.replace(/\s\s+/g, " ").trim());
+                        errorSections = errorSections.map(item => item.replace(/\"/g, ""));
+
+                        let msg = errorSections.join(" ");
+                        const err = {
+                            resourceName: resource.name,
+                            message: msg,
+                            //potentially useful if there is a need to make the validation errors returned by frictionless library
+                            //to be more humanly understandable
+                            validationErrorBySections: {
+                                desc: errorSections[0],
+                                field: errorSections[1],
+                                validationRule: errorSections[2]
+                            }
+                        };
+
+                        console.log("rsrc err: ", err);
+                        let val = resourceErrsMap.get(resource.name);
+                        if (val) {
+                            val.push(err);
+                            resourceErrsMap.set(resource.name, val);
+                        } else {
+                            // console.log("else...")
+                            let newVal = [];
+                            newVal.push(err);
+                            resourceErrsMap.set(resource.name, newVal);
+                        }
+                    }
+                }
+                console.log("resourceErrsMap: ", resourceErrsMap);
+            } else {
+                console.log("resources property does not exist");
+                for (const error of dataPackage.errors) {
                     // console.log("error: ", error);
                     let errorSections = error.message.split("\n");
                     errorSections = errorSections.map(item => item.replace(/\s\s+/g, " ").trim());
                     errorSections = errorSections.map(item => item.replace(/\"/g, ""));
 
                     let msg = errorSections.join(" ");
-                    const err = {
-                        resourceName: resource.name,
+                    err = {
                         message: msg,
                         //potentially useful if there is a need to make the validation errors returned by frictionless library
                         //to be more humanly understandable
@@ -102,33 +138,73 @@ router.post('/v1/datapackageschemas', async (req, res, next) => {
                             validationRule: errorSections[2]
                         }
                     };
-
-                    console.log("rsrc err: ", err);
-                    let val = resourceErrsMap.get(resource.name);
-                    if(val) {
-                        val.push(err);
-                        resourceErrsMap.set(resource.name, val);
-                    }
-                    else {
-                        console.log("else...")
-                        let newVal = [];
-                        newVal.push(err);
-                        resourceErrsMap.set(resource.name, newVal);
-                    }
+                    // console.log("err: ", err);
+                    errs.push(err);
                 }
+
             }
-            console.log("resourceErrsMap: ", resourceErrsMap);
+
+            res.status(400);
+            res.json({
+                status: 400,
+                error: {
+                    message: "Unable to save tabular data package.  Failed validation.",
+                    validationErrors: errs,
+                    validationErrorsByResource: [...resourceErrsMap]
+                }
+            });
+            return;
+
         }
-        else {
-            console.log("resources property does not exist");
-            for (const error of dataPackage.errors) {
+
+        let dataPackageSchema = new db.DataPackageSchema;
+        let resources = [...descriptor.resources];
+
+        console.log("resources: ", resources);
+        resources = resources.map(item => {
+            let newItem = {...item, tableSchema: {...item.schema}};
+            console.log("newItem: ", newItem);
+            return newItem;
+        });
+
+        dataPackageSchema.profile = descriptor.profile;
+        dataPackageSchema.resources = resources;
+
+        await dataPackageSchema.save();
+        res.status(201);
+        res.json({
+            status: 201,
+            message: 'Successfully saved tabular data package'
+        });
+    } catch(err) {
+        console.log("err: ", err);
+        // log.debug(err);
+        res.status(500);
+        res.json({
+            status: 500,
+            error: err.message
+        });
+    }
+});
+
+router.post('/v1/tableschemas', async (req, res, next) => {
+
+    try {
+        console.log("req.bodys: ", req.body);
+
+        let errs = [];
+        let schemaDescriptor = {...req.body};
+
+        const schema = await Schema.load(schemaDescriptor);
+        if (!schema.valid) {
+            for (const error of schema.errors) {
                 // console.log("error: ", error);
                 let errorSections = error.message.split("\n");
                 errorSections = errorSections.map(item => item.replace(/\s\s+/g, " ").trim());
                 errorSections = errorSections.map(item => item.replace(/\"/g, ""));
 
                 let msg = errorSections.join(" ");
-                err = {
+                const err = {
                     message: msg,
                     //potentially useful if there is a need to make the validation errors returned by frictionless library
                     //to be more humanly understandable
@@ -141,352 +217,373 @@ router.post('/v1/datapackageschemas', async (req, res, next) => {
                 // console.log("err: ", err);
                 errs.push(err);
             }
-
-        }
-
-        res.status(400);
-        res.json({
-            status: 400,
-            error: {
-                message: "Unable to save tabular data package.  Failed validation.",
-                validationErrors: errs,
-                validationErrorsByResource: [...resourceErrsMap]
-            }
-        });
-        return;
-
-    }
-
-    let dataPackageSchema = new db.DataPackageSchema;
-    let resources = [...descriptor.resources];
-
-    console.log("resources: ", resources);
-    resources = resources.map(item => {
-        let newItem = {...item, tableSchema: {...item.schema}};
-        console.log("newItem: ", newItem);
-        return newItem;
-    });
-
-    dataPackageSchema.profile = descriptor.profile;
-    dataPackageSchema.resources = resources;
-
-    dataPackageSchema.save(function (err) {
-        if (err) {
-            console.log("err: ", err);
-            // log.debug(err);
-            res.status(500);
+            res.status(400);
             res.json({
-                status: 500,
-                error: err.message
-            });
-        } else {
-            res.status(201);
-            res.json({
-                status: 201,
-                message: 'Successfully saved tabular data package'
-            });
-        }
-    });
-
-    // res.status(200);
-    // res.json({message: "Successfully validated tabular data package"});
-
-});
-
-router.post('/v1/tableschemas', async (req, res, next) => {
-    console.log("req.bodys: ", req.body);
-
-    let errs = [];
-    let schemaDescriptor = {...req.body};
-
-    const schema = await Schema.load(schemaDescriptor);
-    if(!schema.valid) {
-        for (const error of schema.errors) {
-            // console.log("error: ", error);
-            let errorSections = error.message.split("\n");
-            errorSections = errorSections.map(item => item.replace(/\s\s+/g, " ").trim());
-            errorSections = errorSections.map(item => item.replace(/\"/g, ""));
-
-            let msg = errorSections.join(" ");
-            const err = {
-                message: msg,
-                //potentially useful if there is a need to make the validation errors returned by frictionless library
-                //to be more humanly understandable
-                validationErrorBySections: {
-                    desc: errorSections[0],
-                    field: errorSections[1],
-                    validationRule: errorSections[2]
+                status: 400,
+                error: {
+                    message: "Unable to save schema.  Failed validation.",
+                    validationErrors: errs
                 }
-            };
-            // console.log("err: ", err);
-            errs.push(err);
+            });
+            return;
         }
-        res.status(400);
-        res.json({
-            status: 400,
-            error: {
-                message: "Unable to save schema.  Failed validation.",
-                validationErrors: errs
+
+        const dataPackageSchema = new db.DataPackageSchema;
+        // console.log("schemaDescriptor: ", schemaDescriptor);
+
+        dataPackageSchema.profile = "tabular-data-package";
+        dataPackageSchema.resources = [
+            {
+                profile: "tabular-data-resource",
+                data: [],
+                tableSchema: schemaDescriptor
             }
+        ];
+
+        await dataPackageSchema.save();
+        res.status(201);
+        res.json({
+            status: 201,
+            message: 'Schema saved successfully.'
         });
-        return;
+    } catch(err) {
+        console.log("err: ", err);
+        // log.debug(err);
+        res.status(500);
+        res.json({
+            status: 500,
+            error: err.message
+        });
     }
 
-    const dataPackageSchema = new db.DataPackageSchema;
-    // console.log("schemaDescriptor: ", schemaDescriptor);
-
-    dataPackageSchema.profile = "tabular-data-package";
-    dataPackageSchema.resources = [
-        {
-            profile: "tabular-data-resource",
-            data: [],
-            tableSchema: schemaDescriptor
-        }
-    ];
-
-    dataPackageSchema.save(function (err) {
-        if (err) {
-            console.log("err: ", err);
-            // log.debug(err);
-            res.status(500);
-            res.json({
-                status: 500,
-                error: err.message
-            });
-        } else {
-            res.status(201);
-            res.json({
-                status: 201,
-                message: 'Schema saved successfully.'
-            });
-        }
-    });
 });
 
 
 router.post('/v1/datauploads', async (req, res, next) => {
-    console.log("req.body: ", req.body);
-    const dataUploadSchema = new db.DataUploadSchema;
-    dataUploadSchema.name = req.body.name;
-    dataUploadSchema.description = req.body.description;
-    dataUploadSchema.uploader = req.body.uploader;
-    dataUploadSchema.files = req.body.files;
-    dataUploadSchema.create_date = new Date();
+    try {
+        console.log("req.body: ", req.body);
+        const dataUploadSchema = new db.DataUploadSchema;
+        dataUploadSchema.name = req.body.name;
+        dataUploadSchema.description = req.body.description;
+        dataUploadSchema.uploader = req.body.uploader;
+        dataUploadSchema.files = req.body.files;
 
-    dataUploadSchema.save(function (err) {
-        if (err) {
-            console.log("err: ", err);
-            // log.debug(err);
-            res.status(500);
-            res.json({
-                status: 500,
-                error: err.message
+        if (req.body.comments) {
+            dataUploadSchema.comments = req.body.comments.map(item => {
+                item.create_date = new Date();
+                return item;
             });
         } else {
-            res.status(201);
-            res.json({
-                status: 201,
-                message: 'Data upload saved successfully.'
-            });
+            dataUploadSchema.comments = [];
         }
-    });
+        dataUploadSchema.create_date = new Date();
+
+        await dataUploadSchema.save();
+        res.status(201);
+        res.json({
+            status: 201,
+            message: 'Data upload saved successfully.'
+        });
+    } catch(err) {
+        console.log("err: ", err);
+        // log.debug(err);
+        res.status(500);
+        res.json({
+            status: 500,
+            error: err.message
+        });
+    }
 
 });
 
 router.get('/v1/datauploads', async (req, res, next) => {
 
-    db.DataUploadSchema.find({}, function (err, result) {
-        if (err || !result) {
-            log.debug(err);
-            res.status(500);
+    try {
+        let result = await db.DataUploadSchema.find({});
+        console.log("result: ", result);
+        res.json(result);
+    } catch(err) {
+        log.debug(err);
+        res.status(500);
+        res.json({
+            status: 500,
+            error: err.message
+        });
+    }
+
+});
+
+router.post('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => {
+
+    try {
+        // console.log("req.params.dataUploadId: ", req.params.dataUploadId);
+        const dataUploadId = req.params.dataUploadId;
+
+        // console.log("req.body: ", req.body);
+
+        let dataUpload = await db.DataUploadSchema.findOne({_id: dataUploadId});
+        console.log("found data upload: ", dataUpload);
+
+        if(dataUpload) {
+
+            console.log("existing comments: ", dataUpload.comments);
+
+            let comments = dataUpload.comments;
+            let comment = req.body;
+            comment.create_date = new Date();
+            comments.push(comment);
+
+            await db.DataUploadSchema.findOneAndUpdate({_id: dataUploadId}, {comments: comments});
+
+            res.status(201);
             res.json({
-                status: 500,
-                error: err.message
+                status: 201,
+                message: 'Added comment successfully.'
             });
-        } else {
-            // res.json(result.map(function (e) { return e.name }));
-            console.log("result: ", result);
-            res.json(result);
+
         }
-    });
+        else {
+            res.status(404);
+            res.json({
+                status: 404,
+                message: 'Data Upload(' + dataUploadId + ') not found'
+            })
+        }
+
+    }
+    catch (err) {
+        console.log("err: ", err);
+        // log.debug(err);
+        res.status(500);
+        res.json({
+            status: 500,
+            error: err.message
+        });
+
+    }
 
 });
 
 
+router.get('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => {
+
+    try {
+        // console.log("req.params.dataUploadId: ", req.params.dataUploadId);
+        const dataUploadId = req.params.dataUploadId;
+
+        // console.log("req.body: ", req.body);
+
+        let dataUpload = await db.DataUploadSchema.findOne({_id: dataUploadId});
+        console.log("found data upload: ", dataUpload);
+
+        if(dataUpload) {
+            res.json(dataUpload.comments);
+        }
+        else {
+            res.status(404);
+            res.json({
+                status: 404,
+                message: 'Data Upload(' + dataUploadId + ') not found'
+            })
+        }
+
+    }
+    catch (err) {
+        console.log("err: ", err);
+        // log.debug(err);
+        res.status(500);
+        res.json({
+            status: 500,
+            error: err.message
+        });
+
+    }
+
+});
 
 router.post('/v1/repos', async (req, res, next) => {
-    console.log("req.body: ", req.body);
-    const repoSchema = new db.RepoSchema;
-    repoSchema.name = req.body.name;
-    repoSchema.created_date = new Date();
-    repoSchema.data_upload_id = req.body.data_upload_id;
 
-    repoSchema.save(function (err) {
-        if (err) {
-            console.log("err: ", err);
-            // log.debug(err);
-            res.status(500);
-            res.json({
-                status: 500,
-                error: err.message
-            });
-        } else {
-            res.status(201);
-            res.json({
-                status: 201,
-                message: 'Repo saved successfully.'
-            });
-        }
-    });
+    try {
+        console.log("req.body: ", req.body);
+        const repoSchema = new db.RepoSchema;
+        repoSchema.name = req.body.name;
+        repoSchema.created_date = new Date();
+        repoSchema.data_upload_id = req.body.data_upload_id;
+
+        await repoSchema.save();
+        res.status(201);
+        res.json({
+            status: 201,
+            message: 'Repo saved successfully.'
+        });
+    } catch(err) {
+        console.log("err: ", err);
+        // log.debug(err);
+        res.status(500);
+        res.json({
+            status: 500,
+            error: err.message
+        });
+    }
 
 });
 
 router.post('/v1/repobranches', async (req, res, next) => {
-    console.log("req.body: ", req.body);
-    const repoBranchSchema = new db.RepoBranchSchema;
-    repoBranchSchema.repo_id = req.body.repo_id;
-    repoBranchSchema.type = req.body.type;
-    repoBranchSchema.name = req.body.name;
-    repoBranchSchema.description = req.body.description;
-    repoBranchSchema.created_date = new Date();
 
-    repoBranchSchema.save(function (err) {
-        if (err) {
-            console.log("err: ", err);
-            // log.debug(err);
-            res.status(500);
-            res.json({
-                status: 500,
-                error: err.message
-            });
-        } else {
-            res.status(201);
-            res.json({
-                status: 201,
-                message: 'Repo branch saved successfully.'
-            });
-        }
-    });
+    try {
+        console.log("req.body: ", req.body);
+        const repoBranchSchema = new db.RepoBranchSchema;
+        repoBranchSchema.repo_id = req.body.repo_id;
+        repoBranchSchema.type = req.body.type;
+        repoBranchSchema.name = req.body.name;
+        repoBranchSchema.description = req.body.description;
+        repoBranchSchema.created_date = new Date();
+
+        await repoBranchSchema.save();
+        res.status(201);
+        res.json({
+            status: 201,
+            message: 'Repo branch saved successfully.'
+        });
+
+    } catch(err) {
+        console.log("err: ", err);
+        // log.debug(err);
+        res.status(500);
+        res.json({
+            status: 500,
+            error: err.message
+        });
+    }
 
 });
 
 router.post('/v1/metadatarevisions', async (req, res, next) => {
-    console.log("req.body: ", req.body);
-    const metadataRevisionSchema = new db.MetadataRevisionSchema;
 
-    metadataRevisionSchema.repo_branch_id = req.body.repo_branch_id;
-    metadataRevisionSchema.type = req.body.type;
-    metadataRevisionSchema.revision_number = req.body.revision_number;
-    metadataRevisionSchema.change_summary = req.body.change_summary;
-    metadataRevisionSchema.content = req.body.content;
-    metadataRevisionSchema.updater = req.body.updater;
-    metadataRevisionSchema.create_date = new Date();
+    try {
+        console.log("req.body: ", req.body);
+        const metadataRevisionSchema = new db.MetadataRevisionSchema;
 
-    metadataRevisionSchema.save(function (err) {
-        if (err) {
-            console.log("err: ", err);
-            // log.debug(err);
-            res.status(500);
-            res.json({
-                status: 500,
-                error: err.message
-            });
-        } else {
-            res.status(201);
-            res.json({
-                status: 201,
-                message: 'Metadata revision saved successfully.'
-            });
-        }
-    });
+        metadataRevisionSchema.repo_branch_id = req.body.repo_branch_id;
+        metadataRevisionSchema.type = req.body.type;
+        metadataRevisionSchema.revision_number = req.body.revision_number;
+        metadataRevisionSchema.change_summary = req.body.change_summary;
+        metadataRevisionSchema.content = req.body.content;
+        metadataRevisionSchema.updater = req.body.updater;
+        metadataRevisionSchema.create_date = new Date();
+
+        await metadataRevisionSchema.save();
+        res.status(201);
+        res.json({
+            status: 201,
+            message: 'Metadata revision saved successfully.'
+        });
+
+    } catch(err) {
+        console.log("err: ", err);
+        // log.debug(err);
+        res.status(500);
+        res.json({
+            status: 500,
+            error: err.message
+        });
+    }
 
 });
 
 
 router.get('/v1/metadatarevisions/:dataUploadId', async (req, res, next) => {
-    console.log("req.params.dataUploadId: ", req.params.dataUploadId);
-    const dataUploadId = req.params.dataUploadId;
 
-    var pipeline = [
-        {
-            "$project": {
-                "_id": 0,
-                "du": "$$ROOT"
-            }
-        },
-        {
-            "$lookup": {
-                "localField": "du._id",
-                "from": "repo",
-                "foreignField": "data_upload_id",
-                "as": "r"
-            }
-        },
-        {
-            "$unwind": {
-                "path": "$r",
-                "preserveNullAndEmptyArrays": false
-            }
-        },
-        {
-            "$lookup": {
-                "localField": "r._id",
-                "from": "repo_branch",
-                "foreignField": "repo_id",
-                "as": "rb"
-            }
-        },
-        {
-            "$unwind": {
-                "path": "$rb",
-                "preserveNullAndEmptyArrays": false
-            }
-        },
-        {
-            "$lookup": {
-                "localField": "rb._id",
-                "from": "metadata_revision",
-                "foreignField": "repo_branch_id",
-                "as": "mr"
-            }
-        },
-        {
-            "$unwind": {
-                "path": "$mr",
-                "preserveNullAndEmptyArrays": false
-            }
-        },
-        {
-            "$match": {
-                "du._id": new ObjectId(dataUploadId)
-            }
-        },
-        {
-            "$sort": {
-                "mr.revision_number": 1
-            }
-        },
-        {
-            "$project": {
-                "mr._id": "$mr._id",
-                "mr.type": "$mr.type",
-                "mr.revision_number": "$mr.revision_number",
-                "mr.change_summary": "$mr.change_summary",
-                "mr.create_date": "$mr.create_date",
-                "mr.updater": "$mr.updater",
-                "_id": 0
-            }
-        }
-    ];
+    try {
+        console.log("req.params.dataUploadId: ", req.params.dataUploadId);
+        const dataUploadId = req.params.dataUploadId;
 
-    db.DataUploadSchema.aggregate(pipeline)
-        .exec(function(err, result){
-            if(err) { console.log("error: ", err); }
-            // console.log("results: ", result);
-            result = result.map(item => item.mr);
-            console.log("final results: ", result);
-            res.json(result);
+        var pipeline = [
+            {
+                "$project": {
+                    "_id": 0,
+                    "du": "$$ROOT"
+                }
+            },
+            {
+                "$lookup": {
+                    "localField": "du._id",
+                    "from": "repo",
+                    "foreignField": "data_upload_id",
+                    "as": "r"
+                }
+            },
+            {
+                "$unwind": {
+                    "path": "$r",
+                    "preserveNullAndEmptyArrays": false
+                }
+            },
+            {
+                "$lookup": {
+                    "localField": "r._id",
+                    "from": "repo_branch",
+                    "foreignField": "repo_id",
+                    "as": "rb"
+                }
+            },
+            {
+                "$unwind": {
+                    "path": "$rb",
+                    "preserveNullAndEmptyArrays": false
+                }
+            },
+            {
+                "$lookup": {
+                    "localField": "rb._id",
+                    "from": "metadata_revision",
+                    "foreignField": "repo_branch_id",
+                    "as": "mr"
+                }
+            },
+            {
+                "$unwind": {
+                    "path": "$mr",
+                    "preserveNullAndEmptyArrays": false
+                }
+            },
+            {
+                "$match": {
+                    "du._id": new ObjectId(dataUploadId)
+                }
+            },
+            {
+                "$sort": {
+                    "mr.revision_number": 1
+                }
+            },
+            {
+                "$project": {
+                    "mr._id": "$mr._id",
+                    "mr.type": "$mr.type",
+                    "mr.revision_number": "$mr.revision_number",
+                    "mr.change_summary": "$mr.change_summary",
+                    "mr.create_date": "$mr.create_date",
+                    "mr.updater": "$mr.updater",
+                    "_id": 0
+                }
+            }
+        ];
+
+        let result = await db.DataUploadSchema.aggregate(pipeline).exec();
+        console.log("results: ", result);
+        result = result.map(item => item.mr);
+        console.log("final results: ", result);
+        res.json(result);
+    } catch(err) {
+        console.log("err: ", err);
+        // log.debug(err);
+        res.status(500);
+        res.json({
+            status: 500,
+            error: err.message
         });
+    }
 
 });
 
