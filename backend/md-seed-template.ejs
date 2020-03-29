@@ -1,0 +1,23 @@
+let db = require('../db/db');
+const { Seeder } = require('mongoose-data-seed');
+
+const data = [{
+
+}];
+
+class <%= seederName %>Seeder extends Seeder {
+
+  async shouldRun() {
+    const modelSchema = db.modelSchema;
+    const count = await modelSchema.countDocuments().exec();
+    return count === 0;
+  }
+
+  async run() {
+    const dataUploadSchema = db.DataUploadSchema;
+    return dataUploadSchema.create(data);
+  }
+
+}
+
+module.exports = <%= seederName %>Seeder;

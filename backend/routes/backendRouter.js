@@ -407,7 +407,7 @@ router.post('/v1/repos', async (req, res, next) => {
         console.log("req.body: ", req.body);
         const repoSchema = new db.RepoSchema;
         repoSchema.name = req.body.name;
-        repoSchema.created_date = new Date();
+        repoSchema.create_date = new Date();
         repoSchema.data_upload_id = req.body.data_upload_id;
 
         await repoSchema.save();
@@ -437,7 +437,7 @@ router.post('/v1/repobranches', async (req, res, next) => {
         repoBranchSchema.type = req.body.type;
         repoBranchSchema.name = req.body.name;
         repoBranchSchema.description = req.body.description;
-        repoBranchSchema.created_date = new Date();
+        repoBranchSchema.create_date = new Date();
 
         await repoBranchSchema.save();
         res.status(201);

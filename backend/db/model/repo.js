@@ -11,7 +11,7 @@ var repoSchema = new Schema({
         type: String,
         required: true
     },
-    created_date: {
+    create_date: {
         type: Date,
         required: true
     }
