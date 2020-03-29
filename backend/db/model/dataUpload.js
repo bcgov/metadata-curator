@@ -8,6 +8,11 @@ var dataUploadSchema = new Schema({
     uploader: {type: String, required: true},
     files: [{
         name: {type: String, required: true}, size: {type: Number, required: true}
+    }],
+    comments: [{
+        content: {type: String, required: true},
+        create_date: {type: String, required: true},
+        commenter: {type: String, required: true}
     }]
 });
 

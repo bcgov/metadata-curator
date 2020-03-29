@@ -1,0 +1,27 @@
+
+### POST /datauploads/:dataUploadId/comments - add comment to data upload
+POST {{base-url}}/datauploads/5e7e58271db0557cf12109c5/comments
+Content-Type: application/json
+
+{
+  "content": "new comment via api call",
+  "commenter": "jane doe"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+### GET /datauploads/:dataUploadId/comments - get comments for a given data upload
+GET {{base-url}}/datauploads/5e7e58271db0557cf12109c5/comments
+Content-Type: application/json
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+###
