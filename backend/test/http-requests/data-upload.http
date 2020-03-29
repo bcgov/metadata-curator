@@ -70,6 +70,40 @@ Content-Type: application/json
 %}
 
 
+### /datauploads - with comments
+POST {{base-url}}/datauploads
+Content-Type: application/json
+
+{
+  "name": "Dataset 2 - Upload 1",
+  "description": "Upload for dataset 2",
+  "uploader": "jane doe",
+  "files": [
+    {
+      "name": "filename1.csv",
+      "size": 1000
+    }
+  ],
+  "comments": [
+    {
+      "content": "comment 1 asdfsdfdsf",
+      "commenter": "john doe"
+    },
+    {
+      "content": "comment 2 asdfsdfdsf",
+      "commenter": "jane doe"
+    }
+
+  ]
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+
 ### GET /datauploads - default flow
 GET {{base-url}}/datauploads
 Content-Type: application/json
