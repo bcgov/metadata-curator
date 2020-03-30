@@ -4,8 +4,8 @@ POST {{base-url}}/datauploads
 Content-Type: application/json
 
 {
-  "name": "Dataset 1 - Upload 1",
-  "description": "Upload for dataset 1",
+  "name": "Dataset xyz - Upload sjdfk",
+  "description": "Upload for dataset xyz",
   "uploader": "jane doe",
   "files": [
     {
@@ -25,57 +25,12 @@ Content-Type: application/json
     });
 %}
 
-### /datauploads - default flow
-POST {{base-url}}/datauploads
-Content-Type: application/json
-
-{
-  "name": "Dataset 1 - Upload 2",
-  "description": "Upload for dataset 1",
-  "uploader": "john doe",
-  "files": [
-    {
-      "name": "filename3.csv",
-      "size": 1000
-    }
-  ]
-}
-
-> {%
-    client.test("Request executed successfully", function() {
-        client.assert(response.status === 201, "Response status is not 201");
-    });
-%}
-
-### /datauploads - default flow
-POST {{base-url}}/datauploads
-Content-Type: application/json
-
-{
-  "name": "Dataset 2 - Upload 1",
-  "description": "Upload for dataset 2",
-  "uploader": "jane doe",
-  "files": [
-    {
-      "name": "filename1.csv",
-      "size": 1000
-    }
-  ]
-}
-
-> {%
-    client.test("Request executed successfully", function() {
-        client.assert(response.status === 201, "Response status is not 201");
-    });
-%}
-
-
 ### /datauploads - with comments
 POST {{base-url}}/datauploads
 Content-Type: application/json
 
 {
-  "name": "Dataset 2 - Upload 1",
+  "name": "Dataset xyz - Upload with comments",
   "description": "Upload for dataset 2",
   "uploader": "jane doe",
   "files": [
