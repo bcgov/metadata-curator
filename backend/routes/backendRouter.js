@@ -299,7 +299,7 @@ router.post('/v1/datauploads', async (req, res, next) => {
 router.get('/v1/datauploads', async (req, res, next) => {
 
     try {
-        let result = await db.DataUploadSchema.find({});
+        let result = await db.DataUploadSchema.find({}).sort({ "create_date": 1});
         console.log("result: ", result);
         res.json(result);
     } catch(err) {
