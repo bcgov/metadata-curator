@@ -7,7 +7,7 @@ const data = [
     name: "Dataset 1 - Upload 1",
     description: "Upload for dataset 1",
     uploader: "jane doe",
-    create_date: new Date(),
+    create_date: new Date(2020, 0, 1),
     files: [
       {
         name: "filename1.csv",
@@ -24,7 +24,7 @@ const data = [
     name: "Dataset 1 - Upload 2",
     description: "Upload for dataset 1",
     uploader: "john doe",
-    create_date: new Date(),
+    create_date: new Date(2020, 0, 5),
     files: [
       {
         name: "filename3.csv",
@@ -37,7 +37,7 @@ const data = [
     name: "Dataset 2 - Upload 1",
     description: "Upload for dataset 2",
     uploader: "jane doe",
-    create_date: new Date(),
+    create_date: new Date(2020, 1, 3),
     files: [
       {
         name: "filename1.csv",
