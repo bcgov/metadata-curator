@@ -1,6 +1,6 @@
 
 ### POST /datauploads/:dataUploadId/comments - add comment to data upload
-POST {{base-url}}/datauploads/5e7e58271db0557cf12109c5/comments
+POST {{base-url}}/datauploads/5e7a45e510abf3bbf5068f6f/comments
 Content-Type: application/json
 
 {
@@ -15,7 +15,7 @@ Content-Type: application/json
 %}
 
 ### GET /datauploads/:dataUploadId/comments - get comments for a given data upload
-GET {{base-url}}/datauploads/5e7e58271db0557cf12109c5/comments
+GET {{base-url}}/datauploads/5e7a45e510abf3bbf5068f6f/comments
 Content-Type: application/json
 
 > {%
