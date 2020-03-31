@@ -9,11 +9,7 @@ var dataUploadSchema = new Schema({
     files: [{
         name: {type: String, required: true}, size: {type: Number, required: true}
     }],
-    comments: [{
-        content: {type: String, required: true},
-        create_date: {type: String, required: true},
-        commenter: {type: String, required: true}
-    }]
+    topic_id: {type: Schema.Types.ObjectId}
 });
 
 var model = mongoose.model('dataUpload', dataUploadSchema, 'data_upload');

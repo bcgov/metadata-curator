@@ -1,0 +1,29 @@
+
+###
+GET {{forum-api-base-url}}/comment/5e84fc97e4496e2f5390bab4
+Authorization: Bearer {{jwt}}
+Content-Type: application/json
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+###
+POST {{forum-api-base-url}}/comment/5e84fc97e4496e2f5390bab4
+Authorization: Bearer {{jwt}}
+Content-Type: application/json
+
+{
+  "comment": "test comment 3"
+}
+
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+###

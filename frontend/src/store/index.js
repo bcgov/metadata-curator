@@ -8,6 +8,7 @@ import file from './modules/file'
 import schemaImport from './modules/schemaImport'
 import dataUploads from "./modules/dataUploads";
 import dataUploadRevisions from "./modules/dataUploadRevisions";
+import dataUploadComments from "./modules/dataUploadComments";
 
 
 Vue.use(Vuex)
@@ -18,7 +19,8 @@ export default new Vuex.Store({
     file,
     schemaImport,
     dataUploads,
-    dataUploadRevisions
+    dataUploadRevisions,
+    dataUploadComments
   },
   plugins: [createPersistedState({
     paths: [

@@ -17,7 +17,30 @@ const data = [
         name: "filename2.csv",
         size: 2000
       }
-    ]
+    ],
+    topic_id: "5e84fc97e4496e2f5390bab4"
+    // comments: [
+    //   {
+    //     create_date: new Date(),
+    //     content: "missing data.  where is the remaining data?",
+    //     commenter: "john doe"
+    //   },
+    //   {
+    //     create_date: new Date(),
+    //     content: "sorry, forgot some of the data",
+    //     commenter: "jane doe"
+    //   },
+    //   {
+    //     create_date: new Date(),
+    //     content: "can you do another data upload that contains all the data?",
+    //     commenter: "john doe"
+    //   },
+    //   {
+    //     create_date: new Date(),
+    //     content: "yes, will do another upload at the end of the week.",
+    //     commenter: "jane doe"
+    //   },
+    // ]
   },
   {
     _id: "5e7a45e510abf3bbf5068f72",
@@ -30,7 +53,19 @@ const data = [
         name: "filename3.csv",
         size: 1000
       }
-    ]
+    ],
+    // comments: [
+    //   {
+    //     create_date: new Date(),
+    //     content: "missing data.  where is the remaining data",
+    //     commenter: "john doe"
+    //   },
+    //   {
+    //     create_date: new Date(),
+    //     content: "sorry, forgot the data",
+    //     commenter: "jane doe"
+    //   }
+    // ]
   },    
   {
     _id: "5e7a45e510abf3bbf5068f74",
@@ -43,7 +78,19 @@ const data = [
         name: "filename1.csv",
         size: 1000
       }
-    ]
+    ],
+    // comments: [
+    //   {
+    //     create_date: new Date(),
+    //     content: "missing data.  where is the remaining data",
+    //     commenter: "john doe"
+    //   },
+    //   {
+    //     create_date: new Date(),
+    //     content: "sorry, forgot the data",
+    //     commenter: "jane doe"
+    //   }
+    // ]
   }  
 ];
 
