@@ -15,7 +15,7 @@
 
               <v-tab-item v-for="tab of tabs" :key="tab.id" :value="tab.route"
                           :transition="false" :reverse-transition="false">
-                  <router-view></router-view>
+                      <router-view></router-view>
               </v-tab-item>
           </v-tabs>
       </div>
@@ -46,7 +46,7 @@ export default {
               { id: 8, name: "Validate", route: `/validate`, icon: 'mdi-checkbox-marked-circle' },
               { id: 9, name: "Find & Replace", route: `/findreplace`, icon: 'mdi-file-find' },
               { id: 10, name: "Submit", route: `/submit`, icon: 'mdi-send' },
-          ]
+          ],
       };
   },
   computed: {

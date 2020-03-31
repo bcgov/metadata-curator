@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import dataUploadDetail from "../components/pages/dataUploadDetail";
 
 const home = () => import(/* webpackChunkName: "home" */ "../components/pages/home");
 const importSchema = () => import(/* webpackChunkName: "import" */ "../components/pages/importSchema");
@@ -43,6 +44,15 @@ let r = new Router({
       component: importSchema,
       meta: {
           title: "Import",
+          requiresAuth: true
+      }
+    },
+    {
+      path: '/dataUpload/:id',
+      name: 'data-upload-detail',
+      component: dataUploadDetail,
+      meta: {
+          title: "Data Upload Detail",
           requiresAuth: true
       }
     },

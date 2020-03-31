@@ -1,7 +1,7 @@
 <template>
     <div style="width: 85%;">
 
-        <h1 class="display-2 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Data Uploads</h1>
+        <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Data Uploads</h1>
 
         <v-list three-line>
             <template v-for="(item, index) in dataUploadDisplayItems">
@@ -14,10 +14,10 @@
                 <v-list-item
                     v-else
                     :key="item.title"
-                    @click="routeToRevisionHistory(item.dataUploadId)"
+                    @click="routeToUploadDetail(item.dataUploadId)"
                 >
                     <v-btn icon class="mr-4" >
-                        <v-icon>mdi-history</v-icon>
+                        <v-icon>mdi-file-upload</v-icon>
                     </v-btn>
 
                     <v-list-item-content>
@@ -42,7 +42,6 @@
         },
         data: () => ({
             message: '',
-
         }),
         methods: {
             ...mapActions({
@@ -53,9 +52,9 @@
                 await this.getDataUploads();
                 this.message = '';
             },
-            routeToRevisionHistory(dataUploadId) {
-                console.log("routeToRevisionHistory uploadId: " + dataUploadId);
-                this.$router.push({ name: 'data-upload-revisions', params: { id: dataUploadId } })
+            routeToUploadDetail(dataUploadId) {
+                // console.log("routeToUploadDetail uploadId: " + dataUploadId);
+                this.$router.push({ name: 'data-upload-detail', params: { id: dataUploadId } })
             }
         },
         computed: {

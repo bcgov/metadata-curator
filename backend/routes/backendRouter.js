@@ -7,6 +7,7 @@ let router = express.Router();
 let auth = require('../modules/auth');
 const {Package, Profile, Resource, validate:dataPackageValidate} = require('datapackage');
 const {Table, Schema, validate} = require('tableschema');
+const axios = require('axios');
 
 router.use('/login', function(req, res, next){
     req.session.r = req.query.r;
@@ -267,15 +268,7 @@ router.post('/v1/datauploads', async (req, res, next) => {
         dataUploadSchema.description = req.body.description;
         dataUploadSchema.uploader = req.body.uploader;
         dataUploadSchema.files = req.body.files;
-
-        if (req.body.comments) {
-            dataUploadSchema.comments = req.body.comments.map(item => {
-                item.create_date = new Date();
-                return item;
-            });
-        } else {
-            dataUploadSchema.comments = [];
-        }
+        dataUploadSchema.topic_id = req.body.topic_id.
         dataUploadSchema.create_date = new Date();
 
         await dataUploadSchema.save();
@@ -365,28 +358,90 @@ router.post('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => 
 });
 
 
+// router.get('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => {
+//
+//     try {
+//         // console.log("req.params.dataUploadId: ", req.params.dataUploadId);
+//         const dataUploadId = req.params.dataUploadId;
+//
+//         // console.log("req.body: ", req.body);
+//
+//         let dataUpload = await db.DataUploadSchema.findOne({_id: dataUploadId});
+//         console.log("found data upload: ", dataUpload);
+//
+//         if(dataUpload) {
+//             res.json(dataUpload.comments);
+//         }
+//         else {
+//             res.status(404);
+//             res.json({
+//                 status: 404,
+//                 message: 'Data Upload(' + dataUploadId + ') not found'
+//             })
+//         }
+//
+//     }
+//     catch (err) {
+//         console.log("err: ", err);
+//         // log.debug(err);
+//         res.status(500);
+//         res.json({
+//             status: 500,
+//             error: err.message
+//         });
+//
+//     }
+//
+// });
+
 router.get('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => {
 
     try {
+
+        let config = require('config');
+        const forumApiConfig = config.get("forumApi");
+        console.log("forumApiConfig: ", forumApiConfig);
         // console.log("req.params.dataUploadId: ", req.params.dataUploadId);
         const dataUploadId = req.params.dataUploadId;
-
         // console.log("req.body: ", req.body);
 
         let dataUpload = await db.DataUploadSchema.findOne({_id: dataUploadId});
-        console.log("found data upload: ", dataUpload);
+        // console.log("found data upload: ", dataUpload);
 
-        if(dataUpload) {
-            res.json(dataUpload.comments);
-        }
-        else {
+        if(!dataUpload) {
             res.status(404);
             res.json({
                 status: 404,
                 message: 'Data Upload(' + dataUploadId + ') not found'
             })
         }
+        const jwt = forumApiConfig.jwt;
+        const options = {
+            withCredentials: true,
+            headers: {
+                'Authorization': `Bearer ${jwt}`
+            }
+        };
+        // return axios.get(forumApiConfig.baseUrl, options).then(response => response.data)
 
+        const url = forumApiConfig.baseUrl + "/comment/" + dataUpload.topic_id;
+        const response = await axios.get(url, options);
+
+        // console.log("data: ", response.data);
+
+        const comments = response.data.map(item => {
+            const comment = {
+                _id: item._id,
+                create_ts: item.created_ts,
+                comment: item.comment,
+                author_user: item.author_user
+            };
+            // console.log("comment: ", comment);
+            return comment;
+        });
+        // console.log("comments: ", comments);
+
+        res.json(comments);
     }
     catch (err) {
         console.log("err: ", err);

@@ -1,0 +1,56 @@
+
+###
+GET {{forum-api-base-url}}/
+Authorization: Bearer {{jwt}}
+Content-Type: application/json
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+
+### GET /topic by name
+GET {{forum-api-base-url}}/?name={{dataset-1-upload-1-id}}
+Authorization: Bearer {{jwt}}
+Content-Type: application/json
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+
+###
+POST {{forum-api-base-url}}/
+Authorization: Bearer {{jwt}}
+Content-Type: application/json
+
+{
+  "name": "{{dataset-1-upload-1-id}}"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+###
+POST {{forum-api-base-url}}/
+Authorization: Bearer {{jwt}}
+Content-Type: application/json
+
+{
+  "name": "{{dataset-1-upload-2-id}}"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+###

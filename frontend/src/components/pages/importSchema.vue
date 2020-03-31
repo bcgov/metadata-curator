@@ -1,6 +1,6 @@
 <template>
     <div style="vertical-align: top !important; margin-top: 25px; margin-left:15px;">
-        <h1 class="display-2 font-weight-thin" style="margin-top:15px; margin-bottom:20px;">Import Metadata</h1>
+        <h1 class="display-1 font-weight-thin" style="margin-top:15px; margin-bottom:20px;">Import Metadata</h1>
         <v-container fluid style="margin-left:5px; padding-bottom:0px; margin-bottom:7px;">
             <p>Please select type of metadata to import:</p>
             <v-radio-group v-model="metadataType" row style="margin-left:10px;">
