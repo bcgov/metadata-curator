@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "atob": "^2.1.2",
+    "axios": "^0.19.2",
     "bent": "^7.1.0",
     "config": "^3.2.6",
     "connect-history-api-fallback": "^1.6.0",

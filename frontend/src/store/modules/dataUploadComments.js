@@ -3,7 +3,7 @@ const backend = new Backend();
 
 const state = {
     dataUploadId: null,
-    revisions: [],
+    comments: [],
     error: null,
 };
 
@@ -14,16 +14,16 @@ const getters = {
 
 const actions = {
 
-    async getRevisions({ commit }, dataUploadId) {
-        // console.log("getRevisions action");
+    async getComments({ commit }, dataUploadId) {
+        // console.log("getComments action");
 
-        await backend.getRevisionsByDataUpload(dataUploadId).then((data) => {
-            // console.log("getRevisionsByDataUpload action: ", data);
-            commit('clearRevisions');
-            commit('setRevisions', {revisions: data, dataUploadId: dataUploadId});
+        await backend.getCommentsByDataUpload(dataUploadId).then((data) => {
+            // console.log("getCommentsByDataUpload action: ", data);
+            commit('clearComments');
+            commit('setComments', {comments: data, dataUploadId: dataUploadId});
 
         }).catch((e) => {
-            console.log("Retrieve revisions error: ", e);
+            console.log("Retrieve comments error: ", e);
             commit('setError', {error: e.response.data.error});
         });
     },
@@ -32,14 +32,14 @@ const actions = {
 
 
 const mutations = {
-    setRevisions(state, {revisions, dataUploadId}){
-        // console.log("setRevisions: ", revisions);
+    setComments(state, {comments, dataUploadId}){
+        // console.log("setComments: ", comments);
         state.dataUploadId = dataUploadId;
-        state.revisions = revisions;
+        state.comments = comments;
     },
-    clearRevisions(state){
+    clearComments(state){
         state.dataUploadId = null,
-        state.revisions = [];
+        state.comments = [];
     },
     setError(state, { error }) {
         state.error = Object.assign({}, error);

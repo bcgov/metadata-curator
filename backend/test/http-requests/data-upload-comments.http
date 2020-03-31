@@ -15,7 +15,7 @@ Content-Type: application/json
 %}
 
 ### GET /datauploads/:dataUploadId/comments - get comments for a given data upload
-GET {{base-url}}/datauploads/5e7a45e510abf3bbf5068f6f/comments
+GET {{base-url}}/datauploads/{{dataset-1-upload-1-id}}/comments
 Content-Type: application/json
 
 > {%

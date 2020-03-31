@@ -13,7 +13,7 @@ export default {
         MetadataRevisions
     },
     created() {
-        console.log("dataUploadRevisions id param: " + this.$route.params.id);
+        // console.log("dataUploadRevisions id param: " + this.$route.params.id);
         this.loadRevisions();
     },
     methods: {

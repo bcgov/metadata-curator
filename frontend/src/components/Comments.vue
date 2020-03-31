@@ -1,7 +1,7 @@
 <template>
     <div style="width: 85%;">
         <v-list three-line style="margin-bottom: 15px;">
-            <template v-for="(item, index) in revisionDisplayItems">
+            <template v-for="(item, index) in commentDisplayItems">
                     <v-divider
                         v-if="item.divider"
                         :key="index"
@@ -13,7 +13,7 @@
                         :key="item.title"
                     >
                         <v-btn icon class="mr-4" @click="routeToHome()">
-                            R{{item.revision.revision_number}}
+                            <v-icon>mdi-comment-multiple</v-icon>
                         </v-btn>
 
                         <v-list-item-content>
@@ -37,7 +37,7 @@
         }),
         methods: {
             ...mapActions({
-                getRevisions: 'dataUploadRevisions/getRevisions',
+                getComments: 'dataUploadComments/getComments',
             }),
             routeToHome() {
                 console.log("routeToHome uploadId");
@@ -46,21 +46,20 @@
         },
         computed: {
             ...mapState({
-                revisions: state => state.dataUploadRevisions.revisions
+                comments: state => state.dataUploadComments.comments
             }),
-            revisionDisplayItems: function(){
+            commentDisplayItems: function(){
                 let items = [];
-                this.revisions.forEach( (revision, index) => {
+                this.comments.forEach( (comment, index) => {
 
-                    const createDate = this.$options.filters.formatDate(revision.create_date);
+                    const createDate = this.$options.filters.formatDate(comment.created_ts);
                     const item = {
-                        title: "Revision " + revision.revision_number,
-                        subtitle: "Updated on " + createDate + " by " + revision.updater,
-                        content: revision.change_summary,
-                        revision: revision
+                        subtitle: "Updated on " + createDate + " by " + comment.author_user,
+                        content: comment.comment,
+                        comment: comment
                     };
                     items.push(item);
-                    if(index <= this.revisions.length - 1) {
+                    if(index <= this.comments.length - 1) {
                         items.push({ divider: true, inset: true });
                     }
                 });

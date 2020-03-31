@@ -1,0 +1,47 @@
+
+###
+GET {{forum-api-base-url}}/permission
+Authorization: Bearer {{jwt}}
+Content-Type: application/json
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+###
+POST {{forum-api-base-url}}/permission
+Authorization: Bearer {{jwt}}
+Content-Type: application/json
+
+{
+  "priority": 0,
+  "allow": true,
+  "topic_id": "5e84b753e4496e2f5390ba6f",
+  "group_ids": [
+    "project_a"
+   ]
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+###
+POST {{forum-api-base-url}}/
+Authorization: Bearer {{jwt}}
+Content-Type: application/json
+
+{
+  "name": "{{dataset-1-upload-2-id}}"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+###
