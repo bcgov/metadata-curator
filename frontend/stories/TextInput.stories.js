@@ -1,5 +1,5 @@
 import TextInput from '../src/components/TextInput';
-import {withKnobs, text} from "@storybook/addon-knobs";
+import {withKnobs, text, boolean} from "@storybook/addon-knobs";
 
 export default {
     title: 'TextInput',
@@ -20,11 +20,14 @@ export const textInputData = {
 }
 
 
-const template = `<TextInput :name="name" 
+const template = `<TextInput :name="name"
                             :label="label"
                             :placeholder="placeholder"
                             :validationRules="validationRules"
-                             :value="value"/>`;
+                             :value="value"
+                             :outlined="outlined"
+                             :normal="normal"
+                             />`;
 
 export const Default = () => ({
     components: {
@@ -45,6 +48,43 @@ export const Default = () => ({
         },
         validationRules: {
             default: text('validationRules', textInputData.validationRules)
+        },
+        outlined: {
+            default: text('outlined', false)
+        },
+        normal: {
+            default: text('normal', true)
+        },
+    },
+    template: template,
+    methods: actionsData
+});
+
+export const Outlined = () => ({
+    components: {
+        TextInput
+    },
+    props: {
+        name: {
+            default: text('name', textInputData.name)
+        },
+        label: {
+            default: text('label', textInputData.label)
+        },
+        value: {
+            default: text('value', textInputData.value)
+        },
+        placeholder: {
+            default: text('placeholder', textInputData.placeholder)
+        },
+        validationRules: {
+            default: text('validationRules', textInputData.validationRules)
+        },
+        outlined: {
+            default: text('outlined', true)
+        },
+        normal: {
+            default: text('normal', false)
         },
     },
     template: template,
@@ -72,6 +112,12 @@ export const NoPlaceholderProp = () => ({
         validationRules: {
             default: text('validationRules', textInputData.validationRules)
         },
+        outlined: {
+            default: text('outlined', false)
+        },
+        normal: {
+            default: text('normal', true)
+        },
     },
     template: template,
     methods: actionsData
@@ -97,6 +143,12 @@ export const WithRequiredValidationRule = () => ({
         },
         validationRules: {
             default: text('validationRules', 'required')
+        },
+        outlined: {
+            default: text('outlined', false)
+        },
+        normal: {
+            default: text('normal', true)
         },
     },
     template: template,

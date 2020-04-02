@@ -16,16 +16,25 @@ const actions = {
 
     async getComments({ commit }, dataUploadId) {
         // console.log("getComments action");
-
-        await backend.getCommentsByDataUpload(dataUploadId).then((data) => {
-            // console.log("getCommentsByDataUpload action: ", data);
+        try {
+            const data = await backend.getCommentsByDataUpload(dataUploadId);
             commit('clearComments');
             commit('setComments', {comments: data, dataUploadId: dataUploadId});
-
-        }).catch((e) => {
+        } catch(e) {
             console.log("Retrieve comments error: ", e);
             commit('setError', {error: e.response.data.error});
-        });
+        }
+    },
+    async addComment({ commit, dispatch }, {dataUploadId, comment}) {
+        // console.log("addComments action: " + comment);
+        try {
+            await backend.postCommentByDataUpload(dataUploadId, comment);
+            // console.log("postCommentByDataUpload action: ", data);
+            dispatch('getComments', dataUploadId);
+        } catch(e) {
+            console.log("Unable to add comment error: ", e);
+            commit('setError', {error: e.response.data.error});
+        }
     },
 
 }

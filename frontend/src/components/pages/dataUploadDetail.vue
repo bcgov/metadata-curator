@@ -27,13 +27,16 @@
                             <Comments></Comments>
                             <v-card-actions class="card-actions">
                                 <v-spacer></v-spacer>
-                                <v-btn color="orange" text>Add Comment</v-btn>
+                                <v-btn color="orange" text @click="showAddCommentDialog()">Add Comment</v-btn>
                                 <v-btn color="orange" text>View</v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-col>
                 </v-row>
                 <v-btn @click="routeToHome()" style="margin-top:5px">Back</v-btn>
+                <CommentAddDialog :dialog="commentAddDialog"
+                                  @close-button-clicked="onCloseButtonClicked"
+                                  @save-button-clicked="onSaveButtonClicked"/>
             </v-container>
 <!--    </div>-->
 </template>
@@ -42,32 +45,33 @@
 import {mapActions, mapMutations} from "vuex";
 import MetadataRevisions from "../MetadataRevisions";
 import Comments from "../Comments";
+import CommentAddDialog from "../CommentAddDialog";
 
 export default {
     components:{
         MetadataRevisions,
-        Comments
+        Comments,
+        CommentAddDialog
     },
-    created() {
-        // console.log("dataUpload id: " + this.$route.params.id);
-        this.loadRevisions();
-    },
-    beforeDestroy() {
-        console.log("detail view before destroy");
-        this.clearState();
+    data () {
+        return {
+            commentAddDialog: false,
+            dataUploadId: null
+        }
     },
     methods: {
         ...mapActions({
             getRevisions: 'dataUploadRevisions/getRevisions',
             getComments: 'dataUploadComments/getComments',
+            addComment: 'dataUploadComments/addComment',
         }),
         ...mapMutations({
             clearRevisions: 'dataUploadRevisions/clearRevisions',
             clearComments: 'dataUploadComments/clearComments',
         }),
-        async loadRevisions() {
-            await this.getRevisions(this.$route.params.id);
-            await this.getComments(this.$route.params.id);
+        loadRevisions() {
+            this.getRevisions(this.$route.params.id);
+            this.getComments(this.$route.params.id);
         },
         routeToHome() {
             // console.log("routeToHome uploadId");
@@ -77,10 +81,32 @@ export default {
             this.clearRevisions();
             this.clearComments();
         },
+        showAddCommentDialog() {
+            this.commentAddDialog = true;
+        },
+        onCloseButtonClicked() {
+            this.commentAddDialog = false;
+            // this.comment = null;
+        },
+        onSaveButtonClicked(comment) {
+            console.log("save button clicked with val: " + comment);
+            this.commentAddDialog = false;
+            this.addComment({dataUploadId: this.dataUploadId, comment: comment});
+            // this.reloadComments();
+        },
+        // reloadComments() {
+        //     this.clearComments();
+        //     this.getComments(this.dataUploadId);
+        // },
     },
-    data () {
-        return {
-        }
+    created() {
+        // console.log("dataUpload id: " + this.$route.params.id);
+        this.dataUploadId = this.$route.params.id;
+        this.loadRevisions();
+    },
+    beforeDestroy() {
+        // console.log("detail view before destroy");
+        this.clearState();
     },
 }
 </script>

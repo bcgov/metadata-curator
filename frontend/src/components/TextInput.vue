@@ -7,7 +7,9 @@
                 :name="name"
                 v-model="val"
                 :error-messages="errors.length > 0 ? [errors[0]] : []"
-                outlined
+                :outlined="outlined"
+                :normal="normal"
+                ref="txtField"
             ></v-text-field>
         </ValidationProvider>
     </div>
@@ -45,10 +47,31 @@
                 required: false,
                 default: () => ''
             },
+            outlined: {
+                type: Boolean,
+                required: false,
+                default: () => false
+            },
+            normal: {
+                type: Boolean,
+                required: false,
+                default: () => true
+            },
         },
         data() {
             return {
                 val: this.value,
+            }
+        },
+        methods: {
+            clearValidation() {
+                console.log("clear validation");
+                this.$refs.txtField.reset();
+                this.$refs.txtField.resetValidation();
+            },
+            focus() {
+                console.log("focus");
+                this.$refs.txtField.focus();
             }
         },
         computed: {
@@ -61,10 +84,15 @@
         },
         watch: {
             value: function (newVal, oldVal) {
+                console.log("newVal: " + newVal);
+                console.log("oldVal: " + oldVal);
                 this.val = newVal
             },
+            val(){
+                console.log("val changed: ", this.val);
+                this.$emit('edited', this.val);
+            },
         }
-
     };
 </script>
 

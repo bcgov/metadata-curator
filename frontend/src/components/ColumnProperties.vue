@@ -7,14 +7,16 @@
                    :label="fldName.label"
                    :placeholder="fldName.placeholder"
                    :validation-rules="fldName.validationRules"
-                   :value="fldName.value"/>
+                   :value="fldName.value"
+                   outlined="true"/>
 
         <TextInput class="column-prop-input"
                    :name="fldTitle.name"
                    :label="fldTitle.label"
                    :placeholder="fldTitle.placeholder"
                    :validation-rules="fldTitle.validationRules"
-                   :value="fldTitle.value"/>
+                   :value="fldTitle.value"
+                   outlined="true"/>
 
         <TextArea class="column-prop-textarea"
                    :name="fldDesc.name"
@@ -45,7 +47,8 @@
                    :label="fldRdfType.label"
                    :placeholder="fldRdfType.placeholder"
                    :validation-rules="fldRdfType.validationRules"
-                   :value="fldRdfType.value"/>
+                   :value="fldRdfType.value"
+                   outlined="true"/>
 
     </div>
 </template>
