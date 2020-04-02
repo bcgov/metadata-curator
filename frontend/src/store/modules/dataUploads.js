@@ -3,6 +3,7 @@ const backend = new Backend();
 
 const state = {
     dataUploads: [],
+    selectedDataUpload: null,
     error: null,
 };
 

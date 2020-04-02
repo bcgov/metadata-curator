@@ -1,6 +1,6 @@
 
 ### POST /datauploads/:dataUploadId/comments - add comment to data upload
-POST {{base-url}}/datauploads/5e7a45e510abf3bbf5068f6f/comments
+POST {{base-url}}/datauploads/{{dataset-1-upload-1-id}}/comments
 Content-Type: application/json
 
 {
@@ -23,5 +23,14 @@ Content-Type: application/json
         client.assert(response.status === 200, "Response status is not 200");
     });
 %}
+
+
+### POST /datauploads/:dataUploadId/comments - add comment to data upload
+POST {{base-url}}/datauploads/{{dataset-1-upload-1-id}}/comments
+Content-Type: application/json
+
+{
+  "content": "new comment via api call 1"
+}
 
 ###
