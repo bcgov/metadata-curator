@@ -51,8 +51,8 @@
             commentDisplayItems: function(){
                 let items = [];
                 this.comments.forEach( (comment, index) => {
-
-                    const createDate = this.$options.filters.formatDate(comment.created_ts);
+                    // console.log("comment: ", comment);
+                    const createDate = this.$options.filters.formatDate(comment.create_ts);
                     const item = {
                         subtitle: "Updated on " + createDate + " by " + comment.author_user,
                         content: comment.comment,

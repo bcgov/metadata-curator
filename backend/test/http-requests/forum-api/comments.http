@@ -1,6 +1,6 @@
 
 ###
-GET {{forum-api-base-url}}/comment/5e84fc97e4496e2f5390bab4
+GET {{forum-api-base-url}}/comment/{{data-set-upload-1-topic-id}}
 Authorization: Bearer {{jwt}}
 Content-Type: application/json
 
@@ -11,12 +11,12 @@ Content-Type: application/json
 %}
 
 ###
-POST {{forum-api-base-url}}/comment/5e84fc97e4496e2f5390bab4
+POST {{forum-api-base-url}}/comment/{{data-set-upload-1-topic-id}}
 Authorization: Bearer {{jwt}}
 Content-Type: application/json
 
 {
-  "comment": "test comment 3"
+  "comment": "test comment 4"
 }
 
 

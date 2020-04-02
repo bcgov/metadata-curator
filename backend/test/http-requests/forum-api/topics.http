@@ -29,7 +29,7 @@ Authorization: Bearer {{jwt}}
 Content-Type: application/json
 
 {
-  "name": "{{dataset-1-upload-1-id}}"
+  "name": "{{dataset-1-upload-2-id}}"
 }
 
 > {%

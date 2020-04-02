@@ -55,4 +55,10 @@ export class Backend {
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 
+    postCommentByDataUpload(dataUploadId, comment){
+        const url = '/api/v1/datauploads/' + dataUploadId + '/comments';
+        const body = { content: comment};
+        return axios.post(url, body,{withCredentials: true}).then(response => response.data)
+    }
+
 }
