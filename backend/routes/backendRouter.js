@@ -338,14 +338,14 @@ router.post('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => 
             const url = forumApiConfig.baseUrl + "/";
             const requestBody = { name: dataUploadId};
             const response = await axios.post(url, requestBody, options);
-            console.log("add topic response.data: ", response.data);
+            // console.log("add topic response.data: ", response.data);
 
             //update dataUpload
             dataUpload = await db.DataUploadSchema.findOneAndUpdate({_id: dataUploadId},{topic_id: response.data._id}, {new: true});
-            console.log("dataUpload after update: ", dataUpload)
+            // console.log("dataUpload after update: ", dataUpload)
         }
 
-        console.log("dataUpload.topic_id: " + dataUpload.topic_id);
+        // console.log("dataUpload.topic_id: " + dataUpload.topic_id);
         const url = forumApiConfig.baseUrl + "/comment/" + dataUpload.topic_id;
         const requestBody = { comment: req.body.content};
         // console.log("requestBody: ", requestBody);

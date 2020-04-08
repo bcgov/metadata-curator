@@ -94,10 +94,6 @@ export default {
             this.addComment({dataUploadId: this.dataUploadId, comment: comment});
             // this.reloadComments();
         },
-        // reloadComments() {
-        //     this.clearComments();
-        //     this.getComments(this.dataUploadId);
-        // },
     },
     created() {
         // console.log("dataUpload id: " + this.$route.params.id);
