@@ -1,6 +1,6 @@
 <template>
     <div style="width:350px;">
-        <ValidationProvider :rules="validationRules" v-slot="{ errors }" :name="label ? label : name">
+        <ValidationProvider ref="provider" :rules="validationRules" v-slot="{ errors }" :name="label ? label : name">
             <v-text-field
                 :label="displayLabel"
                 :placeholder="placeholder"
@@ -65,12 +65,12 @@
         },
         methods: {
             clearValidation() {
-                console.log("clear validation");
+                this.$refs.provider.reset();
+            },
+            reset() {
                 this.$refs.txtField.reset();
-                this.$refs.txtField.resetValidation();
             },
             focus() {
-                console.log("focus");
                 this.$refs.txtField.focus();
             }
         },
