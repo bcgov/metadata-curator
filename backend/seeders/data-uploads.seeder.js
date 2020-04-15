@@ -6,7 +6,7 @@ const data = [
     _id: "5e7a45e510abf3bbf5068f6f",
     name: "Dataset 1 - Upload 1",
     description: "Upload for dataset 1",
-    uploader: "jane doe",
+    uploader: "Data Provider_1",
     create_date: new Date(2020, 0, 1),
     files: [
       {
@@ -23,7 +23,7 @@ const data = [
     _id: "5e7a45e510abf3bbf5068f72",
     name: "Dataset 1 - Upload 2",
     description: "Upload for dataset 1",
-    uploader: "john doe",
+    uploader: "Data Provider_1",
     create_date: new Date(2020, 0, 5),
     files: [
       {
@@ -36,7 +36,7 @@ const data = [
     _id: "5e7a45e510abf3bbf5068f74",
     name: "Dataset 2 - Upload 1",
     description: "Upload for dataset 2",
-    uploader: "jane doe",
+    uploader: "Data Provider_1",
     create_date: new Date(2020, 1, 3),
     files: [
       {
