@@ -8,7 +8,7 @@ const data = [
     type: "tabular_data_package",
     revision_number: 1,
     change_summary: "Initial upload",
-    updater: "Jane Doe",
+    updater: "Data Provider_1",
     content: {}
   },
   {
@@ -17,7 +17,7 @@ const data = [
     type: "tabular_data_package",
     revision_number: 2,
     change_summary: "Added column",
-    updater: "Jane Doe",
+    updater: "Data Provider_1",
     content: {}
   },
   {
@@ -26,7 +26,7 @@ const data = [
     type: "tabular_data_package",
     revision_number: 3,
     change_summary: "Removed column, change column type",
-    updater: "Jane Doe",
+    updater: "Data Provider_1",
     content: {}
   },
   {
@@ -35,7 +35,7 @@ const data = [
     type: "tabular_data_package",
     revision_number: 4,
     change_summary: "Added columns, column constraints, removed columns",
-    updater: "John Doe",
+    updater: "Data Provider_1",
     content: {}
   },
   {
@@ -44,7 +44,7 @@ const data = [
     type: "tabular_data_package",
     revision_number: 5,
     change_summary: "Added columns, column constraints, removed columns",
-    updater: "John Doe",
+    updater: "Data Provider_1",
     content: {}
   },
   // {
@@ -90,7 +90,7 @@ const data = [
     type : "tabular_data_package",
     revision_number : 1,
     change_summary : "Initial upload",
-    updater : "John Doe",
+    updater : "Data Provider_1",
     content : {}
   },
   {
@@ -99,7 +99,7 @@ const data = [
     type : "tabular_data_package",
     revision_number : 2,
     change_summary : "Removed column, change column type",
-    updater : "Jane Doe",
+    updater : "Data Provider_1",
     content : {}
   },
   {
@@ -108,7 +108,7 @@ const data = [
     type : "tabular_data_package",
     revision_number : 1,
     change_summary : "Initial upload",
-    updater : "Jane Doe",
+    updater : "Data Provider_1",
     content : {}
   },
   {
@@ -117,7 +117,7 @@ const data = [
     type : "tabular_data_package",
     revision_number : 2,
     change_summary : "Added column",
-    updater : "Jane Doe",
+    updater : "Data Provider_1",
     content : {}
   }
     
