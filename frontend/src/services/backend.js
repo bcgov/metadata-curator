@@ -18,6 +18,16 @@ export class Backend {
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 
+    concatenateUpload(joinIds, uploadUrl, jwt, resumable){
+        let uploadOptions = {}
+        uploadOptions.headers = {
+            "Tus-Resumable": resumable,
+            "Upload-Concat": "final;" + joinIds.join(" "),
+            "Upload-Metadata": "jwt " + jwt
+        };
+        return axios.post(uploadUrl, {}, uploadOptions);
+    }
+
     postTableSchema(schema) {
         const url = '/api/v1/tableschemas'
         // console.log("postSchema: ", schema);
