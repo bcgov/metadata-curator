@@ -3,13 +3,12 @@ const backend = new Backend();
 
 const openpgp = require('openpgp');
 
-const CHUNK_SIZE = 5242880;
-
 const state = {
     content: "",
     fileName: "",
     encrypted: false,
     blob: [],
+    uploadContent: "",
     key: null,
     uploadUrl: "",
 };
@@ -42,43 +41,52 @@ const actions = {
         commit('clearBlob');
         // var textEncoding = require('text-encoding');
         // var TextEncoder = textEncoding.TextEncoder;
-        for (let i=0; i<state.content.length; i+=CHUNK_SIZE){
-            //let uint8 = new TextEncoder("utf-8").encode(state.content.substring(i, i+CHUNK_SIZE));
-            // let uint8 = new TextEncoder("utf-8").encode(state.content);
+
+        // let uint8 = new TextEncoder("utf-8").encode(state.content);
+        // eslint-disable-next-line
+        // console.log("uint8 size", uint8.length);
+        var cipherText = await openpgp.encrypt({
+            message: await openpgp.message.fromBinary(state.content), // input as Message object
+            publicKeys: (await openpgp.key.readArmored(state.key)).keys,
+            compression: openpgp.enums.compression.zip,
+            format: 'binary',
+
+        })//.then( async (cipherText) => {
             // eslint-disable-next-line
-            // console.log("uint8 size", uint8.length);
-            var cipherText = await openpgp.encrypt({
-                message: await openpgp.message.fromBinary(state.content.slice(i, i+CHUNK_SIZE)), // input as Message object
-                publicKeys: (await openpgp.key.readArmored(state.key)).keys,
-                compression: openpgp.enums.compression.zip,
-                format: 'binary',
+            //console.log("encrypted text", cipherText.data)
+            //commit('setBlob', {content: cipherText.data} );
 
-            })//.then( async (cipherText) => {
-                // eslint-disable-next-line
-                //console.log("encrypted text", cipherText.data)
-                //commit('setBlob', {content: cipherText.data} );
+            commit('addBlob', {blob: new Blob([cipherText.data])} );
+            // commit('addBlob', {blob: new Blob([state.content])} );
 
-                while (cipherText.data.length < CHUNK_SIZE){
-                    cipherText.data+= (cipherText.data.length === CHUNK_SIZE-1) ? "\n" : " ";
-                }
+            // openpgp.decrypt({
+            //     message: await openpgp.message.readArmored(cipherText.data),
+            //     passwords: ['secret stuff'],
+            //     armor: true
+            // }).then( decryp => {
+            //     console.log("sanity check", decryp);
+            // });
 
+        //});
 
-                commit('addBlob', {blob: new Blob([cipherText.data])} );
-
-                // openpgp.decrypt({
-                //     message: await openpgp.message.readArmored(cipherText.data),
-                //     passwords: ['secret stuff'],
-                //     armor: true
-                // }).then( decryp => {
-                //     console.log("sanity check", decryp);
-                // });
-
-            //});
-        }
         commit('setEncrypted', { encrypted: true });
+        return true;
+    },
 
+    async encryptUploadContent({commit, state}){
+        await openpgp.initWorker({ path: '/js/openpgp.worker.min.js' }, 3); // set the relative web worker path
 
+        commit('clearBlob');
 
+        var cipherText = await openpgp.encrypt({
+            message: await openpgp.message.fromBinary(state.uploadContent), // input as Message object
+            publicKeys: (await openpgp.key.readArmored(state.key)).keys,
+            compression: openpgp.enums.compression.zip,
+            format: 'binary',
+        });
+
+        commit('addBlob', {blob: new Blob([cipherText.data])} );
+        // commit('addBlob', {blob: new Blob([state.uploadContent])} );
     },
 }
 
@@ -87,6 +95,22 @@ const mutations = {
         state.content = content;
         state.encrypted = false;
     },
+
+    setUploadContent(state, {content}){
+        var textEncoding = require('text-encoding');
+        var TextDecoder = textEncoding.TextDecoder;
+        
+        var currC = new TextDecoder("utf-8").decode(state.content);
+        var newC = new TextDecoder("utf-8").decode(content);
+
+        console.log("upload c = c", currC === newC);
+        if (state.uploadContent !== ""){
+            var prevC = new TextDecoder("utf-8").decode(state.uploadContent);
+            console.log("upload c = prev upload c", prevC === newC);
+        }
+        state.uploadContent = content;
+    },
+
     setFileName(state, { fileName }){
         state.fileName = fileName;
     },
@@ -95,10 +119,8 @@ const mutations = {
     },
     setBlob(state, { content }){
         let blobParts = [];
-        for (let i=0; i<content.length; i+=CHUNK_SIZE){
-            let piece = content.substring(i, (i+CHUNK_SIZE));
-            blobParts.push(new Blob([piece]));
-        }
+        let piece = content;
+        blobParts.push(new Blob([piece]));
         state.blob = blobParts;
     },
     addBlob(state, { blob }){
