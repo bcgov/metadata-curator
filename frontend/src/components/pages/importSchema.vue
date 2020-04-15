@@ -9,8 +9,8 @@
             </v-radio-group>
         </v-container>
         <div style="width:350px; margin-left:15px; margin-bottom: 12px;">
-            <FileReader :show-encrypt-button="false"
-                        :show-upload-button="false"
+            <FileReader :show-encrypt-button="true"
+                        :show-upload-button="true"
                         :show-import-button="true"
                         @import-button-clicked="importButtonClicked">
             </FileReader>

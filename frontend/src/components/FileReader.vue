@@ -1,14 +1,16 @@
 <template>
     <span>
-        <v-file-input v-model="file" counter show-size label="File input" style="margin-top:0px;padding-top:0px;"></v-file-input>
-        <v-btn v-if="showEncryptButton" @click="encrypt">Encrypt</v-btn>
-        <v-btn v-if="showUploadButton" @click="upload">Upload</v-btn>
-        <v-btn v-if="showImportButton" @click="onImportButtonClicked">Import</v-btn>
+        <v-file-input v-model="file" :disabled="disabled" counter show-size label="File input" style="margin-top:0px;padding-top:0px;"></v-file-input>
+        <v-btn v-if="showUploadButton" :disabled="disabled" @click="upload">Upload</v-btn>
+        <v-btn v-if="showImportButton" :disabled="disabled" @click="onImportButtonClicked">Import</v-btn>
     </span>
 </template>
 
 <script>
 import { mapState, mapGetters } from 'vuex';
+import { Backend } from '../services/backend';
+
+let backendApi = new Backend();
 
 export default {
 
@@ -25,10 +27,6 @@ export default {
             type: Boolean,
             default: true
         },
-        showEncryptButton: {
-            type: Boolean,
-            default: true
-        },
         showUploadButton: {
             type: Boolean,
             default: true
@@ -42,7 +40,13 @@ export default {
     data() {
         return {
             file: null,
-            fileContent: ""
+            fileContent: "",
+            offset: 0,
+            chunkSize: 5 * 1024 * 1025, // 5mb
+            disabled: false,
+            numChunks: 0,
+            uploads: [],
+            currChunk: 0,
         }
     },
 
@@ -55,38 +59,76 @@ export default {
         }),
         ...mapGetters({
             getStringContent: 'file/getStringContent'
-        }),
+        })
 
     },
 
     watch: {
-        file(){
+        async file(){
+            this.uploads = [];
+            this.numChunks = 0;
+            this.currChunk = 0;
+            
+            if ( (this.readFile) && (this.file) ){    
+                this.disabled = true;
+                await this.getNextChunk();
+                this.disabled = false;
 
-            if (this.readFile){
-                var reader = new FileReader();
-                var self = this;
-                reader.onload = function(e){
-                    if (this.mutateVuex !== ""){
-                        // console.log("watch filename: " + self.file.name);
-                        self.$store.commit('file/setContent', { content: new Uint8Array(e.target.result)})
-                        self.$store.commit('file/setFileName', { fileName: self.file.name})
-                    }else{
-                        self.fileContent = e.target.result;
-                    }
-                }
-                reader.readAsArrayBuffer(this.file);
-
+            }else if ((!this.file) && (this.mutateVuex)){
+                this.$store.commit('file/setContent', { content: new Uint8Array() } );
             }
         }
     },
 
     methods: {
-        encrypt: function(){
-            this.$store.dispatch('file/encryptContent');
+
+        getNextChunk: function(){
+            return new Promise((resolve, reject) => {
+
+                var reader = new FileReader();
+                var self = this;
+                reader.onerror = function(e){
+                    reject(e);
+                }
+
+                reader.onload = async function(e){
+                    if (self.mutateVuex === true){
+                        // console.log("watch filename: " + self.file.name);
+                        if (self.offset === 0){
+                            await self.$store.commit('file/setContent', { content: new Uint8Array(e.target.result)})
+                            self.$store.commit('file/setFileName', { fileName: self.file.name})
+                            await self.$store.dispatch('file/encryptContent');
+                            resolve(e.target.result);
+                        }else{
+                            await self.$store.commit('file/setUploadContent', { content: new Uint8Array(e.target.result)})
+                            await self.$store.dispatch('file/encryptUploadContent');
+                            resolve(e.target.result);
+                        }
+                    }else{
+                        self.fileContent = e.target.result;
+                    }
+                    //see below comment for why this is floor instead of ceil
+                    self.numChunks = Math.floor(self.file.size / self.chunkSize);
+                    self.offset += self.chunkSize;
+                }
+                
+                this.currChunk += 1;
+                if (this.currChunk < this.numChunks){
+                    reader.readAsArrayBuffer(this.file.slice(this.offset, (this.offset + this.chunkSize)));
+                }else{
+                    //this last chunk can be bigger than the rest because each chunk needs to 
+                    //be at least 5mb due to s3/minio restrictions 
+                    //and with ceil that can't be guaranteed
+                    //note it can be at most (2*chunkSize)-1
+                    reader.readAsArrayBuffer(this.file.slice(this.offset));
+                }
+            });
+            
         },
+
         upload: function(){
+            this.disabled = true;
             var i = 0;
-            var uploads = [];
             var tus = require("tus-js-client");
             var fing = function(file, options, callback){
                 return callback(null, [
@@ -115,39 +157,46 @@ export default {
                 onError: error => {
                     // eslint-disable-next-line
                     console.log("Upload error", error)
+                    this.disabled = false;
                 },
                 onProgress: (bytesUploaded, bytesTotal) => {
                     // eslint-disable-next-line
                     console.log("Upload progress " + bytesUploaded + "/" + bytesTotal);
                 },
-                onSuccess: () => {
+                onSuccess: async() => {
                     i += 1;
-                    // eslint-disable-next-line
-                    console.log("Upload " + (i) + "/" + (this.blob.length) +"finished",);
 
-                    if (i<this.blob.length){
+                    if (i<=this.numChunks){
+                        await this.getNextChunk();
+                    }
 
-                        let u2 = new tus.Upload(this.blob[i], uploadOptions);
+                    if ((i<=this.numChunks) && (this.blob[0].size > 0)){
+                        let u2 = new tus.Upload(this.blob[0], uploadOptions);
                         u2.start();
-                        uploads.push(u2);
-                    }else if ( (i !== 1) && (i == this.blob.length) ){
+                        this.uploads.push(u2);
+                    }else if ( (i !== 1) && (i >= this.numChunks) ){
                         let joinIds = [];
-                        for (let j=0; j<uploads.length; j++){
-                            joinIds.push(uploads[j].url);
+                        for (let j=0; j<this.uploads.length; j++){
+                            let url = this.uploads[j].url.substring(this.uploads[j].url.substring(9).indexOf("/")+9);
+                            joinIds.push(url);
                         }
-                        uploadOptions.headers = {
-                            "Upload-Concat": "final; " + joinIds.join(" ")
-                        };
-                        let u2 = new tus.Upload(this.blob[i-1], uploadOptions);
-                        u2.start();
+                        backendApi.concatenateUpload(joinIds, this.uploadUrl, this.jwt, "1.0.0").then( () => {
+                            this.disabled = false;
+                        }).error( (/*e*/) => {
+                            this.disabled = false;
+                        });
+                        
+                        //let u2 = new tus.Upload(this.blob[0], uploadOptions);
+                        //u2.start();
+                        
                     }
                 },
             }
             if (this.blob.length === 1){
                 uploadOptions.headers = {};
             }
-            let u = new tus.Upload(this.blob[i], uploadOptions);
-            uploads.push(u);
+            let u = new tus.Upload(this.blob[0], uploadOptions);
+            this.uploads.push(u);
             u.start();
         },
         onImportButtonClicked: function(){
