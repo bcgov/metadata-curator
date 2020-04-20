@@ -182,7 +182,9 @@ export default {
                         }
                         backendApi.concatenateUpload(joinIds, this.uploadUrl, this.jwt, "1.0.0").then( () => {
                             this.disabled = false;
-                        }).error( (/*e*/) => {
+                        }).catch( (/*e*/) => {
+                            // eslint-disable-next-line
+                            console.log("Concatenation error", error);
                             this.disabled = false;
                         });
                         

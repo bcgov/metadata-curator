@@ -15,6 +15,7 @@ router.use('/login', function(req, res, next){
 });
 
 router.use('/log', passport.authenticate('oidc'), function(req, res, next){
+    console.log("log", req.user);
     next();
 });
 
@@ -34,6 +35,7 @@ router.use('/logout', function(req, res, next){
 });
 
 router.use('/token', auth.removeExpired, function(req, res){
+    console.log("token", req.user);
     if (req.user && req.user.jwt && req.user.refreshToken) {
         res.json(req.user);
     }else{
