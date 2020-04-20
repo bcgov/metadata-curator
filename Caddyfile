@@ -1,0 +1,11 @@
+*:8080 {
+    root /app
+    errors visible
+
+    rewrite {
+        if {path} not_match ^\/(api\/.*)
+        to {path} /
+    }
+
+    proxy /api/ http://{$HOSTNAME}:9090/
+}
