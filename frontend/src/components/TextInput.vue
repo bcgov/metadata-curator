@@ -83,13 +83,13 @@
             }
         },
         watch: {
-            value: function (newVal, oldVal) {
-                console.log("newVal: " + newVal);
-                console.log("oldVal: " + oldVal);
+            value: function (newVal) {
+                // console.log("newVal: " + newVal);
+                // console.log("oldVal: " + oldVal);
                 this.val = newVal
             },
             val(){
-                console.log("val changed: ", this.val);
+                // console.log("val changed: ", this.val);
                 this.$emit('edited', this.val);
             },
         }
