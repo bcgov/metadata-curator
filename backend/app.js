@@ -41,9 +41,26 @@ passport.deserializeUser((obj, next) => {
 });
 
 var strategy = new OidcStrategy(config.get('oidc'), function(issuer, sub, profile, accessToken, refreshToken, done){
-  profile.jwt = accessToken;
-  profile.refreshToken = refreshToken;
 
+  var env = process.env.NODE_ENV || 'development';
+
+  if(env == 'development' && config.hasOwnProperty("testJwt")
+      && config.get('testJwt') && config.get('testJwt').length > 0) {
+    console.log("dev mode");
+    const testJwt = config.get("testJwt");
+    // console.log("testJwt: ", testJwt);
+    const secret = config.get("jwtSecret");
+    var orgAttribute = config.has('orgAttribute') ? config.get('orgAttribute') : false;
+
+    profile = genProfileFromJwt(profile, testJwt, secret, orgAttribute);
+    profile.refreshToken = refreshToken;
+  }
+  else {
+    profile.jwt = accessToken;
+    profile.refreshToken = refreshToken;
+  }
+
+  // console.log("setting token: ", profile);
 
   if ( (typeof(accessToken) === "undefined") || (accessToken === null) || (typeof(refreshToken) === "undefined") || (refreshToken === null) ){
     return done("No access token", null);
@@ -55,6 +72,30 @@ var strategy = new OidcStrategy(config.get('oidc'), function(issuer, sub, profil
 // set up passport
 passport.use('oidc', strategy);
 
+var genProfileFromJwt = function(profile, jwt, secret, orgAttribute) {
+  var jwtLib = require('jsonwebtoken');
+  var decoded = jwtLib.verify(jwt, secret);
+  console.log("decoded token: ", decoded);
+
+  profile.displayName = `${decoded.GivenName} ${decoded.Surname}`;
+  profile.name = {
+    familyName: decoded.Surname,
+    givenName: decoded.Givenname,
+    middleName: undefined
+  };
+
+  if (orgAttribute){
+    profile.organization = decoded[orgAttribute] ? decoded[orgAttribute] : false;
+  }
+
+  profile.groups = decoded.Groups;
+  profile.email = decoded.Email;
+
+  profile._json = decoded;
+  profile.jwt = jwt;
+
+  return profile;
+}
 
 app.use('/api', backendRouter);
 

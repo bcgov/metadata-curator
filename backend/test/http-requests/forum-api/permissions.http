@@ -1,7 +1,7 @@
 
 ###
 GET {{forum-api-base-url}}/permission
-Authorization: Bearer {{jwt}}
+Authorization: Bearer {{jwtAdmin}}
 Content-Type: application/json
 
 > {%
@@ -12,15 +12,15 @@ Content-Type: application/json
 
 ###
 POST {{forum-api-base-url}}/permission
-Authorization: Bearer {{jwt}}
+Authorization: Bearer {{jwtAdmin}}
 Content-Type: application/json
 
 {
   "priority": 0,
   "allow": true,
-  "topic_id": "5e84b753e4496e2f5390ba6f",
+  "topic_id": "5e9f3c896103d6d55dce9060",
   "group_ids": [
-    "project_a"
+    "metadata_approver_1_dip"
    ]
 }
 > {%
@@ -31,7 +31,7 @@ Content-Type: application/json
 
 ###
 POST {{forum-api-base-url}}/
-Authorization: Bearer {{jwt}}
+Authorization: Bearer {{jwtAdmin}}
 Content-Type: application/json
 
 {

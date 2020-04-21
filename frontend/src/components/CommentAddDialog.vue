@@ -60,7 +60,7 @@
             },
             onSaveClicked: function(){
                 // console.log("onSaveClicked");
-                console.log("this.commentVal: " + this.commentVal);
+                // console.log("this.commentVal: " + this.commentVal);
                 this.$emit('save-button-clicked', this.commentVal);
                 // this.clearData();
                 this.$refs.comment.clearValidation();
@@ -81,9 +81,9 @@
             //     console.log(`commentVal changed - oldVal: ${oldVal}, newVal: ${newVal}`);
             // },
             dialog: function (newVal, oldVal) {
-                console.log(`dialog changed - oldVal: ${oldVal}, newVal: ${newVal}`);
+                // console.log(`dialog changed - oldVal: ${oldVal}, newVal: ${newVal}`);
                 if(oldVal === false && newVal) {
-                    console.log("model opening");
+                    // console.log("model opening");
                     // this.$nextTick(() => this.$refs.comment.focus())
                 }
             }

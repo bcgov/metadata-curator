@@ -313,6 +313,9 @@ router.post('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => 
     try {
         let config = require('config');
         const forumApiConfig = config.get("forumApi");
+        console.log("req: ", req.user);
+        const jwt = req.user.jwt;
+
         // console.log("req.params.dataUploadId: ", req.params.dataUploadId);
         const dataUploadId = req.params.dataUploadId;
         // console.log("req.body: ", req.body);
@@ -327,7 +330,7 @@ router.post('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => 
                 message: 'Data Upload(' + dataUploadId + ') not found'
             })
         }
-        const jwt = forumApiConfig.jwt;
+
         const options = {
             withCredentials: true,
             headers: {
@@ -335,15 +338,31 @@ router.post('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => 
             }
         };
 
-        if(!dataUpload.topic_id) {
-            //add topic
-            const url = forumApiConfig.baseUrl + "/";
-            const requestBody = { name: dataUploadId};
-            const response = await axios.post(url, requestBody, options);
-            // console.log("add topic response.data: ", response.data);
+        let topicResponse = null;
 
+        //TODO: topic creation should reside in create upload endpoint implementation which hasn't currently been
+        // wired into the FE yet.  For the time being, it is included here to make it easier to test the functionality
+        // that is currently implemented
+        if(!dataUpload.topic_id) {
+            if (req.user.organization){
+                console.log("biz category exists");
+                const parentTopicResponse = await createTopicIfDoesNotExist(req.user.organization, req.user);
+                if(!parentTopicResponse) {
+                    res.status(500);
+                    res.json({error: "Error creating/fetching parent topic"});
+                    return;
+                }
+                parentId = parentTopicResponse.data._id;
+
+                topicResponse = await createTopic(dataUpload._id, parentId, req.user);
+            } else {
+                topicResponse = await createTopic(dataUpload._id, null, req.user)
+            }
+
+            console.log("topicResponse: ", topicResponse);
             //update dataUpload
-            dataUpload = await db.DataUploadSchema.findOneAndUpdate({_id: dataUploadId},{topic_id: response.data._id}, {new: true});
+            dataUpload = await db.DataUploadSchema.findOneAndUpdate(
+                {_id: dataUploadId},{topic_id: topicResponse.data._id}, {new: true});
             // console.log("dataUpload after update: ", dataUpload)
         }
 
@@ -374,57 +393,83 @@ router.post('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => 
 
 });
 
+var modifyJWTGroups = function(token, newGroups){
+    var config = require('config');
+    var jwt = require('jsonwebtoken');
+    var secret = config.get("jwtSecret")
+    var decoded = jwt.verify(token, secret);
+    decoded.groups = newGroups;
+    var tempToken = jwt.sign(decoded, secret);
+    return tempToken;
+};
 
-// router.post('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => {
-//
-//     try {
-//         // console.log("req.params.dataUploadId: ", req.params.dataUploadId);
-//         const dataUploadId = req.params.dataUploadId;
-//
-//         // console.log("req.body: ", req.body);
-//
-//         let dataUpload = await db.DataUploadSchema.findOne({_id: dataUploadId});
-//         console.log("found data upload: ", dataUpload);
-//
-//         if(dataUpload) {
-//
-//             console.log("existing comments: ", dataUpload.comments);
-//
-//             let comments = dataUpload.comments;
-//             let comment = req.body;
-//             comment.create_date = new Date();
-//             comments.push(comment);
-//
-//             await db.DataUploadSchema.findOneAndUpdate({_id: dataUploadId}, {comments: comments});
-//
-//             res.status(201);
-//             res.json({
-//                 status: 201,
-//                 message: 'Added comment successfully.'
-//             });
-//
-//         }
-//         else {
-//             res.status(404);
-//             res.json({
-//                 status: 404,
-//                 message: 'Data Upload(' + dataUploadId + ') not found'
-//             })
-//         }
-//
-//     }
-//     catch (err) {
-//         console.log("err: ", err);
-//         // log.debug(err);
-//         res.status(500);
-//         res.json({
-//             status: 500,
-//             error: err.message
-//         });
-//
-//     }
-//
-// });
+var createTopic = async function(topicName, parent, user){
+    var config = require('config');
+    const forumApiConfig = config.get("forumApi");
+    const url = forumApiConfig.baseUrl;
+
+    var topic = {
+        name: topicName
+    };
+
+    if (parent){
+        topic.parent_id = parent;
+    }
+
+    const options = {
+        withCredentials: true,
+        headers: {
+            'Authorization': "Bearer "+user.jwt
+        }
+    };
+
+    const response = await axios.post(url, topic, options);
+    return response;
+}
+
+var createTopicIfDoesNotExist = async function(topicName, user){
+    let config = require('config');
+    const forumApiConfig = config.get("forumApi");
+
+    var newG = user.groups.slice();
+    newG.push("admin");
+
+    const options = {
+        withCredentials: true,
+        headers: {
+            'Authorization': "Bearer "+modifyJWTGroups(user.jwt, newG)
+        }
+    };
+
+    const url = forumApiConfig.baseUrl + '/?name='+topicName;
+    const parentTopicResponse = await axios.get(url, options);
+    console.log("parentTopic response is: ", parentTopicResponse);
+
+    if(parentTopicResponse) {
+        console.log("parent topic response came back");
+        console.log("parentTopicResponse.data: ", parentTopicResponse.data);
+        if(parentTopicResponse.data.length === 0) {
+            console.log("create parent topic");
+            // create parent topic
+            var origGroups = user.groups.slice();
+            var origJwt = user.jwt;
+            user.groups = [user.organization, config.get('requiredRoleToCreateRequest')];
+            user.jwt = modifyJWTGroups(user.jwt, user.groups);
+
+            // create upload topic
+            const response = await createTopic(topicName, parentTopicResponse.data._id, user);
+            return response;
+
+        }
+
+        console.log("return existing parent topic");
+        // return parent topic
+        return parentTopicResponse;
+    }
+
+
+
+}
 
 router.get('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => {
 
@@ -447,7 +492,8 @@ router.get('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => {
                 message: 'Data Upload(' + dataUploadId + ') not found'
             })
         }
-        const jwt = forumApiConfig.jwt;
+
+        const jwt = req.user.jwt;
         const options = {
             withCredentials: true,
             headers: {
@@ -508,7 +554,8 @@ router.get('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => {
                 message: 'Data Upload(' + dataUploadId + ') not found'
             })
         }
-        const jwt = forumApiConfig.jwt;
+
+        const jwt = user.jwt;
         const options = {
             withCredentials: true,
             headers: {
@@ -719,9 +766,9 @@ router.get('/v1/metadatarevisions/:dataUploadId', async (req, res, next) => {
         ];
 
         let result = await db.DataUploadSchema.aggregate(pipeline).exec();
-        console.log("results: ", result);
+        // console.log("results: ", result);
         result = result.map(item => item.mr);
-        console.log("final results: ", result);
+        // console.log("final results: ", result);
         res.json(result);
     } catch(err) {
         console.log("err: ", err);
