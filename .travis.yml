@@ -24,7 +24,8 @@ jobs:
       before_script:
         - |-
             cd /home/travis/build/bcgov/metadata-curator/backend
-            cp config/default.json.example config/default.json
+            cp config/default.json.template config/default.json
+            cp config/test.json.example config/test.json
       script:
         - |-
             cd /home/travis/build/bcgov/metadata-curator/backend
@@ -57,7 +58,6 @@ jobs:
       before_script:
         - |-
             cd /home/travis/build/bcgov/metadata-curator/frontend
-            cp config/default.json.example config/default.json
       script:
         - |-
             cd /home/travis/build/bcgov/metadata-curator/frontend
