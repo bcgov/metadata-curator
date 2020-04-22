@@ -61,12 +61,12 @@ jobs:
       script:
         - |-
             cd /home/travis/build/bcgov/metadata-curator/frontend
-            bash docker_quayio_push metadata_curator_api
+            bash docker_quayio_push metadata_curator_ui
       before_deploy:
         - cd /home/travis/build/bcgov/metadata-curator/frontend
       deploy:
         provider: script
-        script: bash docker_push metadata_curator_api || travis_terminate 1
+        script: bash docker_push metadata_curator_ui || travis_terminate 1
         on:
             all_branches: true
             condition: "$TRAVIS_BRANCH =~ ^master|develop$ || -n $TRAVIS_TAG"
