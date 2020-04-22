@@ -54,7 +54,7 @@ jobs:
         - |-
             cd /home/travis/build/bcgov/metadata-curator/frontend
             npm ci
-            if [ "$TRAVIS_TAG" = "" ]; then npm audit; fi
+            # if [ "$TRAVIS_TAG" = "" ]; then npm audit; fi
       before_script:
         - |-
             cd /home/travis/build/bcgov/metadata-curator/frontend
