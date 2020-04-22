@@ -4,7 +4,7 @@ trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 trap 'echo "\"${last_command}\" command filed with exit code $?."' EXIT
 
 #make sure in the right directory
-cd /home/travis/build/bcgov/OCWA/metadata-curator
+cd /home/travis/build/bcgov/OCWA/metadata-curator/backend
 
 BCGOV_BASE="bcgovimages"
 REPO=$1
