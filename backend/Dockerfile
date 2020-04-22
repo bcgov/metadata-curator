@@ -1,17 +1,8 @@
-FROM node:11-alpine
-
-RUN apk update && apk add mongodb>4.0.0
-
-##App folder
-WORKDIR /usr/src/app
-
-##copy package and package-lock and install dependencies
-COPY package*.json ./
-RUN npm ci
-
-# Bundle app source
-COPY . .
-RUN chmod +x entrypoint.sh
-
-EXPOSE 3005
-ENTRYPOINT ["./entrypoint.sh"]
+FROM node:lts-alpine
+WORKDIR /app
+COPY backend/package*.json ./
+RUN npm ci --no-optional --production
+RUN mkdir /.config && chmod 777 /.config
+COPY backend/ ./
+EXPOSE 3000
+CMD [ "npm", "start" ]
