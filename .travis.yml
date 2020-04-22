@@ -6,88 +6,70 @@ services:
 jobs:
     include:
     - name: Metadata Curator Bridge
-    stage: APIs
-    language: node_js
-    node_js: lts/*
-    cache: npm
-    addons:
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-4.8
-    before_install:
-    - |-
-      cd /home/travis/build/bcgov/metadata-curator/backend
-      npm ci
-      if [ "$TRAVIS_TAG" = "" ]; then npm audit; fi
-    before_script:
-    - |-
-      cd /home/travis/build/bcgov/metadata-curator/backend
-      cp config/default.json.example config/default.json
-    # - |-
-    #   wget -q http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-${MONGODB}.tgz
-    #   tar xzf mongodb-linux-x86_64-${MONGODB}.tgz
-    #   mkdir ${PWD}/mongodb-linux-x86_64-${MONGODB}/data
-    #   ${PWD}/mongodb-linux-x86_64-${MONGODB}/bin/mongod --dbpath ${PWD}/mongodb-linux-x86_64-${MONGODB}/data --logpath ${PWD}/mongodb-linux-x86_64-${MONGODB}/mongodb.log --fork
-    #   ${PWD}/mongodb-linux-x86_64-${MONGODB}/bin/mongo forumDb --eval 'db.createUser({user:"forumUser", pwd:"forumPass", roles:["dbAdmin", "readWrite"]});'
-    script:
-    # - |-
-    #   cd /home/travis/build/bcgov/metadata-curator/backend
-    #   npm test
-    - |-
-      cd /home/travis/build/bcgov/metadata-curator/backend
-      bash docker_quayio_push metadata_curator_api
-    before_deploy:
-    - cd /home/travis/build/bcgov/metadata-curator/backend
-    deploy:
-      provider: script
-      script: bash docker_push metadata_curator_api || travis_terminate 1
-      on:
-        all_branches: true
-        condition: "$TRAVIS_BRANCH =~ ^master|develop$ || -n $TRAVIS_TAG"
+      stage: APIs
+      language: node_js
+      node_js: lts/*
+      cache: npm
+      addons:
+        apt:
+          sources:
+          - ubuntu-toolchain-r-test
+          packages:
+          - g++-4.8
+      before_install:
+        - |-
+            cd /home/travis/build/bcgov/metadata-curator/backend
+            npm ci
+            if [ "$TRAVIS_TAG" = "" ]; then npm audit; fi
+      before_script:
+        - |-
+            cd /home/travis/build/bcgov/metadata-curator/backend
+            cp config/default.json.example config/default.json
+      script:
+        - |-
+            cd /home/travis/build/bcgov/metadata-curator/backend
+            bash docker_quayio_push metadata_curator_api
+      before_deploy:
+            - cd /home/travis/build/bcgov/metadata-curator/backend
+      deploy:
+            provider: script
+            script: bash docker_push metadata_curator_api || travis_terminate 1
+            on:
+                all_branches: true
+                condition: "$TRAVIS_BRANCH =~ ^master|develop$ || -n $TRAVIS_TAG"
 
     - name: Metadata Curator Frontend
-    stage: Frontend
-    language: node_js
-    node_js: lts/*
-    cache: npm
-    addons:
+      stage: Frontend
+      language: node_js
+      node_js: lts/*
+      cache: npm
+      addons:
         apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-4.8
-    before_install:
-    - |-
-        cd /home/travis/build/bcgov/metadata-curator/frontend
-        npm ci
-        if [ "$TRAVIS_TAG" = "" ]; then npm audit; fi
-    before_script:
-    - |-
-        cd /home/travis/build/bcgov/metadata-curator/frontend
-        cp config/default.json.example config/default.json
-    # - |-
-    #   wget -q http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-${MONGODB}.tgz
-    #   tar xzf mongodb-linux-x86_64-${MONGODB}.tgz
-    #   mkdir ${PWD}/mongodb-linux-x86_64-${MONGODB}/data
-    #   ${PWD}/mongodb-linux-x86_64-${MONGODB}/bin/mongod --dbpath ${PWD}/mongodb-linux-x86_64-${MONGODB}/data --logpath ${PWD}/mongodb-linux-x86_64-${MONGODB}/mongodb.log --fork
-    #   ${PWD}/mongodb-linux-x86_64-${MONGODB}/bin/mongo forumDb --eval 'db.createUser({user:"forumUser", pwd:"forumPass", roles:["dbAdmin", "readWrite"]});'
-    script:
-    # - |-
-    #   cd /home/travis/build/bcgov/metadata-curator/backend
-    #   npm test
-    - |-
-        cd /home/travis/build/bcgov/metadata-curator/frontend
-        bash docker_quayio_push metadata_curator_api
-    before_deploy:
-    - cd /home/travis/build/bcgov/metadata-curator/frontend
-    deploy:
+            sources:
+            - ubuntu-toolchain-r-test
+            packages:
+            - g++-4.8
+      before_install:
+        - |-
+            cd /home/travis/build/bcgov/metadata-curator/frontend
+            npm ci
+            if [ "$TRAVIS_TAG" = "" ]; then npm audit; fi
+      before_script:
+        - |-
+            cd /home/travis/build/bcgov/metadata-curator/frontend
+            cp config/default.json.example config/default.json
+      script:
+        - |-
+            cd /home/travis/build/bcgov/metadata-curator/frontend
+            bash docker_quayio_push metadata_curator_api
+      before_deploy:
+        - cd /home/travis/build/bcgov/metadata-curator/frontend
+      deploy:
         provider: script
         script: bash docker_push metadata_curator_api || travis_terminate 1
         on:
-        all_branches: true
-        condition: "$TRAVIS_BRANCH =~ ^master|develop$ || -n $TRAVIS_TAG"
+            all_branches: true
+            condition: "$TRAVIS_BRANCH =~ ^master|develop$ || -n $TRAVIS_TAG"
 
 env:
     global:
