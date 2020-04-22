@@ -1,10 +1,10 @@
 #Build production frontend	
 FROM node:lts-alpine as build-stage	
 WORKDIR /app	
-COPY frontend/package*.json ./	
+COPY ./package*.json ./	
 RUN npm ci --no-optional	
 
-COPY frontend/ ./	
+COPY ./ ./	
 ENV NODE_ENV "production"
 RUN npm run build	
 
