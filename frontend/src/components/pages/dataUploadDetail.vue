@@ -3,8 +3,14 @@
             <v-container fluid style="max-width:1500px; width:98%;">
                 <v-row dense>
                     <v-col cols="12">
-                        <v-card outlined max-height="250">
-                            <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Data Upload Summary</h1>
+                        <v-card outlined max-height="150">
+                            <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:15px;">Data Upload Summary</h1>
+                            <p class="display-5" style="margin-left:15px;">
+                                Name: {{dataUpload.name}}
+                            </p>
+                            <p class="display-5" style="margin-left:15px;">
+                                Approver has opened: {{dataUpload.opened_by_approver}}
+                            </p>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
                                 <v-btn color="orange" text>View</v-btn>
@@ -42,7 +48,7 @@
 </template>
 <script>
 
-import {mapActions, mapMutations} from "vuex";
+    import {mapActions, mapMutations, mapState} from "vuex";
 import MetadataRevisions from "../MetadataRevisions";
 import Comments from "../Comments";
 import CommentAddDialog from "../CommentAddDialog";
@@ -56,22 +62,31 @@ export default {
     data () {
         return {
             commentAddDialog: false,
-            dataUploadId: null
+            dataUploadId: null,
         }
     },
     methods: {
         ...mapActions({
+            getDataUpload: 'dataUploadDetail/getDataUpload',
+            updateDataUpload: 'dataUploadDetail/updateDataUpload',
             getRevisions: 'dataUploadRevisions/getRevisions',
             getComments: 'dataUploadComments/getComments',
             addComment: 'dataUploadComments/addComment',
         }),
         ...mapMutations({
+            clearDataUpload: 'dataUploadDetail/clearDataUpload',
             clearRevisions: 'dataUploadRevisions/clearRevisions',
             clearComments: 'dataUploadComments/clearComments',
         }),
-        loadRevisions() {
-            this.getRevisions(this.$route.params.id);
-            this.getComments(this.$route.params.id);
+        async loadSections() {
+            this.getRevisions(this.dataUploadId);
+            this.getComments(this.dataUploadId);
+            await this.getDataUpload(this.dataUploadId);
+            if(this.user.isApprover && !this.dataUpload.opened_by_approver) {
+                console.log("mark data upload as opened by approver");
+                const data = {...this.dataUpload, opened_by_approver: true};
+                this.updateDataUpload(data);
+            }
         },
         routeToHome() {
             // console.log("routeToHome uploadId");
@@ -80,6 +95,7 @@ export default {
         clearState() {
             this.clearRevisions();
             this.clearComments();
+            this.clearDataUpload();
         },
         showAddCommentDialog() {
             this.commentAddDialog = true;
@@ -88,17 +104,23 @@ export default {
             this.commentAddDialog = false;
             // this.comment = null;
         },
-        onSaveButtonClicked(comment) {
+        async onSaveButtonClicked(comment) {
             console.log("save button clicked with val: " + comment);
             this.commentAddDialog = false;
-            this.addComment({dataUploadId: this.dataUploadId, comment: comment});
-            // this.reloadComments();
+            await this.addComment({dataUploadId: this.dataUploadId, comment: comment});
+            this.getDataUpload(this.dataUploadId);
         },
+    },
+    computed: {
+        ...mapState({
+            user: state => state.user.user,
+            dataUpload: state => state.dataUploadDetail.dataUpload,
+        }),
     },
     created() {
         // console.log("dataUpload id: " + this.$route.params.id);
         this.dataUploadId = this.$route.params.id;
-        this.loadRevisions();
+        this.loadSections();
     },
     beforeDestroy() {
         // console.log("detail view before destroy");

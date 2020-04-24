@@ -55,6 +55,11 @@ export class Backend {
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 
+    getDataUpload(dataUploadId){
+        const url = `/api/v1/datauploads/${dataUploadId}`;
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
     getRevisionsByDataUpload(dataUploadId){
         const url = '/api/v1/metadatarevisions/' + dataUploadId;
         return axios.get(url, {withCredentials: true}).then(response => response.data)
@@ -69,6 +74,12 @@ export class Backend {
         const url = '/api/v1/datauploads/' + dataUploadId + '/comments';
         const body = { content: comment};
         return axios.post(url, body,{withCredentials: true}).then(response => response.data)
+    }
+
+    putDataUpload(dataUpload){
+        console.log("BE putdataUpload: " + dataUpload);
+        const url = `/api/v1/datauploads/${dataUpload._id}`;
+        return axios.put(url, dataUpload,{withCredentials: true}).then(response => response.data)
     }
 
 }
