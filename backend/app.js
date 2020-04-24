@@ -42,22 +42,42 @@ passport.deserializeUser((obj, next) => {
 
 var strategy = new OidcStrategy(config.get('oidc'), function(issuer, sub, profile, accessToken, refreshToken, done){
 
-  var env = process.env.NODE_ENV || 'development';
+  const env = process.env.NODE_ENV || 'development';
+
+  profile.isAdmin = false;
+  profile.isDataProvider = false;
+  profile.isApprover = false;
+  profile.groups = [];
+  if ((typeof(profile._json) !== "undefined") && (typeof(profile._json.groups) !== "undefined")){
+    profile.groups = profile._json.groups;
+  }
 
   if(env == 'development' && config.hasOwnProperty("testJwt")
       && config.get('testJwt') && config.get('testJwt').length > 0) {
     console.log("dev mode");
     const testJwt = config.get("testJwt");
     // console.log("testJwt: ", testJwt);
+    const orgAttribute = config.has('orgAttribute') ? config.get('orgAttribute') : false;
     const secret = config.get("jwtSecret");
-    var orgAttribute = config.has('orgAttribute') ? config.get('orgAttribute') : false;
-
     profile = genProfileFromJwt(profile, testJwt, secret, orgAttribute);
     profile.refreshToken = refreshToken;
   }
   else {
     profile.jwt = accessToken;
     profile.refreshToken = refreshToken;
+  }
+
+  const approverGroups = config.get("approverGroups");
+  // console.log("approverGroups: ", approverGroups);
+  const foundApprover = profile.groups.some(group => approverGroups.includes(group));
+  if(foundApprover) {profile.isApprover = true; }
+  // console.log("foundApprover: " + foundApprover);
+
+
+  if(profile.organization) {
+    const alwaysNotifyList = new Map(Object.entries(config.get("alwaysNotifyList")));
+    // console.log("alwaysNotifyList: ", alwaysNotifyList);
+    profile.isDataProvider = alwaysNotifyList.has(profile.organization) ? true : false;
   }
 
   // console.log("setting token: ", profile);
@@ -75,14 +95,10 @@ passport.use('oidc', strategy);
 var genProfileFromJwt = function(profile, jwt, secret, orgAttribute) {
   var jwtLib = require('jsonwebtoken');
   var decoded = jwtLib.verify(jwt, secret);
-  console.log("decoded token: ", decoded);
+  // console.log("decoded token: ", decoded);
 
   profile.displayName = `${decoded.GivenName} ${decoded.Surname}`;
-  profile.name = {
-    familyName: decoded.Surname,
-    givenName: decoded.Givenname,
-    middleName: undefined
-  };
+  profile.name = `${decoded.GivenName} ${decoded.Surname}`;
 
   if (orgAttribute){
     profile.organization = decoded[orgAttribute] ? decoded[orgAttribute] : false;

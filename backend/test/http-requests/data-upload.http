@@ -39,28 +39,44 @@ Content-Type: application/json
       "size": 1000
     }
   ],
-  "comments": [
-    {
-      "content": "comment 1 asdfsdfdsf",
-      "commenter": "john doe"
-    },
-    {
-      "content": "comment 2 asdfsdfdsf",
-      "commenter": "jane doe"
-    }
+}
 
-  ]
+### PUT /datauploads/:dataUploadId  - default flow
+PUT {{base-url}}/datauploads/{{dataset-1-upload-1-id}}
+Content-Type: application/json
+
+{
+  "name": "Dataset xyz - Upload with comments",
+  "description": "Upload for dataset 2",
+  "files": [
+    {
+      "name": "filename1.csv",
+      "size": 1000
+    }
+  ],
+  "opened_by_approver": true
 }
 
 > {%
     client.test("Request executed successfully", function() {
-        client.assert(response.status === 201, "Response status is not 201");
+        client.assert(response.status === 200, "Response status is not 200");
     });
 %}
 
 
 ### GET /datauploads - default flow
 GET {{base-url}}/datauploads
+Content-Type: application/json
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+
+### GET /dataupload/:dataUploadId - default flow
+GET {{base-url}}/datauploads/{{dataset-1-upload-1-id}}
 Content-Type: application/json
 
 > {%

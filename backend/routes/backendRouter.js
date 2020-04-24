@@ -4,6 +4,7 @@ let passport = require('passport');
 let db = require('./db/db');
 let express = require('express');
 let router = express.Router();
+let notify = require('../notifications/notifications')(db);
 let auth = require('../modules/auth');
 const {Package, Profile, Resource, validate:dataPackageValidate} = require('datapackage');
 const {Table, Schema, validate} = require('tableschema');
@@ -35,7 +36,7 @@ router.use('/logout', function(req, res, next){
 });
 
 router.use('/token', auth.removeExpired, function(req, res){
-    console.log("token", req.user);
+    // console.log("token", req.user);
     if (req.user && req.user.jwt && req.user.refreshToken) {
         res.json(req.user);
     }else{
@@ -291,11 +292,81 @@ router.post('/v1/datauploads', async (req, res, next) => {
 
 });
 
+router.put('/v1/datauploads/:dataUploadId', async (req, res, next) => {
+    try {
+        // console.log("req.body: ", req.body);
+        const dataUploadId = req.body._id;
+        // console.log("dataUploadId: " + dataUploadId);
+        let dataUpload = await db.DataUploadSchema.findOne({_id: dataUploadId});
+
+        if(!dataUpload) {
+            res.status(404);
+            res.json({
+                status: 404,
+                message: 'Data Upload(' + dataUploadId + ') not found'
+            })
+        }
+        console.log("dataUpload: ", dataUpload);
+
+        dataUpload.name = req.body.name;
+        dataUpload.description = req.body.description;
+        dataUpload.files = req.body.files;
+        dataUpload.opened_by_approver = req.body.opened_by_approver;
+        dataUpload.approver_has_commented = req.body.approver_has_commented;
+
+        await dataUpload.save();
+        console.log("BE router dataupload from save: ", dataUpload);
+
+        res.status(200);
+        // res.json({
+        //     status: 200,
+        //     message: 'Data upload updated successfully.'
+        // });
+        res.json(dataUpload);
+    } catch(err) {
+        console.log("err: ", err);
+        // log.debug(err);
+        res.status(500);
+        res.json({
+            status: 500,
+            error: err.message
+        });
+    }
+
+});
+
 router.get('/v1/datauploads', async (req, res, next) => {
 
     try {
         let result = await db.DataUploadSchema.find({}).sort({ "create_date": 1});
-        console.log("result: ", result);
+        // console.log("result: ", result);
+        res.json(result);
+    } catch(err) {
+        log.debug(err);
+        res.status(500);
+        res.json({
+            status: 500,
+            error: err.message
+        });
+    }
+
+});
+
+
+router.get('/v1/datauploads/:dataUploadId', async (req, res, next) => {
+
+    try {
+        const dataUploadId = req.params.dataUploadId;
+        let result = await db.DataUploadSchema.findOne({_id: dataUploadId});
+        if(!result) {
+            res.status(404);
+            res.json({
+                status: 404,
+                message: 'Data Upload(' + dataUploadId + ') not found'
+            })
+        }
+
+        // console.log("result: ", result);
         res.json(result);
     } catch(err) {
         log.debug(err);
@@ -330,6 +401,12 @@ router.post('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => 
                 message: 'Data Upload(' + dataUploadId + ') not found'
             })
         }
+
+        const alwaysNotifyUninvolvedOnCommentAdd = config.has("alwaysNotifyUninvolvedOnCommentAdd")
+            && config.has("alwaysNotifyUninvolvedOnCommentAdd") === true;
+        const notifyAllApprovers = alwaysNotifyUninvolvedOnCommentAdd && dataUpload.opened_by_approver
+            && !dataUpload.approver_has_commented && req.user.isDataProvider;
+        console.log("notifyAllApprovers: " + notifyAllApprovers);
 
         const options = {
             withCredentials: true,
@@ -373,6 +450,22 @@ router.post('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => 
         const response = await axios.post(url, requestBody, options);
 
         // console.log("response.data: ", response.data);
+
+        if(req.user.isApprover) {
+            console.log("api add comment is approver");
+            if(!dataUpload.approver_has_commented) {
+                dataUpload.approver_has_commented = true;
+                await dataUpload.save();
+            }
+        }
+
+        //send out notifications if req'd to approvers
+        if(notifyAllApprovers) {
+            console.log("BE post comment notify all approvers");
+            notify.notify(dataUpload, req.user);
+            dataUpload.opened_by_approver = false;
+            await dataUpload.save();
+        }
 
         res.status(201);
         res.json({
@@ -477,7 +570,7 @@ router.get('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => {
 
         let config = require('config');
         const forumApiConfig = config.get("forumApi");
-        console.log("forumApiConfig: ", forumApiConfig);
+        // console.log("forumApiConfig: ", forumApiConfig);
         // console.log("req.params.dataUploadId: ", req.params.dataUploadId);
         const dataUploadId = req.params.dataUploadId;
         // console.log("req.body: ", req.body);
@@ -533,68 +626,68 @@ router.get('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => {
 
 });
 
-router.get('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => {
-
-    try {
-
-        let config = require('config');
-        const forumApiConfig = config.get("forumApi");
-        console.log("forumApiConfig: ", forumApiConfig);
-        // console.log("req.params.dataUploadId: ", req.params.dataUploadId);
-        const dataUploadId = req.params.dataUploadId;
-        // console.log("req.body: ", req.body);
-
-        let dataUpload = await db.DataUploadSchema.findOne({_id: dataUploadId});
-        // console.log("found data upload: ", dataUpload);
-
-        if(!dataUpload) {
-            res.status(404);
-            res.json({
-                status: 404,
-                message: 'Data Upload(' + dataUploadId + ') not found'
-            })
-        }
-
-        const jwt = user.jwt;
-        const options = {
-            withCredentials: true,
-            headers: {
-                'Authorization': `Bearer ${jwt}`
-            }
-        };
-        // return axios.get(forumApiConfig.baseUrl, options).then(response => response.data)
-
-        const url = forumApiConfig.baseUrl + "/comment/" + dataUpload.topic_id;
-        const response = await axios.get(url, options);
-
-        // console.log("data: ", response.data);
-
-        const comments = response.data.map(item => {
-            const comment = {
-                _id: item._id,
-                create_ts: item.created_ts,
-                comment: item.comment,
-                author_user: item.author_user
-            };
-            // console.log("comment: ", comment);
-            return comment;
-        });
-        // console.log("comments: ", comments);
-
-        res.json(comments);
-    }
-    catch (err) {
-        console.log("err: ", err);
-        // log.debug(err);
-        res.status(500);
-        res.json({
-            status: 500,
-            error: err.message
-        });
-
-    }
-
-});
+// router.get('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => {
+//
+//     try {
+//
+//         let config = require('config');
+//         const forumApiConfig = config.get("forumApi");
+//         console.log("forumApiConfig: ", forumApiConfig);
+//         // console.log("req.params.dataUploadId: ", req.params.dataUploadId);
+//         const dataUploadId = req.params.dataUploadId;
+//         // console.log("req.body: ", req.body);
+//
+//         let dataUpload = await db.DataUploadSchema.findOne({_id: dataUploadId});
+//         // console.log("found data upload: ", dataUpload);
+//
+//         if(!dataUpload) {
+//             res.status(404);
+//             res.json({
+//                 status: 404,
+//                 message: 'Data Upload(' + dataUploadId + ') not found'
+//             })
+//         }
+//
+//         const jwt = user.jwt;
+//         const options = {
+//             withCredentials: true,
+//             headers: {
+//                 'Authorization': `Bearer ${jwt}`
+//             }
+//         };
+//         // return axios.get(forumApiConfig.baseUrl, options).then(response => response.data)
+//
+//         const url = forumApiConfig.baseUrl + "/comment/" + dataUpload.topic_id;
+//         const response = await axios.get(url, options);
+//
+//         // console.log("data: ", response.data);
+//
+//         const comments = response.data.map(item => {
+//             const comment = {
+//                 _id: item._id,
+//                 create_ts: item.created_ts,
+//                 comment: item.comment,
+//                 author_user: item.author_user
+//             };
+//             // console.log("comment: ", comment);
+//             return comment;
+//         });
+//         // console.log("comments: ", comments);
+//
+//         res.json(comments);
+//     }
+//     catch (err) {
+//         console.log("err: ", err);
+//         // log.debug(err);
+//         res.status(500);
+//         res.json({
+//             status: 500,
+//             error: err.message
+//         });
+//
+//     }
+//
+// });
 
 router.post('/v1/repos', async (req, res, next) => {
 
@@ -690,7 +783,7 @@ router.post('/v1/metadatarevisions', async (req, res, next) => {
 router.get('/v1/metadatarevisions/:dataUploadId', async (req, res, next) => {
 
     try {
-        console.log("req.params.dataUploadId: ", req.params.dataUploadId);
+        // console.log("req.params.dataUploadId: ", req.params.dataUploadId);
         const dataUploadId = req.params.dataUploadId;
 
         var pipeline = [
