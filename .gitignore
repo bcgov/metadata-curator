@@ -9,3 +9,8 @@
 /backend/test/http-requests/http-client.private.env.json
 
 tmp
+
+**terraform.tfvars
+**terraform.tfstate**
+**/_tmp**
+**/terraform/.terraform**
