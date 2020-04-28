@@ -47,4 +47,4 @@ class RepoBranchesSeeder extends Seeder {
 
 }
 
-module.exports = RepoBranchesSeeder;
+module.exports = {RepoBranchesSeeder, RepoBranchesData:data};
