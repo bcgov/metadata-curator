@@ -70,7 +70,7 @@ router.post('/v1/datapackageschemas', async (req, res, next) => {
         let errs = [];
         let resourceErrsMap = new Map();
         let err = {};
-        console.log("req.body: ", req.body);
+        // console.log("req.body: ", req.body);
 
         let descriptor = {...req.body};
         descriptor.profile = "tabular-data-package";
@@ -194,7 +194,7 @@ router.post('/v1/datapackageschemas', async (req, res, next) => {
 router.post('/v1/tableschemas', async (req, res, next) => {
 
     try {
-        console.log("req.bodys: ", req.body);
+        // console.log("req.bodys: ", req.body);
 
         let errs = [];
         let schemaDescriptor = {...req.body};
@@ -265,14 +265,16 @@ router.post('/v1/tableschemas', async (req, res, next) => {
 
 router.post('/v1/datauploads', async (req, res, next) => {
     try {
-        console.log("req.body: ", req.body);
+        // console.log("req.body: ", req.body);
         const dataUploadSchema = new db.DataUploadSchema;
         dataUploadSchema.name = req.body.name;
         dataUploadSchema.description = req.body.description;
         dataUploadSchema.uploader = req.body.uploader;
         dataUploadSchema.files = req.body.files;
-        dataUploadSchema.topic_id = req.body.topic_id.
+        dataUploadSchema.topic_id = req.body.topic_id;
         dataUploadSchema.create_date = new Date();
+        dataUploadSchema.opened_by_approver = false;
+        dataUploadSchema.approver_has_commented = false;
 
         await dataUploadSchema.save();
         res.status(201);
@@ -281,7 +283,6 @@ router.post('/v1/datauploads', async (req, res, next) => {
             message: 'Data upload saved successfully.'
         });
     } catch(err) {
-        console.log("err: ", err);
         // log.debug(err);
         res.status(500);
         res.json({
@@ -304,9 +305,10 @@ router.put('/v1/datauploads/:dataUploadId', async (req, res, next) => {
             res.json({
                 status: 404,
                 message: 'Data Upload(' + dataUploadId + ') not found'
-            })
+            });
+            return;
         }
-        console.log("dataUpload: ", dataUpload);
+        // console.log("dataUpload: ", dataUpload);
 
         dataUpload.name = req.body.name;
         dataUpload.description = req.body.description;
@@ -315,13 +317,9 @@ router.put('/v1/datauploads/:dataUploadId', async (req, res, next) => {
         dataUpload.approver_has_commented = req.body.approver_has_commented;
 
         await dataUpload.save();
-        console.log("BE router dataupload from save: ", dataUpload);
+        // console.log("BE router dataupload from save: ", dataUpload);
 
         res.status(200);
-        // res.json({
-        //     status: 200,
-        //     message: 'Data upload updated successfully.'
-        // });
         res.json(dataUpload);
     } catch(err) {
         console.log("err: ", err);
@@ -363,13 +361,14 @@ router.get('/v1/datauploads/:dataUploadId', async (req, res, next) => {
             res.json({
                 status: 404,
                 message: 'Data Upload(' + dataUploadId + ') not found'
-            })
+            });
+            return;
         }
 
         // console.log("result: ", result);
         res.json(result);
     } catch(err) {
-        log.debug(err);
+        // log.debug(err);
         res.status(500);
         res.json({
             status: 500,
@@ -399,7 +398,8 @@ router.post('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => 
             res.json({
                 status: 404,
                 message: 'Data Upload(' + dataUploadId + ') not found'
-            })
+            });
+            return;
         }
 
         const alwaysNotifyUninvolvedOnCommentAdd = config.has("alwaysNotifyUninvolvedOnCommentAdd")
@@ -583,7 +583,8 @@ router.get('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => {
             res.json({
                 status: 404,
                 message: 'Data Upload(' + dataUploadId + ') not found'
-            })
+            });
+            return;
         }
 
         const jwt = req.user.jwt;
@@ -626,73 +627,10 @@ router.get('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => {
 
 });
 
-// router.get('/v1/datauploads/:dataUploadId/comments', async (req, res, next) => {
-//
-//     try {
-//
-//         let config = require('config');
-//         const forumApiConfig = config.get("forumApi");
-//         console.log("forumApiConfig: ", forumApiConfig);
-//         // console.log("req.params.dataUploadId: ", req.params.dataUploadId);
-//         const dataUploadId = req.params.dataUploadId;
-//         // console.log("req.body: ", req.body);
-//
-//         let dataUpload = await db.DataUploadSchema.findOne({_id: dataUploadId});
-//         // console.log("found data upload: ", dataUpload);
-//
-//         if(!dataUpload) {
-//             res.status(404);
-//             res.json({
-//                 status: 404,
-//                 message: 'Data Upload(' + dataUploadId + ') not found'
-//             })
-//         }
-//
-//         const jwt = user.jwt;
-//         const options = {
-//             withCredentials: true,
-//             headers: {
-//                 'Authorization': `Bearer ${jwt}`
-//             }
-//         };
-//         // return axios.get(forumApiConfig.baseUrl, options).then(response => response.data)
-//
-//         const url = forumApiConfig.baseUrl + "/comment/" + dataUpload.topic_id;
-//         const response = await axios.get(url, options);
-//
-//         // console.log("data: ", response.data);
-//
-//         const comments = response.data.map(item => {
-//             const comment = {
-//                 _id: item._id,
-//                 create_ts: item.created_ts,
-//                 comment: item.comment,
-//                 author_user: item.author_user
-//             };
-//             // console.log("comment: ", comment);
-//             return comment;
-//         });
-//         // console.log("comments: ", comments);
-//
-//         res.json(comments);
-//     }
-//     catch (err) {
-//         console.log("err: ", err);
-//         // log.debug(err);
-//         res.status(500);
-//         res.json({
-//             status: 500,
-//             error: err.message
-//         });
-//
-//     }
-//
-// });
-
 router.post('/v1/repos', async (req, res, next) => {
 
     try {
-        console.log("req.body: ", req.body);
+        // console.log("req.body: ", req.body);
         const repoSchema = new db.RepoSchema;
         repoSchema.name = req.body.name;
         repoSchema.create_date = new Date();
@@ -719,7 +657,7 @@ router.post('/v1/repos', async (req, res, next) => {
 router.post('/v1/repobranches', async (req, res, next) => {
 
     try {
-        console.log("req.body: ", req.body);
+        // console.log("req.body: ", req.body);
         const repoBranchSchema = new db.RepoBranchSchema;
         repoBranchSchema.repo_id = req.body.repo_id;
         repoBranchSchema.type = req.body.type;
@@ -749,7 +687,7 @@ router.post('/v1/repobranches', async (req, res, next) => {
 router.post('/v1/metadatarevisions', async (req, res, next) => {
 
     try {
-        console.log("req.body: ", req.body);
+        // console.log("req.body: ", req.body);
         const metadataRevisionSchema = new db.MetadataRevisionSchema;
 
         metadataRevisionSchema.repo_branch_id = req.body.repo_branch_id;

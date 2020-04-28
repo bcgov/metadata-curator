@@ -15,7 +15,7 @@ const db = {};
 db.init = function () {
     const logger = require('npmlog');
     const connString = 'mongodb://' + dbUser + ':' + dbPass + '@' + dbHost + '/' + dbName + '?authSource=' + dbName;
-    console.log("connectionstr: " + connString);
+    // console.log("connectionstr: " + connString);
     mongoose.connect(connString, {
         useUnifiedTopology: true,
         useNewUrlParser: true,

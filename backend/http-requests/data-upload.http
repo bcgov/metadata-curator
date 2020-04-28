@@ -25,21 +25,31 @@ Content-Type: application/json
     });
 %}
 
-### /datauploads - with comments
+### /datauploads - missing required property
 POST {{base-url}}/datauploads
 Content-Type: application/json
 
 {
-  "name": "Dataset xyz - Upload with comments",
-  "description": "Upload for dataset 2",
+  "description": "Upload for dataset xyz",
   "uploader": "jane doe",
   "files": [
     {
       "name": "filename1.csv",
       "size": 1000
+    },
+    {
+      "name": "filename2.csv",
+      "size": 2000
     }
-  ],
+  ]
 }
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 500, "Response status is not 500");
+    });
+%}
+
 
 ### PUT /datauploads/:dataUploadId  - default flow
 PUT {{base-url}}/datauploads/{{dataset-1-upload-1-id}}

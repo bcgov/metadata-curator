@@ -69,4 +69,4 @@ class DataUploadsSeeder extends Seeder {
   }
 }
 
-module.exports = DataUploadsSeeder;
+module.exports = {DataUploadsSeeder, DataUploadData: data};
