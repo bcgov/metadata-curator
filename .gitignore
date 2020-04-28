@@ -6,7 +6,7 @@
 .idea/
 *.iml
 *.iws
-/backend/test/http-requests/http-client.private.env.json
+**/http-client.private.env.json
 
 tmp
 
@@ -14,3 +14,9 @@ tmp
 **terraform.tfstate**
 **/_tmp**
 **/terraform/.terraform**
+
+# Coverage directory used by tools like istanbul
+coverage
+
+# nyc test coverage
+.nyc_output

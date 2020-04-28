@@ -18,7 +18,7 @@ Content-Type: application/json
 {
   "priority": 0,
   "allow": true,
-  "topic_id": "5ea35d7d9063fb5425650540",
+  "topic_id": "5ea723ac580fcf55152e92bc",
   "group_ids": [
     "metadata_approver_1_dip"
    ]

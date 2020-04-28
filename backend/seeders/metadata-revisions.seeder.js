@@ -145,4 +145,4 @@ class MetadataRevisionsSeeder extends Seeder {
 
 }
 
-module.exports = MetadataRevisionsSeeder;
+module.exports = {MetadataRevisionsSeeder, MetadataRevisionsData: data};

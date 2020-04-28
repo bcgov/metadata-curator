@@ -8,12 +8,14 @@ let passport = require('passport');
 let OidcStrategy = require('passport-openidconnect').Strategy;
 let history = require('connect-history-api-fallback');
 require('./db/db').init();
+const env = process.env.NODE_ENV || 'development';
 
 let backendRouter = require('./routes/backendRouter');
 
 let app = express();
 
-app.use(logger('dev'));
+
+if(env != 'test') { app.use(logger('dev')); }
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -41,8 +43,6 @@ passport.deserializeUser((obj, next) => {
 });
 
 var strategy = new OidcStrategy(config.get('oidc'), function(issuer, sub, profile, accessToken, refreshToken, done){
-
-  const env = process.env.NODE_ENV || 'development';
 
   profile.isAdmin = false;
   profile.isDataProvider = false;
