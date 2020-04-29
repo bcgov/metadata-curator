@@ -1,0 +1,66 @@
+{
+  "database": {
+    "host": "localhost",
+    "username": "{username}",
+    "password": "{pwd}",
+    "dbName": "{dbName}"
+  },
+  "sessionSecret": "totally secure",
+  "jwtSecret": "jwtSecret",
+  "frontend": "http://localhost:8080",
+  "oidc": {
+    "issuer": "https://{yourdomain}/oauth2/default",
+    "authorizationURL": "https://{yourdomain}/oauth2/default/v1/authorize",
+    "tokenURL": "https://{yourdomain}/oauth2/default/v1/token",
+    "userInfoURL": "https://{yourdomain}/oauth2/default/v1/userinfo",
+    "clientID": "{ClientID}",
+    "clientSecret": "{ClientSecret}",
+    "callbackURL": "http://localhost:3000/api/callback",
+    "scope": "openid profile offline_access"
+  },
+  "forumApi": {
+    "baseUrl": "http://localhost:3000/v1"
+  },
+  "uploadUrl": "http://localhost:1080/files",
+  "base64EncodedPGPPublicKey": "{publickey}",
+  "orgAttribute": "businessCategory",
+  "requiredRoleToCreateRequest": "exporter",
+  "alwaysNotifyListOnTopicCreate": false,
+  "alwaysNotifyUninvolvedOnCommentAdd": true,
+  "approverGroups": [
+    "metadata_approver_1_dip",
+    "metadata_approver_2_dip"
+  ],
+  "alwaysNotifyList": {
+    "business_category_1": [
+      {
+        "name": "Metadata Approver_1_User_1",
+        "email": "{email}"
+      },
+      {
+        "name": "Metadata Approver_1_User_2",
+        "email": "{email}}"
+      }
+    ],
+    "business_category_2": [
+      {
+        "name": "Metadata Approver_2_User_1",
+        "email": "{email}"
+      },
+      {
+        "name": "Metadata Approver_2_User_2",
+        "email": "{email}"
+      }
+    ]
+  },
+  "email": {
+    "enabled": false,
+    "service": "smtp.gmail.com",
+    "secure": true,
+    "port": 465,
+    "user": "{user}",
+    "pass": "{password}",
+    "from": "{email}",
+    "subject": "Data Upload Update"
+  }
+}
