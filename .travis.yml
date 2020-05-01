@@ -34,7 +34,7 @@ jobs:
             - cd /home/travis/build/bcgov/metadata-curator/backend
       deploy:
             provider: script
-            script: bash docker_push metadata_curator_api || travis_terminate 1
+            script: bash ( (docker_push metadata_curator_api || travis_terminate 1) && (wget $WEBHOOK_URL) )
             on:
                 all_branches: true
                 condition: "$TRAVIS_BRANCH =~ ^master|develop$ || -n $TRAVIS_TAG"
@@ -80,3 +80,5 @@ env:
         #quayio
         - secure: "c9tGVLSvw0Bat6brRAsKKNXoZNQ0kZUrc5vXU2opy7ZiYan2jFa9aPecddkDqbnfc/V+TKFBVbQx3AwINeDSLHlW+uzibLjcgXmnc/1dPdbRJhKAEjY3v7K+FAlwkIlp4Cc+Xv+oemjXbCaPaP3Jj1qLBsObVzmjMELEsjhTg1EM6Pz8MLrfdEw6WBQDPUEfx5vHpM9R/nPL9Qz53DaeK4JyCRDxshcpldsXSaMN0nNlFcgfyr4aJp38vm+9u3QEA2E7iY5PQaPW9tqHkn1Ex/Iw4+qkm25sgL17CvJOHCAMZZYPO62wip+gQiz0ipwEymF9oGDnlNjQaKdEnG0yzIP1gbTjQM4XDOPPCNRrD6QBmdJjC0abzQuq25aZUIlskat6QmfCeFv7FrrrpW9sGS+HkopUguqB+i+d/Oc8extAWFzK5+kY9o0K8ozUxQeUV+cSEACoPuF1u3/Xg7B38lLGUCsGIIFFNZqEvnEx3iyuaMT1LZR+iVN61yOawmUIt+OM4alsLTQImZPtgh97fyHB1FEo3mP2DCU8ea5wKB4H/LCHLRZX7bjFROOgtnbQ+Igmqm0T7dgSURzoVjlzYin10bItZuluyWkFEjg9+y3VubWEWVkZ7xXO3fJXgui12XOVIBZ+Jpl38dkzd0YZtZrlG0qbXU34uOebFR4qKPY="
         - secure: "i3etJ+rjQNxyscmh0Mq8K/X2j6pSHr+bjGYf4NXGNmBqytH35nHw8Kp0cJhAYNw/Q0I0/iiGl3e+fHt1GK1MoKWV80C7U4NCV6UyiyjBrX1TCF0P3EHiQVWdB2WfVDGyA5Hn3bbDPjVnDzz2HaLGtq2CyAx9VToGv/4B0lOybBNW5WYbb7HPMYH83AS5N+QSETxqHZjyQ2TA0FnMy+S4+KPaLkxgWRTyYGbt1DcI3fl8aEf3UUB0BeVMKHLQBRrVHDSmY+CZwDGlsBZABBdkhF6C6yv8wCAKXa/ArRInegKHevdMDuyk7EJe6GEPmFzkBMYFpu2qyF+BebLCIXsTqpyP48Qu6y8coqcl8Bxmnk7BKvN9c6mqzU8hGM/l+pwNs/i2kLTOWXisrfmdY6hwJhVkkVTJ4O4lwDaJs+h5FiCxMAzPz2KBCGj5kMIZ5y+MYeFhD2djW2rooZvwDZLg7ChckquBPQ2T6G9vlgeqDYd7fmuFlQsHEbuPliR/UmBQfrUlQIyHZBEYbiiIGgoXMelLtoVnWOicWHYNkTZABHE58PKw1Tm9KU9Tq4GaL3JzuyHptDgPeWebdmuJALUpOKCsZ/HHcTg7SywJvQxOCVbe2T4VMCnV8xW+UNU0iqa3lpIN6uTr/jmJYgrwUeHjNKfrOtXnvupEUSX6IwLAaBc="
+        #deploy
+        - secure: "aI/UQ6Ph61pzaFlhx+XgITbQDK7B3c7M8M2KhbYqRGL3Lv2PUNjv2ZmX5Kt90YJLztZNI4NWIOBdWxq6ROtASpy4KPBJIoUKm1QOMN05KqjC/Js4M9LZWqgWjdkuOGNeF0hMIFWiaMRvHAo/kx4VVgEmQZUurZlwNj1cLWjJkkuoePMuMK3OFsYJm7si588iRDBcTvctwtyR6byhjTBv17Ekj9+LqnDK7UWBc2zbvqZ4qSEPOvJKyG6Ef9uFNDrIJuR1HlNK9LJbYhBq1GK++7Aa3cEIGKBgSsbaJU4KNpwwEaHLjj/EEg+moOKxtSwq9GPylfKpFn9TIWZ3V6T1Xv/YQSnReBbCDa0vicvsNWxl0tE7h3pvLsAsjMe3Fs4EehBj9fLDqRWAwovjcYvApS9OmawRVc7RW0fZ4QjYi1FgyUqQZR1n51OOVP0jnEHeq5z24lXtt+mgQeSjlUUCdZLdxE1uFRN3x6AqNs3Z4M19DZoXzU6zg0LqB/LKzIL4p7IXPaBKsc7A9MplGj48N4P+vTWtUQ0pjnjPCq5T8u22MFiAyuvppkCBagxTjnkqo+T0QNS2c6RSmZu0aqUlS9J/6w1fPAIM4sgvHkdumfzUg7ADY07itmghrMEZJgDr2DQszsN5bUpHEmtK81Ver7BdUQgY+ihVb4GUxVRp3Yo="
