@@ -69,9 +69,8 @@ jobs:
       deploy:
         provider: script
         script:
-          - |-
-            bash docker_push metadata_curator_ui || travis_terminate 1
-            wget $WEBHOOK_URL || travis_terminate 1
+          - bash docker_push metadata_curator_ui || travis_terminate 1
+          - wget $WEBHOOK_URL || travis_terminate 1
         on:
             all_branches: true
             condition: "$TRAVIS_BRANCH =~ ^master|develop$ || -n $TRAVIS_TAG"
