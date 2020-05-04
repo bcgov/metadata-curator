@@ -4,7 +4,7 @@ Metadata Curator is an application for the encrypted (client side) upload of fil
 
 ## Table of Contents
 
-- [Metadata Curator &middot; ![Build Status](https://travis-ci.org/bcgov/metadata-curator.svg?branch=master) ![License](https://opensource.org/licenses/Apache-2.0)](#metadata-curator-middot-build-statushttpstravis-ciorgbcgovocwa-licensehttpsopensourceorglicensesapache-20)
+- [Metadata Curator &middot; ![Build Status](https://travis-ci.org/bcgov/metadata-curator.svg?branch=master) ![License](https://opensource.org/licenses/Apache-2.0)](#metadata-curator-middot-build-statushttpstravis-ciorgbcgov/metadata-curator-licensehttpsopensourceorglicensesapache-20)
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
     - [Prerequisites](#prerequisites)
