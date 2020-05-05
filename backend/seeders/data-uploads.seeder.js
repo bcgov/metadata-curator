@@ -4,8 +4,8 @@ const { Seeder } = require('mongoose-data-seed');
 const data = [
   {
     _id: "5e7a45e510abf3bbf5068f6f",
-    name: "Dataset 1 - Upload 1",
-    description: "Upload for dataset 1",
+    name: "Upload 1",
+    description: "Upload 1",
     uploader: "Data Provider_1",
     create_date: new Date(2020, 0, 1),
     opened_by_approver: false,
@@ -23,8 +23,8 @@ const data = [
   },
   {
     _id: "5e7a45e510abf3bbf5068f72",
-    name: "Dataset 1 - Upload 2",
-    description: "Upload for dataset 1",
+    name: "Upload 2",
+    description: "Upload 2",
     uploader: "Data Provider_1",
     create_date: new Date(2020, 0, 5),
     opened_by_approver: false,
@@ -38,8 +38,8 @@ const data = [
   },    
   {
     _id: "5e7a45e510abf3bbf5068f74",
-    name: "Dataset 2 - Upload 1",
-    description: "Upload for dataset 2",
+    name: "Upload 3",
+    description: "Upload 3",
     uploader: "Data Provider_1",
     create_date: new Date(2020, 1, 3),
     opened_by_approver: false,
