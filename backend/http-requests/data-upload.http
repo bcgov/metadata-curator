@@ -1,6 +1,7 @@
 
 ### /datauploads - default flow
 POST {{base-url}}/datauploads
+Authorization: Bearer {{jwt}}
 Content-Type: application/json
 
 {

@@ -9,6 +9,9 @@ let auth = require('../modules/auth');
 const {Package, Profile, Resource, validate:dataPackageValidate} = require('datapackage');
 const {Table, Schema, validate} = require('tableschema');
 const axios = require('axios');
+const {dataUploadController} = require('../controllers')
+const {postDataUpload} = dataUploadController;
+
 
 router.use('/login', function(req, res, next){
     req.session.r = req.query.r;
@@ -263,35 +266,7 @@ router.post('/v1/tableschemas', async (req, res, next) => {
 });
 
 
-router.post('/v1/datauploads', async (req, res, next) => {
-    try {
-        // console.log("req.body: ", req.body);
-        const dataUploadSchema = new db.DataUploadSchema;
-        dataUploadSchema.name = req.body.name;
-        dataUploadSchema.description = req.body.description;
-        dataUploadSchema.uploader = req.body.uploader;
-        dataUploadSchema.files = req.body.files;
-        dataUploadSchema.topic_id = req.body.topic_id;
-        dataUploadSchema.create_date = new Date();
-        dataUploadSchema.opened_by_approver = false;
-        dataUploadSchema.approver_has_commented = false;
-
-        await dataUploadSchema.save();
-        res.status(201);
-        res.json({
-            status: 201,
-            message: 'Data upload saved successfully.'
-        });
-    } catch(err) {
-        // log.debug(err);
-        res.status(500);
-        res.json({
-            status: 500,
-            error: err.message
-        });
-    }
-
-});
+router.post('/v1/datauploads', postDataUpload);
 
 router.put('/v1/datauploads/:dataUploadId', async (req, res, next) => {
     try {
