@@ -9,7 +9,7 @@ resource "docker_image" "forum_api" {
 
 resource "docker_container" "forum_api" {
   image   = docker_image.forum_api.latest
-  name    = "forum_api"
+  name    = "mc_forum_api"
   restart = "on-failure"
   networks_advanced {
     name = docker_network.private_network.name
