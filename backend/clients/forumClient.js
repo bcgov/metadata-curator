@@ -2,7 +2,6 @@ const axios = require('axios');
 
 const addTopic = async (name, user) => {
     if (user.organization){
-        console.log("biz category exists");
         const parentTopicResponse = await createTopicIfDoesNotExist(user.organization, user);
         if(!parentTopicResponse) {
             throw new Error("Error creating/fetching parent topic");
@@ -13,8 +12,6 @@ const addTopic = async (name, user) => {
     } else {
         topicResponse = await createTopic(name, null, user)
     }
-
-    console.log("topicResponse: ", topicResponse);
     return topicResponse.data;
 }
 
@@ -103,32 +100,19 @@ const createTopicIfDoesNotExist = async function(topicName, user){
 
     const url = forumApiConfig.baseUrl + '/?name='+topicName;
     const parentTopicResponse = await axios.get(url, options);
-    console.log("parentTopic response is: ", parentTopicResponse);
 
     if(parentTopicResponse) {
-        console.log("parent topic response came back");
-        console.log("parentTopicResponse.data: ", parentTopicResponse.data);
         if(parentTopicResponse.data.length === 0) {
-            console.log("create parent topic");
-            // create parent topic
-            var origGroups = user.groups.slice();
-            var origJwt = user.jwt;
             user.groups = [user.organization, config.get('requiredRoleToCreateRequest')];
             user.jwt = modifyJWTGroups(user.jwt, user.groups);
 
-            // create upload topic
             const response = await createTopic(topicName, parentTopicResponse.data._id, user);
             return response;
 
+        } else {
+            return parentTopicResponse;
         }
-
-        console.log("return existing parent topic");
-        // return parent topic
-        return parentTopicResponse;
     }
-
-
-
 }
 
 var modifyJWTGroups = function(token, newGroups){
