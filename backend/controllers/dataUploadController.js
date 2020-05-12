@@ -4,12 +4,14 @@ const { addComment, getComments } = commentService;
 
 const postDataUpload = async (req, res) => {
     try {
-        await createDataUpload(req.body);
+        const dataUpload = await createDataUpload(req.body);
+        // res.status(201);
+        // res.json({
+        //     status: 201,
+        //     message: 'Data upload saved successfully.'
+        // });
         res.status(201);
-        res.json({
-            status: 201,
-            message: 'Data upload saved successfully.'
-        });
+        res.json(dataUpload);
     } catch(err) {
         console.error(err);
         res.status(500);
