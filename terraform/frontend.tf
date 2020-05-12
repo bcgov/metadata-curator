@@ -57,7 +57,11 @@ EOF
 
     uploadUrl = "\"uploadUrl\": \"http://mc_tusd:1080/files\"",
 
-    base64EncodedPGPPublicKey = "\"base64EncodedPGPPublicKey\": \"${var.base64EncodedPGPPublicKey}\""
+    base64EncodedPGPPublicKey = "\"base64EncodedPGPPublicKey\": \"${var.base64EncodedPGPPublicKey}\"",
+
+    approverGroups = "\"approverGroups\": []"
+
+    forumApi = "\"forumApi\": {\"baseUrl\": \"http://mc_forum_api:3000/v1\"}"
   }
 }
 
@@ -70,7 +74,9 @@ data "null_data_source" "configValues" {
   ${data.null_data_source.feIndConfig.outputs["frontend"]},
   ${data.null_data_source.feIndConfig.outputs["oidc"]},
   ${data.null_data_source.feIndConfig.outputs["uploadUrl"]},
-  ${data.null_data_source.feIndConfig.outputs["base64EncodedPGPPublicKey"]}
+  ${data.null_data_source.feIndConfig.outputs["base64EncodedPGPPublicKey"]},
+  ${data.null_data_source.feIndConfig.outputs["approverGroups"]},
+  ${data.null_data_source.feIndConfig.outputs["forumApi"]}
 }
 EOF
 
