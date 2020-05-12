@@ -8,9 +8,11 @@ const state = {
 };
 
 const getters = {
-
+    // eslint-disable-next-line no-unused-vars
+    getDataUploadById: (state, getters) => (id) => {
+        return state.dataUploads.find(upload => upload._id === id);
+    }
 }
-
 
 const actions = {
     async getDataUploads({ commit }) {

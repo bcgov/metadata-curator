@@ -1,0 +1,83 @@
+
+# Note: call /user/login endpoint in http-requests/formio-api/auth.http to retrieve jwt token which will be
+# then automatically populate into the global variable formio-jwt.
+
+### POST /:formName/submission
+POST {{formio-api-base-url}}/testForm1/submission
+Content-Type: application/json
+x-jwt-token: {{formio-jwt}}
+
+{
+  "data": {
+    "firstName": "john"
+  }
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+### PUT /:formName/submission/:submissionId
+PUT {{formio-api-base-url}}/testForm1/submission/5ebf03a7bca87dfafb1d8cef
+Content-Type: application/json
+x-jwt-token: {{formio-jwt}}
+
+{
+  "data": {
+    "firstName": "",
+    "lastname": "blaasdfh",
+    "draft": true
+  }
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+### PUT /:formName/submission/:submissionId  --save draft
+PUT {{formio-api-base-url}}/testForm1/submission/5ebd5835e9ca2880e193b583
+Content-Type: application/json
+x-jwt-token: {{formio-jwt}}
+
+{
+  "data": {
+    "firstName": "johnny"
+  }
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+###  GET /:formName/submission
+GET {{formio-api-base-url}}/testForm1/submission
+Content-Type: application/json
+x-jwt-token: {{formio-jwt}}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+###  GET /:formName/submission/:submissionId
+GET {{formio-api-base-url}}/testForm1/submission/5ebd5835e9ca2880e193b583
+Content-Type: application/json
+x-jwt-token: {{formio-jwt}}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+
+###
+
+

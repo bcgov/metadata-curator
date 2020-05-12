@@ -4,7 +4,7 @@ const logger = require('npmlog');
 let atob = require('atob');
 const NodeCache = require('node-cache');
 //30 minute ttl
-const formioCache = new NodeCache({stdTTL: 1800});
+const formioCache = new NodeCache({stdTTL: 30});
 
 var formio = {};
 
@@ -28,7 +28,7 @@ formio.auth = function(callback){
             callback(null, token);
             return;
         }
-        
+
         //if we're here it is expired
         formioCache.del("token");
     }
@@ -58,7 +58,7 @@ formio.getSubmissions = function(formName, callback) {
             logger.debug("Error getting jwt", err);
         }
         var url = config.get('formio.url') + "/"+formName+"/submission";
-        
+
         logger.verbose("formio get submissions", url);
         httpReq.get(url, {headers: {'x-jwt-token': jwt}}, function(err, res, body){
             if (err){
@@ -85,7 +85,7 @@ formio.getSubmission = function(formName, submissionId, callback) {
         }
         var url = config.get('formio.url') + "/"+formName+"/submission/"+submissionId;
         logger.verbose("formio get submission", url);
-        
+
         httpReq.get(url, {headers: {'x-jwt-token': jwt}}, function(err, res, body){
             if (err){
                 logger.verbose("formio get submission err", err);
@@ -106,9 +106,12 @@ formio.postSubmission = function(formName, values, callback) {
         }
         var url = config.get('formio.url') + "/"+formName+"/submission";
 
+
         var data = {
             data: values
         };
+
+        console.log("post submission data: ", data);
 
         var opts = {
             headers: {
@@ -118,7 +121,7 @@ formio.postSubmission = function(formName, values, callback) {
             body: data,
             json: true
         }
-        
+
         logger.verbose("formio post submission", url);
         httpReq.post(url, opts, function(err, res, body){
             if (err){
@@ -138,7 +141,7 @@ formio.deleteSubmission = function(formName, submissionId, callback) {
             logger.debug("Error getting jwt", err);
         }
         var url = config.get('formio.url') + "/"+formName+"/submission/"+submissionId;
-        
+
         httpReq.delete(url, {headers: {'x-jwt-token': jwt}}, function(err, res, body){
             if (err){
                 callback(err);
@@ -159,7 +162,9 @@ formio.putSubmission = function(formName, submissionId, values, callback) {
         var data = {
             data: values
         };
-        
+
+        console.log("put submission data: ", data);
+
         httpReq.put(url, {headers: {'x-jwt-token': jwt}, body: data, json: true}, function(err, res, body){
             if (err){
                 callback(err);
@@ -184,7 +189,7 @@ formio.getForms = function(callback) {
             logger.debug("Error getting jwt", err);
         }
         var url = config.get('formio.url') + "/form";
-        
+
         logger.verbose("formio get forms", url);
         httpReq.get(url, {headers: {'x-jwt-token': jwt}}, function(err, res, body){
             if (err){
@@ -210,7 +215,7 @@ formio.getForm = function(formName, callback) {
             logger.debug("Error getting jwt", err);
         }
         var url = config.get('formio.url') + "/"+formName;
-        
+
         logger.verbose("formio get form", url);
         httpReq.get(url, {headers: {'x-jwt-token': jwt}}, function(err, res, body){
             if (err){
@@ -235,7 +240,7 @@ formio.postForm = function(data, callback) {
             logger.debug("Error getting jwt", err);
         }
         var url = config.get('formio.url') + "/form";
-        
+
         httpReq.post(url, {headers: {'x-jwt-token': jwt}, body: data, json: true}, function(err, res, body){
             if (err){
                 callback(err);
@@ -255,7 +260,7 @@ formio.putForm = function(formName, data, callback) {
             logger.debug("Error getting jwt", err);
         }
         var url = config.get('formio.url') + "/form/" + formName;
-        
+
         httpReq.put(url, {headers: {'x-jwt-token': jwt}, body: data, json: true}, function(err, res, body){
             if (err){
                 callback(err);
@@ -275,7 +280,7 @@ formio.deleteForm = function(formName, callback) {
             logger.debug("Error getting jwt", err);
         }
         var url = config.get('formio.url') + "/" + formName;
-        
+
         httpReq.delete(url, {headers: {'x-jwt-token': jwt}}, function(err, res, body){
             if (err){
                 callback(err);
