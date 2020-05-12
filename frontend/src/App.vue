@@ -35,7 +35,17 @@ export default {
   data () {
       return {
           activeTab: null,
-          tabs: [
+      };
+  },
+  computed: {
+      ...mapState({
+          user: state => state.user.user,
+          loggedIn: state => state.user.loggedIn,
+          userPermissions: state => state.user.userPermissions,
+          loading: state => state.user.loading
+      }),
+      tabs: function(){
+          let t = [
               { id: 1, name: "Home", route: `/`, icon: 'mdi-home'},
               { id: 2, name: "Upload", route: `/upload`, icon: 'mdi-upload'},
               { id: 3, name: "Import", route: `/import`, icon: 'mdi-import' },
@@ -46,18 +56,16 @@ export default {
               { id: 8, name: "Package", route: `/package`, icon: 'mdi-package-variant-closed' },
               { id: 9, name: "Validate", route: `/validate`, icon: 'mdi-checkbox-marked-circle' },
               { id: 10, name: "Find & Replace", route: `/findreplace`, icon: 'mdi-file-find' },
-              { id: 11, name: "Submit", route: `/submit`, icon: 'mdi-send' },
-          ],
-      };
-  },
-  computed: {
-      ...mapState({
-          user: state => state.user.user,
-          loggedIn: state => state.user.loggedIn,
-          userPermissions: state => state.user.userPermissions,
-          loading: state => state.user.loading
-      })
-  },
+              { id: 11, name: "Submit", route: `/submit`, icon: 'mdi-send' }
+          ];
+
+          if ( (this.user) && (this.user.isAdmin) ){
+              t.push({ id: 12, name: "Admin", route: `/admin`, icon: 'mdi-settings' });
+          }
+
+          return t;
+      }
+    },
   name: 'WebCurator',
 }
 </script>

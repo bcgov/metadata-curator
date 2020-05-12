@@ -13,6 +13,14 @@ const {dataUploadController} = require('../controllers')
 const { getDataUploads, postDataUpload, getDataUpload, putDataUpload, getDataUploadComments, postDataUploadComment } = dataUploadController;
 
 
+let forumRouter = express.Router();
+let forumBridge = require('./forumApi/bridge');
+forumRouter = forumBridge(forumRouter);
+
+let formioRouter = express.Router();
+let formioBridge = require('./formio/bridge');
+formioRouter = formioBridge(formioRouter);
+
 router.use('/login', function(req, res, next){
     req.session.r = req.query.r;
     return res.redirect('/api/log');
@@ -39,7 +47,6 @@ router.use('/logout', function(req, res, next){
 });
 
 router.use('/token', auth.removeExpired, function(req, res){
-    // console.log("token", req.user);
     if (req.user && req.user.jwt && req.user.refreshToken) {
         res.json(req.user);
     }else{
@@ -460,16 +467,7 @@ router.get('/v1/metadatarevisions/:dataUploadId', async (req, res, next) => {
 
 });
 
-/*
-var modifyJWTGroups = function(token, newGroups){
-    var config = require('config');
-    var jwt = require('jsonwebtoken');
-    var secret = config.get("jwtSecret")
-    var decoded = jwt.verify(token, secret);
-    decoded.groups = newGroups;
-    var tempToken = jwt.sign(decoded, secret);
-    return tempToken;
-};
-*/
+router.use('/v1/forum', forumRouter);
+router.use('/v1/formio', formioRouter);
 
 module.exports = router;

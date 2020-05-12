@@ -12,6 +12,10 @@ const env = process.env.NODE_ENV || 'development';
 
 let backendRouter = require('./routes/backendRouter');
 
+let log = require('npmlog');
+log.level = config.get('logLevel');
+log.addLevel('debug', 2900, { fg: 'green' });
+
 let app = express();
 
 
@@ -45,12 +49,22 @@ passport.deserializeUser((obj, next) => {
 var strategy = new OidcStrategy(config.get('oidc'), function(issuer, sub, profile, accessToken, refreshToken, done){
 
   profile.isAdmin = false;
+
   profile.isDataProvider = false;
   profile.isApprover = false;
   profile.groups = [];
   if ((typeof(profile._json) !== "undefined") && (typeof(profile._json.groups) !== "undefined")){
     profile.groups = profile._json.groups;
   }
+
+  if (config.has('adminGroup')){
+    console.log("Checking for admin");
+    profile.isAdmin = (profile.groups.indexOf(config.get('adminGroup')) !== -1);
+    console.log("Checking for admin", profile.isAdmin, profile.groups, config.get('adminGroup'));
+  }
+
+  profile.jwt = accessToken;
+  profile.refreshToken = refreshToken;
 
   if(env == 'development' && config.hasOwnProperty("testJwt")
       && config.get('testJwt') && config.get('testJwt').length > 0) {
@@ -60,10 +74,6 @@ var strategy = new OidcStrategy(config.get('oidc'), function(issuer, sub, profil
     const orgAttribute = config.has('orgAttribute') ? config.get('orgAttribute') : false;
     const secret = config.get("jwtSecret");
     profile = genProfileFromJwt(profile, testJwt, secret, orgAttribute);
-    profile.refreshToken = refreshToken;
-  }
-  else {
-    profile.jwt = accessToken;
     profile.refreshToken = refreshToken;
   }
 
@@ -83,8 +93,11 @@ var strategy = new OidcStrategy(config.get('oidc'), function(issuer, sub, profil
   // console.log("setting token: ", profile);
 
   if ( (typeof(accessToken) === "undefined") || (accessToken === null) || (typeof(refreshToken) === "undefined") || (refreshToken === null) ){
+    console.log("No token");
     return done("No access token", null);
   }
+
+  console.log("setting profile");
   return done(null, profile);
 });
 
