@@ -36,6 +36,7 @@
     "vue-async-computed": "^3.8.2",
     "vue-config": "^1.0.0",
     "vue-directive-tooltip": "^1.6.3",
+    "vue-formio": "^4.0.2",
     "vue-html-loader": "^1.2.4",
     "vue-loader": "^15.9.0",
     "vue-property-decorator": "^8.4.0",

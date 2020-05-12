@@ -82,4 +82,24 @@ export class Backend {
         return axios.put(url, dataUpload,{withCredentials: true}).then(response => response.data)
     }
 
+    getPermissions(){
+        const url = `/api/v1/forum/permissions`;
+        return axios.get(url,{withCredentials: true}).then(response => response.data)
+    }
+
+    putPermission(id, editedItem){
+        const url = `/api/v1/forum/permission/${id}`;
+        return axios.put(url, editedItem, {withCredentials: true}).then(response => response.data)
+    }
+
+    newPermission(editedItem){
+        const url = `/api/v1/forum/permission`;
+        return axios.post(url, editedItem, {withCredentials: true}).then(response => response.data)
+    }
+
+    getForms(){
+        const url = `/api/v1/formio/forms`;
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
 }
