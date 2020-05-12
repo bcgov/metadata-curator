@@ -5,6 +5,7 @@ import dataUploadDetail from "../components/pages/dataUploadDetail";
 const home = () => import(/* webpackChunkName: "home" */ "../components/pages/home");
 const importSchema = () => import(/* webpackChunkName: "import" */ "../components/pages/importSchema");
 const dataUploadRevisions = () => import(/* webpackChunkName: "dataUploadRevisions" */ "../components/pages/dataUploadRevisions");
+const Admin = () => import(/* webpackChunkName: "Admin" */ "../components/pages/Admin");
 const NotFound = () => import(/* webpackChunkName: "NotFound" */ "../components/pages/404");
 
 Vue.use(Router)
@@ -62,6 +63,15 @@ let r = new Router({
       component: dataUploadRevisions,
       meta: {
           title: "Data Upload Revisions",
+          requiresAuth: true
+      }
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: Admin,
+      meta: {
+          title: "Admin",
           requiresAuth: true
       }
     },
