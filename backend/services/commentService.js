@@ -2,6 +2,7 @@ const db = require('../db/db');
 const config = require('config');
 const dataUploadService = require('./dataUploadService');
 const forumClient = require('../clients/forumClient');
+let notify = require('../notifications/notifications')(db);
 
 const addComment = async (dataUploadId, user, comment) => {
     try {
