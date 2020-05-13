@@ -16,6 +16,8 @@ let log = require('npmlog');
 log.level = config.get('logLevel');
 log.addLevel('debug', 2900, { fg: 'green' });
 
+
+
 let app = express();
 
 
@@ -48,6 +50,9 @@ passport.deserializeUser((obj, next) => {
 
 var strategy = new OidcStrategy(config.get('oidc'), function(issuer, sub, profile, accessToken, refreshToken, done){
 
+  var jwt = require('jsonwebtoken');
+  profile.jwt = jwt.sign(profile._json, config.get('jwtSecret'));
+
   profile.isAdmin = false;
 
   profile.isDataProvider = false;
@@ -63,7 +68,7 @@ var strategy = new OidcStrategy(config.get('oidc'), function(issuer, sub, profil
     console.log("Checking for admin", profile.isAdmin, profile.groups, config.get('adminGroup'));
   }
 
-  profile.jwt = accessToken;
+  
   profile.refreshToken = refreshToken;
 
   if(env == 'development' && config.hasOwnProperty("testJwt")

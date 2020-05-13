@@ -11,6 +11,11 @@ import dataUploadRevisions from "./modules/dataUploadRevisions";
 import dataUploadComments from "./modules/dataUploadComments";
 import dataUploadDetail from "./modules/dataUploadDetail";
 
+import { build } from './modules/items';
+
+const permissions = build('getPermissions', 'newPermission', 'putPermission', 'deletePermission');
+const forms = build('getForms', 'newForm', 'putForm', 'deleteForm');
+
 
 Vue.use(Vuex)
 
@@ -22,7 +27,9 @@ export default new Vuex.Store({
     dataUploads,
     dataUploadRevisions,
     dataUploadComments,
-    dataUploadDetail
+    dataUploadDetail,
+    permissions,
+    forms
   },
   plugins: [createPersistedState({
     paths: [
