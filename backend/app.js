@@ -8,6 +8,7 @@ let passport = require('passport');
 let OidcStrategy = require('passport-openidconnect').Strategy;
 let history = require('connect-history-api-fallback');
 require('./db/db').init();
+require('./auth/auth');
 const env = process.env.NODE_ENV || 'development';
 
 let backendRouter = require('./routes/backendRouter');
@@ -131,7 +132,7 @@ var genProfileFromJwt = function(profile, jwt, secret, orgAttribute) {
   return profile;
 }
 
-app.use('/api', backendRouter);
+app.use('/api', passport.authenticate(['jwt','oidc'], {session:false}), backendRouter);
 
 app.use(history({
   index: 'dist/index.html'
