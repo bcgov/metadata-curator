@@ -29,6 +29,7 @@ Content-Type: application/json
 ### /datauploads - missing required property
 POST {{base-url}}/datauploads
 Content-Type: application/json
+Authorization: Bearer {{jwt}}
 
 {
   "description": "Upload for dataset xyz",
@@ -55,6 +56,7 @@ Content-Type: application/json
 ### PUT /datauploads/:dataUploadId  - default flow
 PUT {{base-url}}/datauploads/{{dataset-1-upload-1-id}}
 Content-Type: application/json
+Authorization: Bearer {{jwt}}
 
 {
   "name": "Dataset xyz - Upload with comments",
@@ -65,7 +67,8 @@ Content-Type: application/json
       "size": 1000
     }
   ],
-  "opened_by_approver": true
+  "opened_by_approver": true,
+  "approver_has_commented": false
 }
 
 > {%
@@ -78,6 +81,10 @@ Content-Type: application/json
 ### GET /datauploads - default flow
 GET {{base-url}}/datauploads
 Content-Type: application/json
+Authorization: Bearer {{jwt}}
+
+{    
+}
 
 > {%
     client.test("Request executed successfully", function() {
@@ -89,6 +96,9 @@ Content-Type: application/json
 ### GET /dataupload/:dataUploadId - default flow
 GET {{base-url}}/datauploads/{{dataset-1-upload-1-id}}
 Content-Type: application/json
+Authorization: Bearer {{jwt}}
+
+{}
 
 > {%
     client.test("Request executed successfully", function() {
