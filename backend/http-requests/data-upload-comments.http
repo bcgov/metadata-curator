@@ -2,9 +2,10 @@
 ### POST /datauploads/:dataUploadId/comments - add comment to data upload
 POST {{base-url}}/datauploads/{{dataset-1-upload-1-id}}/comments
 Content-Type: application/json
+Authorization: Bearer {{jwt}}
 
 {
-  "content": "new comment via api call",
+  "content": "new comment via api call yeah!",
   "commenter": "jane doe"
 }
 
@@ -17,6 +18,9 @@ Content-Type: application/json
 ### GET /datauploads/:dataUploadId/comments - get comments for a given data upload
 GET {{base-url}}/datauploads/{{dataset-1-upload-1-id}}/comments
 Content-Type: application/json
+Authorization: Bearer {{jwt}}
+
+{}
 
 > {%
     client.test("Request executed successfully", function() {
@@ -27,6 +31,7 @@ Content-Type: application/json
 
 ### POST /datauploads/:dataUploadId/comments - add comment to data upload
 POST {{base-url}}/datauploads/{{dataset-1-upload-1-id}}/comments
+Authorization: Bearer {{jwt}}
 Content-Type: application/json
 
 {

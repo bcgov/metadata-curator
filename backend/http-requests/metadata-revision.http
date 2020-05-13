@@ -7,10 +7,11 @@
 
 ### /metadatarevisions - default flow
 POST {{base-url}}/metadatarevisions
+Authorization: Bearer {{jwt}}
 Content-Type: application/json
 
 {
-  "repo_branch_id": "xyz",
+  "repo_branch_id": "5ebb2e692c62a269262f9d1d",
   "type": "tabular_data_package",
   "revision_number": 1,
   "change_summary": "Initial upload",

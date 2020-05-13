@@ -1,6 +1,7 @@
 
 ### POST /tableschemas - default flow
 POST {{base-url}}/tableschemas
+Authorization: Bearer {{jwt}}
 Content-Type: application/json
 
 {
@@ -29,6 +30,7 @@ Content-Type: application/json
 
 ### POST /tableschemas - mispelled "fields" property
 POST {{base-url}}/tableschemas
+Authorization: Bearer {{jwt}}
 Content-Type: application/json
 
 {

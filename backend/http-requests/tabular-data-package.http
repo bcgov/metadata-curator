@@ -102,7 +102,7 @@ Content-Type: application/json
 
 
 ### /datapackageschemas - missing name field
-POST {{base-url}}//datapackageschemas
+POST {{base-url}}/datapackageschemas
 Content-Type: application/json
 
 {
@@ -246,7 +246,7 @@ Content-Type: application/json
 %}
 
 ### /datapackageschemas - missing schema field in resource entry
-POST {{base-url}}//datapackageschemas
+POST {{base-url}}/datapackageschemas
 Content-Type: application/json
 
 {
@@ -269,7 +269,7 @@ Content-Type: application/json
 
 
 ### /datapackageschemas - missing schema and data fields in resource entry
-POST {{base-url}}//datapackageschemas
+POST {{base-url}}/datapackageschemas
 Content-Type: application/json
 
 {
@@ -292,7 +292,7 @@ Content-Type: application/json
 
 
 ### /datapackageschemas - missing "fields" field
-POST {{base-url}}//datapackageschemas
+POST {{base-url}}/datapackageschemas
 Content-Type: application/json
 
 {
@@ -315,7 +315,7 @@ Content-Type: application/json
 %}
 
 ### /datapackageschemas - empty fields array
-POST {{base-url}}//datapackageschemas
+POST {{base-url}}/datapackageschemas
 Content-Type: application/json
 
 {
@@ -340,7 +340,7 @@ Content-Type: application/json
 %}
 
 ### /datapackageschemas - missing name field
-POST {{base-url}}//datapackageschemas
+POST {{base-url}}/datapackageschemas
 Content-Type: application/json
 
 {
@@ -395,7 +395,7 @@ Content-Type: application/json
 %}
 
 ### /datapackageschemas - mispelled/missing name field on multiple resources
-POST {{base-url}}//datapackageschemas
+POST {{base-url}}/datapackageschemas
 Content-Type: application/json
 
 {
