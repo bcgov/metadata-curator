@@ -64,9 +64,7 @@ var strategy = new OidcStrategy(config.get('oidc'), function(issuer, sub, profil
   }
 
   if (config.has('adminGroup')){
-    console.log("Checking for admin");
     profile.isAdmin = (profile.groups.indexOf(config.get('adminGroup')) !== -1);
-    console.log("Checking for admin", profile.isAdmin, profile.groups, config.get('adminGroup'));
   }
 
   
@@ -132,7 +130,7 @@ var genProfileFromJwt = function(profile, jwt, secret, orgAttribute) {
   return profile;
 }
 
-app.use('/api', passport.authenticate(['jwt','oidc'], {session:false}), backendRouter);
+app.use('/api', backendRouter);
 
 app.use(history({
   index: 'dist/index.html'
