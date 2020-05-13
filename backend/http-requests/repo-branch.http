@@ -1,10 +1,11 @@
 
 ### /datauploads - default flow
 POST {{base-url}}/repobranches
+Authorization: Bearer {{jwt}}
 Content-Type: application/json
 
 {
-  "repo_id": "xyz",
+  "repo_id": "5ebb2e0401ef4868d10a41e7",
   "type": "standard",
   "name": "edition/standard",
   "description": "Dataset 1 - Upload 1 repo branch",
