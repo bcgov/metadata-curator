@@ -38,6 +38,9 @@ jobs:
       script:
         - |-
             cd /home/travis/build/bcgov/metadata-curator/backend
+            npm test
+        - |-
+            cd /home/travis/build/bcgov/metadata-curator/backend
             bash docker_quayio_push metadata_curator_api
       before_deploy:
             - cd /home/travis/build/bcgov/metadata-curator
