@@ -42,9 +42,9 @@ jobs:
         - |-
             cd /home/travis/build/bcgov/metadata-curator/backend
             bash docker_quayio_push metadata_curator_api
-      before_deploy:
-            - cd /home/travis/build/bcgov/metadata-curator
-            - sonar-scanner -Dproject.settings=sonar-project.properties -Dsonar.projectKey=mdc_backend -Dsonar.projectName="Metadata Curator - Backend" -Dsonar.modules=backend
+        - |-
+            cd /home/travis/build/bcgov/metadata-curator
+            sonar-scanner -Dproject.settings=sonar-project.properties -Dsonar.projectKey=mdc_backend -Dsonar.projectName="Metadata Curator - Backend" -Dsonar.modules=backend
       deploy:
             provider: script
             script:
