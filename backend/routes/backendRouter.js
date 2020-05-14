@@ -26,5 +26,4 @@ router.use('/v1/formio', formioRouter);
 frontendRoutes(router);
 repositoriesRoutes(router);
 
-
 module.exports = router;
