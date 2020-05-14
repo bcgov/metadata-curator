@@ -22,7 +22,6 @@ function isTokenExpired(token){
 
 formio.auth = function(callback){
     var token = formioCache.get("token");
-    console.log("AUTH", token);
     if ((token) && (token !== undefined) ){
         //check if the token is expired
         if (!isTokenExpired(token)){
@@ -40,7 +39,7 @@ formio.auth = function(callback){
         }
     };
     var url = config.get('formio.url') + "/user/login";
-    logger.verbose("formio auth", url, data);
+    
     httpReq.post(url, {body: data, json: true}, function(err, res, body){
         if (err){
             logger.verbose("formio auth err", err);
@@ -172,7 +171,6 @@ formio.putSubmission = function(formName, submissionId, values, callback) {
 };
 
 formio.getForms = function(callback) {
-    console.log("get forms formio");
     let cacheKey = "forms"
     if (formioCache.has(cacheKey)){
         let val = formioCache.get(cacheKey)
@@ -181,7 +179,6 @@ formio.getForms = function(callback) {
             return;
         }
     }
-    console.log("get forms formio auth");
     this.auth(function(err, jwt){
         if (err){
             logger.debug("Error getting jwt", err);
@@ -229,6 +226,10 @@ formio.getForm = function(formName, callback) {
 };
 
 formio.postForm = function(data, callback) {
+    
+    //invalidate cache
+    formioCache.del('forms');
+
     this.auth(function(err, jwt){
         if (err){
             logger.debug("Error getting jwt", err);
@@ -246,6 +247,9 @@ formio.postForm = function(data, callback) {
 };
 
 formio.putForm = function(formName, data, callback) {
+    //invalidate cache
+    formioCache.del('forms');
+
     this.auth(function(err, jwt){
         if (err){
             logger.debug("Error getting jwt", err);
@@ -263,6 +267,9 @@ formio.putForm = function(formName, data, callback) {
 };
 
 formio.deleteForm = function(formName, callback) {
+    //invalidate cache
+    formioCache.del('forms');
+    
     this.auth(function(err, jwt){
         if (err){
             logger.debug("Error getting jwt", err);
