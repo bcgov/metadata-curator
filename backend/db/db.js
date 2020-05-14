@@ -12,12 +12,13 @@ dbName = dbProps.dbName;
 
 const db = {};
 
-db.init = function () {
+db.init = function (_connString = null) {
     const logger = require('npmlog');
-    const connString = 'mongodb://' + dbUser + ':' + dbPass + '@' + dbHost + '/' + dbName + '?authSource=' + dbName;
+    const connString = (_connString == null) ? 'mongodb://' + dbUser + ':' + dbPass + '@' + dbHost + '/' + dbName + '?authSource=' + dbName : _connString;
     // console.log("connectionstr: " + connString);
     mongoose.connect(connString, {
         useUnifiedTopology: true,
+        useFindAndModify: false,
         useNewUrlParser: true,
         bufferMaxEntries: 0
     });

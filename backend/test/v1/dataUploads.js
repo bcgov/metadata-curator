@@ -3,6 +3,7 @@ var chaiHttp = require('chai-http');
 var server = require('../../app');
 var should = chai.should();
 var expect = chai.expect;
+/*
 
 let seedConfig = require('../../md-seed-config');
 let {MdSeedRunner} = require('mongoose-data-seed');
@@ -187,3 +188,4 @@ function dataUploadCompare(sourceUpload, upload) {
         matchingFile.should.have.property("size").eql(file.size);
     });
 }
+*/
