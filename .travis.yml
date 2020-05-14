@@ -3,6 +3,11 @@ dist: trusty
 language: node_js
 services:
 - docker
+addons:
+  sonarcloud:
+    organization: ajc_bcgov
+    token:
+      secure: "A/QGXHNZfMK+Jbn15dLml0fgWtlinuoYRKEd7G+NpRtANBBC8fr0KvIERHePvoOvfUZ/I9AFY+b8+gpAAAHyemSQ+GdxUgbZlJuNHgP4TqaQwn7O2HP7ZqmZTU9yVj2NjiSVZTC2MMFWqI2bL9AF85FxS/oyagjN+RFZtbIB/9YtmWTGJW5n7zQ9fTv9Y4SWHO5+85RqBnXT2CVriT8xdHTJmvOEdFOWemlnylh1CkkPs1JqCPiKh5MqtYKB7L/0LCE76g819hY1DS3peBYDnUKeLiS+VT3/u1PMC8E0qaI1uZkSUNdodWNBJ9xHvxtVCLFWSUo4cfe0wpHWgsVRioRVZQssRWI8cLOJMwPm/Pq8pfXH5zkjqUjnVahSU0A73FpyCmVWfsxVkdtSKD3xOOE1mTds2WGCg0RnY66VcogoBETF4n9L9o57ja+552tAYyWcPa/fSa81pI3KMbk//LPbX6dPeyP1tD2wGvoCKi/KnwO3ykXzpknWOFArusEVUHs1KK2qix2NwblAXOgkeWzF6K8JuXwDgpN0mSsMtPKI0ak/90VlaPFWL/MsB1ovmPDqEJHNSJausMrQ8ONvIx2Wn5SHY9+geqaDQ46SjEtAIYdbVlioe+lezQnHf+gdu0GHVBb9DrY8CpPrEm4IYN3uVYB3RCdi5AxiVp+b6SY="
 jobs:
     include:
     - name: Metadata Curator Bridge
@@ -26,12 +31,17 @@ jobs:
             cd /home/travis/build/bcgov/metadata-curator/backend
             cp config/default.json.template config/default.json
             cp config/test.json.example config/test.json
+        - |-
+            wget -q ${SONAR_URL}${SONAR_APP}-cli-${SONAR_VERSION}.zip
+            unzip ${SONAR_APP}-cli-${SONAR_VERSION}.zip
+            PATH=`pwd`/${SONAR_APP}-${SONAR_VERSION}/bin:$PATH
       script:
         - |-
             cd /home/travis/build/bcgov/metadata-curator/backend
             bash docker_quayio_push metadata_curator_api
       before_deploy:
-            - cd /home/travis/build/bcgov/metadata-curator/backend
+            - cd /home/travis/build/bcgov/metadata-curator
+            - sonar-scanner -Dproject.settings=sonar-project.properties -Dsonar.projectKey=mdc_backend -Dsonar.projectName="Metadata Curator - Backend" -Dsonar.modules=backend
       deploy:
             provider: script
             script:
@@ -76,7 +86,9 @@ jobs:
 
 env:
     global:
-        - MONGODB=4.1.1
+        - SONAR_APP=sonar-scanner
+        - SONAR_URL=https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/
+        - SONAR_VERSION=3.2.0.1227-linux
         #docker
         - secure: "PDYlDhtyWWbVsb0Olbwy3UyQhR83osg9lSrqsNRLjwyJC5WeJX7+pkKxFo5UJOcuCxVXY1T1JxqM3TetgWveiOYfm+QBAAVt4NgLLgaL6bWHT9+vhNe61senkyuwbm1a+S2Ea+i5iea3U/3YMLmrWxQHuGPjSePJhPUYuCvob0ONbt83QQ2odcJsNSIPmYFNnM5tvWm/+jxNfTuA36bVoK0zR6RuEJpmhnkIqcXLrA2b7KWGoWAARt48NjevMK/WVv5jIx3kReQZhZYNj4dvq+zlbMPm3wZhv0zma/4rMbFmtDQOkN6t+Q1NL46gKhvouxZ0UrfTsBsOgYMtkqG84sOvde6vVz6w2hES9ScXJLry8TKW1wgXobt0diueWlpUeh4nXJqFDZjzVZJkRgbMR9+A33xR2P6DfIvwNrSDFq31LutCi7P7c/SXUtDTR+G2pnmcFNULZyGnaasjpbNKwyczRDhaffWts4rQ3cfiXvwdo15zCzOH0dTupZ1iOns4t4IYM7J5TozJ13PPYLqDivvMJ5zg20GqXpVd+KXHJ5cVOOc+ETdqraA+aNt42IQXH+oruRuZt4edg5M6S8RABIZTCgrI8mPjRdzqqMl3EmE+LzySWaluZmn1JoTndTwxieN4W7j0mZZ59gE8p0umYqxBToFe9CE5M2600Gt1DrM="
         - secure: "fMR8Z+bf70t5Uh7ISmJg0YDnO9JtHUY8WHNfMK7QyAQp+1myE42ttz7HT08xs4dkC93JP1hWUlTcSmhM6DACOM8VBvYkF88AgHZ3PR1/5dDxuAi1GsMCi/nUV8Xl6qyHqUzbbcyLudBx0VhWPcwqV2FFBiu7XYt3vio1/i0GziRuVcsHrxJ2NrMLZEVpjYFGwn7Ca7YyeKyt//EMml6B3yomPPsYq3KQmhHyaPJhJ2oz7jHrqItAxM5M9wRxEdtn8s6Fe+zXOtdBkJXQo13pA/rvPvSzLukm4uMu7cKvVbGLFowc51ZVXyrQRdrAnwhwsX/ZP/SmMx8cUJqh0eMNKc6AJpUZ8zNp6WMf/jFec7VrpvvVYIMsldr6Z+TabBRFbUPfUcnX/5M5Kysv2DekXbEvcnOwHS00gnq5tbMbbrgNfmKifSNeXCVKGfBHuhugVEYy+Vzv4ZnSft0NeLFAmy6yoq8EPLwk1sclbhS1czKJSXwl8X3gRuq+BfCCGgzTIs1hMDFpwetQD8yT/ZhQD2Ia/eB+Wb/rk4qVgjH8Cw+WKKH6qqXCyzRuyEV0ikDB3S9MlI91Xpr+DqRj9DKGklccri5yrSGer+pgBWJdyv4BYBwVuOK5Lt2X3NQkLQfl0aF1DmzSdYSxajgv4KdNmKIzU0phrU0U1OVTgVWoWBw="
