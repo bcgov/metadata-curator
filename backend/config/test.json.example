@@ -1,4 +1,5 @@
 {
+  "logLevel": "debug",
   "database": {
       "host": "localhost",
       "username": "mcUser",
