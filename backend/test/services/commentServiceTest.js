@@ -5,7 +5,7 @@ var should = chai.should()
 var expect = chai.expect
 
 const config = require('config');
-const forumClient = require('../../clients/forumClient');
+const forumClient = require('../../clients/forum_client');
 
 const commentService = require('../../services/commentService')
 const dataUploadService = require('../../services/dataUploadService')
@@ -23,6 +23,9 @@ describe("CommentService", function() {
         sinon.stub(forumClient, 'addTopic').returns({_id:"0000000009c5d71ee7600000"})
         sinon.stub(forumClient, 'addComment').returns({_id:"0000011119c5d71ee7600000"})
         sinon.stub(forumClient, 'getComments').returns([{_id:"0000011119c5d71ee7600000", comment: "mycomment"}])
+    })
+    after(async () => {
+        sinon.reset()
     })
 
     beforeEach(async () => {
@@ -43,7 +46,7 @@ describe("CommentService", function() {
         expect(comment).to.be.an('undefined')
     })
 
-    it('should succeed adding a comment', async () => {
+    it('should succeed getting a specific data upload', async () => {
         const data = await dataUploadService.getDataUploadById(id)
         expect(data).to.be.an('object')
         expect(data.name).to.equal("abc")

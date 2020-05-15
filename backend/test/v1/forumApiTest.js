@@ -4,8 +4,8 @@ var chaiHttp = require('chai-http');
 var server = require('../../app');
 var should = chai.should();
 var expect = chai.expect;
-var axios = require('axios')
 var sinon = require('sinon')
+var axios = require('axios')
 
 chai.use(chaiHttp);
 
@@ -16,10 +16,15 @@ afterEach(async () => await dbHandler.clearDatabase())
 after(async () => await dbHandler.closeDatabase())
 
 describe("Forum API Bridge", function() {
+    let sandbox
     before(async () => {
-        sinon.stub(axios, 'get').returns({data: [{_id:"00",name:"someperm"}]})
-        sinon.stub(axios, 'put').returns({data: [{_id:"00"}]})
-        sinon.stub(axios, 'post').returns({data: [{_id:"00"}]})
+        sandbox = sinon.createSandbox();
+        sandbox.stub(axios, 'get').returns({data: [{_id:"00",name:"someperm"}]})
+        sandbox.stub(axios, 'put').returns({data: [{_id:"00"}]})
+        sandbox.stub(axios, 'post').returns({data: [{_id:"00"}]})
+    })
+    after(async () => {
+        sandbox.restore()
     })
 
     describe('/GET v1/forum/permissions', function () {
@@ -70,7 +75,7 @@ describe("Forum API Bridge", function() {
                 {
                 }
             `
-            
+
             chai.request(server)
             .post('/api/v1/forum/permission')
             .set('Authorization' , 'Bearer ' + jwt)

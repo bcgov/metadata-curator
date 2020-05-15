@@ -6,16 +6,19 @@ var sinon = require('sinon')
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Types.ObjectId;
 
-//sinon.stub(config, 'get').returns("a")
-
-var nodemailer = require("nodemailer");
-sinon.stub(nodemailer, 'createTransport').returns({
-    sendMail: function(mailOptions, callback) {
-        callback(null, null);
-    }
-});
-
 describe("Notifications Emails", function() {
+    before (async () => {
+        var nodemailer = require("nodemailer");
+        sinon.stub(nodemailer, 'createTransport').returns({
+            sendMail: function(mailOptions, callback) {
+                callback(null, null);
+            }
+        });
+    })
+    after(async () => {
+        sinon.reset()
+    })
+
     const config = () => {
         const hardcoded = {
             frontend: "http://localhost",
