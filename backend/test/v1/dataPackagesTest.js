@@ -149,6 +149,48 @@ describe("Data Packages", function() {
             })
         })
 
+        it('should fail to create a schema - invalid field type', function (done) {
+            var jwt = config.get('testJwt');
+
+            const body = `
+                            {
+                                "profile": "tabular-data-package",
+                                "name": "dataset",
+                                "resources" : [
+                                {
+                                    "name" : "resource_1",
+                                    "profile" : "tabular-data-resource",
+                                    "data": [],
+                                    "schema" : {
+                                    "fields" : [
+                                        {
+                                        "name" : "height",
+                                        "type" : "bad_integer"
+                                        },
+                                        {
+                                        "name" : "age",
+                                        "type" : "integer"
+                                        },
+                                        {
+                                        "name" : "name",
+                                        "type" : "string"
+                                        }
+                                    ]
+                                    }
+                                }
+                                ]
+                            }            
+            `
+            chai.request(server)
+            .post('/api/v1/datapackageschemas')
+            .set('Authorization' , 'Bearer ' + jwt)
+            .send(JSON.parse(body))
+            .end(async function (err, res) {
+                res.should.have.status(400);
+                done();
+            })
+        })
+
         it('should fail to create a schema - resources missing', function (done) {
             var jwt = config.get('testJwt');
 

@@ -4,12 +4,13 @@ var sinon = require('sinon')
 var should = chai.should()
 var expect = chai.expect
 
+const config = require('config');
 const forumClient = require('../../clients/forumClient');
 
-const dbHandler = require('../db-handler')
 const commentService = require('../../services/commentService')
 const dataUploadService = require('../../services/dataUploadService')
 
+const dbHandler = require('../db-handler')
 before(async () => await dbHandler.connect())
 afterEach(async () => await dbHandler.clearDatabase())
 after(async () => await dbHandler.closeDatabase())
