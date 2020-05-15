@@ -1,7 +1,6 @@
 
 const {dataUploadController} = require('../../controllers')
 const { getDataUploads, postDataUpload, getDataUpload, putDataUpload, getDataUploadComments, postDataUploadComment } = dataUploadController;
-const catchAsync = require('../catch-async');
 
 module.exports = (router) => {
     router.get ('', catchAsync(getDataUploads));
