@@ -10,6 +10,7 @@ describe("MC Unit Tests", function() {
     require('./v1/repositoriesTest');
     require('./v1/tableSchemaTest');
     require('./v1/forumApiTest');
+    require('./v1/formioTest');
     require('./services/dataUploadServiceTest');
     require('./services/commentServiceTest');
     require('./controllers/dataUploadControllerTest');
