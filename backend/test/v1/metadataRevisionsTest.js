@@ -37,8 +37,6 @@ describe("Metadata Revisions", function() {
                 done();
             })
         })
-        
-
     })
 
     describe('/GET v1/metadataRevisions/:id', function () {
