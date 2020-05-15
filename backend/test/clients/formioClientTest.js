@@ -60,26 +60,7 @@ describe("Formio Client", function() {
     after(async () => {
         sandbox.restore()
     })
-/*
-    it('should succeed adding a topic without organization', async function () {
-        const topic = await client.addTopic("myname", {})
-        expect(topic).to.be.an('object')
-        expect(topic._id).equals('111')
-    })
 
-    it('should succeed adding a topic with organization', async function () {
-        const topic = await client.addTopic("myname", {organization: 'myorg', jwt: validToken, groups: []})
-        expect(topic).to.be.an('object')
-        expect(topic._id).equals('111')
-    })
-
-    it('should succeed adding a comment', async function () {
-        const topic = await client.addComment("topic_id", "my comment", {organization: 'myorg', jwt: validToken, groups: []})
-        expect(topic).to.be.an('object')
-        expect(topic.data._id).equals('111')
-    })
-
-*/
     it('should succeed getting submissions', function (done) {
         client.getSubmissions('form123', (subm, body) => {
             expect(body.name).equals('abc')
