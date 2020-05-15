@@ -29,7 +29,7 @@ jobs:
       before_script:
         - |-
             cd /home/travis/build/bcgov/metadata-curator/backend
-            cp config/default.json.template config/default.json
+            cp config/default.json.example config/default.json
             cp config/test.json.example config/test.json
         - |-
             wget -q ${SONAR_URL}${SONAR_APP}-cli-${SONAR_VERSION}.zip
