@@ -2,6 +2,7 @@ process.env.NODE_ENV = 'test';
 
 describe("MC Unit Tests", function() {
     require('./modules/authTest');
+    require('./clients/forumClientTest');
     require('./notifications/emailTest');
     require('./v1/dataPackagesTest');
     require('./v1/metadataRevisionsTest');

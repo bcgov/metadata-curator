@@ -3,9 +3,9 @@ chai.use(require('chai-as-promised'))
 var should = chai.should()
 var expect = chai.expect
 
-const dbHandler = require('../db-handler')
 const dataUploadService = require('../../services/dataUploadService')
 
+const dbHandler = require('../db-handler')
 before(async () => await dbHandler.connect())
 afterEach(async () => await dbHandler.clearDatabase())
 after(async () => await dbHandler.closeDatabase())
