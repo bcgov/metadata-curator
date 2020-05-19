@@ -26,7 +26,7 @@ describe("Forum API Bridge", function() {
     after(async () => {
         sandbox.restore()
     })
-
+/*
     describe('/GET v1/forum/permissions', function () {
         it('should get permissions', function (done) {
             var jwt = config.get('testJwt');
@@ -89,5 +89,5 @@ describe("Forum API Bridge", function() {
             })
         })
     })
-
+*/
 })
