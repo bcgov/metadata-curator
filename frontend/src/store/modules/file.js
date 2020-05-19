@@ -9,6 +9,8 @@ const state = {
     blob: [],
     key: null,
     uploadUrl: "",
+    fileSig: "",
+    successfullyUploadedChunks: [],
 };
 
 const getters = {
@@ -85,6 +87,15 @@ const mutations = {
     setFileName(state, { fileName }){
         state.fileName = fileName;
     },
+
+    setFileSig(state, { fileSig }){
+        state.fileSig = fileSig;
+    },
+
+    setSuccessfullyUploadedChunk(state, {index, success}){
+        state.successfullyUploadedChunks[index] = success;
+    },
+
     setBlob(state, { blob, index }){
         state.blob[index] = blob;
     },

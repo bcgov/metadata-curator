@@ -1,35 +1,49 @@
 <template>
-    <span>
-        <v-file-input v-model="file" :disabled="disabled" counter show-size label="File input" style="margin-top:0px;padding-top:0px;"></v-file-input>
-        <v-btn v-if="showUploadButton" :disabled="disabled" @click="upload">Upload</v-btn>
-        <v-btn v-if="showImportButton" :disabled="disabled" @click="onImportButtonClicked">Import</v-btn>
-        <div v-if="pleaseWait">
-            <v-progress-circular
-                indeterminate
-            ></v-progress-circular>
-            <span>Please wait while the first bit of the file is encrypted...</span>
-        </div>
-        <div v-if="showProgress">
-            <span>
-                {{progressMessage1}}
-            </span>
-            <br />
-            <span>
-                {{progressMessage2}}
-            </span> 
-            <br />
-            <span>
-                {{progressMessage3}}
-                <v-progress-linear :value="(up1Progress/up1Size)*100"></v-progress-linear>
-            </span>
-            <br />
-            <span>
-                {{progressMessage4}}
-                <v-progress-linear :value="(up2Progress/up2Size)*100"></v-progress-linear>
-            </span>
-            <br />
-        </div>
-    </span>
+    <v-container fluid>
+        <v-row v-if="confirmChange" class="mb-2">
+            <span>Warning, you have an upload in progress, if you change to uploading this file some progress will be lost</span>
+            <v-btn color="warning" @click="changeConfirmed()">Confirm</v-btn>
+        </v-row>
+        <v-row v-if="confirmResume" class="mb-2">
+            <span>We believe that this upload has already been started, resume? (if you believe this to be an error clear your cache)</span>
+            <v-btn color="success" @click="resumeConfirmed()">Confirm</v-btn>
+        </v-row>
+        <v-row>
+            <v-col cols=12>
+                <v-file-input v-model="file" :disabled="disabled" counter show-size label="File input" style="margin-top:0px;padding-top:0px;"></v-file-input>
+            </v-col>
+            <v-col cols=12>
+                <v-btn v-if="showUploadButton" :disabled="disabled" @click="upload">Upload</v-btn>
+                <v-btn v-if="showImportButton" :disabled="disabled" @click="onImportButtonClicked">Import</v-btn>
+                <div v-if="pleaseWait">
+                    <v-progress-circular
+                        indeterminate
+                    ></v-progress-circular>
+                    <span>Please wait while the first bit of the file is encrypted...</span>
+                </div>
+                <div v-if="showProgress">
+                    <span>
+                        {{progressMessage1}}
+                    </span>
+                    <br />
+                    <span>
+                        {{progressMessage2}}
+                    </span> 
+                    <br />
+                    <span>
+                        {{progressMessage3}}
+                        <v-progress-linear :value="(up1Progress/up1Size)*100"></v-progress-linear>
+                    </span>
+                    <br />
+                    <span>
+                        {{progressMessage4}}
+                        <v-progress-linear :value="(up2Progress/up2Size)*100"></v-progress-linear>
+                    </span>
+                    <br />
+                </div>
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
 
 <script>
@@ -82,6 +96,9 @@ export default {
             up2Progress: 0,
             showProgress: false,
             pleaseWait: false,
+            confirmChange: false,
+            confirmResume: false,
+            nextChunk: 1,
         }
     },
 
@@ -90,7 +107,9 @@ export default {
             blob: state => state.file.blob,
             encrypted: state => state.file.encrypted,
             jwt: state => state.user.jwt,
-            uploadUrl: state => state.file.uploadUrl
+            uploadUrl: state => state.file.uploadUrl,
+            fileSig: state => state.file.fileSig,
+            successfullyUploadedChunks: state => state.file.successfullyUploadedChunks
         }),
         ...mapGetters({
             getStringContent: 'file/getStringContent'
@@ -112,28 +131,86 @@ export default {
     },
 
     watch: {
-        file(){
+        file(newVal){
             this.uploads = [];
             this.numChunks = 0;
             this.currChunk = 0;
-            
-            if ( (this.readFile) && (this.file) ){    
+            this.nextChunk = 1;
+            let newFing = this.getFinger(newVal);
+
+            if (this.fileSig !== "" && this.fileSig !== newFing){
+                //Trying to change upload
+                this.confirmChange = true;
+                this.confirmResume = false;
+            }else if (this.fileSig !== "" && this.fileSig === newFing){
+                ///same upload resume
+                this.confirmResume = true;
+                this.confirmChange = false;
+            }else{
+                this.confirmChange = false;
+                this.confirmResume = false;
+                this.openFile();
+            }
+        }
+    },
+
+    methods: {
+        getFinger: function(file){
+            return file.name + "-" + file.type + "-" + file.size + "-" + file.lastModified;
+        },
+
+        resumeConfirmed: function(){
+            this.confirmChange = false;
+            this.confirmResume = false;
+            this.openFile(true);
+        },
+
+        changeConfirmed: function(){
+            this.confirmChange = false;
+            this.confirmResume = false;
+            this.openFile();
+        },
+
+        openFile: function(resume){
+            if (typeof(resume) === "undefined"){
+                resume = false;
+            }
+
+             if ( (this.readFile) && (this.file) ){    
                 this.disabled = true;
                 var self = this;
                 this.pleaseWait = true;
                 this.getNextChunk(0).then( () => {
                     self.numEncrypted += 1
+                     if (resume){
+                        this.nextChunk = -1;
+                        let i = 0;
+                        for (; i<this.successfullyUploadedChunks.length; i++){
+                            if (typeof(this.successfullyUploadedChunks[i])==="undefined"){
+                                this.currChunk = i-1;
+                                this.nextChunk = i;
+                                break;
+                            }
+                        }
+                        if ((this.nextChunk === -1) && (i < this.numChunks) ){
+                            this.nextChunk = i;
+                        }else if(this.nextChunk === -1){
+                            this.nextChunk = 1;
+                        }
+                        if (this.currChunk<0){
+                            this.currChunk = 0;
+                            this.nextChunk = 1;
+                        }
+                    }
                     self.disabled = false;
                     self.pleaseWait = false;
                 });
 
             }else if ((!this.file) && (this.mutateVuex)){
                 this.$store.commit('file/clearContent');
+                self.$store.commit('file/setFileSig', {fileSig: ""});
             }
-        }
-    },
-
-    methods: {
+        },
 
         getNextChunk: async function(index){
             return new Promise((resolve, reject) => {
@@ -151,8 +228,11 @@ export default {
                         let content = new Uint8Array(e.target.result);
 
                         if (self.offset === 0){
+                            self.$store.commit('file/setFileSig', {fileSig: ""});
                             self.$store.commit('file/setFileName', { fileName: self.file.name})
-                            await self.$store.commit('file/setContent', { content: content, index: index})
+                            await self.$store.commit('file/setContent', { content: content, index: index});
+                            let finger = self.getFinger(self.file);
+                            self.$store.commit('file/setFileSig', {fileSig: finger});
                         }
 
                         self.$store.dispatch('file/encryptContent', {clear: self.offset === 0, index: index, content: content}).then( () => {
@@ -223,6 +303,7 @@ export default {
                     this.up1Size = bytesTotal;
                 },
                 onSuccess: async() => {
+                    self.$store.commit('file/setSuccessfullyUploadedChunk', {index: i, success: true});
                     i += 1;
                     this.numUploaded += 1;
 
@@ -245,6 +326,7 @@ export default {
                                     joinIds.push(url);
                                 }
                                 backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0").then( () => {
+                                    self.$store.commit('file/setFileSig', {fileSig: ""});
                                     self.numUploaded += 1;
                                     self.disabled = false;
                                 }).catch( (/*e*/) => {
@@ -264,7 +346,7 @@ export default {
 
             let u = new tus.Upload(this.blob[0], uploadOptions);
             this.uploads.push(u);
-            this.getNextChunk(1).then( () => {
+            this.getNextChunk(this.nextChunk).then( () => {
                 self.numEncrypted += 1
                 let chunkIndex = 1;
                 i += 1;
@@ -279,6 +361,7 @@ export default {
                         joinIds.push(url);
                     }
                     backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0").then( () => {
+                        self.$store.commit('file/setFileSig', {fileSig: ""});
                         self.numUploaded += 1;
                         self.disabled = false;
                     }).catch( (/*e*/) => {
