@@ -38,7 +38,11 @@ export default new Vuex.Store({
       'user.loggedIn',
       'user.loading',
       'user.useDark',
-      'file.fileName'
+      'file.fileName',
+      'file.fileSig',
+      'file.key',
+      'file.uploadUrl',
+      'file.successfullyUploadedChunks'
     ]
   })],
   strict: process.env.NODE_ENV !== 'production'
