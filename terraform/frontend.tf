@@ -62,6 +62,19 @@ EOF
     approverGroups = "\"approverGroups\": []"
 
     forumApi = "\"forumApi\": {\"baseUrl\": \"http://mc_forum_api:3000/v1\"}"
+
+
+    logLevel = "\"logLevel\": \"debug\""
+    jwtSecret = "\"jwtSecret\": \"${random_string.jwtSecret.result}\""
+    orgAttribute = "\"orgAttribute\": \"${var.orgAttribute}\""
+    requiredRoleToCreateRequest = "\"requiredRoleToCreateRequest\": \"${var.requiredRoleToCreateRequest}\""
+    alwaysNotifyListOnTopicCreate = "\"alwaysNotifyListOnTopicCreate\": ${var.alwaysNotifyListOnTopicCreate}"
+    alwaysNotifyUninvolvedOnCommentAdd = "\"alwaysNotifyUninvolvedOnCommentAdd\": ${var.alwaysNotifyUninvolvedOnCommentAdd}"
+    approverGroups = "\"approverGroups\": ${var.approverGroups}"
+    alwaysNotifyList = "\"alwaysNotifyList\": ${var.alwaysNotifyList}"
+    email = "\"email\": ${var.email}"
+    adminGroup = "\"adminGroup\": \"${var.adminGroup}\""
+    formio = "\"formio\": ${var.formio}"
   }
 }
 
@@ -76,7 +89,19 @@ data "null_data_source" "configValues" {
   ${data.null_data_source.feIndConfig.outputs["uploadUrl"]},
   ${data.null_data_source.feIndConfig.outputs["base64EncodedPGPPublicKey"]},
   ${data.null_data_source.feIndConfig.outputs["approverGroups"]},
-  ${data.null_data_source.feIndConfig.outputs["forumApi"]}
+  ${data.null_data_source.feIndConfig.outputs["forumApi"]},
+
+  ${data.null_data_source.feIndConfig.outputs["logLevel"]},
+  ${data.null_data_source.feIndConfig.outputs["jwtSecret"]},
+  ${data.null_data_source.feIndConfig.outputs["orgAttribute"]},
+  ${data.null_data_source.feIndConfig.outputs["requiredRoleToCreateRequest"]},
+  ${data.null_data_source.feIndConfig.outputs["alwaysNotifyListOnTopicCreate"]},
+  ${data.null_data_source.feIndConfig.outputs["alwaysNotifyUninvolvedOnCommentAdd"]},
+  ${data.null_data_source.feIndConfig.outputs["alwaysNotifyList"]},
+  ${data.null_data_source.feIndConfig.outputs["email"]},
+  ${data.null_data_source.feIndConfig.outputs["adminGroup"]},
+  ${data.null_data_source.feIndConfig.outputs["formio"]}
+  
 }
 EOF
 

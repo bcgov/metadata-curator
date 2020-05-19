@@ -87,19 +87,45 @@ export class Backend {
         return axios.get(url,{withCredentials: true}).then(response => response.data)
     }
 
-    putPermission(id, editedItem){
+    putPermission(id, editedPermission){
         const url = `/api/v1/forum/permission/${id}`;
-        return axios.put(url, editedItem, {withCredentials: true}).then(response => response.data)
+        return axios.put(url, editedPermission, {withCredentials: true}).then(response => response.data)
     }
 
-    newPermission(editedItem){
+    newPermission(newPermission){
         const url = `/api/v1/forum/permission`;
-        return axios.post(url, editedItem, {withCredentials: true}).then(response => response.data)
+        return axios.post(url, newPermission, {withCredentials: true}).then(response => response.data)
+    }
+
+    deletePermission(id){
+        const url = `/api/v1/forum/permission/${id}`;
+        return axios.delete(url, {}, {withCredentials: true}).then(response => response.data)
     }
 
     getForms(){
         const url = `/api/v1/formio/forms`;
-        return axios.get(url, {withCredentials: true}).then(response => response.data)
+        return axios.get(url, {withCredentials: true}).then( (response) => {
+            let data = response.data;
+            for (let i=0; i<data.length; i++){
+                response.data[i]._id = response.data[i].name
+            }
+            return data;
+        })
+    }
+
+    putForm(id, editedForm){
+        const url = `/api/v1/formio/form/${id}`;
+        return axios.put(url, editedForm, {withCredentials: true}).then(response => response.data)
+    }
+
+    newForm(newForm){
+        const url = `/api/v1/formio/form`;
+        return axios.post(url, newForm, {withCredentials: true}).then(response => response.data)
+    }
+
+    deleteForm(id){
+        const url = `/api/v1/formio/form/${id}`;
+        return axios.delete(url, {}, {withCredentials: true}).then(response => response.data)
     }
 
 }

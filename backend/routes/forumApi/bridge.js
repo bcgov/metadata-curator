@@ -14,6 +14,7 @@ var addRoutes = function(router){
                 "Authorization": "Bearer " + req.user.jwt
             }
         };
+        console.log("Get with headers", options.headers);
         const response = await axios.get(url, options);
         res.json(response.data);
     });
@@ -35,7 +36,7 @@ var addRoutes = function(router){
                 "Authorization": "Bearer " + req.user.jwt
             }
         };
-        const response = await axios.put(url, req.body, {withCredentials: true}, options);
+        const response = await axios.put(url, req.body, options);
         res.json(response.data);
     });
 
@@ -54,7 +55,26 @@ var addRoutes = function(router){
                 "Authorization": "Bearer " + req.user.jwt
             }
         };
-        const response = await axios.post(url, req.body, {withCredentials: true}, options);
+        const response = await axios.post(url, req.body, options);
+        res.json(response.data);
+    });
+
+    router.delete('/permission/:id', async function(req, res, next){
+        const forumApiConfig = config.get('forumApi');
+        const url = forumApiConfig.baseUrl + "/permission/" + req.params.id;
+
+        if (!req.user || !req.user.jwt){
+            res.status(403);
+            return res.json({error: "Forbidden"})
+        }
+        
+        const options = {
+            headers: {
+                "Authorization": "Bearer " + req.user.jwt
+            }
+        };
+
+        const response = await axios.delete(url, options);
         res.json(response.data);
     });
 
