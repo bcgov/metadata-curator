@@ -38,6 +38,7 @@ jobs:
       script:
         - |-
             cd /home/travis/build/bcgov/metadata-curator/backend
+            cat config/default.json
             npm test
         - |-
             cd /home/travis/build/bcgov/metadata-curator/backend
