@@ -835,32 +835,6 @@
       "properties": {
 
       }
-    },
-    {
-      "autofocus": false,
-      "input": true,
-      "label": "Submit",
-      "tableView": false,
-      "key": "submit",
-      "size": "md",
-      "leftIcon": "",
-      "rightIcon": "",
-      "block": false,
-      "action": "submit",
-      "disableOnInvalid": false,
-      "theme": "primary",
-      "type": "button",
-      "tags": [
-
-      ],
-      "conditional": {
-        "show": "",
-        "when": null,
-        "eq": ""
-      },
-      "properties": {
-
-      }
     }
   ],
   "display": "form",
