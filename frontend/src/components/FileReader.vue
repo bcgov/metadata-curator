@@ -12,6 +12,13 @@
             <v-col cols=12>
                 <v-file-input v-model="file" :disabled="disabled" counter show-size label="File input" style="margin-top:0px;padding-top:0px;"></v-file-input>
             </v-col>
+        </v-row>
+        <v-row>
+            <v-col cols=12>
+                <span class="fineText">Using Chunksize for your computer: {{Math.ceil(chunkSize / 1024 / 1024)}}mb</span>
+            </v-col>
+        </v-row>
+        <v-row>
             <v-col cols=12>
                 <v-btn v-if="showUploadButton" :disabled="disabled" @click="upload">Upload</v-btn>
                 <v-btn v-if="showImportButton" :disabled="disabled" @click="onImportButtonClicked">Import</v-btn>
@@ -78,11 +85,14 @@ export default {
     },
 
     data() {
+        let defChunkSize = (5 * 1024 * 1024) + 1; // 5mb
+        //ram converted to bytes divided by 164 (arbitrary) by 3 because we can have 3 in mem at once
+        let customChunkSize = Math.ceil(navigator.deviceMemory * 1024 * 1024 * 1024 / 164 / 3);
         return {
             file: null,
             fileContent: "",
             offset: 0,
-            chunkSize: 5 * 1024 * 1025, // 5mb
+            chunkSize: (customChunkSize > defChunkSize) ? customChunkSize : defChunkSize,
             disabled: false,
             numChunks: 0,
             uploads: [],
@@ -291,7 +301,7 @@ export default {
                     jwt: this.jwt
                 },
                 retryDelays: [0, 1000, 3000, 5000],
-                chunkSize: 52000000,
+                chunkSize: this.chunkSize*10,
                 onError: error => {
                     // eslint-disable-next-line
                     console.log("Upload error", error)
@@ -384,5 +394,9 @@ export default {
 </script>
 
 <style scoped>
+
+.fineText{
+    font-size: 8px;
+}
 
 </style>
