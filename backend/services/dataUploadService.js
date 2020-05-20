@@ -21,6 +21,7 @@ const createDataUpload = async (upload) => {
 
 const updateDataUpload = async (dataUploadId, updatedData) => {
     try {
+        console.log('updatedData: ', updatedData);
         let dataUpload = await db.DataUploadSchema.findOne({_id: dataUploadId});
 
         if(!dataUpload) {
@@ -32,6 +33,7 @@ const updateDataUpload = async (dataUploadId, updatedData) => {
         dataUpload.files = updatedData.files;
         dataUpload.opened_by_approver = updatedData.opened_by_approver;
         dataUpload.approver_has_commented = updatedData.approver_has_commented;
+        dataUpload.upload_submission_id = updatedData.upload_submission_id ? updatedData.upload_submission_id : null;
 
         return await dataUpload.save();
 

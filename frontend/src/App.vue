@@ -47,7 +47,7 @@ export default {
       tabs: function(){
           let t = [
               { id: 1, name: "Home", route: `/`, icon: 'mdi-home'},
-              { id: 2, name: "Upload", route: `/upload`, icon: 'mdi-upload'},
+              { id: 2, name: "Upload", route: `/upload/new`, icon: 'mdi-upload'},
               { id: 3, name: "Import", route: `/import`, icon: 'mdi-import' },
               { id: 4, name: "Guess", route: `/infer`, icon: 'mdi-file-question-outline'},
               { id: 5, name: "Column", route: `/column`, icon: 'mdi-view-column' },
