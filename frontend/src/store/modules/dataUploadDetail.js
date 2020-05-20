@@ -15,7 +15,7 @@ const actions = {
         // console.log("getDataUpload action");
 
         await backend.getDataUpload(dataUploadId).then((data) => {
-            console.log("getDataUpload action: ", data);
+            // console.log("getDataUpload action: ", data);
             commit('clearDataUpload');
             commit('setDataUpload', {dataUpload: data});
 
@@ -25,7 +25,7 @@ const actions = {
         });
     },
     async updateDataUpload({ commit }, dataUpload) {
-        console.log("updateDataUpload action: " + dataUpload);
+        // console.log("updateDataUpload action: " + dataUpload);
         try {
             dataUpload = await backend.putDataUpload(dataUpload);
             console.log("dataupload after update dataupload: ", dataUpload);

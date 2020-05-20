@@ -77,13 +77,13 @@ export class Backend {
     }
 
     postDataUpload(dataUpload){
-        console.log("BE postdataUpload: " + dataUpload);
+        // console.log("BE postdataUpload: " + dataUpload);
         const url = `/api/v1/datauploads`;
         return axios.post(url, dataUpload,{withCredentials: true}).then(response => response.data)
     }
 
     putDataUpload(dataUpload){
-        console.log("BE putdataUpload: " + dataUpload);
+        // console.log("BE putdataUpload: " + dataUpload);
         const url = `/api/v1/datauploads/${dataUpload._id}`;
         return axios.put(url, dataUpload,{withCredentials: true}).then(response => response.data)
     }
