@@ -10,7 +10,8 @@ import dataUploads from "./modules/dataUploads";
 import dataUploadRevisions from "./modules/dataUploadRevisions";
 import dataUploadComments from "./modules/dataUploadComments";
 import dataUploadDetail from "./modules/dataUploadDetail";
-import upload from "./modules/upload";
+import upload from "./modules/createUpload/upload";
+import uploadForm from "./modules/createUpload/uploadForm";
 
 import { build } from './modules/items';
 
@@ -31,7 +32,8 @@ export default new Vuex.Store({
     dataUploadDetail,
     permissions,
     forms,
-    upload
+    upload,
+    uploadForm
   },
   plugins: [createPersistedState({
     paths: [
