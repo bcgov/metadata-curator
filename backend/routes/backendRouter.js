@@ -15,6 +15,12 @@ let tableSchemasRoutes = require('./tableSchemas/routes');
 let repositoriesRoutes = require('./repositories/routes');
 let metadataRevisionsRoutes = require('./metadataRevisions/routes');
 
+global.catchAsync = fn => {
+    return (req, res, next) => {
+      fn(req, res, next).catch(next)
+    };
+};
+
 router.use('/v1/datauploads', dataUploadRoutes(express.Router()));
 router.use('/v1/datapackageschemas', dataPackagesRoutes(express.Router()));
 router.use('/v1/tableschemas', tableSchemasRoutes(express.Router()));
@@ -24,6 +30,5 @@ router.use('/v1/formio', formioRouter);
 
 frontendRoutes(router);
 repositoriesRoutes(router);
-
 
 module.exports = router;
