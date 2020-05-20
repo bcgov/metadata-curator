@@ -36,6 +36,19 @@ module.exports = (router) => {
         }
     });
     
+    router.use('/', auth.removeExpired, function(req, res){
+        if (req.user && req.user.jwt && req.user.refreshToken) {
+            res.send(`
+                <html>
+                    <body>
+                        <pre>curl http://localhost:9090/api/v1/datauploads -H "Cookie: connect.sid=${req.cookies['connect.sid']}"
+                        </pre>
+                    </body>
+                </html>`)
+        }else{
+            res.redirect('/api/login?r=' + encodeURIComponent('api/'));
+        }
+    });
     
     router.use('/v1/publickey', auth.removeExpired, function(req, res){
         var config = require('config');

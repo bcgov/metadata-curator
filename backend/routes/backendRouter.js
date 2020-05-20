@@ -22,7 +22,7 @@ global.catchAsync = fn => {
 };
 
 router.use('/v1/datauploads', dataUploadRoutes(express.Router()));
-router.use('/v1/datapackageschemas', dataPackagesRoutes(express.Router()));
+router.use('/v1/datapackages', dataPackagesRoutes(express.Router()));
 router.use('/v1/tableschemas', tableSchemasRoutes(express.Router()));
 router.use('/v1/metadatarevisions', metadataRevisionsRoutes(express.Router()));
 router.use('/v1/forum', forumRouter);
