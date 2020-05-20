@@ -1,4 +1,5 @@
 {
+  "logLevel": "debug",
   "database": {
     "host": "localhost",
     "username": "{username}",
@@ -68,7 +69,5 @@
         "url": "http://localhost:3006",
         "username": "admin@example.com",
         "password": "CHANGEME"
-    },
-
-  "jwtSecret": "jwtSecret",
+  }
 }
