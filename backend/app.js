@@ -130,6 +130,13 @@ var genProfileFromJwt = function(profile, jwt, secret, orgAttribute) {
   return profile;
 }
 
+if (env === "test") {
+    // use JWT auth for testing, rather than OIDC
+    app.use('/api', passport.authenticate(['jwt']));
+}
+
+app.get('/', (req, res) => { res.redirect('api/'); });
+
 app.use('/api', backendRouter);
 
 app.use('/api', (err, req, res, next) => {
