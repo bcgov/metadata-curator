@@ -1,6 +1,5 @@
 let express = require('express');
 let router = express.Router();
-
 let forumRouter = express.Router();
 let forumBridge = require('./forumApi/bridge');
 forumRouter = forumBridge(forumRouter);
