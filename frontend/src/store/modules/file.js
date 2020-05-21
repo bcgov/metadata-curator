@@ -5,6 +5,7 @@ const openpgp = require('openpgp');
 
 const state = {
     content: [],
+    fileHandles: [],
     fileName: "",
     blob: [],
     key: null,
@@ -18,6 +19,14 @@ const getters = {
         var textEncoding = require('text-encoding');
         var TextDecoder = textEncoding.TextDecoder;
         return new TextDecoder("utf-8").decode(state.content[0]);
+    },
+
+    getPublicKey: (state) => async () => {
+        if (state.publicKey == null){
+            let data = await backend.getPublicKey();
+            return data.key
+        }
+        return state.publicKey;
     }
 }
 
@@ -49,8 +58,7 @@ const actions = {
 
         if (state.publicKey == null){
             let data = await backend.getPublicKey();
-            commit('setPublicKey', {key: data.key});
-            
+            commit('setPublicKey', {key: data.key});   
         }
 
         if (state.uploadUrl === ""){
@@ -92,6 +100,24 @@ const mutations = {
         state.fileSig = fileSig;
     },
 
+    setFileHandles(state, { handles }){
+        state.fileHandles = handles;
+    },
+
+    addFileHandle(state, { handle }){
+        state.fileHandles.push(handle);
+    },
+
+    addFileHandleIfNotPresent(state, { handle }){
+        if (state.fileHandles.indexOf(handle) === -1){
+            state.fileHandles.push(handle);
+        }
+    },
+
+    clearFileHandles(state){
+        state.fileHandles = [];
+    },
+
     setSuccessfullyUploadedChunk(state, {index, success}){
         state.successfullyUploadedChunks[index] = success;
     },
@@ -111,17 +137,21 @@ const mutations = {
     setUploadUrl(state, { uploadUrl }){
         state.uploadUrl = uploadUrl;
     },
-    // eslint-disable-next-line no-unused-vars
+    
+    // eslint-disable-next-line
     resetState(state){
         console.log("file.js resetState");
-        state =  {
-            content: "",
+
+        state = {
+            content: [],
+            fileHandles: [],
             fileName: "",
-            encrypted: false,
             blob: [],
             key: null,
             uploadUrl: "",
-        };
+            fileSig: "",
+            successfullyUploadedChunks: [],
+        }
     },
 }
 
