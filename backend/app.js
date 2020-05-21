@@ -140,7 +140,8 @@ app.get('/', (req, res) => { res.redirect('api/'); });
 app.use('/api', backendRouter);
 
 app.use('/api', (err, req, res, next) => {
-    console.log(err);
+    log.debug(typeof err);
+    log.debug(err);
     err.statusCode = err.statusCode || 500;
     err.status = err.status || 'error';
 

@@ -6,6 +6,7 @@ var should = chai.should();
 var expect = chai.expect;
 
 chai.use(chaiHttp);
+//chai.use(require('chai-as-promised'))
 
 const dbHandler = require('../db-handler')
 
@@ -16,7 +17,7 @@ after(async () => await dbHandler.closeDatabase())
 describe("Repositories", function() {
 
     describe('/POST v1/repos', function () {
-        it('should create a repo', async function () {
+        it('should create a repo', function (done) {
             var jwt = config.get('testJwt');
 
             const body = `
@@ -25,12 +26,17 @@ describe("Repositories", function() {
                                 "data_upload_id": "0000000009c5d71ee7600000"
                             }            
             `
+
             chai.request(server)
             .post('/api/v1/repos')
             .set('Authorization' , 'Bearer ' + jwt)
             .send(JSON.parse(body))
             .end(async function (err, res) {
+                expect(err).is.null
                 res.should.have.status(201);
+                expect(res.body).to.be.an('object')
+                expect(res.body).has.property('id')
+                done();
             })
         })
     })
@@ -47,13 +53,14 @@ describe("Repositories", function() {
                                 "name": "branchname"
                             }            
             `
-            chai.request(server)
+            const res = await chai.request(server)
             .post('/api/v1/repobranches')
             .set('Authorization' , 'Bearer ' + jwt)
             .send(JSON.parse(body))
-            .end(async function (err, res) {
-                res.should.have.status(201);
-            })
+
+            res.should.have.status(201);
+            expect(res.body).to.be.an('object')
+            expect(res.body).has.property('id')
         })
     })
 })

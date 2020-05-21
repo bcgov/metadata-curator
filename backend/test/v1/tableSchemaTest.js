@@ -16,7 +16,7 @@ after(async () => await dbHandler.closeDatabase())
 describe("Table Schemas", function() {
 
     describe('/POST v1/tableschemas', function () {
-        it('should create a table schema', async function () {
+        it('should create a table schema', function (done) {
             var jwt = config.get('testJwt');
 
             const body = `
@@ -41,13 +41,14 @@ describe("Table Schemas", function() {
             .post('/api/v1/tableschemas')
             .set('Authorization' , 'Bearer ' + jwt)
             .send(JSON.parse(body))
-            .end(async function (err, res) {
-                res.should.have.status(201);
+            .end(function (err, res) {
+                res.should.have.status(201)
+                done()
             })
         })
 
-        it('should fail with bad field type', async function () {
-            var jwt = config.get('testJwt');
+        it('should fail with bad field type', function (done) {
+            var jwt = config.get('testJwt')
 
             const body = `
                             {
@@ -71,9 +72,10 @@ describe("Table Schemas", function() {
             .post('/api/v1/tableschemas')
             .set('Authorization' , 'Bearer ' + jwt)
             .send(JSON.parse(body))
-            .end(async function (err, res) {
-                res.should.have.status(400);
-                expect(res.body.error.message).to.equal('Unable to save schema.  Failed validation.')
+            .end(function (err, res) {
+                res.should.have.status(400)
+                expect(res.body.message).to.equal('validation errors')
+                done()
             })
         })        
     })
