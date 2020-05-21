@@ -1,0 +1,22 @@
+
+###
+POST {{formio-api-base-url}}/user/login
+Content-Type: application/json
+
+{
+  "data": {
+     "email": "{{formio-username}}",
+     "password": "{{formio-password}}"
+  }
+}
+
+> {%
+
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+    client.global.set("formio-jwt", response.headers.valueOf("x-jwt-token"));
+%}
+
+###
+

@@ -20,6 +20,7 @@ const data = [
         size: 2000
       }
     ],
+    status: "submitted"
   },
   {
     _id: "5e7a45e510abf3bbf5068f72",
@@ -35,7 +36,8 @@ const data = [
         size: 1000
       }
     ],
-  },    
+    status: "submitted"
+  },
   {
     _id: "5e7a45e510abf3bbf5068f74",
     name: "Upload 3",
@@ -50,6 +52,7 @@ const data = [
         size: 1000
       }
     ],
+    status: "submitted"
   }  
 ];
 

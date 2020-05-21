@@ -1,0 +1,68 @@
+
+# Note: call /user/login endpoint in http-requests/formio-api/auth.http to retrieve jwt token which will be
+# then automatically populate into the global variable formio-jwt.
+
+### list forms
+GET {{formio-api-base-url}}/form
+Content-Type: application/json
+x-jwt-token: {{formio-jwt}}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+
+### get form by name
+GET {{formio-api-base-url}}/testForm1
+Content-Type: application/json
+x-jwt-token: {{formio-jwt}}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+
+
+### get form by regex name
+GET {{formio-api-base-url}}/form/?name__regex=/^testForm1/i
+Content-Type: application/json
+x-jwt-token: {{formio-jwt}}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+### get form by id
+GET {{formio-api-base-url}}/form/5ebaa034796431df7b3aa5e1
+Content-Type: application/json
+x-jwt-token: {{formio-jwt}}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+### create form
+POST {{formio-api-base-url}}/form
+Content-Type: application/json
+x-jwt-token: {{formio-jwt}}
+
+< ./json-payloads/uploadForm.json
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+###
+
+
+

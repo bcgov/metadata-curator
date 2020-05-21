@@ -50,15 +50,20 @@ async function encrypt(commit, clear, content, key, replaceIndex){
             commit('setBlob', {index: replaceIndex, blob: new Blob([cipherText.data])} );
         }
     });
-    
+
 }
 
 const actions = {
-    async encryptContent({commit, state}, {index, clear, content}){   
+    async encryptContent({commit, state}, {index, clear, content}){
 
         if (state.publicKey == null){
             let data = await backend.getPublicKey();
+<<<<<<< HEAD
             commit('setPublicKey', {key: data.key});   
+=======
+            commit('setPublicKey', {key: data.key});
+
+>>>>>>> 8b964bdcd3542b309582d52ed3756f591b717ec0
         }
 
         if (state.uploadUrl === ""){
@@ -66,13 +71,13 @@ const actions = {
                 commit('setUploadUrl', {uploadUrl: data.url});
             });
         }
-        
+
         let rI = index;
         if ( (content.length-1) <= index ){
             //add blob
             rI = -1;
         }
-        
+
         await encrypt(commit, clear, content, state.key, rI);
 
         return true;
@@ -140,11 +145,17 @@ const mutations = {
     
     // eslint-disable-next-line
     resetState(state){
+<<<<<<< HEAD
         console.log("file.js resetState");
 
         state = {
             content: [],
             fileHandles: [],
+=======
+        // console.log("file.js resetState");
+        state =  {
+            content: "",
+>>>>>>> 8b964bdcd3542b309582d52ed3756f591b717ec0
             fileName: "",
             blob: [],
             key: null,

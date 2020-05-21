@@ -1,4 +1,5 @@
 const db = require('../db/db');
+let log = require('npmlog');
 
 const createDataUpload = async (upload) => {
     try {
@@ -13,12 +14,14 @@ const createDataUpload = async (upload) => {
         dataUploadSchema.approver_has_commented = false;
         return await dataUploadSchema.save();
     } catch(e) {
+        log.error(e)
         throw new Error(e.message)
     }
 }
 
 const updateDataUpload = async (dataUploadId, updatedData) => {
     try {
+        // console.log('updatedData: ', updatedData);
         let dataUpload = await db.DataUploadSchema.findOne({_id: dataUploadId});
 
         if(!dataUpload) {
@@ -30,11 +33,12 @@ const updateDataUpload = async (dataUploadId, updatedData) => {
         dataUpload.files = updatedData.files;
         dataUpload.opened_by_approver = updatedData.opened_by_approver;
         dataUpload.approver_has_commented = updatedData.approver_has_commented;
+        dataUpload.upload_submission_id = updatedData.upload_submission_id ? updatedData.upload_submission_id : null;
 
         return await dataUpload.save();
 
     } catch(e) {
-        console.error(e);
+        log.error(e);
         throw new Error(e.message)
     }
 }
@@ -43,7 +47,7 @@ const listDataUploads = async () => {
     try {
         return await db.DataUploadSchema.find({}).sort({ "create_date": 1});
     } catch (e) {
-        console.error(e);
+        log.error(e);
         throw new Error(e.message)
     }
 }
@@ -52,7 +56,7 @@ const getDataUploadById = async (id) => {
     try {
         return await db.DataUploadSchema.findOne({_id: id});
     } catch (e) {
-        console.error(e);
+        log.error(e);
         throw new Error(e.message)
     }
 }

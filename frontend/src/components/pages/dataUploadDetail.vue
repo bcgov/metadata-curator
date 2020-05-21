@@ -17,17 +17,17 @@
                             </v-card-actions>
                         </v-card>
                     </v-col>
-                    <v-col cols="6">
-                        <v-card class="scroll card-outter" max-height="600" height="600">
-                            <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Metadata Revisions</h1>
-                            <MetadataRevisions></MetadataRevisions>
-                            <v-card-actions class="card-actions">
-                                <v-spacer></v-spacer>
-                                <v-btn color="orange" text>View</v-btn>
-                            </v-card-actions>
-                        </v-card>
-                    </v-col>
-                    <v-col cols="6">
+<!--                    <v-col cols="6">-->
+<!--                        <v-card class="scroll card-outter" max-height="600" height="600">-->
+<!--                            <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Metadata Revisions</h1>-->
+<!--                            <MetadataRevisions></MetadataRevisions>-->
+<!--                            <v-card-actions class="card-actions">-->
+<!--                                <v-spacer></v-spacer>-->
+<!--                                <v-btn color="orange" text>View</v-btn>-->
+<!--                            </v-card-actions>-->
+<!--                        </v-card>-->
+<!--                    </v-col>-->
+                    <v-col cols="12">
                         <v-card class="scroll card-outter" max-height="600"  height="600">
                             <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Comments</h1>
                             <Comments></Comments>
@@ -49,13 +49,13 @@
 <script>
 
     import {mapActions, mapMutations, mapState} from "vuex";
-import MetadataRevisions from "../MetadataRevisions";
+// import MetadataRevisions from "../MetadataRevisions";
 import Comments from "../Comments";
 import CommentAddDialog from "../CommentAddDialog";
 
 export default {
     components:{
-        MetadataRevisions,
+        // MetadataRevisions,
         Comments,
         CommentAddDialog
     },
@@ -69,17 +69,17 @@ export default {
         ...mapActions({
             getDataUpload: 'dataUploadDetail/getDataUpload',
             updateDataUpload: 'dataUploadDetail/updateDataUpload',
-            getRevisions: 'dataUploadRevisions/getRevisions',
+            // getRevisions: 'dataUploadRevisions/getRevisions',
             getComments: 'dataUploadComments/getComments',
             addComment: 'dataUploadComments/addComment',
         }),
         ...mapMutations({
             clearDataUpload: 'dataUploadDetail/clearDataUpload',
-            clearRevisions: 'dataUploadRevisions/clearRevisions',
+            // clearRevisions: 'dataUploadRevisions/clearRevisions',
             clearComments: 'dataUploadComments/clearComments',
         }),
         async loadSections() {
-            this.getRevisions(this.dataUploadId);
+            // this.getRevisions(this.dataUploadId);
             this.getComments(this.dataUploadId);
             await this.getDataUpload(this.dataUploadId);
             if(this.user.isApprover && !this.dataUpload.opened_by_approver) {
@@ -93,7 +93,7 @@ export default {
             this.$router.push({ name: 'home' });
         },
         clearState() {
-            this.clearRevisions();
+            // this.clearRevisions();
             this.clearComments();
             this.clearDataUpload();
         },

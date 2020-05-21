@@ -1,4 +1,5 @@
 {
+  "logLevel": "debug",
   "database": {
     "host": "localhost",
     "username": "{username}",
@@ -63,15 +64,10 @@
     "from": "{email}",
     "subject": "Data Upload Update"
   },
-
-
   "adminGroup": "mc-admin",
-
   "formio": {
         "url": "http://localhost:3006",
         "username": "admin@example.com",
         "password": "CHANGEME"
-    },
-
-  "jwtSecret": "jwtSecret",
+  }
 }

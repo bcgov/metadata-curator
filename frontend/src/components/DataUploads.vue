@@ -13,8 +13,8 @@
 
                 <v-list-item
                     v-else
-                    :key="item.title"
-                    @click="routeToUploadDetail(item.dataUploadId)"
+                    :key="item.dataUploadId"
+                    @click="routeToUploadInfo(item.dataUploadId)"
                 >
                     <v-btn icon class="mr-4" >
                         <v-icon>mdi-file-upload</v-icon>
@@ -34,7 +34,7 @@
 
 <script>
 
-    import {mapActions, mapState} from "vuex";
+    import {mapActions, mapState, mapGetters} from "vuex";
 
     export default {
         async created() {
@@ -52,14 +52,22 @@
                 await this.getDataUploads();
                 this.message = '';
             },
-            routeToUploadDetail(dataUploadId) {
-                // console.log("routeToUploadDetail uploadId: " + dataUploadId);
-                this.$router.push({ name: 'data-upload-detail', params: { id: dataUploadId } })
+            routeToUploadInfo(dataUploadId) {
+                const selectedDataUpload = this.getDataUploadById(dataUploadId);
+                if(selectedDataUpload.status == 'not_submitted') {
+                    this.$router.push({ name: 'upload', params: { id: dataUploadId } })
+                }
+                else {
+                    this.$router.push({ name: 'data-upload-detail', params: { id: dataUploadId } })
+                }
             }
         },
         computed: {
             ...mapState({
                 dataUploads: state => state.dataUploads.dataUploads
+            }),
+            ...mapGetters({
+                getDataUploadById: 'dataUploads/getDataUploadById',
             }),
             dataUploadDisplayItems: function(){
                 let items = [];

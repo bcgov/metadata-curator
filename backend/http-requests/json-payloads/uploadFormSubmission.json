@@ -1,0 +1,20 @@
+{
+  "ministryOrganization": "MOH",
+  "uploadDescription": "upload desc",
+  "daterangestart": "",
+  "dateRangeEnd": "",
+  "sourceSystem": "source sys",
+  "datasetName": "MOH",
+  "specificInstructionsAppendLink": "specific instructions",
+  "sensitiveFields": "asdf",
+  "inclusions": "asdf",
+  "exclusions": "exclusions",
+  "qualityAccurancyInfo": "QOA",
+  "dataChangesOverTime": "asdf",
+  "importantAdditionalInfo": "asdf",
+  "references": "asdf",
+  "createdUpdatedDate": "2019-12-22T00:00:00-08:00",
+  "keywordsDescribingData": "MOH, kw, age, population",
+  "moreInfoUrl": "http://www.someurl.com",
+  "numOfUploadFiles": 4
+}
