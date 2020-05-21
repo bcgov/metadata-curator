@@ -1,10 +1,8 @@
 const { commentService, dataUploadService } = require('../services')
 
 const postDataUpload = async (req, res, next) => {
-    await dataUploadService.createDataUpload(req.body);
-    res.status(201).json({
-        message: 'Data upload saved successfully.'
-    });
+    const dataUpload = await dataUploadService.createDataUpload(req.body);
+    res.status(201).json(dataUpload);
 }
 
 const putDataUpload = async (req, res, next) => {
