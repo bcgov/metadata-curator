@@ -13,12 +13,18 @@ const getDataPackage = async (req, res, next) => {
     res.status(200).json(await dataPackageService.getDataPackageById(id));
 }
 
+const deleteDataPackage = async (req, res, next) => {
+    const id = req.params.dataPackageId;
+    res.status(204).json(await dataPackageService.deleteDataPackage(id));
+}
+
 const listDataPackages = async (req, res, next) => {
     res.status(200).json(await dataPackageService.listDataPackages());
 }
 
 module.exports = {
     postDataPackage,
+    deleteDataPackage,
     getDataPackage,
     listDataPackages
 }
