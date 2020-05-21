@@ -59,6 +59,8 @@ import { Backend } from '../services/backend';
 
 let backendApi = new Backend();
 
+const openpgp = require('openpgp');
+
 export default {
 
     props: {
@@ -98,6 +100,7 @@ export default {
             uploads: [],
             currChunk: 0,
             numEncrypted: 0,
+            encContentBlobs: [],
 
             numUploaded: 0,
             up1Size: 0,
@@ -119,10 +122,11 @@ export default {
             jwt: state => state.user.jwt,
             uploadUrl: state => state.file.uploadUrl,
             fileSig: state => state.file.fileSig,
-            successfullyUploadedChunks: state => state.file.successfullyUploadedChunks
+            successfullyUploadedChunks: state => state.file.successfullyUploadedChunks,
         }),
         ...mapGetters({
-            getStringContent: 'file/getStringContent'
+            getStringContent: 'file/getStringContent',
+            getPublicKey: 'file/getPublicKey'
         }),
 
         progressMessage1: function(){
@@ -166,7 +170,10 @@ export default {
 
     methods: {
         getFinger: function(file){
-            return file.name + "-" + file.type + "-" + file.size + "-" + file.lastModified;
+            if (typeof(file) !== "undefined"){
+                return file.name + "-" + file.type + "-" + file.size + "-" + file.lastModified;
+            }
+            return "";
         },
 
         resumeConfirmed: function(){
@@ -181,10 +188,32 @@ export default {
             this.openFile();
         },
 
+        encrypt: async function(content, index){
+            await openpgp.initWorker({ path: '/js/openpgp.worker.min.js' }, 3); // set the relative web worker path
+            let key = await this.getPublicKey();
+
+            return openpgp.encrypt({
+                message: await openpgp.message.fromBinary(content), // input as Message object
+                publicKeys: (await openpgp.key.readArmored(key)).keys,
+                compression: openpgp.enums.compression.zip,
+                format: 'binary',
+
+            }).then( async (cipherText) => {
+                if (index === -1){
+                    this.encContentBlobs.push(new Blob([cipherText.data]));
+                }else{
+                    this.encContentBlobs[index] = new Blob([cipherText.data])
+                }
+            });
+        },
+
         openFile: function(resume){
             if (typeof(resume) === "undefined"){
                 resume = false;
             }
+
+            //this always mutates the store so we can track the files for later
+            this.$store.commit('file/addFileHandleIfNotPresent', {handle: this.file});
 
              if ( (this.readFile) && (this.file) ){    
                 this.disabled = true;
@@ -218,7 +247,7 @@ export default {
 
             }else if ((!this.file) && (this.mutateVuex)){
                 this.$store.commit('file/clearContent');
-                self.$store.commit('file/setFileSig', {fileSig: ""});
+                this.$store.commit('file/setFileSig', {fileSig: ""});
             }
         },
 
@@ -250,8 +279,13 @@ export default {
                         });
                         
                     }else{
-                        self.fileContent = e.target.result;
-                        resolve(e.target.result)
+                        if (self.readFile){
+                            self.fileContent = e.target.result;
+                        }
+                        self.encrypt(e.target.result, index).then ( () => {
+                            resolve(e.target.result);
+                        })
+                        
                     }
                     //see below comment for why this is floor instead of ceil
                     self.numChunks = Math.floor(self.file.size / self.chunkSize);
@@ -313,7 +347,9 @@ export default {
                     this.up1Size = bytesTotal;
                 },
                 onSuccess: async() => {
-                    self.$store.commit('file/setSuccessfullyUploadedChunk', {index: i, success: true});
+                    if (this.readFile && this.mutateVuex){
+                        self.$store.commit('file/setSuccessfullyUploadedChunk', {index: i, success: true});
+                    }
                     i += 1;
                     this.numUploaded += 1;
 
@@ -326,7 +362,12 @@ export default {
                                     self.up2Progress = byteUp;
                                     self.up2Size = byteTot;
                                 }
-                                let u2 = new tus.Upload(self.blob[chunkIndex], uploadOptions);
+                                let u2 = null;
+                                if (this.readFile && this.mutateVuex){
+                                    u2 = new tus.Upload(self.blob[chunkIndex], uploadOptions);
+                                }else{
+                                    u2 = new tus.Upload(self.encContentBlobs[chunkIndex], uploadOptions);
+                                }
                                 u2.start();
                                 self.uploads.push(u2);
                             }else if ( (i !== 1) && (i >= self.numChunks) ){
@@ -336,7 +377,9 @@ export default {
                                     joinIds.push(url);
                                 }
                                 backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0").then( () => {
-                                    self.$store.commit('file/setFileSig', {fileSig: ""});
+                                    if (this.readFile && this.mutateVuex){
+                                        self.$store.commit('file/setFileSig', {fileSig: ""});
+                                    }
                                     self.numUploaded += 1;
                                     self.disabled = false;
                                 }).catch( (/*e*/) => {
@@ -353,15 +396,24 @@ export default {
             if (this.blob[0].size <= this.chunkSize){
                 uploadOptions.headers = {};
             }
-
-            let u = new tus.Upload(this.blob[0], uploadOptions);
+            let u = null;
+            if (this.readFile && this.mutateVuex){
+                u = new tus.Upload(this.blob[0], uploadOptions);
+            }else{
+                u = new tus.Upload(this.encContentBlobs[0]);
+            }
             this.uploads.push(u);
             this.getNextChunk(this.nextChunk).then( () => {
                 self.numEncrypted += 1
                 let chunkIndex = 1;
                 i += 1;
                 if ((i<self.numChunks) && (self.blob[chunkIndex].size > 0)){
-                    let u2 = new tus.Upload(self.blob[chunkIndex], uploadOptions);
+                    let u2 = null;
+                    if (this.readFile && this.mutateVuex){
+                        u2 = new tus.Upload(self.blob[chunkIndex], uploadOptions);
+                    }else{
+                        u2 = new tus.Upload(self.encContentBlobs[chunkIndex], uploadOptions);
+                    }
                     u2.start();
                     self.uploads.push(u2);
                 }else if ( (i !== 1) && (i >= self.numChunks) ){
@@ -371,7 +423,9 @@ export default {
                         joinIds.push(url);
                     }
                     backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0").then( () => {
-                        self.$store.commit('file/setFileSig', {fileSig: ""});
+                        if (this.readFile && this.mutateVuex){
+                            self.$store.commit('file/setFileSig', {fileSig: ""});
+                        }
                         self.numUploaded += 1;
                         self.disabled = false;
                     }).catch( (/*e*/) => {
