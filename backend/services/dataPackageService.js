@@ -43,16 +43,6 @@ const validateDataPackage = async function (descriptor) {
         }
 
         throw new ValidationError("validation errors", resourceErrsMap)
-        // res.status(400);
-        // res.json({
-        //     status: 400,
-        //     error: {
-        //         message: "Unable to save tabular data package.  Failed validation.",
-        //         validationErrors: errs,
-        //         validationErrorsByResource: [...resourceErrsMap]
-        //     }
-        // });
-//        return;
     }
 
     return dataPackage;
@@ -106,26 +96,18 @@ const addDataPackage = async function(descriptor) {
     });
 }
 
+const deleteDataPackage = async function(id) {
+    const current = await db.DataPackageSchema.findOne({_id: id});
+    await current.delete();
+}
+
 const updateDataPackage = async function (id, descriptor) {
     await validateDataPackage(descriptor);
 
-
     const dataPackageSchema = await db.DataPackageSchema.findOne({_id: id});
-
-    // let resources = [...descriptor.resources];
-
-    // resources = resources.map(item => {
-    //     let newItem = {...item, tableSchema: {...item.schema}};
-    //     return newItem;
-    // });
 
     dataPackageSchema.profile = descriptor.profile;
     dataPackageSchema.resources = transformResources([...descriptor.resources]);
-
-//    ['profile','resources'].forEach(a => current[a] = descriptor[a]);
-
-    // do a transformation to make it compatible with the frictionlessdata schema
-    //current.resources.forEach(r => { r.tableSchema = r.schema; delete r.schema; })
 
     let newRecord = await dataPackageSchema.save().catch (e => {
         log.error(e);
@@ -138,8 +120,6 @@ const updateDataPackage = async function (id, descriptor) {
     newRecord.resources = transformResourcesToFrictionless(newRecord.resources);
 
     return newRecord;
-
-//    return newRecord.toObject({transform: (t => { if ('tableSchema' in t) { t.schema = t.tableSchema; delete t.tableSchema;}; return t;})});
 }
 
 const getDataPackageById = async function (id) {
@@ -195,8 +175,8 @@ const transformResourcesToFrictionless = function (resources) {
 module.exports = {
     addDataPackage,
     addDataPackageFromTableSchema,
-    updateDataPackage,
+    deleteDataPackage,
     getDataPackageById,
-    listDataPackages
+    listDataPackages,
+    updateDataPackage
 }
-
