@@ -98,6 +98,9 @@ const addDataPackage = async function(descriptor) {
 
 const deleteDataPackage = async function(id) {
     const current = await db.DataPackageSchema.findOne({_id: id});
+    if (!current) {
+        throw new Error("Data package not found")
+    }
     await current.delete();
 }
 
