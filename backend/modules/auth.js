@@ -82,20 +82,8 @@ auth.renew = async function(jwt, token, cb){
 
 auth.removeExpired = function(req, res, next){
     if ( (typeof(req.user) !== "undefined") && (typeof(req.user.jwt) !== "undefined") && (req.user.jwt !== null) ){
-        if (req.user.jwt === null){
-            req.user = null;
-            delete req.user;
-            next();
-        }
-
         if (auth.isTokenExpired(req.user.jwt)){
             if ( (typeof(req.user.refreshToken) !== "undefined") && (req.user.refreshToken !== null) ){
-
-                if (req.user.refreshToken === null){
-                    req.user = null;
-                    delete req.user;
-                    next();
-                }
 
                 if (auth.isRenewable(req.user.refreshToken)){
                     auth.renew(req.user.jwt, req.user.refreshToken, function(refreshErr, accessToken, refreshToken){

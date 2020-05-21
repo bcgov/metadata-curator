@@ -132,6 +132,16 @@ var genProfileFromJwt = function(profile, jwt, secret, orgAttribute) {
 
 app.use('/api', backendRouter);
 
+app.use('/api', (err, req, res, next) => {
+    err.statusCode = err.statusCode || 500;
+    err.status = err.status || 'error';
+
+    res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message
+    });
+});
+
 app.use(history({
   index: 'dist/index.html'
 }));

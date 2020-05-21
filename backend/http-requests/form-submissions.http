@@ -1,0 +1,60 @@
+
+### GET /forms/:formName/submission/:submissionId
+GET {{base-url}}/formio/form/testForm1/submission/5ebe9b36bca87dfafb1d8c8e
+Content-Type: application/json
+Authorization: Bearer {{jwt}}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+
+
+### POST /forms/:formName/submission
+POST {{base-url}}/formio/form/testForm1/submission
+Content-Type: application/json
+Authorization: Bearer {{jwt}}
+
+{
+  "firstName": "jane"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+### PUT /forms/:formName/submission/:submissionId
+PUT {{base-url}}/formio/form/testForm1/submission/5ebe9b36bca87dfafb1d8c8e
+Content-Type: application/json
+Authorization: Bearer {{jwt}}
+
+{
+  "firstName": "janeb"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+### PUT /forms/:formName/submission/:submissionId from json payload
+PUT {{base-url}}/formio/form/uploadForm/submission/5ec3cd5bc016723be25e5c89
+Content-Type: application/json
+Authorization: Bearer {{jwt}}
+
+< ./json-payloads/uploadFormSubmission.json
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+###
+
+

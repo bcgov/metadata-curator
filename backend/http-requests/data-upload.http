@@ -106,4 +106,23 @@ Authorization: Bearer {{jwt}}
     });
 %}
 
+### PUT /datauploads/:dataUploadId  - default flow
+PUT {{base-url}}/datauploads/{{dataset-1-upload-1-id}}
+Content-Type: application/json
+Authorization: Bearer {{jwt}}
+
+{
+  "name": "Dataset xyz - Upload with comments",
+  "description": "Upload for dataset 2",
+  "files": [
+    {
+      "name": "filename1.csv",
+      "size": 1000
+    }
+  ],
+  "opened_by_approver": true,
+  "approver_has_commented": false,
+  "upload_submission_id": "5eba9aca796431df7b3aa5d6"
+}
+
 ###

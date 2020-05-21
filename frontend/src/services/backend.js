@@ -76,8 +76,14 @@ export class Backend {
         return axios.post(url, body,{withCredentials: true}).then(response => response.data)
     }
 
+    postDataUpload(dataUpload){
+        // console.log("BE postdataUpload: " + dataUpload);
+        const url = `/api/v1/datauploads`;
+        return axios.post(url, dataUpload,{withCredentials: true}).then(response => response.data)
+    }
+
     putDataUpload(dataUpload){
-        console.log("BE putdataUpload: " + dataUpload);
+        // console.log("BE putdataUpload: " + dataUpload);
         const url = `/api/v1/datauploads/${dataUpload._id}`;
         return axios.put(url, dataUpload,{withCredentials: true}).then(response => response.data)
     }
@@ -126,6 +132,26 @@ export class Backend {
     deleteForm(id){
         const url = `/api/v1/formio/form/${id}`;
         return axios.delete(url, {}, {withCredentials: true}).then(response => response.data)
+    }
+
+    getForm(formName) {
+        const url = `/api/v1/formio/form/${formName}`;
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+    getFormSubmission(formName, submissionId) {
+        const url = `/api/v1/formio/form/${formName}/submission/${submissionId}`;
+        return axios.get(url,{withCredentials: true}).then(response => response.data)
+    }
+
+    postFormSubmission(formName, submission) {
+        const url = `/api/v1/formio/form/${formName}/submission`;
+        return axios.post(url, submission,{withCredentials: true}).then(response => response.data)
+    }
+
+    putFormSubmission(formName, submissionId, submission) {
+        const url = `/api/v1/formio/form/${formName}/submission/${submissionId}`;
+        return axios.put(url, submission,{withCredentials: true}).then(response => response.data)
     }
 
 }

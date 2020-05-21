@@ -1,4 +1,5 @@
-var notification = function(db){
+var notification = function(_config = null){
+    var config = _config == null ? require('config') : _config;
 
     var notifications = {};
     var fs = require('fs');
@@ -13,7 +14,6 @@ var notification = function(db){
             templateName = "emailTemplate.html";
         }
 
-        var config = require('config');
         var email = "";
         if (templateName === "emailSubmitTemplate.html"){
             email = submitTemplate;
@@ -46,7 +46,6 @@ var notification = function(db){
     //user is the user making the change
     notifications.notify = function(dataUpload, user){
 
-        var config = require('config');
         // var logger = require('npmlog');
 
         if (!config.has('email')){
@@ -73,7 +72,6 @@ var notification = function(db){
     };
 
     function sendEmail(dataUpload, userInfo, user, templateName){
-        var config = require('config');
         // var logger = require('npmlog');
 
         var emailConfig = config.get('email');
