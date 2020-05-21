@@ -21,7 +21,7 @@ const createDataUpload = async (upload) => {
 
 const updateDataUpload = async (dataUploadId, updatedData) => {
     try {
-        console.log('updatedData: ', updatedData);
+        // console.log('updatedData: ', updatedData);
         let dataUpload = await db.DataUploadSchema.findOne({_id: dataUploadId});
 
         if(!dataUpload) {
