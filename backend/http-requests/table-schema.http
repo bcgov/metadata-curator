@@ -1,7 +1,7 @@
 
 ### POST /tableschemas - default flow
 POST {{base-url}}/tableschemas
-Authorization: Bearer {{jwt}}
+Cookie: connect.sid={{connect.sid}}
 Content-Type: application/json
 
 {
@@ -30,7 +30,7 @@ Content-Type: application/json
 
 ### POST /tableschemas - mispelled "fields" property
 POST {{base-url}}/tableschemas
-Authorization: Bearer {{jwt}}
+Cookie: connect.sid={{connect.sid}}
 Content-Type: application/json
 
 {
@@ -60,6 +60,7 @@ Content-Type: application/json
 ### POST /tableschemas - empty field array
 POST {{base-url}}/tableschemas
 Content-Type: application/json
+Cookie: connect.sid={{connect.sid}}
 
 {
   "fields" : []
@@ -74,6 +75,7 @@ Content-Type: application/json
 ### POST /tableschemas - mispelled required column def "name" attribute
 POST {{base-url}}/tableschemas
 Content-Type: application/json
+Cookie: connect.sid={{connect.sid}}
 
 {
   "fields" :
@@ -102,6 +104,7 @@ Content-Type: application/json
 ### POST /tableschemas - missing required column def "name" attribute
 POST {{base-url}}/tableschemas
 Content-Type: application/json
+Cookie: connect.sid={{connect.sid}}
 
 {
   "fields" :
@@ -129,6 +132,7 @@ Content-Type: application/json
 ### POST /tableschemas - multiple invalid column defs
 POST {{base-url}}/tableschemas
 Content-Type: application/json
+Cookie: connect.sid={{connect.sid}}
 
 {
   "fields" :

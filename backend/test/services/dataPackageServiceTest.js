@@ -5,6 +5,8 @@ chai.use(require('chai-as-promised'))
 var should = chai.should()
 var expect = chai.expect
 
+const ValidationError = require('../../modules/validationError');
+
 const {Schema} = require('tableschema');
 const {DataPackageError} = require('datapackage');
 
@@ -34,8 +36,8 @@ describe("DataPackageService", function() {
     it('should fail with frictionlessdata validation - missing resources', async () => {
         const desc = {
         }
-        const err = 'Validation errors [{"message":"Descriptor validation error: Missing required property: resources at  in descriptor and at /required/0 in profile","validationErrorBySections":{"desc":"Descriptor validation error:","field":"Missing required property: resources","validationRule":"at  in descriptor and"}}] -- []'
-        await expect(dataPackageService.addDataPackage(desc)).to.be.rejectedWith(err)
+        //const err = 'Validation errors [{"message":"Descriptor validation error: Missing required property: resources at  in descriptor and at /required/0 in profile","validationErrorBySections":{"desc":"Descriptor validation error:","field":"Missing required property: resources","validationRule":"at  in descriptor and"}}] -- []'
+        await expect(dataPackageService.addDataPackage(desc)).to.be.rejectedWith('validation errors')
     })
 
     it('should fail with Mongoose validation errors', async () => {
@@ -50,8 +52,7 @@ describe("DataPackageService", function() {
                 }
             ]
         }
-        const err = 'Validation Error - {"resources.0.tableSchema.fields.0.type":{"message":"Path `type` is required.","name":"ValidatorError","properties":{"message":"Path `type` is required.","type":"required","path":"type"},"kind":"required","path":"type"},"resources.0.tableSchema":{"errors":{"fields.0.type":{"message":"Path `type` is required.","name":"ValidatorError","properties":{"message":"Path `type` is required.","type":"required","path":"type"},"kind":"required","path":"type"}},"_message":"Validation failed","message":"Validation failed: fields.0.type: Path `type` is required.","name":"ValidationError"}}'
-        await expect(dataPackageService.addDataPackage(desc)).to.be.rejectedWith(err)
+        await expect(dataPackageService.addDataPackage(desc)).to.be.rejectedWith('DB Validation Error')
     })
 
     it('should fail with Frictionlessdata validation errors', async () => {
@@ -66,8 +67,11 @@ describe("DataPackageService", function() {
                 }
             ]
         }
+        const result = dataPackageService.addDataPackage(desc)
         const err = 'Validation Error - {"resources.0.tableSchema.fields.0.type":{"message":"Path `type` is required.","name":"ValidatorError","properties":{"message":"Path `type` is required.","type":"required","path":"type"},"kind":"required","path":"type"},"resources.0.tableSchema":{"errors":{"fields.0.type":{"message":"Path `type` is required.","name":"ValidatorError","properties":{"message":"Path `type` is required.","type":"required","path":"type"},"kind":"required","path":"type"}},"_message":"Validation failed","message":"Validation failed: fields.0.type: Path `type` is required.","name":"ValidationError"}}'
-        await expect(dataPackageService.addDataPackage(desc)).to.be.rejectedWith("Error")
+        let resmap = new Map();
+        await expect(result).to.be.rejectedWith(new ValidationError("validation errors", resmap))
+//        await expect(result.errors).length(2)
     })
 
     it('should succeed with valid resources', async () => {
@@ -123,4 +127,13 @@ describe("DataPackageService", function() {
         expect (updated.resources[0].schema.fields).has.length(2)
         expect (updated.resources[0].schema.fields[1].name).is.equal("field2")
     })
+
+    it('should succeed with valid table schema', async () => {
+        const desc = { fields: [ {name: "field1", type: "string"}]}
+
+        const result = await dataPackageService.addDataPackageFromTableSchema(desc)
+        expect(result.id).to.exist
+
+        expect (await dataPackageService.getDataPackageById(result.id)).to.be.an('object')
+    })    
 })

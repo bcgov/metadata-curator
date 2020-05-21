@@ -74,7 +74,7 @@ describe("Data Packages", function() {
                             }            
             `
             chai.request(server)
-            .post('/api/v1/datapackageschemas')
+            .post('/api/v1/datapackages')
             .set('Authorization' , 'Bearer ' + jwt)
             .send(JSON.parse(body))
             .end(async function (err, res) {
@@ -140,7 +140,7 @@ describe("Data Packages", function() {
                             }            
             `
             chai.request(server)
-            .post('/api/v1/datapackageschemas')
+            .post('/api/v1/datapackages')
             .set('Authorization' , 'Bearer ' + jwt)
             .send(JSON.parse(body))
             .end(async function (err, res) {
@@ -182,7 +182,7 @@ describe("Data Packages", function() {
                             }            
             `
             chai.request(server)
-            .post('/api/v1/datapackageschemas')
+            .post('/api/v1/datapackages')
             .set('Authorization' , 'Bearer ' + jwt)
             .send(JSON.parse(body))
             .end(async function (err, res) {
@@ -201,7 +201,7 @@ describe("Data Packages", function() {
                             }            
             `
             chai.request(server)
-            .post('/api/v1/datapackageschemas')
+            .post('/api/v1/datapackages')
             .set('Authorization' , 'Bearer ' + jwt)
             .send(JSON.parse(body))
             .end(async function (err, res) {

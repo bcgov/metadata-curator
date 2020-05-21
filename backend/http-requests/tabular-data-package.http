@@ -226,6 +226,30 @@ Cookie: connect.sid={{connect.sid}}
     });
 %}
 
+### /datapackageschemas - missing field type
+POST {{base-url}}/datapackages
+Content-Type: application/json
+Cookie: connect.sid={{connect.sid}}
+
+{
+  "profile": "tabular-data-package",
+  "name": "my-dataset",
+  "resources" : [
+    {
+      "name" : "resource_1",
+      "data": [],
+      "profile" : "tabular-data-resource",
+      "schema" : {
+        "fields" : [
+          {
+            "name" : "height"
+          }
+        ]
+      }
+    }
+  ]
+}
+
 ### /datapackageschemas - missing data field in resource entry
 POST {{base-url}}/datapackages
 Content-Type: application/json
