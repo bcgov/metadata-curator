@@ -3,14 +3,15 @@
 const mongoose = require('mongoose');
 const db = require('../db/db');
 let log = require('npmlog');
+let ValidationError = require('../modules/validationError');
 const {Package, Resource} = require('datapackage');
+const {Schema} = require('tableschema');
 const tableSchemaService = require('./tableSchemaService');
 
 const validateDataPackage = async function (descriptor) {
     const dataPackage = await Package.load(descriptor, {strict: false});
 
     if (!dataPackage.valid) {
-        let errs = [];
         let resourceErrsMap = new Map();
 
         if (descriptor.resources && descriptor.resources.length > 0) {
@@ -35,11 +36,13 @@ const validateDataPackage = async function (descriptor) {
                 }
             }
         } else {
+            let newVal = [];
+            resourceErrsMap.set('package', newVal);
             const validations = await tableSchemaService.formatValidation(dataPackage);
-            validations.forEach(err => errs.push(err));
+            validations.forEach(err => newVal.push(err));
         }
 
-        throw new Error("Validation errors " + JSON.stringify(errs) + " -- " + JSON.stringify([...resourceErrsMap]))
+        throw new ValidationError("validation errors", resourceErrsMap)
         // res.status(400);
         // res.json({
         //     status: 400,
@@ -55,24 +58,48 @@ const validateDataPackage = async function (descriptor) {
     return dataPackage;
 }
 
+
+const addDataPackageFromTableSchema = async function(schemaDescriptor) {
+    
+    let schema = await Schema.load(schemaDescriptor);
+    if (!schema.valid) {
+        let resourceErrsMap = new Map();
+        const validations = await tableSchemaService.formatValidation(schema);
+        resourceErrsMap.set('schema', validations);
+        throw new ValidationError("validation errors", resourceErrsMap)
+    }
+
+    let resources = [
+        {
+            profile: "tabular-data-resource",
+            data: [],
+            schema: schemaDescriptor
+        }
+    ];
+
+    let dataPackageSchema = new db.DataPackageSchema;
+    dataPackageSchema.profile = 'tabular-data-package';
+    dataPackageSchema.resources = transformResources([...resources]);
+
+    return await dataPackageSchema.save().catch (e => {
+        if (e instanceof mongoose.Error.ValidationError) {
+            throw new ValidationError("DB Validation Error", e.errors);
+        } else {
+            throw e;
+        }
+    });
+}
+
 const addDataPackage = async function(descriptor) {
     await validateDataPackage(descriptor);
 
     let dataPackageSchema = new db.DataPackageSchema;
-    // let resources = [...descriptor.resources];
-
-    // resources = resources.map(item => {
-    //     let newItem = {...item, tableSchema: {...item.schema}};
-    //     return newItem;
-    // });
-
     dataPackageSchema.profile = descriptor.profile;
     dataPackageSchema.resources = transformResources([...descriptor.resources]);
 
-
     return await dataPackageSchema.save().catch (e => {
         if (e instanceof mongoose.Error.ValidationError) {
-            throw new Error("MongoDB Validation Error - " + JSON.stringify(e.errors));
+            throw new ValidationError("DB Validation Error", e.errors);
         } else {
             throw e;
         }
@@ -167,6 +194,7 @@ const transformResourcesToFrictionless = function (resources) {
 
 module.exports = {
     addDataPackage,
+    addDataPackageFromTableSchema,
     updateDataPackage,
     getDataPackageById,
     listDataPackages
