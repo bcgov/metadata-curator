@@ -136,4 +136,13 @@ describe("DataPackageService", function() {
 
         expect (await dataPackageService.getDataPackageById(result.id)).to.be.an('object')
     })    
+
+    it('should succeed deleting a data package', async () => {
+        const desc = { fields: [ {name: "field1", type: "string"}]}
+
+        const result = await dataPackageService.addDataPackageFromTableSchema(desc)
+        expect(result.id).to.exist
+
+        expect (await dataPackageService.deleteDataPackage(result.id)).to.be.an('undefined')
+    })      
 })
