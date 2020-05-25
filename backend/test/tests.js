@@ -17,5 +17,8 @@ describe("MC Unit Tests", function() {
     require('./services/commentServiceTest');
     require('./services/tableSchemaServiceTest');
     require('./services/dataPackageServiceTest');
+    require('./services/repoServiceTest');
+    require('./services/repoBranchServiceTest');
+    require('./services/revisionServiceTest');
     require('./controllers/dataUploadControllerTest');
 });

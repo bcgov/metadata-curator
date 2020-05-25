@@ -10,9 +10,6 @@ var tableSchema = new Schema({
    fields: {type: [fieldSchema], required: true}
 }, { _id : false });
 
-var model = mongoose.model('tableSchema', tableSchema, 'tableSchema');
-
 module.exports = {
-    model,
     tableSchema
 };
