@@ -12,12 +12,12 @@ describe("Forum Client", function() {
     let sandbox
     const validToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTA0NjM2NjAsImV4cCI6MTY1MDQ2MzY2MCwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoiYXJndXMrbWExX3VzZXIxQGhpZ2h3YXl0aHJlZXNvbHV0aW9ucy5jb20iLCJHaXZlbk5hbWUiOiJNZXRhZGF0YSIsIlN1cm5hbWUiOiJBcHByb3Zlcl8xX1VzZXJfMSIsIkVtYWlsIjoiYXJndXMrbWExX3VzZXIxQGhpZ2h3YXl0aHJlZXNvbHV0aW9ucy5jb20iLCJHcm91cHMiOlsiZXhwb3J0ZXIiLCJtZXRhZGF0YV9hcHByb3Zlcl8xX2RpcCJdfQ.ESqoLyihlc-lbfXrzfGaxYa9RWLb6lXmqcs1bghyzas"
 
-    before(async () => {
+    beforeEach(async () => {
         sandbox = sinon.createSandbox();
         sandbox.stub(axios, 'get').returns({data: [{_id:"00",name:"someperm"}]})
         sandbox.stub(axios, 'post').returns({data: {_id:"111"}})
     })
-    after(async () => {
+    afterEach(async () => {
         sandbox.restore()
     })
 

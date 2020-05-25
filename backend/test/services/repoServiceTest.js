@@ -1,8 +1,10 @@
 var chai = require('chai')
 chai.use(require('chai-as-promised'))
+var sinon = require('sinon')
 var should = chai.should()
 var expect = chai.expect
 
+const forumClient = require('../../clients/forum_client');
 const repoService = require('../../services/repoService')
 const dataUploadService = require('../../services/dataUploadService')
 
@@ -12,11 +14,17 @@ afterEach(async () => await dbHandler.clearDatabase())
 after(async () => await dbHandler.closeDatabase())
 
 describe("RepoServiceTest", function() {
+
     let duid, rid;
+    before(async () => sinon.stub(forumClient, 'addTopic').returns({_id:"0000000009c5d71ee7600000"}))
     beforeEach (async () => {
-        duid = await dataUploadService.createDataUpload({name:"my_upload",uploader:"joe"})
+        duid = await dataUploadService.createDataUpload({},{name:"my_upload",uploader:"joe"})
         rid = await repoService.createRepo(duid, 'some repo name');
     })
+    after(async () => {
+        sinon.restore();
+    })
+
     it('should succeed creating a new repository', async () => {
         const result = await repoService.createRepo(duid, 'another repo');
         expect(result).to.be.an('object')

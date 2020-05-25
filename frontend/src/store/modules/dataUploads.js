@@ -15,18 +15,20 @@ const getters = {
 }
 
 const actions = {
-    async getDataUploads({ commit }) {
+    async getDataUploads({ commit }, {filterBy}) {
         // console.log("getDataUploads action");
+        const query = {filterBy: filterBy};
 
-        await backend.getDataUploads().then((data) => {
-            // console.log("getDataUploads action: ", data);
+        try {
+            const data = await backend.getDataUploads(query);
             commit('clearDataUploads');
             commit('setDataUploads', {dataUploads: data});
 
-        }).catch((e) => {
+        } catch(e) {
             // console.log("Retrieve data uploads error: ", e);
             commit('setError', {error: e.response.data.error});
-        });
+        }
+
     },
 
 }

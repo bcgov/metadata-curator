@@ -111,7 +111,7 @@ formio.postSubmission = function(formName, values, callback) {
             data: values
         };
 
-        console.log("post submission data: ", data);
+        // console.log("post submission data: ", data);
 
         var opts = {
             headers: {
@@ -163,7 +163,7 @@ formio.putSubmission = function(formName, submissionId, values, callback) {
             data: values
         };
 
-        console.log("put submission data: ", data);
+        // console.log("put submission data: ", data);
 
         httpReq.put(url, {headers: {'x-jwt-token': jwt}, body: data, json: true}, function(err, res, body){
             if (err){

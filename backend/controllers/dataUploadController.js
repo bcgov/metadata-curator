@@ -1,7 +1,8 @@
 const { commentService, dataUploadService, repoService, revisionService } = require('../services')
 
 const postDataUpload = async (req, res, next) => {
-    const dataUpload = await dataUploadService.createDataUpload(req.body);
+    console.log("postDataUpload req.user:", req.user);
+    const dataUpload = await dataUploadService.createDataUpload(req.user, req.body);
     res.status(201).json(dataUpload);
 }
 
@@ -19,7 +20,7 @@ const putDataUpload = async (req, res, next) => {
 }
 
 const getDataUploads = async (req, res, next) => {
-    let list = await dataUploadService.listDataUploads();
+    const list = await dataUploadService.listDataUploads(req.user, req.query);
     res.json(list);
 }
 
@@ -33,6 +34,7 @@ const getDataUpload = async (req, res, next) => {
 }
 
 const postDataUploadComment = async (req, res, next) => {
+    console.log("postDataUploadComment req: ", req);
     await commentService.addComment (req.params.dataUploadId, req.user, req.body.content);
     res.status(201).json({
         message: 'Comment saved successfully.'

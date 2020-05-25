@@ -25,16 +25,16 @@ describe("CommentService", function() {
         sinon.stub(forumClient, 'getComments').returns([{_id:"0000011119c5d71ee7600000", comment: "mycomment"}])
     })
     after(async () => {
-        sinon.reset()
+        sinon.restore();
     })
 
     beforeEach(async () => {
 
-        const newData = await dataUploadService.createDataUpload({name:"abc",uploader:"joe"})
+        const newData = await dataUploadService.createDataUpload({},{name:"abc",uploader:"joe"})
 
         id = newData._id
 
-        let newData2 = await dataUploadService.createDataUpload({name:"abc",uploader:"joe"})
+        let newData2 = await dataUploadService.createDataUpload({},{name:"abc",uploader:"joe"})
         id2 = newData2._id
 
         newData2['opened_by_approver'] = true
