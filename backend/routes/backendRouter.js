@@ -32,6 +32,12 @@ router.use('/v1/formio', formioRouter);
 router.use('/v1/repos', repositoriesRoutes(express.Router()));
 router.use('/v1/repobranches', repoBranchesRoutes(express.Router()));
 
+/*
+
+router.use('/v1/repositories/xx/branches/yy')
+router.use('/v1/repositories/xx/branches/yy/revisions/1')
+router.use('/v1/repositories/xx/branches/yy/revisions?q=current')
+*/
 frontendRoutes(router);
 
 module.exports = router;

@@ -35,7 +35,7 @@ db.init = function (_connString = null) {
     db.DataPackageSchema = require('./model/dataPackageSchema');
     db.DataUploadSchema = require('./model/dataUpload');
     db.RepoSchema = require('./model/repo');
-    db.RepoBranchSchema = require('./model/repoBranch');
+    db.RepoBranchSchema = require('./model/repoBranch').model;
     db.MetadataRevisionSchema = require('./model/metadataRevision');
 };
 
