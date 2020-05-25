@@ -18,7 +18,8 @@
                     <v-card class="mb-12">
                         <UploadForm ref="uploadForm" :upload="upload"></UploadForm>
                     </v-card>
-                    <v-btn color="primary" @click="stepSaveUploadForm">Next</v-btn>
+                    <v-btn color="primary" @click="stepSaveUploadForm(false)">Save</v-btn>
+                    <v-btn text @click="stepSaveUploadForm(true)">Next</v-btn>
                 </v-stepper-content>
 
                 <v-stepper-content :step="steps.step2FileSelection">
@@ -58,10 +59,7 @@
         },
         created() {
             if(this.$route.params.id && this.$route.params.id != 'new') { this.uploadId = this.$route.params.id; }
-            if(this.uploadId) {
-                // console.log("get upload ", this.uploadId);
-                this.getUpload(this.uploadId);
-            }
+            if(this.uploadId) { this.getUpload(this.uploadId); }
         },
         methods: {
             ...mapActions({
@@ -74,7 +72,7 @@
             triggerUploadFormSubmit() {
                 this.$refs.uploadForm.submitForm();
             },
-            async stepSaveUploadForm() {
+            async stepSaveUploadForm(transitionNextStepAfterSave) {
               if(this.$refs.uploadForm.validateForm()) {
                   if((!this.uploadId && !this.newUploadCreated) && !this.createUploadInProgress) {
                       // console.log("create new upload");
@@ -82,17 +80,16 @@
                       const initialUpload = {
                           name: submission.data.datasetName,
                           description: submission.data.datasetName,
-                          uploader: this.user.displayName
+                          uploader: this.user.email
                       }
-                      this.createInitialUpload(initialUpload);
+                      await this.createInitialUpload(initialUpload);
                       await this.triggerUploadFormSubmit();
                   }
                   else {
                       // console.log("update existing upload submission");
                       await this.triggerUploadFormSubmit();
                   }
-                  await this.triggerUploadFormSubmit();
-                  this.step = this.steps.step2FileSelection;
+                  if(transitionNextStepAfterSave) { this.step = this.steps.step2FileSelection; }
               }
               else {
                 //still trigger submit so form displays all validation errors on UI
@@ -133,13 +130,8 @@
             },
             // eslint-disable-next-line no-unused-vars
             newUploadCreated: function (newVal, oldVal) {
-                // console.log('newUploadCreated prop changed: ', newVal, ' | was: ', oldVal);
                 if(newVal) {
-                    // console.log("new upload created");
-                    // console.log("upload id: " + this.upload._id);
-                    // console.log(`this.$route.params.id: ${this.$route.params.id}`);
                     if(this.$route.params.id != this.upload._id ) {
-                        // console.log("re-route");
                         this.$router.push({ name: 'upload', params: { id: this.upload._id } });
                     }
                 }

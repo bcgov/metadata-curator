@@ -1,14 +1,19 @@
+const mongoose = require('mongoose');
 const db = require('../db/db');
+const forumClient = require('../clients/forum_client');
 let log = require('npmlog');
 
-const createDataUpload = async (upload) => {
+const createDataUpload = async (user, upload) => {
     try {
         const dataUploadSchema = new db.DataUploadSchema;
+        const id = mongoose.Types.ObjectId();
+        const topic = await forumClient.addTopic(id, user);
+        dataUploadSchema._id = id;
         dataUploadSchema.name = upload.name;
         dataUploadSchema.description = upload.description;
         dataUploadSchema.uploader = upload.uploader;
         dataUploadSchema.files = upload.files;
-        dataUploadSchema.topic_id = upload.topic_id;
+        dataUploadSchema.topic_id = topic._id;
         dataUploadSchema.create_date = new Date();
         dataUploadSchema.opened_by_approver = false;
         dataUploadSchema.approver_has_commented = false;
@@ -43,9 +48,24 @@ const updateDataUpload = async (dataUploadId, updatedData) => {
     }
 }
 
-const listDataUploads = async () => {
+const listDataUploads = async (user, query) => {
     try {
-        return await db.DataUploadSchema.find({}).sort({ "create_date": 1});
+        let topics = [];
+        const topicResponse = await forumClient.getTopics(user, query);
+        if(query && query.filterBy) {
+            if(query.filterBy === 'me') {
+                topics = topicResponse.data.filter(item => item.contributors.indexOf(user.email) !== -1 && item.parent_id);
+            } else {
+                topics = topicResponse.data.filter(item => item.parent_id);
+            }
+        }
+        else {
+            topics = topicResponse.data.filter(item => item.parent_id);
+        }
+
+        const uploadIds = topics.map(item => item.name);
+        return await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": 1});
+
     } catch (e) {
         log.error(e);
         throw new Error(e.message)

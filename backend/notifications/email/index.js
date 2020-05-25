@@ -61,7 +61,6 @@ var notification = function(_config = null){
 
         if (config.has('alwaysNotifyList')){
             var emailList = config.get('alwaysNotifyList')[user.organization];
-            console.log("alwaysNotifyList emails: ", emailList);
             for (let i=0; i<emailList.length; i++){
                 sendEmail(dataUpload, {name: emailList[i].name, email: emailList[i].email}, user, "emailTemplate.html");
             }

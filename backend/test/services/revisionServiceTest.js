@@ -2,7 +2,9 @@ var chai = require('chai')
 chai.use(require('chai-as-promised'))
 var should = chai.should()
 var expect = chai.expect
+var sinon = require('sinon')
 
+const forumClient = require('../../clients/forum_client');
 const repoService = require('../../services/repoService')
 const repoBranchService = require('../../services/repoBranchService')
 const dataUploadService = require('../../services/dataUploadService')
@@ -16,8 +18,9 @@ after(async () => await dbHandler.closeDatabase())
 describe("RevisionService Test", function() {
     let duid, rid, bid, revid, pkgDesc;
 
+    before(async() => sinon.stub(forumClient, 'addTopic').returns({_id:"0000000009c5d71ee7600000"}))
     beforeEach (async () => {
-        duid = await dataUploadService.createDataUpload({name:"my_upload",uploader:"joe"})
+        duid = await dataUploadService.createDataUpload({},{name:"my_upload",uploader:"joe"})
         rid = await repoService.createRepo(duid._id, 'some repo name');
         bid = await repoBranchService.addBranch(rid._id, 'standard', 'Standard dataset', "Description about the standard metadata");
 
@@ -33,6 +36,9 @@ describe("RevisionService Test", function() {
             ]
         }        
         revid = await revisionService.createRevisionWithDataPackage(bid, 'Change summary', 'joe@local', pkgDesc);
+    })
+    after(async () => {
+        sinon.restore();
     })
 
     it('should succeed creating a revision', async () => {
