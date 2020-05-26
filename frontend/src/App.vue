@@ -71,4 +71,7 @@ export default {
 </script>
 
 <style scoped>
+    /deep/ .formio-errors .error {
+        color: white !important;
+    }
 </style>

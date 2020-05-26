@@ -13,7 +13,7 @@ describe("DataUploadController", function() {
     let sandbox
     before(async () => {
         sandbox = sinon.createSandbox();
-        sandbox.stub(dataUploadService, 'createDataUpload').returns({_id:"0000000"})
+        sandbox.stub(dataUploadService, 'createDataUpload').returns({name:"dupload"})
         sandbox.stub(dataUploadService, 'updateDataUpload').returns({name:"dupload"})
         sandbox.stub(dataUploadService, 'getDataUploadById').returns({name:"dupload"})
         sandbox.stub(dataUploadService, 'listDataUploads').returns([{name:"dupload"}])
@@ -40,7 +40,7 @@ describe("DataUploadController", function() {
         let { dataUploadController } = require('../../controllers')
         const response = resStub()
         await dataUploadController.postDataUpload({body:{name:"abc", uploader:"aa"}}, response)
-        expect(response.answer).to.equal("201 {\"id\":\"0000000\"}")
+        expect(response.answer).to.equal( "201 {\"name\":\"dupload\"}");
     })
 
     it('should succeed put', async () => {

@@ -39,16 +39,16 @@ async function encrypt(commit, clear, content, key, replaceIndex){
             commit('setBlob', {index: replaceIndex, blob: new Blob([cipherText.data])} );
         }
     });
-    
+
 }
 
 const actions = {
-    async encryptContent({commit, state}, {index, clear, content}){   
+    async encryptContent({commit, state}, {index, clear, content}){
 
         if (state.publicKey == null){
             let data = await backend.getPublicKey();
             commit('setPublicKey', {key: data.key});
-            
+
         }
 
         if (state.uploadUrl === ""){
@@ -56,13 +56,13 @@ const actions = {
                 commit('setUploadUrl', {uploadUrl: data.url});
             });
         }
-        
+
         let rI = index;
         if ( (content.length-1) <= index ){
             //add blob
             rI = -1;
         }
-        
+
         await encrypt(commit, clear, content, state.key, rI);
 
         return true;
@@ -102,7 +102,7 @@ const mutations = {
     },
     // eslint-disable-next-line no-unused-vars
     resetState(state){
-        console.log("file.js resetState");
+        // console.log("file.js resetState");
         state =  {
             content: "",
             fileName: "",

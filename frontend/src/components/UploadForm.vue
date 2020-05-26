@@ -26,49 +26,58 @@
         components:{
             formio: Form
         },
-        created() {
+        props: {
+            upload: {
+                type: Object,
+                required: false,
+                default: () => null
+            },
+        },
+        async created() {
             this.resetState();
-            if(this.$route.params.id && this.$route.params.id != 'new') { this.uploadId = this.$route.params.id; }
             this.formSubmission = {...this.submission};
-            if(this.uploadId) { this.getUpload(this.uploadId); }
-            this.getUploadForm();
+            await this.getUploadForm();
+
+            if(this.upload) {
+                this.uploadId = this.upload;
+                this.getUploadFormSubmission(this.upload.upload_submission_id);
+            }
+        },
+        mounted() {
         },
         methods: {
             ...mapActions({
-                getUploadForm: 'upload/getUploadForm',
-                createInitialUpload: 'upload/createInitialUpload',
-                getUpload: 'upload/getUpload',
-                createUploadFormSubmission: 'upload/createUploadFormSubmission',
-                updateUploadFormSubmission: 'upload/updateUploadFormSubmission',
+                getUploadForm: 'uploadForm/getUploadForm',
+                getUploadFormSubmission: 'uploadForm/getUploadFormSubmission',
+                createUploadFormSubmission: 'uploadForm/createUploadFormSubmission',
+                updateUploadFormSubmission: 'uploadForm/updateUploadFormSubmission',
             }),
             ...mapMutations({
-                resetState: 'upload/resetState',
+                resetState: 'uploadForm/resetState',
             }),
             async onSubmit(submission) {
-                // console.log(submission);
-                if((!this.uploadId && !this.newUploadCreated) && !this.createUploadInProgress) {
-                    console.log("create new upload and submission");
-                    const initialUpload = {
-                        name: submission.data.datasetName,
-                        description: submission.data.datasetName,
-                        uploader: this.user.displayName
-                    }
-                    this.createInitialUpload(initialUpload);
+                // console.log("onSubmit submission: ", submission);
+                // console.log(`submission._id: ${submission._id}, newSubmissionCreated: ${this.newSubmissionCreated},
+                //             this.createSubmissionInProgress: ${this.createSubmissionInProgress}`);
+                if(!submission._id && !this.createSubmissionInProgress) {
+                    // console.log("create new submission");
                     await this.createUploadFormSubmission(submission.data);
                 }
                 else {
-                    console.log("update existing upload submission");
+                    // console.log("update existing upload submission");
                     await this.updateUploadFormSubmission(this.formSubmission);
                 }
-
-                this.$refs.formioObj.formio.emit('submitDone', submission);
+                // this.$refs.formioObj.formio.emit('submitDone', submission);
             },
             submitForm() {
-                console.log("this.$refs.formioObj.formio: ", this.$refs.formioObj.formio);
+                // console.log("this.$refs.formioObj.formio: ", this.$refs.formioObj.formio);
                 this.$refs.formioObj.formio.submit();
             },
             validateForm() {
                 return this.$refs.formioObj.formio.checkValidity();
+            },
+            getSubmission() {
+                return this.formSubmission;
             }
         },
         data () {
@@ -81,12 +90,9 @@
         },
         computed: {
             ...mapState({
-                user: state => state.user.user,
-                uploadForm: state => state.upload.uploadForm,
-                upload: state => state.upload.upload,
-                createUploadInProgress: state => state.upload.createUploadInProgress,
-                submission: state => state.upload.submission,
-                newUploadCreated: state => state.upload.newUploadCreated,
+                uploadForm: state => state.uploadForm.formDef,
+                submission: state => state.uploadForm.submission,
+                createSubmissionInProgress: state => state.uploadForm.createSubmissionInProgress,
             }),
         },
         watch: {
@@ -95,36 +101,25 @@
                 // console.log('uploadForm prop changed: ', newVal, ' | was: ', oldVal);
                 this.formDef = JSON.parse(JSON.stringify(newVal));
             },
-            // eslint-disable-next-line no-unused-vars
+            // // eslint-disable-next-line no-unused-vars
             upload: function (newVal, oldVal) {
                 // console.log('uploadForm prop changed: ', newVal, ' | was: ', oldVal);
-                if(newVal) {
-                    // console.log("set upload exists to true");
+                if(newVal && !oldVal) {
+                    this.uploadId = newVal._id;
+                    // console.log("assigned upload id: " + this.uploadId);
                 }
             },
             // eslint-disable-next-line no-unused-vars
             submission: function (newVal, oldVal) {
                 // eslint-disable-next-line no-undef
                 if(newVal) {
-                    console.log("update  submission");
+                    // console.log("update  submission");
                     this.formSubmission = {...newVal};
-                }
-            },
-            // eslint-disable-next-line no-unused-vars
-            newUploadCreated: function (newVal, oldVal) {
-                // console.log('newUploadCreated prop changed: ', newVal, ' | was: ', oldVal);
-                if(newVal) {
-                    // console.log("new upload created");
-                    // console.log("upload id: " + this.upload._id);
-                    console.log(`this.$route.params.id: ${this.$route.params.id}`);
-                    if(this.$route.params.id != this.upload._id ) {
-                        // console.log("re-route");
-                        this.$router.push({ name: 'upload', params: { id: this.upload._id } });
-                    }
                 }
             },
         },
         beforeDestroy() {
+            // console.log("uploadform reset state");
             this.resetState();
         },
     }
