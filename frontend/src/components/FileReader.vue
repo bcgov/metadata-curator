@@ -72,10 +72,6 @@ export default {
             type: Boolean,
             default: true
         },
-        mutateVuex: {
-            type: Boolean,
-            default: true
-        },
         showUploadButton: {
             type: Boolean,
             default: true
@@ -84,6 +80,10 @@ export default {
             type: Boolean,
             default: false
         },
+        triggerUpload: {
+            type: Boolean,
+            default: false,
+        }
     },
 
     data() {
@@ -140,23 +140,37 @@ export default {
         },
         progressMessage4: function(){
             return `Upload 2: ${this.up2Progress}/${this.up2Size}` 
-        }
+        },
+
+        getFinger: function(){
+            if (typeof(this.file) !== "undefined"){
+                return this.file.name + "-" + this.file.type + "-" + this.file.size + "-" + this.file.lastModified;
+            }
+            return "";
+        },
+
 
     },
 
     watch: {
-        file(newVal){
+        triggerUpload(newVal){
+            if (newVal){
+                this.upload();
+            }
+        },
+
+        file(){
             this.uploads = [];
             this.numChunks = 0;
             this.currChunk = 0;
             this.nextChunk = 1;
-            let newFing = this.getFinger(newVal);
+            let newFing = this.getFinger;
 
-            if (this.fileSig !== "" && this.fileSig !== newFing){
+            /*if (this.fileSig[newFing]){
                 //Trying to change upload
-                this.confirmChange = true;
-                this.confirmResume = false;
-            }else if (this.fileSig !== "" && this.fileSig === newFing){
+                //this.confirmChange = true;
+                //this.confirmResume = false;
+            }else */if (this.fileSig[newFing]){
                 ///same upload resume
                 this.confirmResume = true;
                 this.confirmChange = false;
@@ -169,12 +183,6 @@ export default {
     },
 
     methods: {
-        getFinger: function(file){
-            if (typeof(file) !== "undefined"){
-                return file.name + "-" + file.type + "-" + file.size + "-" + file.lastModified;
-            }
-            return "";
-        },
 
         resumeConfirmed: function(){
             this.confirmChange = false;
@@ -212,20 +220,19 @@ export default {
                 resume = false;
             }
 
-            //this always mutates the store so we can track the files for later
             this.$store.commit('file/addFileHandleIfNotPresent', {handle: this.file});
 
-             if ( (this.readFile) && (this.file) ){    
+             if (this.file){
                 this.disabled = true;
                 var self = this;
                 this.pleaseWait = true;
                 this.getNextChunk(0).then( () => {
                     self.numEncrypted += 1
-                     if (resume){
+                     if ( (resume) && (this.successfullyUploadedChunks[this.getFinger]) ){
                         this.nextChunk = -1;
                         let i = 0;
-                        for (; i<this.successfullyUploadedChunks.length; i++){
-                            if (typeof(this.successfullyUploadedChunks[i])==="undefined"){
+                        for (; i<this.successfullyUploadedChunks[this.getFinger].length; i++){
+                            if (typeof(this.successfullyUploadedChunks[this.getFinger][i])==="undefined"){
                                 this.currChunk = i-1;
                                 this.nextChunk = i;
                                 break;
@@ -245,9 +252,8 @@ export default {
                     self.pleaseWait = false;
                 });
 
-            }else if ((!this.file) && (this.mutateVuex)){
+            }else if ((!this.file) && (this.readFile)){
                 this.$store.commit('file/clearContent');
-                this.$store.commit('file/setFileSig', {fileSig: ""});
             }
         },
 
@@ -261,16 +267,17 @@ export default {
                 }
 
                 reader.onload = async function(e){
-                    if (self.mutateVuex === true){
+                    let content = new Uint8Array(e.target.result);
+
+                    if (self.readFile === true){
                         // console.log("watch filename: " + self.file.name);
                         
-                        let content = new Uint8Array(e.target.result);
-
                         if (self.offset === 0){
-                            self.$store.commit('file/setFileSig', {fileSig: ""});
-                            self.$store.commit('file/setFileName', { fileName: self.file.name})
+                            let finger = self.getFinger;
+                            self.$store.commit('file/setFileName', { fileName: self.file.name});
+                            self.$store.commit('file/addFileHandleIfNotPresent', { handle: self.file});
                             await self.$store.commit('file/setContent', { content: content, index: index});
-                            let finger = self.getFinger(self.file);
+                            
                             self.$store.commit('file/setFileSig', {fileSig: finger});
                         }
 
@@ -279,10 +286,7 @@ export default {
                         });
                         
                     }else{
-                        if (self.readFile){
-                            self.fileContent = e.target.result;
-                        }
-                        self.encrypt(e.target.result, index).then ( () => {
+                        self.encrypt(content, index).then ( () => {
                             resolve(e.target.result);
                         })
                         
@@ -315,10 +319,10 @@ export default {
             var fing = function(file, options, callback){
                 return callback(null, [
                     "tus-br",
-                    file.name,
-                    file.type,
-                    file.size,
-                    file.lastModified,
+                    self.file.name,
+                    self.file.type,
+                    self.file.size,
+                    self.file.lastModified,
                     i, //the chunk
                     options.endpoint
                 ].join("-"));
@@ -347,9 +351,7 @@ export default {
                     this.up1Size = bytesTotal;
                 },
                 onSuccess: async() => {
-                    if (this.readFile && this.mutateVuex){
-                        self.$store.commit('file/setSuccessfullyUploadedChunk', {index: i, success: true});
-                    }
+                    self.$store.commit('file/setSuccessfullyUploadedChunk', {fing: this.getFinger, index: i, success: true});
                     i += 1;
                     this.numUploaded += 1;
 
@@ -357,13 +359,13 @@ export default {
                         let chunkIndex = 2;
                         this.getNextChunk(chunkIndex).then( () => {
                             self.numEncrypted += 1
-                            if ((i<self.numChunks) && (self.blob[chunkIndex].size > 0)){
+                            if (i<self.numChunks){
                                 uploadOptions.onProgress = function(byteUp, byteTot){
                                     self.up2Progress = byteUp;
                                     self.up2Size = byteTot;
                                 }
                                 let u2 = null;
-                                if (this.readFile && this.mutateVuex){
+                                if (this.readFile){
                                     u2 = new tus.Upload(self.blob[chunkIndex], uploadOptions);
                                 }else{
                                     u2 = new tus.Upload(self.encContentBlobs[chunkIndex], uploadOptions);
@@ -377,9 +379,8 @@ export default {
                                     joinIds.push(url);
                                 }
                                 backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0").then( () => {
-                                    if (this.readFile && this.mutateVuex){
-                                        self.$store.commit('file/setFileSig', {fileSig: ""});
-                                    }
+                                    self.$store.commit('file/setFileSig', {fileSig: this.getFinger});
+                                    self.$emit('upload-finished')
                                     self.numUploaded += 1;
                                     self.disabled = false;
                                 }).catch( (/*e*/) => {
@@ -389,52 +390,58 @@ export default {
                                 });
                             }
                         });
-                    }                        
+                    }else{
+                        self.$emit('upload-finished');
+                        self.disabled = false;
+                    }                     
                 },
             }
 
-            if (this.blob[0].size <= this.chunkSize){
+            let u = null;
+            let size = this.readFile ? this.blob[0].size : this.encContentBlobs[0].size;
+            if (size <= this.chunkSize){
                 uploadOptions.headers = {};
             }
-            let u = null;
-            if (this.readFile && this.mutateVuex){
+
+            if (this.readFile){
                 u = new tus.Upload(this.blob[0], uploadOptions);
-            }else{
-                u = new tus.Upload(this.encContentBlobs[0]);
+            }else{ 
+                u = new tus.Upload(this.encContentBlobs[0], uploadOptions);
             }
             this.uploads.push(u);
-            this.getNextChunk(this.nextChunk).then( () => {
-                self.numEncrypted += 1
-                let chunkIndex = 1;
-                i += 1;
-                if ((i<self.numChunks) && (self.blob[chunkIndex].size > 0)){
-                    let u2 = null;
-                    if (this.readFile && this.mutateVuex){
-                        u2 = new tus.Upload(self.blob[chunkIndex], uploadOptions);
-                    }else{
-                        u2 = new tus.Upload(self.encContentBlobs[chunkIndex], uploadOptions);
-                    }
-                    u2.start();
-                    self.uploads.push(u2);
-                }else if ( (i !== 1) && (i >= self.numChunks) ){
-                    let joinIds = [];
-                    for (let j=0; j<self.uploads.length; j++){
-                        let url = self.uploads[j].url.substring(self.uploads[j].url.substring(9).indexOf("/")+9);
-                        joinIds.push(url);
-                    }
-                    backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0").then( () => {
-                        if (this.readFile && this.mutateVuex){
-                            self.$store.commit('file/setFileSig', {fileSig: ""});
+            if (size*2 <= this.chunkSize){
+                this.getNextChunk(this.nextChunk).then( () => {
+                    self.numEncrypted += 1
+                    let chunkIndex = 1;
+                    i += 1;
+                    if (i<self.numChunks){
+                        let u2 = null;
+                        if (this.readFile){
+                            u2 = new tus.Upload(self.blob[chunkIndex], uploadOptions);
+                        }else{
+                            u2 = new tus.Upload(self.encContentBlobs[chunkIndex], uploadOptions);
                         }
-                        self.numUploaded += 1;
-                        self.disabled = false;
-                    }).catch( (/*e*/) => {
-                        // eslint-disable-next-line
-                        console.log("Concatenation error", error);
-                        self.disabled = false;
-                    });
-                }
-            });
+                        u2.start();
+                        self.uploads.push(u2);
+                    }else if ( (i !== 1) && (i >= self.numChunks) ){
+                        let joinIds = [];
+                        for (let j=0; j<self.uploads.length; j++){
+                            let url = self.uploads[j].url.substring(self.uploads[j].url.substring(9).indexOf("/")+9);
+                            joinIds.push(url);
+                        }
+                        backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0").then( () => {
+                            self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
+                            self.$emit('upload-finished')
+                            self.numUploaded += 1;
+                            self.disabled = false;
+                        }).catch( (e) => {
+                            // eslint-disable-next-line
+                            console.log("Concatenation error", e);
+                            self.disabled = false;
+                        });
+                    }
+                });
+            }
             u.start();
         },
         onImportButtonClicked: function(){
