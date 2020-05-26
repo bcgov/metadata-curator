@@ -10,10 +10,24 @@ info:
   contact:
     name: Brandon Sharratt
 servers:
-  - url: /v1
+  - url: /api/v1
     description: This Server
+tags:
+  - name: Data Upload
+    description: Everything about data upload submissions
+  - name: data_upload_model
+    x-displayName: The Data Upload Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/DataUpload" />
+x-tagGroups:
+  - name: General
+    tags:
+      - Data Upload
+  - name: Models
+    tags:
+      - data_upload_model
 paths:
-  /:
+  /datauploads:
     get:
       summary: List all data uploads
       security:
@@ -64,14 +78,48 @@ components:
     DataUpload:
       required:
         - name
+        - create_date
+        - uploader
         - files
+        - opened_by_approver
+        - approver_has_commented
+        - status
       properties:
         name:
           type: string
           description: Name of the data upload
         description:
           type: string
-          description: Description of data upload
+          description: Description of the data upload
+        create_date:
+          type: date-time
+          description: Timestamp of when the data upload was submitted
+        uploader:
+          type: string
+          description: Person who performed the data upload
+        topic_id:
+          type: string
+          description: A reference to the discussion topic
+        opened_by_approver:
+          type: boolean
+          description: Indicates whether an approver has opened this data upload request
+          default: false
+        approver_has_commented:
+          type: boolean
+          description: Indicates whether an approver commented on this data upload
+          default: false
+        upload_submission_id:
+          type: string
+          description: '??'
+        status:
+          type: string
+          description: Status of this request
+          enum:
+            - not_submitted
+            - upload_in_progress
+            - upload_error
+            - submitted
+          default: not_submitted
         files:
           type: array
           items:
@@ -139,6 +187,6 @@ components:
         OAuth2 is also a safer and more secure way to give you access.
       type: oauth2
       flows:
-        password:
-          tokenUrl: 'http://localhost:9090/token'
+        implicit:
+          authorizationUrl: 'http://localhost:9090/token'
           scopes: {}
