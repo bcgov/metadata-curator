@@ -1,6 +1,6 @@
 var fs = require('fs');
 var express = require('express');
-var router = express.Router();
+
 var path = require('path');
 var config = require('config');
 
@@ -18,45 +18,56 @@ let tableSchemasRoutes = require('./tableSchemas/routes');
 let repositoriesRoutes = require('./repositories/routes');
 let repoBranchesRoutes = require('./repoBranches/routes');
 
-//api spec
-router.use('/spec', express.static(path.join(__dirname, 'spec')));
+module.exports = (router) => {
 
-//api docs
-router.use('/api-docs/', function(req, res){
-    var docs = require('./docs/docs');
-    res.send(docs.getDocHTML("v1"));
-});
+    //api spec
+    router.use('/spec', express.static(path.join(__dirname, 'spec')));
 
-// const swaggerUi = require('swagger-ui-express');
-// var Converter = require('api-spec-converter');
-// let openapiFile = path.join(__dirname, 'spec') + "/api-docs.yaml";
+    //api docs
+    router.use('/api-docs', function(req, res){
+        var docs = require('./docs/docs');
+        res.send(docs.getDocHTML("v1"));
+    });
 
-// var options = {
-//     explorer: true
-//     };
+    // const swaggerUi = require('swagger-ui-express');
+    // var Converter = require('api-spec-converter');
+    // let openapiFile = path.join(__dirname, 'spec') + "/api-docs.yaml";
 
-// Converter.convert({
-//     from: 'openapi_3',
-//     to: 'swagger_2',
-//     source: openapiFile,
-// }, function(err, converted) {
-//     let swaggerDocument = JSON.parse(converted.stringify())
+    // var options = {
+    //     explorer: true
+    //     };
 
-//     swaggerDocument.securityDefinitions.api_auth.tokenUrl = config.get("oidc.tokenURL")
-//     swaggerDocument.securityDefinitions.api_auth.authorizationUrl = config.get("oidc.authorizationURL")
+    // Converter.convert({
+    //     from: 'openapi_3',
+    //     to: 'swagger_2',
+    //     source: openapiFile,
+    // }, function(err, converted) {
+    //     let swaggerDocument = JSON.parse(converted.stringify())
 
-    
-//     console.log("Registered /swag-docs");
-//     router.use('/swag-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
-// })
+    //     swaggerDocument.securityDefinitions.api_auth.tokenUrl = config.get("oidc.tokenURL")
+    //     swaggerDocument.securityDefinitions.api_auth.authorizationUrl = config.get("oidc.authorizationURL")
 
-router.use('/datauploads', dataUploadRoutes(express.Router()));
-router.use('/datapackages', dataPackagesRoutes(express.Router()));
-router.use('/tableschemas', tableSchemasRoutes(express.Router()));
-router.use('/forum', forumRouter);
-router.use('/formio', formioRouter);
+        
+    //     console.log("Registered /swag-docs");
+    //     router.use('/swag-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
+    // })
 
-router.use('/repos', repositoriesRoutes(express.Router()));
-router.use('/repobranches', repoBranchesRoutes(express.Router()));
+    router.use('/datauploads', dataUploadRoutes(express.Router()));
+    router.use('/datapackages', dataPackagesRoutes(express.Router()));
+    router.use('/tableschemas', tableSchemasRoutes(express.Router()));
+    router.use('/forum', forumRouter);
+    router.use('/formio', formioRouter);
 
-module.exports = router;
+    router.use('/repos', repositoriesRoutes(express.Router()));
+    router.use('/repobranches', repoBranchesRoutes(express.Router()));
+
+    router.use('/token', function(req, res){
+        if (req.user && req.user.jwt && req.user.refreshToken) {
+            res.json(req.user);
+        }else{
+            res.json({error: "Not logged in"});
+        }
+    });
+
+    return router;
+}

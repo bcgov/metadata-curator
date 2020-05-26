@@ -9,8 +9,8 @@ global.catchAsync = fn => {
     };
 };
 
-let v1 = require('./v1/v1');
-router.use('/v1', v1);
+const v1 = require('./v1/v1');
+router.use('/v1', v1(express.Router()));
 
 frontendRoutes(router);
 
