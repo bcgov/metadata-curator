@@ -28,7 +28,7 @@ describe("Repositories", function() {
             `
 
             chai.request(server)
-            .post('/api/v1/repos')
+            .post('/api/v1/repositories')
             .set('Authorization' , 'Bearer ' + jwt)
             .send(JSON.parse(body))
             .end(async function (err, res) {

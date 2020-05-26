@@ -6,17 +6,15 @@
 #####################################################################################################################
 
 ### /metadatarevisions - default flow
-POST {{base-url}}/metadatarevisions
+POST {{base-url}}/repos/5ecc148fedadcc07b812753b/branches/5ecc15943e191307cb0d6e2f/revisions
 Authorization: Bearer {{jwt}}
 Content-Type: application/json
 
 {
-  "repo_branch_id": "5ebb2e692c62a269262f9d1d",
   "type": "tabular_data_package",
-  "revision_number": 1,
   "change_summary": "Initial upload",
   "updater": "Jane Doe",
-  "content": {}
+  "descriptor": {}
 }
 
 > {%
@@ -27,6 +25,11 @@ Content-Type: application/json
 
 ###
 
+GET {{base-url}}/repos/5ecc148fedadcc07b812753b/branches/5ecc15943e191307cb0d6e2f/revisions
+Authorization: Bearer {{jwt}}
+Content-Type: application/json
+
+{}
 
 
 

@@ -20,4 +20,7 @@ var dataPackageSchema = new Schema({
 
 var model = mongoose.model('dataPackageSchema', dataPackageSchema, 'dataPackageSchema');
 
-module.exports = model;
+module.exports = {
+    dataPackageSchema,
+    model
+}
