@@ -135,7 +135,7 @@ if (env === "test") {
     app.use('/api', passport.authenticate(['jwt']));
 }
 
-app.get('/', (req, res) => { res.redirect('api/'); });
+app.get('/', (req, res) => { res.redirect('/api/v1/api-docs'); });
 
 app.use('/api', backendRouter);
 

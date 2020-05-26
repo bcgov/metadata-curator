@@ -13,12 +13,13 @@ module.exports = (router) => {
         next();
     });
     
-    router.use('/callback', passport.authenticate('oidc'), function(req, res, next){
+    router.get('/callback', passport.authenticate('oidc', { failureRedirect: '/api/login' }), function(req, res, next){
         let config = require('config');
         if (req.session.r){
             return res.redirect(config.get('frontend')+'/'+req.session.r);
         }
-        return res.redirect(config.get('frontend')+'/');
+        console.log("Redirect to "+config.get("frontend"));
+        return res.redirect(config.get('frontend'));
         
     });
     
@@ -27,7 +28,12 @@ module.exports = (router) => {
         let config = require('config');
         res.redirect(config.get('frontend'));
     });
-    
+
+    router.use('/oauth/token', function(req, res){
+        let config = require('config');
+        res.redirect(config.get("oidc.tokenURL"));
+    });
+
     router.use('/token', auth.removeExpired, function(req, res){
         if (req.user && req.user.jwt && req.user.refreshToken) {
             res.json(req.user);
@@ -36,7 +42,7 @@ module.exports = (router) => {
         }
     });
     
-    router.use('/', auth.removeExpired, function(req, res){
+    router.get('/', auth.removeExpired, function(req, res){
         if (req.user && req.user.jwt && req.user.refreshToken) {
             res.send(`
                 <html>

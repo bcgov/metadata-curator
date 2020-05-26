@@ -1,9 +1,20 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.1
+  version: 0.1.0
   title: Metadata Curator API
   description: |
-    This is a metadata curator api that provides services for managing metadata and file uploads.
+    # Introduction
+    This is the backend API for Metadata Curator.  The source is located at [Metadata Curator](https://github.com/bcgov/metadata-curator).
+
+    # OpenAPI Specification
+    This API is documented in **OpenAPI format** and uses [ReDoc](https://github.com/Redocly/redoc) documentation. In addition to standard
+    OpenAPI syntax we use a few [vendor extensions](https://github.com/Redocly/redoc/blob/master/docs/redoc-vendor-extensions.md).
+
+    # Cross-Origin Resource Sharing
+    This API features Cross-Origin Resource Sharing (CORS) implemented in compliance with  [W3C spec](https://www.w3.org/TR/cors/).
+    And that allows cross-domain communication from the browser.
+    All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.
+
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
@@ -19,13 +30,31 @@ tags:
     x-displayName: The Data Upload Model
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/DataUpload" />
+  - name: repository_model
+    x-displayName: The Repository Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Repository" />
+  - name: repository_branch_model
+    x-displayName: The Repository Branch Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/RepositoryBranch" />
+  - name: metadata_revision_model
+    x-displayName: The Metadata Revision Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/MetadataRevision" />
 x-tagGroups:
   - name: General
     tags:
-      - Data Upload
+      - Data Upload Submissions
+      - Repositories
+      - Repository Branches
+      - Metadata Revisions
   - name: Models
     tags:
       - data_upload_model
+      - repository_model
+      - repository_branch_model
+      - metadata_revision_model
 paths:
   /datauploads:
     get:
@@ -34,7 +63,7 @@ paths:
         - api_auth: [] 
       operationId: listDataUploads
       tags:
-        - Data Upload
+        - Data Upload Submissions
       responses:
         '200':
           description: A paged array of data uploads
@@ -52,7 +81,7 @@ paths:
       summary: Submit a new data upload
       operationId: submitDataUpload
       tags:
-        - Data Upload
+        - Data Upload Submissions
       requestBody:
         required: true
         content:
@@ -72,6 +101,223 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+
+  /datauploads/{dataUploadId}/repositories:
+    post:
+      summary: Link a new metadata repository
+      operationId: linkMetadataRepository
+      parameters:
+        - in: path
+          name: dataUploadId
+          schema:
+            type: string
+          required: true
+          description: The data upload submission related to this new repository
+      tags:
+        - Data Upload Submissions
+  /datauploads/{dataUploadId}/comments:
+    post:
+      summary: Add a new comment to a data upload submission
+      operationId: addComment
+      parameters:
+        - in: path
+          name: dataUploadId
+          schema:
+            type: string
+          required: true
+          description: The data upload submission related to this new comment
+      tags:
+        - Data Upload Submissions
+  /datauploads/{dataUploadId}/revisions:
+    get:
+      summary: List of metadata revisions for a data upload submission
+      operationId: listMetadataRevisions
+      parameters:
+        - in: path
+          name: dataUploadId
+          schema:
+            type: string
+          required: true
+          description: Filtered list of revisions by data upload submission
+      tags:
+        - Data Upload Submissions
+
+  /repos:
+    get:
+      summary: List all metadata repositories
+      operationId: listRepositories
+      tags:
+        - Repositories
+  /repos/{repoId}/branches:
+    get:
+      summary: List all branches of a metadata repository
+      operationId: listRepositoryBranches
+      parameters:
+        - in: path
+          name: repoId
+          schema:
+            type: string
+          required: true
+          description: Filtered list of branches in a repository
+      tags:
+        - Repository Branches
+    post:
+      summary: Create a new branch of a metadata repository
+      operationId: createRepositoryBranch
+      parameters:
+        - in: path
+          name: repoId
+          schema:
+            type: string
+          required: true
+          description: The repository related to this new branch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name of the new branch
+                  type: string
+                description:
+                  description: Description of the branch
+                  type: string
+                type:
+                  description: Type of branch
+                  type: string
+                  enum:
+                    - standard
+                    - reserve
+      tags:
+        - Repository Branches
+
+  /repobranches/{branchId}:
+    get:
+      summary: Get details of a particular branch of a metadata repository
+      operationId: getRepositoryBranch
+      parameters:
+        - in: path
+          name: branchId
+          schema:
+            type: string
+          required: true
+          description: The repository branch to get details about.
+      tags:
+        - Repository Branches
+    put:
+      summary: Update details of a particular branch of a metadata repository
+      operationId: updateRepositoryBranch
+      parameters:
+        - in: path
+          name: dataUploadId
+          schema:
+            type: string
+          required: true
+          description: The repository branch to update          
+      tags:
+        - Repository Branches
+    delete:
+      summary: Delete a particular branch of a metadata repository
+      operationId: deleteRepositoryBranch
+      parameters:
+        - in: path
+          name: dataUploadId
+          schema:
+            type: string
+          required: true
+          description: The repository branch to delete
+      tags:
+        - Repository Branches
+
+  /repobranches/{branchId}/revisions:
+    get:
+      summary: List revisions by branch
+      operationId: getRevisions
+      parameters:
+        - in: path
+          name: branchId
+          schema:
+            type: string
+          required: true
+          description: List of revisions for this repository branch
+      tags:
+        - Metadata Revisions
+    post:
+      summary: Record a new revision
+      operationId: recordNewRevision
+      parameters:
+        - in: path
+          name: branchId
+          schema:
+            type: string
+          required: true
+          description: The repository branch for the new revision
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MetadataRevisionPost"
+      tags:
+        - Metadata Revisions
+
+  /repobranches/{branchId}/revisions/{revisionId}:
+    get:
+      summary: Get details of a revision
+      operationId: getBranchRevision
+      parameters:
+        - in: path
+          name: branchId
+          schema:
+            type: string
+          required: true
+          description: The repository branch containing the revision
+        - in: path
+          name: revisionId
+          schema:
+            type: string
+          required: true
+          description: The revision to retrieve
+      tags:
+        - Metadata Revisions
+    put:
+      summary: Update details of a revision
+      operationId: updateBranchRevision
+      parameters:
+        - in: path
+          name: branchId
+          schema:
+            type: string
+          required: true
+          description: The repository branch containing the revision
+        - in: path
+          name: revisionId
+          schema:
+            type: string
+          required: true
+          description: The revision to update
+      tags:
+        - Metadata Revisions
+    delete:
+      summary: Delete a revision
+      operationId: deleteBranchRevision
+      description: "NOTE: Only supports deleting the most recent revision."
+      parameters:
+        - in: path
+          name: branchId
+          schema:
+            type: string
+          required: true
+          description: The repository branch containing the revision
+        - in: path
+          name: revisionId
+          schema:
+            type: string
+          required: true
+          description: The revision to delete
+      tags:
+        - Metadata Revisions
 
 components:
   schemas:
@@ -102,7 +348,7 @@ components:
           description: A reference to the discussion topic
         opened_by_approver:
           type: boolean
-          description: Indicates whether an approver has opened this data upload request
+          description: Indicates whether an approver has opened this data upload submission
           default: false
         approver_has_commented:
           type: boolean
@@ -158,6 +404,115 @@ components:
               size:
                 type: number
 
+    Repository:
+      required:
+        - name
+        - data_upload_id
+        - create_date
+      properties:
+        name:
+          type: string
+          description: Name of the metadata repository
+        data_upload_id:
+          type: string
+          description: Link to the data upload submission
+        create_date:
+          type: date-time
+          description: Timestamp of when the repository was created
+
+    RepositoryBranch:
+      required:
+        - repo_id
+        - name
+        - type
+        - description
+        - create_date
+        - revisions
+      properties:
+        name:
+          type: string
+          description: Name of the repository branch
+        description:
+          type: string
+          description: Description of the repository branch
+        repo_id:
+          type: string
+          description: Link to the metadata repository
+        type:
+          type: string
+          description: Type of branch
+          enum:
+            - standard
+            - reserve
+        create_date:
+          type: date-time
+          description: Timestamp of when the branch was created
+        revisions:
+          type: array
+          description: List of metadata revisions for the branch by reference
+          items:
+            type: string
+            description: Unique ID for a revision
+
+    MetadataRevision:
+      required:
+        - repo_branch_id
+        - type
+        - revision_number
+        - change_summary
+        - content
+        - updater
+        - create_date
+      properties:
+        type:
+          type: string
+          description: Type of revision
+          enum:
+            - tabular-data-package
+            - table-schema
+        revision_number:
+          type: number
+          description: Unique sequential revision number relative to branch
+        change_summary:
+          type: string
+          description: Short description about the changes in the revision
+        content:
+          type: string
+          description: A descriptor based on the frictionless data package shema (https://specs.frictionlessdata.io/data-package/) 
+        create_date:
+          type: date-time
+          description: Timestamp of when the revision record was created
+        updater:
+          type: string
+          description: Name of the person that created the revision
+        repo_branch_id:
+          type: string
+          description: Link to the repository branch (the branch also maintains references to the revision)
+
+    MetadataRevisionPost:
+      required:
+        - type
+        - change_summary
+        - content
+        - updater
+      properties:
+        type:
+          type: string
+          description: Type of revision
+          enum:
+            - tabular-data-package
+            - table-schema
+        change_summary:
+          type: string
+          description: Short description about the changes in the revision
+        content:
+          type: string
+          description: A descriptor based on the frictionless data package shema (https://specs.frictionlessdata.io/data-package/) 
+        updater:
+          type: string
+          description: Name of the person that created the revision
+          
+            
     Success:
       required:
         - message
@@ -187,6 +542,6 @@ components:
         OAuth2 is also a safer and more secure way to give you access.
       type: oauth2
       flows:
-        implicit:
-          authorizationUrl: 'http://localhost:9090/token'
+        password:
+          tokenUrl: '/oauth/token'
           scopes: {}
