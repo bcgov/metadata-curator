@@ -22,7 +22,7 @@ docs.getDocHTML = function(version){
         '  </head>\n' +
         '  <body>\n' +
         '    <redoc spec-url=\'/api/'+version+'/spec/api-docs.yaml\'></redoc>\n' +
-        '    <script src="https://cdn.jsdelivr.net/npm/redoc/bundles/redoc.standalone.js"> </script>\n' +
+        '    <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"> </script>\n' +
         '  </body>\n' +
         '</html>';
     return html;

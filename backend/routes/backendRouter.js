@@ -1,6 +1,6 @@
 let express = require('express');
 let router = express.Router();
-
+let passport = require('passport');
 let frontendRoutes = require('./frontend/routes');
 
 global.catchAsync = fn => {
