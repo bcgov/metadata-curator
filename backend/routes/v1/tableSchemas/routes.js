@@ -1,4 +1,4 @@
-const { tableSchemaController } = require('../../controllers')
+const { tableSchemaController } = require('../../../controllers')
 const { postTableSchema } = tableSchemaController;
 
 module.exports = (router) => {

@@ -1,5 +1,5 @@
 
-const {dataUploadController} = require('../../controllers')
+const {dataUploadController} = require('../../../controllers')
 const { getDataUploads, postDataUpload, postRepository, getDataUpload, putDataUpload, getDataUploadComments, postDataUploadComment, getRevisions } = dataUploadController;
 
 module.exports = (router) => {
