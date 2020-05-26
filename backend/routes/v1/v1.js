@@ -27,40 +27,28 @@ router.use('/api-docs/', function(req, res){
     res.send(docs.getDocHTML("v1"));
 });
 
-const swaggerUi = require('swagger-ui-express');
-var Converter = require('api-spec-converter');
-let openapiFile = path.join(__dirname, 'spec') + "/api-docs.yaml";
+// const swaggerUi = require('swagger-ui-express');
+// var Converter = require('api-spec-converter');
+// let openapiFile = path.join(__dirname, 'spec') + "/api-docs.yaml";
 
-// router.get('/swagger', (req, res, next) => {
-//     Converter.convert({
-//         from: 'openapi_3',
-//         to: 'swagger_2',
-//         source: openapiFile,
-//       }, function(err, converted) {
-//         console.log(converted.stringify());
-//         res.status(200).json(JSON.parse(converted.stringify()));
-//       });
-// });
+// var options = {
+//     explorer: true
+//     };
 
-var options = {
-    explorer: true,
-    oauth2RedirectUrl: '/api/v1/swag-docs/callback',
-    };
+// Converter.convert({
+//     from: 'openapi_3',
+//     to: 'swagger_2',
+//     source: openapiFile,
+// }, function(err, converted) {
+//     let swaggerDocument = JSON.parse(converted.stringify())
 
-Converter.convert({
-    from: 'openapi_3',
-    to: 'swagger_2',
-    source: openapiFile,
-}, function(err, converted) {
-    let swaggerDocument = JSON.parse(converted.stringify())
-
-    swaggerDocument.securityDefinitions.api_auth.tokenUrl = config.get("oidc.tokenURL")
-    swaggerDocument.securityDefinitions.api_auth.authorizationUrl = config.get("oidc.authorizationURL")
+//     swaggerDocument.securityDefinitions.api_auth.tokenUrl = config.get("oidc.tokenURL")
+//     swaggerDocument.securityDefinitions.api_auth.authorizationUrl = config.get("oidc.authorizationURL")
 
     
-    console.log("Registered /swag-docs");
-    router.use('/swag-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
-})
+//     console.log("Registered /swag-docs");
+//     router.use('/swag-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
+// })
 
 router.use('/datauploads', dataUploadRoutes(express.Router()));
 router.use('/datapackages', dataPackagesRoutes(express.Router()));

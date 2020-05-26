@@ -10,7 +10,6 @@
     "serve": "nodemon ./bin/www"
   },
   "dependencies": {
-    "api-spec-converter": "^2.11.0",
     "atob": "^2.1.2",
     "axios": "^0.19.2",
     "bent": "^7.1.0",
