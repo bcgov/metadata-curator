@@ -1,0 +1,144 @@
+openapi: "3.0.0"
+info:
+  version: 0.0.1
+  title: Metadata Curator API
+  description: |
+    This is a metadata curator api that provides services for managing metadata and file uploads.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  contact:
+    name: Brandon Sharratt
+servers:
+  - url: /v1
+    description: This Server
+paths:
+  /:
+    get:
+      summary: List all data uploads
+      security:
+        - api_auth: [] 
+      operationId: listDataUploads
+      tags:
+        - Data Upload
+      responses:
+        '200':
+          description: A paged array of data uploads
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataUploads"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Submit a new data upload
+      operationId: submitDataUpload
+      tags:
+        - Data Upload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DataUploadPost"
+      responses:
+        '201':
+          description: Success Message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessCreated"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    DataUpload:
+      required:
+        - name
+        - files
+      properties:
+        name:
+          type: string
+          description: Name of the data upload
+        description:
+          type: string
+          description: Description of data upload
+        files:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              size:
+                type: number
+        __v:
+          type: string
+          description: version of the data upload (increments with changes)
+    DataUploads:
+      type: array
+      items:
+        $ref: "#/components/schemas/DataUpload"
+
+    DataUploadPost:
+      required:
+        - name
+        - files
+      properties:
+        name:
+          type: string
+          description: Name of the data upload
+        description:
+          type: string
+          description: Description of data upload
+        files:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              size:
+                type: number
+
+    Success:
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Contains message about the success, normally "Written successfully"
+    SuccessCreated:
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          description: Contains the unique ID for the newly create record
+    Error:
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: contains a message about the failure
+
+  securitySchemes:
+    api_auth:
+      description: |
+        Get access to data while protecting your account credentials.
+        OAuth2 is also a safer and more secure way to give you access.
+      type: oauth2
+      flows:
+        password:
+          tokenUrl: 'http://localhost:9090/token'
+          scopes: {}

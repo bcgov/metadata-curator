@@ -1,9 +1,8 @@
 const { commentService, dataUploadService, repoService, revisionService } = require('../services')
 
 const postDataUpload = async (req, res, next) => {
-<<<<<<< HEAD
-    const upl = await dataUploadService.createDataUpload(req.body);
-    res.status(201).json({id: upl._id.toString()});
+    const dataUpload = await dataUploadService.createDataUpload(req.body);
+    res.status(201).json(dataUpload);
 }
 
 const postRepository = async (req, res, next) => {
@@ -12,10 +11,6 @@ const postRepository = async (req, res, next) => {
 
     const repo = await repoService.createRepo(id, fields.name);
     res.status(201).json({id: repo._id.toString()});
-=======
-    const dataUpload = await dataUploadService.createDataUpload(req.body);
-    res.status(201).json(dataUpload);
->>>>>>> develop
 }
 
 const putDataUpload = async (req, res, next) => {

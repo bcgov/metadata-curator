@@ -7,12 +7,6 @@ describe("MC Unit Tests", function() {
     require('./clients/forumClientTest');
     require('./clients/formioClientTest');
     require('./notifications/emailTest');
-//    require('./v1/dataPackagesTest');
-//    require('./v1/metadataRevisionsTest');
-    require('./v1/repositoriesTest');
-    require('./v1/tableSchemaTest');
-    require('./v1/forumApiTest');
-    require('./v1/formioTest');
     require('./services/dataUploadServiceTest');
     require('./services/commentServiceTest');
     require('./services/tableSchemaServiceTest');
@@ -21,4 +15,8 @@ describe("MC Unit Tests", function() {
     require('./services/repoBranchServiceTest');
     require('./services/revisionServiceTest');
     require('./controllers/dataUploadControllerTest');
+    require('./controllers/repoBranchControllerTest');
+    require('./controllers/repoControllerTest');
+    require('./v1/forumApiTest');
+    require('./v1/formioTest');
 });

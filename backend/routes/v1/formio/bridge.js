@@ -1,6 +1,6 @@
 var addRoutes = function(router){
     const config = require('config');
-    const formio = require('../../clients/formio_client');
+    const formio = require('../../../clients/formio_client');
 
     router.get('/forms', function(req, res, next){
         formio.getForms(function(err, form){
