@@ -12,6 +12,15 @@ const addBranch = async function(repoId, type, name, description) {
     return await repoBranchSchema.save();
 }
 
+const updateBranch = async function(branchId, type, name, description) {
+    const repoBranchSchema = getBranchById(branchId);
+    repoBranchSchema.type = type;
+    repoBranchSchema.name = name;
+    repoBranchSchema.description = description;
+    return await repoBranchSchema.save();
+}
+
+
 const listBranches = async (repoId) => {
     try {
         return await db.RepoBranchSchema.find({repo_id:repoId}).sort({ "create_date": 1});
@@ -55,6 +64,7 @@ const removeRevision = async (branchId, revisionId) => {
 
 module.exports = {
     addBranch,
+    updateBranch,
     listBranches,
     getBranchById,
     deleteBranch,

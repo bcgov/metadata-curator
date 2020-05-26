@@ -13,6 +13,15 @@ const createRepo = async function(dataUploadId, name) {
     return await repoSchema.save();
 }
 
+const listRepositories = async () => {
+    try {
+        return await db.RepoSchema.find({}).sort({ "create_date": 1});
+    } catch (e) {
+        log.error(e);
+        throw new Error(e.message)
+    }
+}
+
 const listRepositoriesByDataUpload = async (dataUploadId) => {
     try {
         return await db.RepoSchema.find({data_upload_id:dataUploadId}).sort({ "create_date": 1});
@@ -50,6 +59,7 @@ const createRepoWithDataPackage = async function(dataUploadId, name, updater, da
 
 module.exports = {
     createRepo,
+    listRepositories,
     listRepositoriesByDataUpload,
     createRepoWithDataPackage,
     getRepoById

@@ -13,8 +13,7 @@ let dataUploadRoutes = require('./dataUploads/routes');
 let dataPackagesRoutes = require('./dataPackages/routes');
 let tableSchemasRoutes = require('./tableSchemas/routes');
 let repositoriesRoutes = require('./repositories/routes');
-let repoBranchesRoutes = require('./repobranches/routes');
-let metadataRevisionsRoutes = require('./metadataRevisions/routes');
+let repoBranchesRoutes = require('./repoBranches/routes');
 
 global.catchAsync = fn => {
     return (req, res, next) => {
@@ -25,7 +24,6 @@ global.catchAsync = fn => {
 router.use('/v1/datauploads', dataUploadRoutes(express.Router()));
 router.use('/v1/datapackages', dataPackagesRoutes(express.Router()));
 router.use('/v1/tableschemas', tableSchemasRoutes(express.Router()));
-router.use('/v1/metadatarevisions', metadataRevisionsRoutes(express.Router()));
 router.use('/v1/forum', forumRouter);
 router.use('/v1/formio', formioRouter);
 

@@ -83,9 +83,7 @@ const addDataPackageFromTableSchema = async function(schemaDescriptor) {
 const addDataPackage = async function(descriptor) {
     await validateDataPackage(descriptor);
 
-    let dataPackageSchema = new db.DataPackageSchema;
-    dataPackageSchema.profile = descriptor.profile;
-    dataPackageSchema.resources = transformResources([...descriptor.resources]);
+    const dataPackageSchema = await buildDataPackageSchema(descriptor);
 
     return await dataPackageSchema.save().catch (e => {
         if (e instanceof mongoose.Error.ValidationError) {
@@ -175,11 +173,21 @@ const transformResourcesToFrictionless = function (resources) {
     return resources;
 }
 
+const buildDataPackageSchema = async function (descriptor) {
+    await validateDataPackage(descriptor);
+
+    let dataPackageSchema = new db.DataPackageSchema;
+    dataPackageSchema.profile = descriptor.profile;
+    dataPackageSchema.resources = transformResources([...descriptor.resources]);
+    return dataPackageSchema;
+}
+
 module.exports = {
     addDataPackage,
     addDataPackageFromTableSchema,
     deleteDataPackage,
     getDataPackageById,
     listDataPackages,
-    updateDataPackage
+    updateDataPackage,
+    buildDataPackageSchema
 }

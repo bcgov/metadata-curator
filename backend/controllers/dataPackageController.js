@@ -1,4 +1,4 @@
-const { dataPackageService} = require('../services');
+const { dataPackageService } = require('../services');
 
 const postDataPackage = async (req, res, next) => {
     let descriptor = {...req.body};

@@ -32,7 +32,7 @@ db.init = function (_connString = null) {
         // logger.debug('DB connection established');
     });
     db.TableSchema = require('./model/tableSchema').model;
-    db.DataPackageSchema = require('./model/dataPackageSchema');
+    db.DataPackageSchema = require('./model/dataPackageSchema').model;
     db.DataUploadSchema = require('./model/dataUpload');
     db.RepoSchema = require('./model/repo');
     db.RepoBranchSchema = require('./model/repoBranch').model;
