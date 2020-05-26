@@ -1,6 +1,8 @@
 import { Backend } from '../../services/backend';
 const backend = new Backend();
 
+import Vue from 'vue';
+
 const openpgp = require('openpgp');
 
 const state = {
@@ -10,8 +12,8 @@ const state = {
     blob: [],
     key: null,
     uploadUrl: "",
-    fileSig: "",
-    successfullyUploadedChunks: [],
+    fileSig: {},
+    successfullyUploadedChunks: {},
 };
 
 const getters = {
@@ -58,12 +60,7 @@ const actions = {
 
         if (state.publicKey == null){
             let data = await backend.getPublicKey();
-<<<<<<< HEAD
             commit('setPublicKey', {key: data.key});   
-=======
-            commit('setPublicKey', {key: data.key});
-
->>>>>>> 8b964bdcd3542b309582d52ed3756f591b717ec0
         }
 
         if (state.uploadUrl === ""){
@@ -102,7 +99,11 @@ const mutations = {
     },
 
     setFileSig(state, { fileSig }){
-        state.fileSig = fileSig;
+        Vue.set(state.fileSig, fileSig, true);
+    },
+
+    clearFileSig(state, { fileSig }){
+        Vue.delete(state.fileSig, fileSig);
     },
 
     setFileHandles(state, { handles }){
@@ -123,8 +124,11 @@ const mutations = {
         state.fileHandles = [];
     },
 
-    setSuccessfullyUploadedChunk(state, {index, success}){
-        state.successfullyUploadedChunks[index] = success;
+    setSuccessfullyUploadedChunk(state, {fing, index, success}){
+        if (typeof(state.successfullyUploadedChunks[fing]) === "undefined"){
+            state.successfullyUploadedChunks[fing] = [];
+        }
+        state.successfullyUploadedChunks[fing][index] = success;
     },
 
     setBlob(state, { blob, index }){
@@ -145,23 +149,17 @@ const mutations = {
     
     // eslint-disable-next-line
     resetState(state){
-<<<<<<< HEAD
         console.log("file.js resetState");
 
         state = {
             content: [],
             fileHandles: [],
-=======
-        // console.log("file.js resetState");
-        state =  {
-            content: "",
->>>>>>> 8b964bdcd3542b309582d52ed3756f591b717ec0
             fileName: "",
             blob: [],
             key: null,
             uploadUrl: "",
-            fileSig: "",
-            successfullyUploadedChunks: [],
+            fileSig: {},
+            successfullyUploadedChunks: {},
         }
     },
 }
