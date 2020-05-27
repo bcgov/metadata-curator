@@ -22,7 +22,7 @@ function isTokenExpired(token){
 
 formio.auth = function(callback){
     var token = formioCache.get("token");
-    if ((token) && (token !== undefined) ){
+    if ((token) && (token != undefined) ){
         //check if the token is expired
         if (!isTokenExpired(token)){
             callback(null, token);
