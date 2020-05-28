@@ -88,8 +88,8 @@ export default {
 
     data() {
         let defChunkSize = (5 * 1024 * 1024) + 1; // 5mb
-        //ram converted to bytes divided by 164 (arbitrary) by 3 because we can have 3 in mem at once
-        let customChunkSize = Math.ceil(navigator.deviceMemory * 1024 * 1024 * 1024 / 164 / 3);
+        //ram converted to bytes divided by 128 (arbitrary)
+        let customChunkSize = Math.ceil(navigator.deviceMemory * 1024 * 1024 * 1024 / 128);
         return {
             file: null,
             fileContent: "",
@@ -111,7 +111,6 @@ export default {
             pleaseWait: false,
             confirmChange: false,
             confirmResume: false,
-            nextChunk: 1,
         }
     },
 
@@ -130,10 +129,12 @@ export default {
         }),
 
         progressMessage1: function(){
-            return `Encrypted: ${this.numEncrypted}/${this.numChunks}` 
+            let num = this.numChunks && this.numChunks > 0 ? this.numChunks : 1;
+            return `Encrypted: ${this.numEncrypted}/${num}` 
         },
         progressMessage2: function(){
-            return `Uploaded: ${this.numUploaded}/${this.numChunks}` 
+            let num = this.numChunks && this.numChunks > 1 ? this.numChunks+1 : 1;
+            return `Uploaded: ${this.numUploaded}/${num}` 
         },
         progressMessage3: function(){
             return `Upload 1: ${this.up1Progress}/${this.up1Size}` 
@@ -163,7 +164,6 @@ export default {
             this.uploads = [];
             this.numChunks = 0;
             this.currChunk = 0;
-            this.nextChunk = 1;
             let newFing = this.getFinger;
 
             /*if (this.fileSig[newFing]){
@@ -226,26 +226,26 @@ export default {
                 this.disabled = true;
                 var self = this;
                 this.pleaseWait = true;
-                this.getNextChunk(0).then( () => {
+                this.getNextChunk(0).then( async() => {
                     self.numEncrypted += 1
-                     if ( (resume) && (this.successfullyUploadedChunks[this.getFinger]) ){
-                        this.nextChunk = -1;
+                    if ( (resume) && (this.successfullyUploadedChunks[this.getFinger]) ){
                         let i = 0;
                         for (; i<this.successfullyUploadedChunks[this.getFinger].length; i++){
                             if (typeof(this.successfullyUploadedChunks[this.getFinger][i])==="undefined"){
-                                this.currChunk = i-1;
-                                this.nextChunk = i;
                                 break;
                             }
                         }
-                        if ((this.nextChunk === -1) && (i < this.numChunks) ){
-                            this.nextChunk = i;
-                        }else if(this.nextChunk === -1){
-                            this.nextChunk = 1;
+                        let diff = i-1; //we read one chunk already
+                        if ( diff > 0 ){
+                            self.currChunk += diff;
+                            self.numEncrypted = self.currChunk - 1;
+                            self.numUploaded = self.currChunk - 1;
+                            self.offset += (self.chunkSize * diff);
+                            await this.getNextChunk(2);
                         }
+
                         if (this.currChunk<0){
                             this.currChunk = 0;
-                            this.nextChunk = 1;
                         }
                     }
                     self.disabled = false;
@@ -313,7 +313,7 @@ export default {
         upload: function(){
             this.disabled = true;
             this.showProgress = true;
-            var i = 0;
+            var i = this.currChunk;
             var self = this;
             var tus = require("tus-js-client");
             var fing = function(file, options, callback){
@@ -343,21 +343,20 @@ export default {
                 onError: error => {
                     // eslint-disable-next-line
                     console.log("Upload error", error)
-                    this.disabled = false;
+                    self.disabled = false;
                 },
                 onProgress: (bytesUploaded, bytesTotal) => {
-                    // eslint-disable-next-line
-                    this.up1Progress = bytesUploaded;
-                    this.up1Size = bytesTotal;
+                    self.up1Progress = bytesUploaded;
+                    self.up1Size = bytesTotal;
                 },
                 onSuccess: async() => {
                     self.$store.commit('file/setSuccessfullyUploadedChunk', {fing: this.getFinger, index: i, success: true});
                     i += 1;
-                    this.numUploaded += 1;
+                    self.numUploaded += 1;
 
-                    if ( (i+1) <= this.numChunks){
+                    if (i <= self.numChunks){
                         let chunkIndex = 2;
-                        this.getNextChunk(chunkIndex).then( () => {
+                        self.getNextChunk(chunkIndex).then( () => {
                             self.numEncrypted += 1
                             if (i<self.numChunks){
                                 uploadOptions.onProgress = function(byteUp, byteTot){
@@ -379,9 +378,9 @@ export default {
                                     joinIds.push(url);
                                 }
                                 backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0").then( () => {
-                                    self.$store.commit('file/setFileSig', {fileSig: this.getFinger});
+                                    self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
                                     self.$emit('upload-finished')
-                                    self.numUploaded += 1;
+                                    self.numUploaded = self.numChunks+1;
                                     self.disabled = false;
                                 }).catch( (/*e*/) => {
                                     // eslint-disable-next-line
@@ -392,6 +391,8 @@ export default {
                         });
                     }else{
                         self.$emit('upload-finished');
+                        self.numUploaded = self.numChunks+1
+                        self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
                         self.disabled = false;
                     }                     
                 },
@@ -403,14 +404,16 @@ export default {
                 uploadOptions.headers = {};
             }
 
+
+            let initialUpIndex = (this.currChunk > 1) ? 2 : 0;
             if (this.readFile){
-                u = new tus.Upload(this.blob[0], uploadOptions);
+                u = new tus.Upload(this.blob[initialUpIndex], uploadOptions);
             }else{ 
-                u = new tus.Upload(this.encContentBlobs[0], uploadOptions);
+                u = new tus.Upload(this.encContentBlobs[initialUpIndex], uploadOptions);
             }
             this.uploads.push(u);
             if (size*2 <= this.chunkSize){
-                this.getNextChunk(this.nextChunk).then( () => {
+                this.getNextChunk(1).then( () => {
                     self.numEncrypted += 1
                     let chunkIndex = 1;
                     i += 1;
@@ -432,7 +435,7 @@ export default {
                         backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0").then( () => {
                             self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
                             self.$emit('upload-finished')
-                            self.numUploaded += 1;
+                            self.numUploaded = self.numChunks+1;
                             self.disabled = false;
                         }).catch( (e) => {
                             // eslint-disable-next-line
