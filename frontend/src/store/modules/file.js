@@ -26,6 +26,7 @@ const getters = {
     getPublicKey: (state) => async () => {
         if (state.publicKey == null){
             let data = await backend.getPublicKey();
+            console.log("GET PK", data);
             return data.key
         }
         return state.publicKey;
@@ -103,6 +104,7 @@ const mutations = {
     },
 
     clearFileSig(state, { fileSig }){
+        Vue.delete(state.successfullyUploadedChunks, fileSig);
         Vue.delete(state.fileSig, fileSig);
     },
 
