@@ -4,15 +4,12 @@ const Schema = mongoose.Schema;
 var fieldSchema = new Schema({
     name: {type: String, required: true},
     type: {type: String, required: true},
-});
+}, { _id : false });
 
 var tableSchema = new Schema({
    fields: {type: [fieldSchema], required: true}
-});
-
-var model = mongoose.model('tableSchema', tableSchema, 'tableSchema');
+}, { _id : false });
 
 module.exports = {
-    model,
     tableSchema
 };

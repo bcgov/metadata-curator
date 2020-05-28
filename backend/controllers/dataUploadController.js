@@ -1,8 +1,16 @@
-const { commentService, dataUploadService } = require('../services')
+const { commentService, dataUploadService, repoService, revisionService } = require('../services')
 
 const postDataUpload = async (req, res, next) => {
     const dataUpload = await dataUploadService.createDataUpload(req.body);
     res.status(201).json(dataUpload);
+}
+
+const postRepository = async (req, res, next) => {
+    const id = req.params.dataUploadId;
+    let fields = {...req.body};
+
+    const repo = await repoService.createRepo(id, fields.name);
+    res.status(201).json({id: repo._id.toString()});
 }
 
 const putDataUpload = async (req, res, next) => {
@@ -36,11 +44,18 @@ const getDataUploadComments = async (req, res, next) => {
     res.json(comments);
 }
 
+const getRevisions = async (req, res, next) => {
+    const result = await revisionService.listRevisionsByDataUpload(req.params.dataUploadId);
+    res.json(result);
+}
+
 module.exports = {
     getDataUploads,
     postDataUpload,
     getDataUpload,
     putDataUpload,
     getDataUploadComments,
-    postDataUploadComment
+    postDataUploadComment,
+    postRepository,
+    getRevisions
 }

@@ -1,19 +1,7 @@
 let express = require('express');
 let router = express.Router();
-let forumRouter = express.Router();
-let forumBridge = require('./forumApi/bridge');
-forumRouter = forumBridge(forumRouter);
-
-let formioRouter = express.Router();
-let formioBridge = require('./formio/bridge');
-formioRouter = formioBridge(formioRouter);
-
+let passport = require('passport');
 let frontendRoutes = require('./frontend/routes');
-let dataUploadRoutes = require('./dataUploads/routes');
-let dataPackagesRoutes = require('./dataPackages/routes');
-let tableSchemasRoutes = require('./tableSchemas/routes');
-let repositoriesRoutes = require('./repositories/routes');
-let metadataRevisionsRoutes = require('./metadataRevisions/routes');
 
 global.catchAsync = fn => {
     return (req, res, next) => {
@@ -21,14 +9,9 @@ global.catchAsync = fn => {
     };
 };
 
-router.use('/v1/datauploads', dataUploadRoutes(express.Router()));
-router.use('/v1/datapackageschemas', dataPackagesRoutes(express.Router()));
-router.use('/v1/tableschemas', tableSchemasRoutes(express.Router()));
-router.use('/v1/metadatarevisions', metadataRevisionsRoutes(express.Router()));
-router.use('/v1/forum', forumRouter);
-router.use('/v1/formio', formioRouter);
+const v1 = require('./v1/v1');
+router.use('/v1', v1(express.Router()));
 
 frontendRoutes(router);
-repositoriesRoutes(router);
 
 module.exports = router;

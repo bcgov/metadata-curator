@@ -126,3 +126,33 @@ Authorization: Bearer {{jwt}}
 }
 
 ###
+
+
+### /datauploads - create a new metadata repository from data upload
+POST {{base-url}}/datauploads/5ecc13b39de3bc07a017d089/repositories
+Content-Type: application/json
+Cookie: connect.sid={{connect.sid}}
+
+{
+  "name": "Metadata for upload"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 500, "Response status is not 500");
+    });
+%}
+
+### /datauploads - get metadata revisions from data upload
+GET {{base-url}}/datauploads/5ecc13b39de3bc07a017d089/revisions
+Content-Type: application/json
+Cookie: connect.sid={{connect.sid}}
+
+{
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 500, "Response status is not 500");
+    });
+%}
