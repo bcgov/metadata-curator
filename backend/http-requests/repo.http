@@ -1,7 +1,7 @@
 
 ### /datauploads - default flow
-POST {{base-url}}/repos
-Authorization: Bearer {{jwt}}
+GET {{base-url}}/repos
+Cookie: connect.sid={{connect.sid}}
 Content-Type: application/json
 
 {
@@ -15,4 +15,3 @@ Content-Type: application/json
     });
 %}
 
-###

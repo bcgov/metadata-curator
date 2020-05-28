@@ -5,7 +5,7 @@ const ExtractJWT = passJwt.ExtractJwt;
 var config = require('config');
 var logger = require('npmlog');
 
-passport.use(new JWTStrategy({
+passport.use('jwt', new JWTStrategy({
         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
         secretOrKey: config.get("jwtSecret"),
         passReqToCallback: true,
