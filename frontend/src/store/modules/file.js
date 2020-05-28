@@ -1,14 +1,19 @@
 import { Backend } from '../../services/backend';
 const backend = new Backend();
 
+import Vue from 'vue';
+
 const openpgp = require('openpgp');
 
 const state = {
     content: [],
+    fileHandles: [],
     fileName: "",
     blob: [],
     key: null,
     uploadUrl: "",
+    fileSig: {},
+    successfullyUploadedChunks: {},
 };
 
 const getters = {
@@ -16,6 +21,15 @@ const getters = {
         var textEncoding = require('text-encoding');
         var TextDecoder = textEncoding.TextDecoder;
         return new TextDecoder("utf-8").decode(state.content[0]);
+    },
+
+    getPublicKey: (state) => async () => {
+        if (state.publicKey == null){
+            let data = await backend.getPublicKey();
+            console.log("GET PK", data);
+            return data.key
+        }
+        return state.publicKey;
     }
 }
 
@@ -47,8 +61,7 @@ const actions = {
 
         if (state.publicKey == null){
             let data = await backend.getPublicKey();
-            commit('setPublicKey', {key: data.key});
-
+            commit('setPublicKey', {key: data.key});   
         }
 
         if (state.uploadUrl === ""){
@@ -85,6 +98,41 @@ const mutations = {
     setFileName(state, { fileName }){
         state.fileName = fileName;
     },
+
+    setFileSig(state, { fileSig }){
+        Vue.set(state.fileSig, fileSig, true);
+    },
+
+    clearFileSig(state, { fileSig }){
+        Vue.delete(state.successfullyUploadedChunks, fileSig);
+        Vue.delete(state.fileSig, fileSig);
+    },
+
+    setFileHandles(state, { handles }){
+        state.fileHandles = handles;
+    },
+
+    addFileHandle(state, { handle }){
+        state.fileHandles.push(handle);
+    },
+
+    addFileHandleIfNotPresent(state, { handle }){
+        if (state.fileHandles.indexOf(handle) === -1){
+            state.fileHandles.push(handle);
+        }
+    },
+
+    clearFileHandles(state){
+        state.fileHandles = [];
+    },
+
+    setSuccessfullyUploadedChunk(state, {fing, index, success}){
+        if (typeof(state.successfullyUploadedChunks[fing]) === "undefined"){
+            state.successfullyUploadedChunks[fing] = [];
+        }
+        state.successfullyUploadedChunks[fing][index] = success;
+    },
+
     setBlob(state, { blob, index }){
         state.blob[index] = blob;
     },
@@ -100,17 +148,21 @@ const mutations = {
     setUploadUrl(state, { uploadUrl }){
         state.uploadUrl = uploadUrl;
     },
-    // eslint-disable-next-line no-unused-vars
+    
+    // eslint-disable-next-line
     resetState(state){
-        // console.log("file.js resetState");
-        state =  {
-            content: "",
+        console.log("file.js resetState");
+
+        state = {
+            content: [],
+            fileHandles: [],
             fileName: "",
-            encrypted: false,
             blob: [],
             key: null,
             uploadUrl: "",
-        };
+            fileSig: {},
+            successfullyUploadedChunks: {},
+        }
     },
 }
 
