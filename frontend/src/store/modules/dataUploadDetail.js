@@ -12,10 +12,7 @@ const getters = {
 
 const actions = {
     async getDataUpload({ commit }, dataUploadId) {
-        // console.log("getDataUpload action");
-
         await backend.getDataUpload(dataUploadId).then((data) => {
-            // console.log("getDataUpload action: ", data);
             commit('clearDataUpload');
             commit('setDataUpload', {dataUpload: data});
 
@@ -25,11 +22,9 @@ const actions = {
         });
     },
     async updateDataUpload({ commit }, dataUpload) {
-        // console.log("updateDataUpload action: " + dataUpload);
         try {
             dataUpload = await backend.putDataUpload(dataUpload);
             console.log("dataupload after update dataupload: ", dataUpload);
-            // dispatch('getDataUpload', dataUpload._id);
             commit('setDataUpload', {dataUpload: dataUpload});
         } catch(e) {
             console.log("Unable to update data upload error: ", e);
@@ -43,7 +38,6 @@ const actions = {
 
 const mutations = {
     setDataUpload(state, {dataUpload}){
-        // console.log("setDataUpload: ", dataUploads);
         state.dataUpload = dataUpload;
     },
     clearDataUpload(state){

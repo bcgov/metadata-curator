@@ -1,4 +1,5 @@
 const dataUploadService = require('./dataUploadService');
+const dataProviderService = require('./dataProviderService');
 const commentService = require('./commentService');
 const tableSchemaService = require('./tableSchemaService');
 const dataPackageService = require('./dataPackageService');
@@ -11,6 +12,7 @@ module.exports = {
     commentService,
     dataPackageService,
     dataUploadService,
+    dataProviderService,
     tableSchemaService,
 
     repoService,
