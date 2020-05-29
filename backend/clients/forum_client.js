@@ -70,7 +70,6 @@ const getTopic = async (user, name) => {
     };
 
     const url = `${forumApiConfig.baseUrl}/?name=${name}`;
-    console.log("getTopic url: " + url);
     return await axios.get(url, options);
 }
 
