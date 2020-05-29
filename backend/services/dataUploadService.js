@@ -55,8 +55,15 @@ const listDataUploads = async (user, query) => {
         if(query && query.filterBy) {
             if(query.filterBy === 'me') {
                 topics = topicResponse.data.filter(item => item.contributors.indexOf(user.email) !== -1 && item.parent_id);
+            } else if(query.filterBy === 'provider') {
+                if(query.providerGroups && query.providerGroups.includes('all') ) {
+                    topics = topicResponse.data.filter(item => item.parent_id); }
+                else {
+                    topics = topicResponse.data.filter(item => item.parent_id && item.author_groups.some(r => query.providerGroups.includes(r)));
+                }
             } else {
                 topics = topicResponse.data.filter(item => item.parent_id);
+
             }
         }
         else {
@@ -71,6 +78,7 @@ const listDataUploads = async (user, query) => {
         throw new Error(e.message)
     }
 }
+
 
 const getDataUploadById = async (id) => {
     try {

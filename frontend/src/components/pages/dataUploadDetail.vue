@@ -83,7 +83,6 @@ export default {
             this.getComments(this.dataUploadId);
             await this.getDataUpload(this.dataUploadId);
             if(this.user.isApprover && !this.dataUpload.opened_by_approver) {
-                console.log("mark data upload as opened by approver");
                 const data = {...this.dataUpload, opened_by_approver: true};
                 this.updateDataUpload(data);
             }
@@ -105,7 +104,6 @@ export default {
             // this.comment = null;
         },
         async onSaveButtonClicked(comment) {
-            console.log("save button clicked with val: " + comment);
             this.commentAddDialog = false;
             await this.addComment({dataUploadId: this.dataUploadId, comment: comment});
             this.getDataUpload(this.dataUploadId);
