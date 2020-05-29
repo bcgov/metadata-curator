@@ -6,7 +6,7 @@ let notify = require('../notifications/notifications')();
 
 const addComment = async (dataUploadId, user, comment) => {
     try {
-        let dataUpload = await dataUploadService.getDataUploadById(dataUploadId);
+        let dataUpload = await dataUploadService.getDataUploadById(user, dataUploadId);
         if (dataUpload == null) {
             throw new Error("Invalid data upload ID")
         }
@@ -38,7 +38,7 @@ const addComment = async (dataUploadId, user, comment) => {
 
 const getComments = async (dataUploadId, user) => {
     try {
-        let dataUpload = await dataUploadService.getDataUploadById(dataUploadId);
+        let dataUpload = await dataUploadService.getDataUploadById({}, dataUploadId);
         if (dataUpload == null) {
             throw new Error("Invalid data upload ID")
         }

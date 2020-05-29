@@ -51,7 +51,7 @@ describe("DataUploadService", function() {
 
         const id = data._id
 
-        const newData = await dataUploadService.updateDataUpload(id, {name:"abcd",uploader:"joe", opened_by_approver: false, approver_has_commented:false})
+        const newData = await dataUploadService.updateDataUpload({}, id, {name:"abcd",uploader:"joe", opened_by_approver: false, approver_has_commented:false})
         await expect(newData.name).equal('abcd')
     })
 
