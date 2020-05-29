@@ -8,7 +8,7 @@
                   centered
                   dark
                   grow>
-              <v-tab v-for="tab of tabs" :key="tab.id" :to="tab.route" exact>
+              <v-tab v-for="tab of tabs" :key="tab.id" :to="tab.route" exact :disabled="tab.disabled">
                   {{ tab.name }}
                   <v-icon>{{tab.icon}}</v-icon>
               </v-tab>
@@ -46,21 +46,21 @@ export default {
       }),
       tabs: function(){
           let t = [
-              { id: 1, name: "Home", route: `/`, icon: 'mdi-home'},
-              { id: 2, name: "Upload", route: `/upload/new`, icon: 'mdi-upload'},
-              { id: 3, name: "Import", route: `/import`, icon: 'mdi-import' },
-              { id: 4, name: "Guess", route: `/infer`, icon: 'mdi-file-question-outline'},
-              { id: 5, name: "Column", route: `/column`, icon: 'mdi-view-column' },
-              { id: 6, name: "Table", route: `/table`, icon: 'mdi-table' },
-              { id: 7, name: "Provenance", route: `/provenance`, icon: 'mdi-file-document' },
-              { id: 8, name: "Package", route: `/package`, icon: 'mdi-package-variant-closed' },
-              { id: 9, name: "Validate", route: `/validate`, icon: 'mdi-checkbox-marked-circle' },
-              { id: 10, name: "Find & Replace", route: `/findreplace`, icon: 'mdi-file-find' },
-              { id: 11, name: "Submit", route: `/submit`, icon: 'mdi-send' }
+              { id: 1, name: "Home", route: `/`, icon: 'mdi-home', disabled: false},
+              { id: 2, name: "Upload", route: `/upload/new`, icon: 'mdi-upload', disabled: false},
+              { id: 3, name: "Import", route: `/import`, icon: 'mdi-import', disabled: false },
+              { id: 4, name: "Guess", route: `/infer`, icon: 'mdi-file-question-outline', disabled: true},
+              { id: 5, name: "Column", route: `/column`, icon: 'mdi-view-column', disabled: true},
+              { id: 6, name: "Table", route: `/table`, icon: 'mdi-table', disabled: true},
+              { id: 7, name: "Provenance", route: `/provenance`, icon: 'mdi-file-document', disabled: true },
+              { id: 8, name: "Package", route: `/package`, icon: 'mdi-package-variant-closed', disabled: true },
+              { id: 9, name: "Validate", route: `/validate`, icon: 'mdi-checkbox-marked-circle', disabled: true },
+              { id: 10, name: "Find & Replace", route: `/findreplace`, icon: 'mdi-file-find', disabled: true },
+              { id: 11, name: "Submit", route: `/submit`, icon: 'mdi-send', disabled: true }
           ];
 
           if ( (this.user) && (this.user.isAdmin) ){
-              t.push({ id: 12, name: "Admin", route: `/admin`, icon: 'mdi-settings' });
+              t.push({ id: 12, name: "Admin", route: `/admin`, icon: 'mdi-settings', disabled: false });
           }
 
           return t;
