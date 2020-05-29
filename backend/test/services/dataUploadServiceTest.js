@@ -11,6 +11,7 @@ const dbHandler = require('../db-handler')
 describe("DataUploadService", function() {
 
     beforeEach(async () => {
+        sinon.stub(forumClient, 'getTopic').returns({data: [{_id:"0000000009c5d71ee7600000"}]})
         sinon.stub(forumClient, 'addTopic').returns({_id:"0000000009c5d71ee7600000"})
     })
     before(async () => await dbHandler.connect())
@@ -66,13 +67,13 @@ describe("DataUploadService", function() {
 
         const id = newData._id
 
-        const data = await dataUploadService.getDataUploadById(id)
+        const data = await dataUploadService.getDataUploadById({}, id)
         expect(data).to.be.an('object')
         expect(data.name).to.equal("abc")
     })
 
     it('should fail because of invalid id', async () => {
-        const data = await dataUploadService.getDataUploadById('000006a5d9c5d71ee7600000')
+        const data = await dataUploadService.getDataUploadById({},'000006a5d9c5d71ee7600000')
         await expect(data).to.be.null
     })
 

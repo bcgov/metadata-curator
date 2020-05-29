@@ -57,6 +57,23 @@ const getComments = async (topic_id, user) => {
     });
 }
 
+const getTopic = async (user, name) => {
+    let config = require('config');
+    const forumApiConfig = config.get("forumApi");
+
+    const jwt = user.jwt;
+    const options = {
+        withCredentials: true,
+        headers: {
+            'Authorization': `Bearer ${jwt}`
+        }
+    };
+
+    const url = `${forumApiConfig.baseUrl}/?name=${name}`;
+    console.log("getTopic url: " + url);
+    return await axios.get(url, options);
+}
+
 const getTopics = async (user) => {
     let config = require('config');
     const forumApiConfig = config.get("forumApi");
@@ -142,6 +159,7 @@ var modifyJWTGroups = function(token, newGroups){
 };
 
 module.exports = {
+    getTopic,
     getTopics,
     addTopic,
     addComment,

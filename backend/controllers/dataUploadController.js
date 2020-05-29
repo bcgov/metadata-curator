@@ -25,7 +25,7 @@ const getDataUploads = async (req, res, next) => {
 
 const getDataUpload = async (req, res, next) => {
     const dataUploadId = req.params.dataUploadId;
-    let result = await dataUploadService.getDataUploadById(dataUploadId);
+    let result = await dataUploadService.getDataUploadById(req.user, dataUploadId);
     if(!result) {
         throw new Error("Data Upload not found")
     }

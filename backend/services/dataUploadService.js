@@ -26,7 +26,6 @@ const createDataUpload = async (user, upload) => {
 
 const updateDataUpload = async (dataUploadId, updatedData) => {
     try {
-        // console.log('updatedData: ', updatedData);
         let dataUpload = await db.DataUploadSchema.findOne({_id: dataUploadId});
 
         if(!dataUpload) {
@@ -80,8 +79,10 @@ const listDataUploads = async (user, query) => {
 }
 
 
-const getDataUploadById = async (id) => {
+const getDataUploadById = async (user, id) => {
     try {
+        const response = await forumClient.getTopic(user, id);
+        if(!response.data || response.data.length === 0) { throw new Error("User not authorized to retrieve this data upload."); }
         return await db.DataUploadSchema.findOne({_id: id});
     } catch (e) {
         log.error(e);
