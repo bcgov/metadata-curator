@@ -15,7 +15,6 @@ const getters = {
 
 const actions = {
     async createInitialUpload({ commit }, upload) {
-        // console.log("createInitialUpload action");
         try {
             commit('setCreateUploadInProgress', true);
             const data = await backend.postDataUpload(upload);
@@ -37,7 +36,6 @@ const actions = {
         }
     },
     async addSubmissionIdToUpload({ commit }, submissionId) {
-        // console.log("addSubmissionIdToUpload action: ", submissionId);
         try {
             const upload = {...this.state.upload.upload, upload_submission_id: submissionId};
             const data = await backend.putDataUpload(upload);

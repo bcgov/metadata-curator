@@ -3,7 +3,10 @@ const backend = new Backend();
 
 const state = {
     dataUploads: [],
+    dataProviders: [],
     selectedDataUpload: null,
+    selectedFilterBy: null,
+    selectedDataProviders: [],
     error: null,
 };
 
@@ -15,20 +18,33 @@ const getters = {
 }
 
 const actions = {
-    async getDataUploads({ commit }) {
-        // console.log("getDataUploads action");
+    async getDataUploads({ commit }, {filterBy, providerGroups}) {
+        const query = {filterBy: filterBy, providerGroups: providerGroups ? providerGroups : undefined};
 
-        await backend.getDataUploads().then((data) => {
-            // console.log("getDataUploads action: ", data);
+        try {
+            const data = await backend.getDataUploads(query);
             commit('clearDataUploads');
             commit('setDataUploads', {dataUploads: data});
 
-        }).catch((e) => {
+        } catch(e) {
             // console.log("Retrieve data uploads error: ", e);
             commit('setError', {error: e.response.data.error});
-        });
-    },
+        }
 
+    },
+    async getDataProviders({ commit }) {
+        try {
+            const data = await backend.getDataProviders();
+            let providers = data.map(item => {return {name: item, value: item}});
+            providers.unshift({name: "All data providers", value: 'all'});
+            commit('clearDataProviders');
+            commit('setDataProviders', {dataProviders: providers});
+        } catch(e) {
+            // console.log("Retrieve data uploads error: ", e);
+            commit('setError', {error: e.response.data.error});
+        }
+
+    },
 }
 
 
@@ -39,6 +55,24 @@ const mutations = {
     },
     clearDataUploads(state){
         state.dataUploads = null;
+    },
+    setDataProviders(state, {dataProviders}){
+        state.dataProviders = dataProviders
+    },
+    clearDataProviders(state){
+        state.dataProviders = null;
+    },
+    setSelectedFilterBy(state, selectedFilterBy){
+        state.selectedFilterBy = selectedFilterBy
+    },
+    clearSelectedFilterBy(state){
+        state.selectedFilterBy = null;
+    },
+    setSelectedDataProviders(state, selectedDataProviders){
+        state.selectedDataProviders = [...selectedDataProviders];
+    },
+    clearSelectedDataProviders(state){
+        state.selectedDataProviders = [];
     },
     setError(state, { error }) {
         state.error = Object.assign({}, error);
