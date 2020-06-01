@@ -17,6 +17,7 @@ let dataPackagesRoutes = require('./dataPackages/routes');
 let tableSchemasRoutes = require('./tableSchemas/routes');
 let repositoriesRoutes = require('./repositories/routes');
 let repoBranchesRoutes = require('./repoBranches/routes');
+let dataProviderRoutes = require('./dataProviders/routes');
 
 module.exports = (router) => {
 
@@ -53,6 +54,7 @@ module.exports = (router) => {
     // })
 
     router.use('/datauploads', dataUploadRoutes(express.Router()));
+    router.use('/dataproviders', dataProviderRoutes(express.Router()));
     router.use('/datapackages', dataPackagesRoutes(express.Router()));
     router.use('/tableschemas', tableSchemasRoutes(express.Router()));
     router.use('/forum', forumRouter);

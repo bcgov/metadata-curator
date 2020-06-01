@@ -1,7 +1,7 @@
 const { commentService, dataUploadService, repoService, revisionService } = require('../services')
 
 const postDataUpload = async (req, res, next) => {
-    const dataUpload = await dataUploadService.createDataUpload(req.body);
+    const dataUpload = await dataUploadService.createDataUpload(req.user, req.body);
     res.status(201).json(dataUpload);
 }
 
@@ -14,18 +14,18 @@ const postRepository = async (req, res, next) => {
 }
 
 const putDataUpload = async (req, res, next) => {
-    const dataUpload = await dataUploadService.updateDataUpload(req.params.dataUploadId, req.body);
+    const dataUpload = await dataUploadService.updateDataUpload(req.user, req.params.dataUploadId, req.body);
     res.status(200).json(dataUpload);
 }
 
 const getDataUploads = async (req, res, next) => {
-    let list = await dataUploadService.listDataUploads();
+    const list = await dataUploadService.listDataUploads(req.user, req.query);
     res.json(list);
 }
 
 const getDataUpload = async (req, res, next) => {
     const dataUploadId = req.params.dataUploadId;
-    let result = await dataUploadService.getDataUploadById(dataUploadId);
+    let result = await dataUploadService.getDataUploadById(req.user, dataUploadId);
     if(!result) {
         throw new Error("Data Upload not found")
     }

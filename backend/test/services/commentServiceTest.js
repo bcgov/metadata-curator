@@ -23,31 +23,33 @@ describe("CommentService", function() {
         sinon.stub(forumClient, 'addTopic').returns({_id:"0000000009c5d71ee7600000"})
         sinon.stub(forumClient, 'addComment').returns({_id:"0000011119c5d71ee7600000"})
         sinon.stub(forumClient, 'getComments').returns([{_id:"0000011119c5d71ee7600000", comment: "mycomment"}])
+        sinon.stub(forumClient, 'getTopic')
+            .callsFake((user, name) => {return {data: [{_id: name}]}});
     })
     after(async () => {
-        sinon.reset()
+        sinon.restore();
     })
 
     beforeEach(async () => {
 
-        const newData = await dataUploadService.createDataUpload({name:"abc",uploader:"joe"})
+        const newData = await dataUploadService.createDataUpload({},{name:"abc",uploader:"joe"})
 
         id = newData._id
 
-        let newData2 = await dataUploadService.createDataUpload({name:"abc",uploader:"joe"})
+        let newData2 = await dataUploadService.createDataUpload({},{name:"abc",uploader:"joe"})
         id2 = newData2._id
 
         newData2['opened_by_approver'] = true
         newData2['approver_has_commented'] = false
 
-        await dataUploadService.updateDataUpload(id2, newData2)
+        await dataUploadService.updateDataUpload({}, id2, newData2)
 
         const comment = await commentService.addComment(id, {}, 'mycomment')
         expect(comment).to.be.an('undefined')
     })
 
     it('should succeed getting a specific data upload', async () => {
-        const data = await dataUploadService.getDataUploadById(id)
+        const data = await dataUploadService.getDataUploadById({}, id)
         expect(data).to.be.an('object')
         expect(data.name).to.equal("abc")
         expect(data.topic_id.toString()).to.equal("0000000009c5d71ee7600000")
@@ -64,25 +66,25 @@ describe("CommentService", function() {
     })
 
     it('should succeed when user is an approver', async () => {
-        let data = await dataUploadService.getDataUploadById(id)
+        let data = await dataUploadService.getDataUploadById({}, id)
         expect(data.approver_has_commented).to.equal(false)
 
         const comment = await commentService.addComment(id, {isApprover: true}, 'approver comment')
         expect(comment).to.be.an('undefined')
 
-        data = await dataUploadService.getDataUploadById(id)
+        data = await dataUploadService.getDataUploadById({}, id)
         expect(data.approver_has_commented).to.equal(true)
     })
 
     it('should succeed when notifying all approvers', async () => {
-        let data = await dataUploadService.getDataUploadById(id2)
+        let data = await dataUploadService.getDataUploadById({}, id2)
         expect(data.opened_by_approver).to.equal(true)
         expect(data.approver_has_commented).to.equal(false)
 
         const comment = await commentService.addComment(id2, {isDataProvider: true}, 'approver comment')
         expect(comment).to.be.an('undefined')
 
-        data = await dataUploadService.getDataUploadById(id2)
+        data = await dataUploadService.getDataUploadById({}, id2)
         expect(data.opened_by_approver).to.equal(false)
     })
 

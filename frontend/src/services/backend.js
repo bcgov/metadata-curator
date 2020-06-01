@@ -50,8 +50,15 @@ export class Backend {
         ).then(response => response.data)
     }
 
-    getDataUploads(){
-        const url = '/api/v1/datauploads'
+    getDataUploads(query){
+        let url = '/api/v1/datauploads';
+        if(query.filterBy) {
+            if (query.filterBy === "provider" && query.providerGroups) {
+                url = `${url}/?filterBy=${query.filterBy}&providerGroups=${query.providerGroups}`;
+            } else {
+                url = `${url}/?filterBy=${query.filterBy}`;
+            }
+        }
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 
@@ -152,6 +159,11 @@ export class Backend {
     putFormSubmission(formName, submissionId, submission) {
         const url = `/api/v1/formio/form/${formName}/submission/${submissionId}`;
         return axios.put(url, submission,{withCredentials: true}).then(response => response.data)
+    }
+
+    getDataProviders(){
+        let url = '/api/v1/dataproviders';
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 
 }

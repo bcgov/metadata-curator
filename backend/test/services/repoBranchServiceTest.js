@@ -2,7 +2,8 @@ var chai = require('chai')
 chai.use(require('chai-as-promised'))
 var should = chai.should()
 var expect = chai.expect
-
+var sinon = require('sinon')
+const forumClient = require('../../clients/forum_client');
 const repoService = require('../../services/repoService')
 const repoBranchService = require('../../services/repoBranchService')
 const revisionService = require('../../services/revisionService')
@@ -15,6 +16,8 @@ after(async () => await dbHandler.closeDatabase())
 
 describe("RepoBranchServiceTest", function() {
     let duid, rid, bid;
+
+    before(async () => sinon.stub(forumClient, 'addTopic').returns({_id:"0000000009c5d71ee7600000"}))
     beforeEach (async () => {
         let descriptor = {
             profile: "tabular-data-package",
@@ -28,10 +31,13 @@ describe("RepoBranchServiceTest", function() {
             ]
         }
 
-        duid = await dataUploadService.createDataUpload({name:"my_upload",uploader:"joe"})
+        duid = await dataUploadService.createDataUpload({},{name:"my_upload",uploader:"joe"})
         rid = await repoService.createRepo(duid, 'some repo name');
         bid = await repoBranchService.addBranch(rid._id, 'standard', 'Standard dataset', "Description about the standard metadata");
 //        revid = await revisionService.createRevisionWithDataPackage(bid, 'Change summary', 'joe@local', descriptor);
+    })
+    after(async () => {
+        sinon.restore();
     })
 
     it('should succeed creating a new repository branch', async () => {

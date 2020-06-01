@@ -7,7 +7,6 @@ const addTopic = async (name, user) => {
             throw new Error("Error creating/fetching parent topic");
         }
         parentId = parentTopicResponse.data._id;
-
         topicResponse = await createTopic(name, parentId, user);
     } else {
         topicResponse = await createTopic(name, null, user)
@@ -56,6 +55,38 @@ const getComments = async (topic_id, user) => {
             author_user: item.author_user
         };
     });
+}
+
+const getTopic = async (user, name) => {
+    let config = require('config');
+    const forumApiConfig = config.get("forumApi");
+
+    const jwt = user.jwt;
+    const options = {
+        withCredentials: true,
+        headers: {
+            'Authorization': `Bearer ${jwt}`
+        }
+    };
+
+    const url = `${forumApiConfig.baseUrl}/?name=${name}`;
+    return await axios.get(url, options);
+}
+
+const getTopics = async (user) => {
+    let config = require('config');
+    const forumApiConfig = config.get("forumApi");
+
+    const jwt = user.jwt;
+    const options = {
+        withCredentials: true,
+        headers: {
+            'Authorization': `Bearer ${jwt}`
+        }
+    };
+
+    const url = forumApiConfig.baseUrl;
+    return await axios.get(url, options);
 }
 
 const createTopic = async function(topicName, parent, user){
@@ -110,6 +141,7 @@ const createTopicIfDoesNotExist = async function(topicName, user){
             return response;
 
         } else {
+            parentTopicResponse.data = parentTopicResponse.data[0];
             return parentTopicResponse;
         }
     }
@@ -126,6 +158,8 @@ var modifyJWTGroups = function(token, newGroups){
 };
 
 module.exports = {
+    getTopic,
+    getTopics,
     addTopic,
     addComment,
     getComments
