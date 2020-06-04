@@ -67,6 +67,10 @@ var strategy = new OidcStrategy(config.get('oidc'), function(issuer, sub, profil
     profile.isAdmin = (profile.groups.indexOf(config.get('adminGroup')) !== -1);
   }
 
+  if ( (config.has('orgAttribute')) && (profile._json[config.get('orgAttribute')]) ){
+    profile.organization = profile._json[config.get('orgAttribute')];
+  }
+
   
   profile.refreshToken = refreshToken;
 
