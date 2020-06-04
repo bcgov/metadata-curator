@@ -109,6 +109,9 @@ export default {
             selectedProviders: [],
         }
     },
+    mounted(){
+        this.loadDataUploads();
+    },
     methods: {
         ...mapActions({
             getDataUploads: 'dataUploads/getDataUploads',
