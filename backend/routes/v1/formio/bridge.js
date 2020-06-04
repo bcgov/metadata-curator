@@ -18,7 +18,11 @@ var addRoutes = function(router){
                 res.status(500);
                 return res.json({error: err});
             }
-            return res.json(JSON.parse(form));
+            try{
+                return res.json(JSON.parse(form));
+            }catch(ex){
+                return res.json({"error": ex});
+            }
         });
     });
 
