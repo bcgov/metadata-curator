@@ -51,7 +51,7 @@ let r = new Router({
     },
     {
       path: '/upload/:id',
-      name: 'upload',
+      name: 'upload_view',
       component: upload,
       meta: {
           title: "Upload",

@@ -11,7 +11,7 @@ const createDataUpload = async (user, upload) => {
         dataUploadSchema._id = id;
         dataUploadSchema.name = upload.name;
         dataUploadSchema.description = upload.description;
-        dataUploadSchema.uploader = upload.uploader;
+        dataUploadSchema.uploader = user._json.email;
         dataUploadSchema.files = upload.files;
         dataUploadSchema.topic_id = topic._id;
         dataUploadSchema.create_date = new Date();
@@ -19,6 +19,7 @@ const createDataUpload = async (user, upload) => {
         dataUploadSchema.approver_has_commented = false;
         return await dataUploadSchema.save();
     } catch(e) {
+        console.log("err data upload");
         log.error(e)
         throw new Error(e.message)
     }

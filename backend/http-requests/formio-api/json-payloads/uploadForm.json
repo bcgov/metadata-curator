@@ -838,8 +838,8 @@
     }
   ],
   "display": "form",
-  "title": "Upload Form 2",
-  "name": "uploadForm2",
-  "path": "uploadform2",
-  "machineName": "uploadForm2"
+  "title": "Upload Form",
+  "name": "uploadForm",
+  "path": "uploadform",
+  "machineName": "uploadForm"
 }
