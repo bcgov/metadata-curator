@@ -50,6 +50,7 @@ jobs:
             provider: script
             script:
               - |-
+                cd backend
                 bash docker_push metadata_curator_api || travis_terminate 1
             on:
                 all_branches: true
@@ -83,6 +84,7 @@ jobs:
       deploy:
         provider: script
         script:
+          - cd frontend
           - bash docker_push metadata_curator_ui || travis_terminate 1
         on:
             all_branches: true
