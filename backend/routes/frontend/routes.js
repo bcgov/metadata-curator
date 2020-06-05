@@ -3,7 +3,7 @@ let auth = require('../../modules/auth');
 
 module.exports = (router) => {
 
-    router.use('/login', function(req, res, next){
+    router.use('/login', auth.removeExpired, function(req, res, next){
         req.session.r = req.query.r;
         return res.redirect('/api/log');
     });
@@ -23,13 +23,13 @@ module.exports = (router) => {
         
     });
     
-    router.use('/logout', function(req, res, next){
+    router.use('/logout', auth.removeExpired,  function(req, res, next){
         req.logout();
         let config = require('config');
         res.redirect(config.get('frontend'));
     });
 
-    router.use('/oauth/token', function(req, res){
+    router.use('/oauth/token', auth.removeExpired, function(req, res){
         let config = require('config');
         res.redirect(config.get("oidc.tokenURL"));
     });
@@ -42,7 +42,7 @@ module.exports = (router) => {
         }
     });
     
-    router.get('/', auth.removeExpired, function(req, res){
+    router.get('/', function(req, res){
         if (req.user && req.user.jwt && req.user.refreshToken) {
             res.send(`
                 <html>
@@ -56,7 +56,7 @@ module.exports = (router) => {
         }
     });
     
-    router.use('/v1/publickey', auth.removeExpired, function(req, res){
+    router.use('/v1/publickey', auth.removeExpired, auth.requireLoggedIn, function(req, res){
         var config = require('config');
         var atob = require('atob');
         if (!config.has('base64EncodedPGPPublicKey')){
@@ -66,7 +66,7 @@ module.exports = (router) => {
         return res.json({key: key});
     });
     
-    router.use('/v1/uploadurl', auth.removeExpired, function(req, res){
+    router.use('/v1/uploadurl', auth.removeExpired, auth.requireLoggedIn, function(req, res){
         var config = require('config');
         if (!config.has('uploadUrl')){
             return res.json({error: "Not configured"});

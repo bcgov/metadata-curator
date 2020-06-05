@@ -48,6 +48,23 @@ const actions = {
                         loggedIn = false;
                     }
                 });
+            }else{
+                //catch scenario where server crashed
+                authServ.getToken().then((data) => {
+                    if ((typeof (data.error) === "undefined") && (typeof (data) === "object")) {
+                        commit('setUser', { user: data });
+                        commit('setJWT', { jwt: data.jwt });
+                        commit('setLoggedIn', {loggedIn: true});
+                        user = data;
+                        loggedIn = true;
+                    } else {
+                        commit('setUser', {user: null});
+                        commit('setJWT', { jwt: "" });
+                        commit('setLoggedIn', {loggedIn: false});
+                        user = {};
+                        loggedIn = false;
+                    }
+                });
             }
         } else {
             await authServ.getToken().then((data) => {

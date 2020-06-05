@@ -58,8 +58,11 @@ export default {
     },
 
     watch: {
-        loading(newVal){
-            this.handleAuth(newVal);
+        loading(){
+            this.handleAuth();
+        },
+        user(){
+            this.handleAuth();
         },
         useDark(newVal){
             this.dark = newVal;
@@ -68,8 +71,8 @@ export default {
     },
 
     methods: {
-        handleAuth: function(loading){
-            if (loading && this.checkRoute){
+        handleAuth: function(){
+            if (this.checkRoute){
                 let requiresAuth = this.$router.currentRoute.path !== '/login';//this.$router.app._route.meta.requiresAuth;
                 let requiresNoUser = this.$router.currentRoute.path === '/login';//this.$router.app._route.meta.requiresNoUser;
                 if ( (requiresAuth) && (!this.loggedIn) ){
