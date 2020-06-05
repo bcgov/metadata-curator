@@ -2,6 +2,25 @@ let auth = {};
 let atob = require('atob');
 let bent = require('bent')
 
+auth.requireLoggedIn = function(req, res, next){
+    if (!req.user){
+        res.status(401);
+        return res.json({error: "Not Authorized"});
+    }
+    next();
+}
+
+auth.requireGroup = function(groupName){
+
+    return function(req, res, next){
+        if ( (!req.user) || (!req.user.groups) || (req.user.groups.indexOf(groupName) === -1) ){
+            res.status(403);
+            return res.json({error: "Forbidden"});
+        }
+        next();
+    }
+
+}
 
 auth.isTokenExpired = function(token){
     let currDate = new Date();
@@ -81,11 +100,16 @@ auth.renew = async function(jwt, token, cb){
 }
 
 auth.removeExpired = function(req, res, next){
+    console.log("remove expired");
     if ( (typeof(req.user) !== "undefined") && (typeof(req.user.jwt) !== "undefined") && (req.user.jwt !== null) ){
+        console.log("remove expired not undef");
         if (auth.isTokenExpired(req.user.jwt)){
+            console.log("remove expired token is expired");
             if ( (typeof(req.user.refreshToken) !== "undefined") && (req.user.refreshToken !== null) ){
+                console.log("remove expired refresh token exists");
 
                 if (auth.isRenewable(req.user.refreshToken)){
+                    console.log("remove expired refreshable");
                     auth.renew(req.user.jwt, req.user.refreshToken, function(refreshErr, accessToken, refreshToken){
                         if (refreshErr){
                             console.error("refresh token error", refreshErr);
@@ -93,25 +117,32 @@ auth.removeExpired = function(req, res, next){
                             return;
 
                         }
+                        console.log("renewed");
 
                         req.user.jwt = accessToken;
                         req.user.refreshToken =  refreshToken;
                         next();
                     });
                 } else {
+                    console.log("remove expired not refreshable");
                     req.user = null;
                     delete req.user;
                     next();
                 }
             } else {
+                console.log("remove expired no refresh token");
                 req.user = null;
                 delete req.user;
                 next();
             }
         }else {
+            console.log("remove expired not expired");
             next()
         }
     } else {
+        console.log("remove expired not signed in");
+        req.user = null;
+        delete req.user;
         next()
     }
 }

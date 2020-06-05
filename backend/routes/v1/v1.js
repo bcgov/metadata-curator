@@ -12,6 +12,8 @@ let formioRouter = express.Router();
 let formioBridge = require('./formio/bridge');
 formioRouter = formioBridge(formioRouter);
 
+let auth = require('../../modules/auth');
+
 let dataUploadRoutes = require('./dataUploads/routes');
 let dataPackagesRoutes = require('./dataPackages/routes');
 let tableSchemasRoutes = require('./tableSchemas/routes');
@@ -53,17 +55,17 @@ module.exports = (router) => {
     //     router.use('/swag-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
     // })
 
-    router.use('/datauploads', dataUploadRoutes(express.Router()));
-    router.use('/dataproviders', dataProviderRoutes(express.Router()));
-    router.use('/datapackages', dataPackagesRoutes(express.Router()));
-    router.use('/tableschemas', tableSchemasRoutes(express.Router()));
-    router.use('/forum', forumRouter);
-    router.use('/formio', formioRouter);
+    router.use('/datauploads', auth.requireLoggedIn, dataUploadRoutes(express.Router()));
+    router.use('/dataproviders', auth.requireLoggedIn, dataProviderRoutes(express.Router()));
+    router.use('/datapackages', auth.requireLoggedIn, dataPackagesRoutes(express.Router()));
+    router.use('/tableschemas', auth.requireLoggedIn, tableSchemasRoutes(express.Router()));
+    router.use('/forum', auth.requireLoggedIn, forumRouter);
+    router.use('/formio', auth.requireLoggedIn, formioRouter);
 
-    router.use('/repos', repositoriesRoutes(express.Router()));
-    router.use('/repobranches', repoBranchesRoutes(express.Router()));
+    router.use('/repos', auth.requireLoggedIn, repositoriesRoutes(express.Router()));
+    router.use('/repobranches', auth.requireLoggedIn, repoBranchesRoutes(express.Router()));
 
-    router.use('/token', function(req, res){
+    router.use('/token', auth.requireLoggedIn, function(req, res){
         if (req.user && req.user.jwt && req.user.refreshToken) {
             res.json(req.user);
         }else{
