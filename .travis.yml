@@ -50,7 +50,7 @@ jobs:
             provider: script
             script:
               - |-
-                bash cd backend && docker_push metadata_curator_api || travis_terminate 1
+                cd backend; bash docker_push metadata_curator_api || travis_terminate 1
             on:
                 all_branches: true
                 condition: "$TRAVIS_BRANCH =~ ^master|develop$ || -n $TRAVIS_TAG"
@@ -83,7 +83,7 @@ jobs:
       deploy:
         provider: script
         script:
-          - bash cd frontend && docker_push metadata_curator_ui || travis_terminate 1
+          - cd frontend; bash docker_push metadata_curator_ui || travis_terminate 1
         on:
             all_branches: true
             condition: "$TRAVIS_BRANCH =~ ^master|develop$ || -n $TRAVIS_TAG"
