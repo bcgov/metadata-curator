@@ -7,7 +7,7 @@ var dataUploadSchema = new Schema({
     create_date: {type: Date, required: true},
     uploader: {type: String, required: true},
     files: [{
-        name: {type: String, required: true}, size: {type: Number, required: true}
+        name: {type: String, required: true}, size: {type: Number, required: true}, id: {type: String, required: true}, data: {type: Boolean, required: true},
     }],
     topic_id: {type: Schema.Types.ObjectId},
     opened_by_approver: {type: Boolean, required: true},

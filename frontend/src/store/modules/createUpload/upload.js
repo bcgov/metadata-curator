@@ -46,6 +46,20 @@ const actions = {
         }
     },
 
+    async modifyStoreUpload({ commit }, upload) {
+        commit('setUpload', upload);
+    },
+
+    async updateUpload({ commit }, upload) {
+        try {
+            const data = await backend.putDataUpload(upload);
+            commit('setUpload', data);
+        } catch(e) {
+            console.log("addSubmissionIdToUpload error: ", e);
+            commit('setError', {error: e.response.data.error});
+        }
+    },
+
 }
 
 

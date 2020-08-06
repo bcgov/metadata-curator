@@ -46,7 +46,8 @@ export default new Vuex.Store({
       'file.fileSig',
       'file.key',
       'file.uploadUrl',
-      'file.successfullyUploadedChunks'
+      'file.successfullyUploadedChunks',
+      'file.fileHandles'
     ]
   })],
   strict: process.env.NODE_ENV !== 'production'
