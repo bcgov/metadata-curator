@@ -30,7 +30,7 @@ const getters = {
             return data.key
         }
         return state.publicKey;
-    }
+    },
 }
 
 async function encrypt(commit, clear, content, key, replaceIndex){
@@ -57,13 +57,23 @@ async function encrypt(commit, clear, content, key, replaceIndex){
 }
 
 const actions = {
+    async getUploadUrl({commit, state}){
+
+        if ( (state.uploadUrl === null) || (state.uploadUrl === "") ){
+            backend.getUploadUrl().then( (data) => {
+                commit('setUploadUrl', {uploadUrl: data.url});
+            });
+        }
+
+
+    },
     async encryptContent({commit, state}, {index, clear, content}){
 
         if (state.publicKey == null){
             let data = await backend.getPublicKey();
             commit('setPublicKey', {key: data.key});   
         }
-
+    
         if (state.uploadUrl === ""){
             backend.getUploadUrl().then( (data) => {
                 commit('setUploadUrl', {uploadUrl: data.url});

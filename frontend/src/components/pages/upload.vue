@@ -23,8 +23,11 @@
                 </v-stepper-content>
 
                 <v-stepper-content :step="steps.step2FileSelection">
-                    <v-card class="mb-12"></v-card>
-                    <v-btn color="primary" @click="step=steps.step3FileLevelForm">Next</v-btn>
+                    <v-card class="mb-12">
+                        <FileForm ref="fileForm" :upload="upload"></FileForm>
+                    </v-card>
+                    <v-btn color="primary" @click="stepSaveFileForm(false)">Save</v-btn>
+                    <v-btn color="primary" @click="stepSaveFileForm(true)">Next</v-btn>
                     <v-btn text @click="step=steps.step1UploadForm">Back</v-btn>
                 </v-stepper-content>
 
@@ -52,10 +55,12 @@
 
     import {mapActions, mapMutations, mapState} from "vuex";
     import UploadForm from "../UploadForm";
+    import FileForm from "../FileForm";
 
     export default {
         components:{
-            UploadForm
+            UploadForm,
+            FileForm
         },
         created() {
             if(this.$route.params.id && this.$route.params.id != 'new') { this.uploadId = this.$route.params.id; }
@@ -65,6 +70,8 @@
             ...mapActions({
                 getUpload: 'upload/getUpload',
                 createInitialUpload: 'upload/createInitialUpload',
+                updateUpload: 'upload/updateUpload',
+
             }),
             ...mapMutations({
                 resetState: 'upload/resetState'
@@ -95,6 +102,12 @@
                 //still trigger submit so form displays all validation errors on UI
                 this.triggerUploadFormSubmit();
               }
+            },
+
+            async stepSaveFileForm(transitionNextStepAfterSave) {
+                await this.updateUpload(this.upload);
+                if(transitionNextStepAfterSave) { this.step = this.steps.step3FileLevelForm; }
+
             }
         },
         data () {

@@ -13,7 +13,7 @@
                 <v-file-input v-model="file" :disabled="disabled" counter show-size label="File input" style="margin-top:0px;padding-top:0px;"></v-file-input>
             </v-col>
         </v-row>
-        <v-row>
+        <v-row class="my-0 py-0" v-if="admin">
             <v-col cols=12>
                 <span class="fineText">Using Chunksize for your computer: {{Math.ceil(chunkSize / 1024 / 1024)}}mb</span>
             </v-col>
@@ -83,7 +83,11 @@ export default {
         triggerUpload: {
             type: Boolean,
             default: false,
-        }
+        },
+        index: {
+            type: Number,
+            default: 0
+        },
     },
 
     data() {
@@ -122,11 +126,16 @@ export default {
             uploadUrl: state => state.file.uploadUrl,
             fileSig: state => state.file.fileSig,
             successfullyUploadedChunks: state => state.file.successfullyUploadedChunks,
+            user: state => state.user.user,
         }),
         ...mapGetters({
             getStringContent: 'file/getStringContent',
             getPublicKey: 'file/getPublicKey'
         }),
+
+        admin: function(){
+            return this.user.isAdmin;
+        },
 
         progressMessage1: function(){
             let num = this.numChunks && this.numChunks > 0 ? this.numChunks : 1;
@@ -160,7 +169,7 @@ export default {
             }
         },
 
-        file(){
+        file(newVal){
             this.uploads = [];
             this.numChunks = 0;
             this.currChunk = 0;
@@ -179,6 +188,7 @@ export default {
                 this.confirmResume = false;
                 this.openFile();
             }
+            this.$emit("file-opened", this.index, newVal);
         }
     },
 
@@ -199,6 +209,7 @@ export default {
         encrypt: async function(content, index){
             await openpgp.initWorker({ path: '/js/openpgp.worker.min.js' }, 3); // set the relative web worker path
             let key = await this.getPublicKey();
+            this.$store.dispatch('file/getUploadUrl');
 
             return openpgp.encrypt({
                 message: await openpgp.message.fromBinary(content), // input as Message object
@@ -379,7 +390,7 @@ export default {
                                 }
                                 backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0").then( () => {
                                     self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
-                                    self.$emit('upload-finished')
+                                    self.$emit('upload-finished', self.uploads[0].url.substring(self.uploads[0].url.lastIndexOf("/")+1), this.file.name, this.file.size);
                                     self.numUploaded = self.numChunks+1;
                                     self.disabled = false;
                                 }).catch( (/*e*/) => {
@@ -390,7 +401,7 @@ export default {
                             }
                         });
                     }else{
-                        self.$emit('upload-finished');
+                        self.$emit('upload-finished', self.uploads[0].url.substring(self.uploads[0].url.lastIndexOf("/")+1), this.file.name, this.file.size);
                         self.numUploaded = self.numChunks+1
                         self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
                         self.disabled = false;
@@ -434,7 +445,7 @@ export default {
                         }
                         backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0").then( () => {
                             self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
-                            self.$emit('upload-finished')
+                            self.$emit('upload-finished', self.uploads[0].url.substring(self.uploads[0].url.lastIndexOf("/")+1), this.file.name, this.file.size);
                             self.numUploaded = self.numChunks+1;
                             self.disabled = false;
                         }).catch( (e) => {
