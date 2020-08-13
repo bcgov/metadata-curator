@@ -188,7 +188,7 @@ export default {
                 this.confirmResume = false;
                 this.openFile();
             }
-            this.$emit("file-opened", this.index, newVal);
+            this.$emit("file-opened", this.index, newVal, newFing);
         }
     },
 
@@ -231,7 +231,8 @@ export default {
                 resume = false;
             }
 
-            this.$store.commit('file/addFileHandleIfNotPresent', {handle: this.file});
+            let finger = this.getFinger;
+            this.$store.commit('file/addFileHandleIfNotPresent', {handle: this.file, fileSig: finger});
 
              if (this.file){
                 this.disabled = true;
@@ -286,7 +287,7 @@ export default {
                         if (self.offset === 0){
                             let finger = self.getFinger;
                             self.$store.commit('file/setFileName', { fileName: self.file.name});
-                            self.$store.commit('file/addFileHandleIfNotPresent', { handle: self.file});
+                            self.$store.commit('file/addFileHandleIfNotPresent', { handle: self.file, fileSig: finger});
                             await self.$store.commit('file/setContent', { content: content, index: index});
                             
                             self.$store.commit('file/setFileSig', {fileSig: finger});

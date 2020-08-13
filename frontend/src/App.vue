@@ -74,4 +74,8 @@ export default {
     /deep/ .formio-errors .error {
         color: white !important;
     }
+
+    .v-tab.v-tab{
+        color: var(--v-text-base);
+    }
 </style>
