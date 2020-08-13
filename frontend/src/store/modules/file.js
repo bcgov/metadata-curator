@@ -7,7 +7,7 @@ const openpgp = require('openpgp');
 
 const state = {
     content: [],
-    fileHandles: [],
+    fileHandles: {},
     fileName: "",
     blob: [],
     key: null,
@@ -122,18 +122,26 @@ const mutations = {
         state.fileHandles = handles;
     },
 
-    addFileHandle(state, { handle }){
-        state.fileHandles.push(handle);
-    },
-
-    addFileHandleIfNotPresent(state, { handle }){
-        if (state.fileHandles.indexOf(handle) === -1){
-            state.fileHandles.push(handle);
+    addFileHandleIfNotPresent(state, { handle, fileSig }){
+        if (typeof(state.fileHandles) !== "object"){
+            state.fileHandles = {};
+        }
+        let keys = Object.keys(state.fileHandles);
+        for (let i=0; i<keys.length; i++){
+            if ( (typeof(state.fileHandles) !== "undefined") && (typeof(state.fileHandles[keys[i]]) !== "undefined") && (state.fileHandles[keys[i]] !== null) ){
+                //if this is true it only has a signature which is what happens when the handle is removed from the store
+                if (typeof(state.fileHandles[keys[i]].name) === "undefined"){
+                    Vue.delete(state.fileHandles, keys[i]);
+                }
+            }
+        }
+        if (typeof(state.fileHandles[fileSig]) === "undefined"){
+            Vue.set(state.fileHandles, fileSig, handle);
         }
     },
 
     clearFileHandles(state){
-        state.fileHandles = [];
+        state.fileHandles = {};
     },
 
     setSuccessfullyUploadedChunk(state, {fing, index, success}){

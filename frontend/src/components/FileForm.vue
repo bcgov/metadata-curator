@@ -1,29 +1,37 @@
 <template>
     <v-container>
         <span :key="'container'+spanKey">
-            <v-row v-for="(val, index) in fileReaders" :key="'fileReader'+index">
+            <v-row>
                 <v-col cols=10>
                     <FileReader
-                                :key="'fileR'+index"
                                 :show-encrypt-button="false"
                                 :show-upload-button="false"
                                 :show-import-button="false"
                                 :read-file="false"
-                                :index="index"
+                                :index="files.length"
                                 @file-opened="fileOpened"
                     >
                     </FileReader>
                 </v-col>
                 <v-col cols=1>
-                    <v-checkbox label="Data File" v-model="dataFile[index]">
+                    <v-checkbox label="Data File" v-model="dataFile[files.length]">
                     </v-checkbox>
                 </v-col>
-                <v-col cols=1 v-if="index>0">
-                    <v-btn @click="removeFile(index)" color="error"><v-icon>mdi-minus</v-icon></v-btn>
+            </v-row>
+            <v-row v-for="(val, index) in files" :key="'fileReader'+index">
+                <v-col cols=10>
+                    <v-text-field
+                                :disabled="true"
+                                :key="'fileR'+index"
+                                v-model="files[index].name"
+                    >
+                    </v-text-field>
+                </v-col>
+                <v-col cols=1>
+                    <v-btn @click="removeFile(index)" color="error"><v-icon>mdi-delete</v-icon></v-btn>
                 </v-col>
             </v-row>   
         </span>    
-        <v-btn @click="addFile" color="success"><v-icon>mdi-plus</v-icon></v-btn>
     </v-container>
 </template>
 
@@ -32,19 +40,15 @@
     import FileReader from './FileReader';
 
     export default {
-        name: 'UploadForm',
+        name: 'FileForm',
         components:{
             FileReader
         },
         props: {
-            upload: {
-                type: Object,
-                required: false,
-                default: () => null
-            },
         },
         
         mounted() {
+            this.buildFiles();
         },
         methods: {
 
@@ -60,8 +64,8 @@
             },
             
             removeFile(index){
-                delete this.fileReaders[index];
-                delete this.files[index];
+                delete this.fileReaders.splice(index, 1);
+                delete this.files.splice(index, 1);
                 this.spanKey++
                 this.updateFormSubmission();
             },
@@ -70,34 +74,53 @@
             //     Vue.set(this.triggerUpload, this.uploading, true);
             // },
 
-            fileOpened(index, file){
+            fileOpened(index, file, sig){
+                this.fileReaders[this.fileReaders.length] = {}
                 this.files[index] = file;
+                this.files[index].sig = sig;
+                this.dataFile.push(this.dataFile[this.dataFile.length-1]);
                 this.updateFormSubmission();
+                this.spanKey++;
             },
 
             updateFormSubmission(){
                 let f = JSON.parse(JSON.stringify(this.formSubmission));
-                if ( (typeof(f.files) !== "object") || (f.files.length === 0) ){
-                    f.files = [];
-                }
-                for (let i=0; i<f.files.length; i++){
+                f.files = [];
+
+                for (let i=0; i<this.files.length; i++){
                     if (i >= f.files.length){
                         f.files[i] = {};
                     }
                     f.files[i].name = this.files[i].name;
                     f.files[i].id = "Not yet uploaded";
                     f.files[i].size = this.files[i].size;
+                    f.files[i].sig = this.files[i].sig;
                     f.files[i].data = this.dataFile[i];
                 }
                 this.modifyStoreUpload(f);
             },
+
+            buildFiles(){
+                if ( (typeof(this.formSubmission.files) !== "undefined") && (this.formSubmission.files.length > 0) ){
+                    for (let i=0; i<this.formSubmission.files.length; i++){
+
+                        //if its 1 it's only sig
+                        if ( (typeof(this.handles[this.formSubmission.files[i].sig]) !== "undefined") && (typeof(this.handles[this.formSubmission.files[i].sig].name) !== "undefined") ){
+                            this.files[i] = this.handles[this.formSubmission.files[i].sig]
+                        }
+                    }
+                }else{
+                    this.files = [];
+                }
+                this.spanKey++;
+            }
         },
         data () {
             return {
                 uploadId: null,
                 formOptions: {},
                 formSubmission: {},
-                fileReaders: [{}],
+                fileReaders: [],
                 dataFile: [false],
                 spanKey: 0,
                 files: []
@@ -105,19 +128,11 @@
         },
         computed: {
             ...mapState({
-                createSubmissionInProgress: state => state.uploadForm.createSubmissionInProgress,
                 uploadStore: state => state.upload.upload,
+                handles: state => state.file.fileHandles
             }),
         },
         watch: {
-            // // eslint-disable-next-line no-unused-vars
-            upload: function (newVal, oldVal) {
-                // console.log('uploadForm prop changed: ', newVal, ' | was: ', oldVal);
-                if(newVal && !oldVal) {
-                    this.uploadId = newVal._id;
-                    // console.log("assigned upload id: " + this.uploadId);
-                }
-            },
 
             // eslint-disable-next-line no-unused-vars
             uploadStore: function (newVal, oldVal) {
@@ -126,6 +141,7 @@
                     // console.log("update  submission");
                     this.formSubmission = {...newVal};
                 }
+                this.buildFiles();
             },
         },
     }

@@ -32,7 +32,9 @@
                 </v-stepper-content>
 
                 <v-stepper-content :step="steps.step3FileLevelForm">
-                    <v-card class="mb-12"></v-card>
+                    <v-card class="mb-12">
+                        <FileInfoForm ref="fileInfoForm"></FileInfoForm>
+                    </v-card>
                     <v-btn color="primary" @click="step=steps.step4UploadProgress">Next</v-btn>
                     <v-btn text @click="step=steps.step2FileSelection">Back</v-btn>
                 </v-stepper-content>
@@ -56,11 +58,13 @@
     import {mapActions, mapMutations, mapState} from "vuex";
     import UploadForm from "../UploadForm";
     import FileForm from "../FileForm";
+    import FileInfoForm from "../FileInfoForm";
 
     export default {
         components:{
             UploadForm,
-            FileForm
+            FileForm,
+            FileInfoForm
         },
         created() {
             if(this.$route.params.id && this.$route.params.id != 'new') { this.uploadId = this.$route.params.id; }
