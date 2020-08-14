@@ -65,7 +65,7 @@ module.exports = (router) => {
     router.use('/repos', auth.requireLoggedIn, repositoriesRoutes(express.Router()));
     router.use('/repobranches', auth.requireLoggedIn, repoBranchesRoutes(express.Router()));
 
-    router.use('/token', auth.requireLoggedIn, function(req, res){
+    router.use('/token', function(req, res){
         if (req.user && req.user.jwt && req.user.refreshToken) {
             res.json(req.user);
         }else{
