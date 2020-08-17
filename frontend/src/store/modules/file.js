@@ -173,7 +173,7 @@ const mutations = {
 
         state = {
             content: [],
-            fileHandles: [],
+            fileHandles: {},
             fileName: "",
             blob: [],
             key: null,

@@ -11,6 +11,7 @@
                         <v-text-field
                             v-model="title[index]"
                             label="Title"
+                            @change="updateFormSubmission"
                             placeholder="Title">
                         </v-text-field>
                     </v-row>
@@ -20,6 +21,7 @@
                             v-model="type[index]"
                             :items="typeOptions"
                             label="File Type"
+                            @change="updateFormSubmission"
                             placeholder="File Type">
                         </v-select>
                     </v-row>
@@ -41,6 +43,7 @@
                                 readonly
                                 v-bind="attrs"
                                 v-on="on"
+                                @change="updateFormSubmission"
                             ></v-text-field>
                             </template>
                             <v-date-picker v-model="start[index]" @input="menu[index] = false"></v-date-picker>
@@ -63,6 +66,7 @@
                                 prepend-icon="mdi-calendar"
                                 readonly
                                 v-bind="attrs"
+                                @change="updateFormSubmission"
                                 v-on="on"
                             ></v-text-field>
                             </template>
@@ -74,6 +78,7 @@
                         <v-textarea
                             v-model="description[index]"
                             label="File"
+                            @change="updateFormSubmission"
                             placeholder="Description">
                         </v-textarea>
                     </v-row>
@@ -102,7 +107,7 @@
                 modifyStoreUpload: 'upload/modifyStoreUpload',
             }),
 
-            updateFormSubmission(){
+            async updateFormSubmission(){
                 let f = JSON.parse(JSON.stringify(this.formSubmission));
 
                 for (let i=0; i<f.files.length; i++){
@@ -112,7 +117,7 @@
                     f.files[i].type = this.type[i];
                     f.files[i].description = this.description[i];
                 }
-                this.modifyStoreUpload(f);
+                await this.modifyStoreUpload(f);
             },
 
             buildFiles(){
@@ -122,6 +127,11 @@
                         //if its 1 it's only sig
                         if ( (typeof(this.handles[this.formSubmission.files[i].sig]) !== "undefined") && (typeof(this.handles[this.formSubmission.files[i].sig].name) !== "undefined") ){
                             this.files[i] = this.handles[this.formSubmission.files[i].sig]
+                            this.start[i] = this.formSubmission.files[i].start_date;
+                            this.end[i] = this.formSubmission.files[i].end_date;
+                            this.title[i] = this.formSubmission.files[i].title;
+                            this.type[i] = this.formSubmission.files[i].type;
+                            this.description[i] = this.formSubmission.files[i].description;
                         }
                     }
                 }else{
