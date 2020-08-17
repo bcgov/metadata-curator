@@ -88,6 +88,16 @@ export default {
             type: Number,
             default: 0
         },
+        loadFromStore: {
+            type: String,
+            default: ""
+        }
+    },
+
+    mounted() {
+        if (this.loadFromStore !== ""){
+            this.file = this.handles[this.loadFromStore];
+        }
     },
 
     data() {
@@ -127,6 +137,7 @@ export default {
             fileSig: state => state.file.fileSig,
             successfullyUploadedChunks: state => state.file.successfullyUploadedChunks,
             user: state => state.user.user,
+            handles: state => state.file.fileHandles,
         }),
         ...mapGetters({
             getStringContent: 'file/getStringContent',
@@ -183,6 +194,11 @@ export default {
                 ///same upload resume
                 this.confirmResume = true;
                 this.confirmChange = false;
+                if (this.loadFromStore){
+                    this.confirmResume = false;
+                    this.openFile();
+                }
+                
             }else{
                 this.confirmChange = false;
                 this.confirmResume = false;
@@ -222,6 +238,9 @@ export default {
                     this.encContentBlobs.push(new Blob([cipherText.data]));
                 }else{
                     this.encContentBlobs[index] = new Blob([cipherText.data])
+                }
+                if (index <= 0){
+                    this.$emit("encrypted", this.index);
                 }
             });
         },

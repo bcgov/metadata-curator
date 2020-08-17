@@ -35,18 +35,22 @@
                     <v-card class="mb-12">
                         <FileInfoForm ref="fileInfoForm"></FileInfoForm>
                     </v-card>
-                    <v-btn color="primary" @click="step=steps.step4UploadProgress">Next</v-btn>
+                    <v-btn color="primary" @click="step=stepSaveFileInfoForm(true)">Start Upload</v-btn>
                     <v-btn text @click="step=steps.step2FileSelection">Back</v-btn>
                 </v-stepper-content>
 
                 <v-stepper-content :step="steps.step4UploadProgress">
-                    <v-card class="mb-12"></v-card>
-                    <v-btn color="primary" @click="step=steps.step5UploadSummary">Next</v-btn>
-                    <v-btn text @click="step=steps.step3FileLevelForm">Back</v-btn>
+                    <v-card class="mb-12">
+                        <FileUploadForm ref="fileUploadForm" @uploads-finished="stepSaveFileUploads" :active="step === steps.step4UploadProgress"></FileUploadForm>
+                    </v-card>
+                    <!--<v-btn color="primary" @click="step=steps.step5UploadSummary">Next</v-btn>
+                    <v-btn text @click="step=steps.step3FileLevelForm">Back</v-btn>-->
                 </v-stepper-content>
 
                 <v-stepper-content :step="steps.step5UploadSummary">
-                    <v-card class="mb-12"></v-card>
+                    <v-card class="mb-12">
+                        <UploadSummaryForm ref="uploadSummaryForm"></UploadSummaryForm>
+                    </v-card>
                 </v-stepper-content>
             </v-stepper-items>
         </v-stepper>
@@ -59,12 +63,16 @@
     import UploadForm from "../UploadForm";
     import FileForm from "../FileForm";
     import FileInfoForm from "../FileInfoForm";
+    import FileUploadForm from "../FileUploadForm";
+    import UploadSummaryForm from '../UploadSummaryForm';
 
     export default {
         components:{
             UploadForm,
             FileForm,
-            FileInfoForm
+            FileInfoForm,
+            FileUploadForm,
+            UploadSummaryForm,
         },
         created() {
             if(this.$route.params.id && this.$route.params.id != 'new') { this.uploadId = this.$route.params.id; }
@@ -111,8 +119,18 @@
             async stepSaveFileForm(transitionNextStepAfterSave) {
                 await this.updateUpload(this.upload);
                 if(transitionNextStepAfterSave) { this.step = this.steps.step3FileLevelForm; }
+            },
 
-            }
+            async stepSaveFileInfoForm(transitionNextStepAfterSave) {
+                await this.updateUpload(this.upload);
+                if(transitionNextStepAfterSave) { this.step = this.steps.step4UploadProgress; }
+            },
+
+            async stepSaveFileUploads(){
+                await this.updateUpload(this.upload);
+                 this.step = this.steps.step5UploadSummary;
+
+            },
         },
         data () {
             return {
@@ -142,6 +160,17 @@
                 if(newVal && !oldVal) {
                     if(this.upload.upload_submission_id) {
                         this.step = this.steps.step2FileSelection;
+                        if (this.upload.files.length >= 1){
+                            let allGood = true;
+                            for (let i=0; i<this.upload.files.length; i++){
+                                if ( (!this.upload.files[i].id) || (this.upload.files[i].id === "") ){
+                                    allGood = false;
+                                }
+                            }
+                            if (allGood){
+                                this.step = this.steps.step5UploadSummary;
+                            }
+                        }
                     }
                 }
             },
