@@ -8,6 +8,7 @@
   },
   "sessionSecret": "totally secure",
   "jwtSecret": "jwtSecret",
+  "jwtAud": "aud",
   "frontend": "http://localhost:8080",
   "oidc": {
     "issuer": "https://{yourdomain}/oauth2/default",
