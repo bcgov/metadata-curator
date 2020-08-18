@@ -5,7 +5,7 @@ const ExtractJWT = passJwt.ExtractJwt;
 var config = require('config');
 var logger = require('npmlog');
 var jwtLib = require('jsonwebtoken');
-var secret = config.get("jwtSecret"),
+var secret = config.get("jwtSecret");
 
 passport.use('jwt', new JWTStrategy({
         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
