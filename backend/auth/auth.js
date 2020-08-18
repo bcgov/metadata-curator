@@ -4,14 +4,26 @@ const JWTStrategy = passJwt.Strategy;
 const ExtractJWT = passJwt.ExtractJwt;
 var config = require('config');
 var logger = require('npmlog');
+var jwtLib = require('jsonwebtoken');
+var secret = config.get("jwtSecret"),
 
 passport.use('jwt', new JWTStrategy({
         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-        secretOrKey: config.get("jwtSecret"),
+        secretOrKey: secret,
         passReqToCallback: true,
     }, function(req, jwtPayload, cb) {
 
-        var encodedJWT = req.headers['authorization'].substring("Bearer ".length);
+        var originalJwt = req.headers['authorization'].substring("Bearer ".length);
+        var encodedJWT = originalJwt;
+
+        // invalid token - synchronous
+        try {
+            let decodedJWT = jwt.verify(originalJwt, secret);
+            decodedJWT.aud = config.get('jwtAud');
+            encodedJWT = jwt.sign(decodedJWT, secret);
+        } catch(err) {
+        // err
+        }
         //var userConf = config.get('user');
         var user = {
             jwt: encodedJWT,
