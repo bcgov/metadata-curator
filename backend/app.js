@@ -52,6 +52,7 @@ passport.deserializeUser((obj, next) => {
 var strategy = new OidcStrategy(config.get('oidc'), function(issuer, sub, profile, accessToken, refreshToken, done){
 
   var jwt = require('jsonwebtoken');
+  profile._json['aud'] = config.get('jwtAud');
   profile.jwt = jwt.sign(profile._json, config.get('jwtSecret'));
 
   profile.isAdmin = false;
