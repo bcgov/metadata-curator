@@ -174,8 +174,9 @@ export default {
     },
 
     watch: {
-        triggerUpload(newVal){
+        async triggerUpload(newVal){
             if (newVal){
+                await this.$store.dispatch('file/getUploadUrl');
                 this.upload();
             }
         },
