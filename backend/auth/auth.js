@@ -21,8 +21,9 @@ passport.use('jwt', new JWTStrategy({
             let decodedJWT = jwt.verify(originalJwt, secret);
             decodedJWT.aud = config.get('jwtAud');
             encodedJWT = jwt.sign(decodedJWT, secret);
+            console.log("Resignined jwt");
         } catch(err) {
-        // err
+            console.log("Error resigning");
         }
         //var userConf = config.get('user');
         var user = {
