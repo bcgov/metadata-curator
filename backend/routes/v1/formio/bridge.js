@@ -64,7 +64,12 @@ var addRoutes = function(router){
                 res.status(500);
                 return res.json({error: err});
             }
-            return res.json(JSON.parse(submission));
+            try{
+                console.log("SUB", submisison);
+                return res.json(JSON.parse(submission));
+            }catch(e){
+                return res.json(submission);
+            }
         });
     });
 

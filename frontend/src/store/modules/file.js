@@ -53,7 +53,6 @@ async function encrypt(commit, clear, content, key, replaceIndex){
             commit('setBlob', {index: replaceIndex, blob: new Blob([cipherText.data])} );
         }
     });
-
 }
 
 const actions = {

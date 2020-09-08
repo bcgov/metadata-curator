@@ -96,6 +96,10 @@
         components:{
         },
         props: {
+            visible: {
+                type: Boolean,
+                default: false,
+            }
         },
         
         mounted() {

@@ -72,6 +72,10 @@ export default {
             type: Boolean,
             default: true
         },
+        clearFile: {
+            type: Boolean,
+            default: false
+        },
         showUploadButton: {
             type: Boolean,
             default: true
@@ -97,6 +101,7 @@ export default {
     mounted() {
         if (this.loadFromStore !== ""){
             this.file = this.handles[this.loadFromStore];
+            this.openFile(true);
         }
     },
 
@@ -164,7 +169,7 @@ export default {
         },
 
         getFinger: function(){
-            if (typeof(this.file) !== "undefined"){
+            if ( (typeof(this.file) !== "undefined") && (this.file !== null) ){
                 return this.file.name + "-" + this.file.type + "-" + this.file.size + "-" + this.file.lastModified;
             }
             return "";
@@ -176,8 +181,17 @@ export default {
     watch: {
         async triggerUpload(newVal){
             if (newVal){
-                await this.$store.dispatch('file/getUploadUrl');
+                if ( (this.readFile && this.blob.length <= 0) ||  (this.encContentBlobs.length <= 0) ){
+                    this.currChunk = 0;
+                    await this.openFileSync(true);
+                }
                 this.upload();
+            }
+        },
+
+        clearFile(newVal){
+            if (newVal){
+                this.file = null;
             }
         },
 
@@ -197,7 +211,7 @@ export default {
                 this.confirmChange = false;
                 if (this.loadFromStore){
                     this.confirmResume = false;
-                    this.openFile();
+                    this.openFile(true);
                 }
                 
             }else{
@@ -246,15 +260,56 @@ export default {
             });
         },
 
+        openFileSync: async function(resume){
+            if (typeof(resume) === "undefined"){
+                resume = false;
+            }
+
+            
+
+            if (this.file){
+                let finger = this.getFinger;
+                this.$store.commit('file/addFileHandleIfNotPresent', {handle: this.file, fileSig: finger});
+                this.disabled = true;
+                this.pleaseWait = true;
+                await this.getNextChunk(0);
+                this.numEncrypted += 1
+                if ( (resume) && (this.successfullyUploadedChunks[this.getFinger]) ){
+                    let i = 0;
+                    for (; i<this.successfullyUploadedChunks[this.getFinger].length; i++){
+                        if (typeof(this.successfullyUploadedChunks[this.getFinger][i])==="undefined"){
+                            break;
+                        }
+                    }
+                    let diff = i-1; //we read one chunk already
+                    if ( diff > 0 ){
+                        this.currChunk += diff;
+                        this.numEncrypted = this.currChunk - 1;
+                        this.numUploaded = this.currChunk - 1;
+                        this.offset += (this.chunkSize * diff);
+                        await this.getNextChunk(2);
+                    }
+
+                    if (this.currChunk<0){
+                        this.currChunk = 0;
+                    }
+                }
+                this.disabled = false;
+                this.pleaseWait = false;
+            }else if ((!this.file) && (this.readFile)){
+                this.$store.commit('file/clearContent');
+            }
+
+        },
+
         openFile: function(resume){
             if (typeof(resume) === "undefined"){
                 resume = false;
             }
 
-            let finger = this.getFinger;
-            this.$store.commit('file/addFileHandleIfNotPresent', {handle: this.file, fileSig: finger});
-
              if (this.file){
+                let finger = this.getFinger;
+                this.$store.commit('file/addFileHandleIfNotPresent', {handle: this.file, fileSig: finger});
                 this.disabled = true;
                 var self = this;
                 this.pleaseWait = true;
@@ -331,6 +386,7 @@ export default {
                 this.currChunk += 1;
                 if (this.currChunk < this.numChunks){
                     reader.readAsArrayBuffer(this.file.slice(this.offset, (this.offset + this.chunkSize)));
+
                 }else{
                     //this last chunk can be bigger than the rest because each chunk needs to 
                     //be at least 5mb due to s3/minio restrictions 
@@ -411,7 +467,9 @@ export default {
                                 }
                                 backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0").then( () => {
                                     self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
-                                    self.$emit('upload-finished', self.uploads[0].url.substring(self.uploads[0].url.lastIndexOf("/")+1), this.file.name, this.file.size);
+                                    var slashInd = self.uploads[0].url.lastIndexOf("/");
+                                    var plusInd = self.uploads[0].url.lastIndexOf("+");
+                                    self.$emit('upload-finished', self.uploads[0].url.substring(slashInd+1, plusInd), this.file.name, this.file.size);
                                     self.numUploaded = self.numChunks+1;
                                     self.disabled = false;
                                 }).catch( (/*e*/) => {
@@ -422,7 +480,9 @@ export default {
                             }
                         });
                     }else{
-                        self.$emit('upload-finished', self.uploads[0].url.substring(self.uploads[0].url.lastIndexOf("/")+1), this.file.name, this.file.size);
+                        var slashInd = self.uploads[0].url.lastIndexOf("/");
+                        var plusInd = self.uploads[0].url.lastIndexOf("+");
+                        self.$emit('upload-finished', self.uploads[0].url.substring(slashInd+1, plusInd), this.file.name, this.file.size);
                         self.numUploaded = self.numChunks+1
                         self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
                         self.disabled = false;
@@ -461,19 +521,25 @@ export default {
                     }else if ( (i !== 1) && (i >= self.numChunks) ){
                         let joinIds = [];
                         for (let j=0; j<self.uploads.length; j++){
-                            let url = self.uploads[j].url.substring(self.uploads[j].url.substring(9).indexOf("/")+9);
-                            joinIds.push(url);
+                            if (self.uploads[j].url){
+                                let url = self.uploads[j].url.substring(self.uploads[j].url.substring(9).indexOf("/")+9);
+                                joinIds.push(url);
+                            }
                         }
-                        backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0").then( () => {
-                            self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
-                            self.$emit('upload-finished', self.uploads[0].url.substring(self.uploads[0].url.lastIndexOf("/")+1), this.file.name, this.file.size);
-                            self.numUploaded = self.numChunks+1;
-                            self.disabled = false;
-                        }).catch( (e) => {
-                            // eslint-disable-next-line
-                            console.log("Concatenation error", e);
-                            self.disabled = false;
-                        });
+                        if (joinIds.length > 0){
+                            backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0").then( () => {
+                                self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
+                                var slashInd = self.uploads[0].url.lastIndexOf("/");
+                                var plusInd = self.uploads[0].url.lastIndexOf("+");
+                                self.$emit('upload-finished', self.uploads[0].url.substring(slashInd+1, plusInd), this.file.name, this.file.size);
+                                self.numUploaded = self.numChunks+1;
+                                self.disabled = false;
+                            }).catch( (e) => {
+                                // eslint-disable-next-line
+                                console.log("Concatenation error", e);
+                                self.disabled = false;
+                            });
+                        }
                     }
                 });
             }
