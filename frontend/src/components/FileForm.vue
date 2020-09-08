@@ -8,6 +8,7 @@
                                 :show-upload-button="false"
                                 :show-import-button="false"
                                 :read-file="false"
+                                :clear-file="clearFile"
                                 :index="files.length"
                                 @file-opened="fileOpened"
                     >
@@ -56,12 +57,12 @@
                 modifyStoreUpload: 'upload/modifyStoreUpload',
             }),
 
-            addFile(){
-                this.files[this.fileReaders.length]={};
-                this.fileReaders[this.fileReaders.length]={key: 'val'}; 
-                this.spanKey++;
-                this.updateFormSubmission();
-            },
+            // addFile(){
+            //     this.files[this.fileReaders.length]={};
+            //     this.fileReaders[this.fileReaders.length]={key: 'val'}; 
+            //     this.spanKey++;
+            //     this.updateFormSubmission();
+            // },
             
             removeFile(index){
                 delete this.fileReaders.splice(index, 1);
@@ -70,11 +71,10 @@
                 this.updateFormSubmission();
             },
 
-            // async startUploadFiles(){
-            //     Vue.set(this.triggerUpload, this.uploading, true);
-            // },
-
             fileOpened(index, file, sig){
+                this.clearFile = false;
+                this.spanKey++;
+                this.clearFile = true;
                 this.fileReaders[this.fileReaders.length] = {}
                 this.files[index] = file;
                 this.files[index].sig = sig;
@@ -84,6 +84,9 @@
             },
 
             updateFormSubmission(){
+                if (this.uploadStore && Object.keys(this.formSubmission).length === 0){
+                    this.formSubmission = {...this.uploadStore};
+                }
                 let f = JSON.parse(JSON.stringify(this.formSubmission));
                 f.files = [];
 
@@ -101,6 +104,9 @@
             },
 
             buildFiles(){
+                if (this.uploadStore && Object.keys(this.formSubmission).length === 0){
+                    this.formSubmission = {...this.uploadStore};
+                }
                 if ( (typeof(this.formSubmission.files) !== "undefined") && (this.formSubmission.files.length > 0) ){
                     for (let i=0; i<this.formSubmission.files.length; i++){
 
@@ -123,6 +129,7 @@
                 fileReaders: [],
                 dataFile: [false],
                 spanKey: 0,
+                clearFile: false,
                 files: []
             }
         },

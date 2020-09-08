@@ -24,7 +24,7 @@
 
                 <v-stepper-content :step="steps.step2FileSelection">
                     <v-card class="mb-12">
-                        <FileForm ref="fileForm" :upload="upload"></FileForm>
+                        <FileForm v-if="step === steps.step2FileSelection" ref="fileForm" :upload="upload"></FileForm>
                     </v-card>
                     <v-btn color="primary" @click="stepSaveFileForm(false)">Save</v-btn>
                     <v-btn color="primary" @click="stepSaveFileForm(true)">Next</v-btn>
@@ -41,7 +41,7 @@
 
                 <v-stepper-content :step="steps.step4UploadProgress">
                     <v-card class="mb-12">
-                        <FileUploadForm ref="fileUploadForm" @uploads-finished="stepSaveFileUploads" :active="step === steps.step4UploadProgress"></FileUploadForm>
+                        <FileUploadForm @uploads-finished="stepSaveFileUploads" :active="step === steps.step4UploadProgress"></FileUploadForm>
                     </v-card>
                     <!--<v-btn color="primary" @click="step=steps.step5UploadSummary">Next</v-btn>
                     <v-btn text @click="step=steps.step3FileLevelForm">Back</v-btn>-->
@@ -49,7 +49,7 @@
 
                 <v-stepper-content :step="steps.step5UploadSummary">
                     <v-card class="mb-12">
-                        <UploadSummaryForm ref="uploadSummaryForm"></UploadSummaryForm>
+                        <UploadSummaryForm v-if="step === steps.step5UploadSummary" ref="uploadSummaryForm"></UploadSummaryForm>
                     </v-card>
                 </v-stepper-content>
             </v-stepper-items>
@@ -96,13 +96,15 @@
                   if((!this.uploadId && !this.newUploadCreated) && !this.createUploadInProgress) {
                       // console.log("create new upload");
                       const submission = this.$refs.uploadForm.getSubmission();
+                      await this.triggerUploadFormSubmit();
                       const initialUpload = {
                           name: submission.data.datasetName,
                           description: submission.data.datasetName,
-                          uploader: this.user.email
+                          uploader: this.user.email,
+                          upload_submission_id: this.$refs.uploadForm.submissionId
                       }
                       await this.createInitialUpload(initialUpload);
-                      await this.triggerUploadFormSubmit();
+                      
                   }
                   else {
                       // console.log("update existing upload submission");
@@ -163,7 +165,7 @@
                         if (this.upload.files.length >= 1){
                             let allGood = true;
                             for (let i=0; i<this.upload.files.length; i++){
-                                if ( (!this.upload.files[i].id) || (this.upload.files[i].id === "") ){
+                                if ( (!this.upload.files[i].id) || (this.upload.files[i].id === "") || (this.upload.files[i].id.toLowerCase() === "not yet uploaded") ){
                                     allGood = false;
                                 }
                             }
