@@ -54,6 +54,7 @@
                 
                 await this.updateFormSubmission();
                 if (this.uploadIndex >= this.files.length){
+                    await this.updateFormSubmission(true);
                     this.$emit("uploads-finished");
                 }else{
                     Vue.set(this.startUpload, this.uploadIndex, true);
@@ -69,15 +70,32 @@
 
             startUploads(){
                 if (this.readyToUpload){
+                    this.updateFormSubmission(false, true)
                     Vue.set(this.startUpload, 0, true);
                 }
             },
             
 
-            async updateFormSubmission(){
+            async updateFormSubmission(done, start){
+                if (typeof(done) === "undefined"){
+                    done = false;
+                }
+
+                if (typeof(start) === "undefined"){
+                    start = false;
+                }
+
                 let f = JSON.parse(JSON.stringify(this.formSubmission));
                 for (let i=0; i<this.files.length; i++){
                     f.files[i].id = this.fileIds[i];
+                }
+
+                if (start){
+                    f.status = 'upload_in_progress';
+                }
+
+                if (done){
+                    f.status = 'submitted';
                 }
                 await this.modifyStoreUpload(f);
             },

@@ -1,7 +1,10 @@
 <template>
 <!--    <div style="width: 75%; alignment: center !important;">-->
             <v-container fluid style="max-width:1500px; width:98%;">
-                <v-row dense>
+                <v-row v-if="!dataUpload" dense>
+                    Loading...
+                </v-row>
+                <v-row v-else dense>
                     <v-col cols="12">
                         <v-card outlined max-height="150">
                             <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:15px;">Data Upload Summary</h1>
@@ -11,10 +14,6 @@
                             <p class="display-5" style="margin-left:15px;">
                                 Approver has opened: {{dataUpload.opened_by_approver}}
                             </p>
-                            <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn color="orange" text>View</v-btn>
-                            </v-card-actions>
                         </v-card>
                     </v-col>
 <!--                    <v-col cols="6">-->
@@ -34,7 +33,7 @@
                             <v-card-actions class="card-actions">
                                 <v-spacer></v-spacer>
                                 <v-btn color="orange" text @click="showAddCommentDialog()">Add Comment</v-btn>
-                                <v-btn color="orange" text>View</v-btn>
+                                <v-btn color="orange" text @click="showViewDialog()">View</v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-col>
@@ -43,6 +42,9 @@
                 <CommentAddDialog :dialog="commentAddDialog"
                                   @close-button-clicked="onCloseButtonClicked"
                                   @save-button-clicked="onSaveButtonClicked"/>
+                <ViewDialog :dialog="viewDialog"
+                                  :uploadId="dataUploadId"
+                                  @close-button-clicked="onViewClosedClick"/>
             </v-container>
 <!--    </div>-->
 </template>
@@ -52,17 +54,20 @@
 // import MetadataRevisions from "../MetadataRevisions";
 import Comments from "../Comments";
 import CommentAddDialog from "../CommentAddDialog";
+import ViewDialog from "../ViewUploadDialog";
 
 export default {
     components:{
         // MetadataRevisions,
         Comments,
-        CommentAddDialog
+        CommentAddDialog,
+        ViewDialog
     },
     data () {
         return {
             commentAddDialog: false,
             dataUploadId: null,
+            viewDialog: false,
         }
     },
     methods: {
@@ -99,10 +104,19 @@ export default {
         showAddCommentDialog() {
             this.commentAddDialog = true;
         },
+
+        showViewDialog() {
+            this.viewDialog = true;
+        },
+
         onCloseButtonClicked() {
             this.commentAddDialog = false;
-            // this.comment = null;
         },
+        
+        onViewClosedClick(){
+            this.viewDialog = false;
+        },
+
         async onSaveButtonClicked(comment) {
             this.commentAddDialog = false;
             await this.addComment({dataUploadId: this.dataUploadId, comment: comment});

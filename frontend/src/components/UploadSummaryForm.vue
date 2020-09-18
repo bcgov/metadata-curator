@@ -6,6 +6,16 @@
                     <v-icon color="primary">mdi-check</v-icon> Data Uploaded Successfully
                 </v-col>
             </v-row>
+            <span>
+                <formio
+                    v-if="formDef"
+                    ref="formioObj"
+                    :form="formDef"
+                    :submission="formSubmission"
+                    v-bind:options="formOptions"
+                >
+                </formio>
+            </span>
             <span v-if="uploadStore">
                 <v-row v-for="(file, index) in uploadStore.files" :key="'fileReader'+index">
                     <v-col cols=12>
@@ -23,16 +33,22 @@
 </template>
 
 <script>
-    import { mapState } from "vuex";
+    import { mapActions, mapState } from "vuex";
+    import { Form } from 'vue-formio';
 
     export default {
         name: 'UploadSummaryForm',
         components:{
+            formio: Form
         },
         props: {
         },
         
         methods: {
+            ...mapActions({
+                getUploadFormSubmission: 'uploadForm/getUploadFormSubmission',
+            }),
+
             formatDate(d){
                 var date = new Date(d);
                 let month = new Array();
@@ -55,12 +71,19 @@
         data () {
             return {
                 uploadId: null,
-                spanKey: 0
+                spanKey: 0,
+                formDef: {},
+                formOptions: {
+                    readOnly: true
+                },
+                formSubmission: {},
             }
         },
         computed: {
             ...mapState({
                 uploadStore: state => state.upload.upload,
+                uploadForm: state => state.uploadForm.formDef,
+                submission: state => state.uploadForm.submission,
             }),
         },
         watch: {
@@ -71,9 +94,28 @@
                 if(newVal) {
                     // console.log("update  submission");
                     this.formSubmission = {...newVal};
+                    
+                    this.getUploadFormSubmission(this.formSubmission.upload_submission_id);
                     this.spanKey++;
                 }
             },
+            // eslint-disable-next-line no-unused-vars
+            uploadForm: function (newVal, oldVal) {
+                // console.log('uploadForm prop changed: ', newVal, ' | was: ', oldVal);
+                this.formDef = JSON.parse(JSON.stringify(newVal));
+            },
+            // eslint-disable-next-line no-unused-vars
+            submission: function (newVal, oldVal) {
+                // eslint-disable-next-line no-undef
+                if(newVal) {
+                    if (typeof(newVal) === "string"){
+                        newVal = JSON.parse(newVal);
+                    }
+                    this.formSubmission = {...newVal};
+                    this.$refs.formioObj.formio.submission = this.formSubmission;
+                }
+            },
+
         },
     }
 </script>
