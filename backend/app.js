@@ -89,6 +89,8 @@ var strategy = new OidcStrategy(config.get('oidc'), function(issuer, sub, profil
   const approverGroups = config.get("approverGroups");
   // console.log("approverGroups: ", approverGroups);
   const foundApprover = profile.groups.some(group => approverGroups.includes(group));
+  console.log("FA", foundApprover);
+  console.log("PG", profile);
   if(foundApprover) {profile.isApprover = true; }
   // console.log("foundApprover: " + foundApprover);
 

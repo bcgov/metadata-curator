@@ -73,7 +73,15 @@ const listDataUploads = async (user, query) => {
         }
 
         const uploadIds = topics.map(item => item.name);
-        return await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": 1});
+        if(query.filterBy === 'provider') {
+            let results = await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": 1});
+            results = results.filter( (item) => {
+                return item.status === "submitted";
+            });
+            return results;
+        }else{
+            return await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": 1});
+        }
 
     } catch (e) {
         log.error(e);
