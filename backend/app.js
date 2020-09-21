@@ -64,6 +64,10 @@ var strategy = new OidcStrategy(config.get('oidc'), function(issuer, sub, profil
     profile.groups = profile._json.groups;
   }
 
+  if ((typeof(profile._json) !== "undefined") && (typeof(profile._json.email) !== "undefined")){
+    profile.email = profile._json.email;
+  }
+
   if (config.has('adminGroup')){
     profile.isAdmin = (profile.groups.indexOf(config.get('adminGroup')) !== -1);
   }

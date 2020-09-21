@@ -38,6 +38,7 @@ const updateDataUpload = async (user, dataUploadId, updatedData) => {
         dataUpload.name = updatedData.name;
         dataUpload.description = updatedData.description;
         dataUpload.files = updatedData.files;
+        dataUpload.status = updatedData.status;
         dataUpload.opened_by_approver = updatedData.opened_by_approver;
         dataUpload.approver_has_commented = updatedData.approver_has_commented;
         dataUpload.upload_submission_id = updatedData.upload_submission_id ? updatedData.upload_submission_id : null;
@@ -56,7 +57,9 @@ const listDataUploads = async (user, query) => {
         const topicResponse = await forumClient.getTopics(user, query);
         if(query && query.filterBy) {
             if(query.filterBy === 'me') {
-                topics = topicResponse.data.filter(item => item.contributors.indexOf(user.email) !== -1 && item.parent_id);
+                topics = topicResponse.data.filter( (item) => {
+                    return (item.contributors.indexOf(user.email) !== -1 && item.parent_id);
+                });
             } else if(query.filterBy === 'provider') {
                 if(query.providerGroups && query.providerGroups.includes('all') ) {
                     topics = topicResponse.data.filter(item => item.parent_id); }

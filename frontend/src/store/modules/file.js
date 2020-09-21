@@ -24,12 +24,12 @@ const getters = {
     },
 
     getPublicKey: (state) => async () => {
-        if (state.publicKey == null){
+        if (state.key === null){
             let data = await backend.getPublicKey();
             console.log("GET PK", data);
-            return data.key
+            return data.key;
         }
-        return state.publicKey;
+        return state.key;
     },
 }
 
@@ -70,7 +70,7 @@ const actions = {
 
         if (state.publicKey == null){
             let data = await backend.getPublicKey();
-            commit('setPublicKey', {key: data.key});   
+            commit('setPublicKey', {key: data.key});
         }
     
         if (state.uploadUrl === ""){
