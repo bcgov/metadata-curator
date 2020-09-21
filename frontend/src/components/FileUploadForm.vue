@@ -45,6 +45,7 @@
 
             ...mapActions({
                 modifyStoreUpload: 'upload/modifyStoreUpload',
+                updateUploadFormSubmission: 'uploadForm/updateUploadFormSubmission',
             }),
 
             async uploadFinished(id){
@@ -52,7 +53,6 @@
                 this.fileIds[this.uploadIndex] = id;
                 this.uploadIndex++;
                 
-                await this.updateFormSubmission();
                 if (this.uploadIndex >= this.files.length){
                     await this.updateFormSubmission(true);
                     this.$emit("uploads-finished");
@@ -70,7 +70,8 @@
 
             startUploads(){
                 if (this.readyToUpload){
-                    this.updateFormSubmission(false, true)
+                    // await this.updateFormSubmission(false, true);
+                    // await this.updateUploadFormSubmission(this.formSubmission);
                     Vue.set(this.startUpload, 0, true);
                 }
             },
