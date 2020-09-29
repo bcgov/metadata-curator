@@ -79,3 +79,11 @@ export default {
         color: var(--v-text-base);
     }
 </style>
+
+<style>
+
+.flatpickr-calendar.animate{
+    display: none;
+}
+
+</style>
