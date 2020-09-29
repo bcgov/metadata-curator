@@ -7,18 +7,22 @@
             :submission="formSubmission"
             v-bind:options="formOptions"
             v-on:submit="onSubmit"
+            v-on:render="renderDone"
         >
         </formio>
+
 <!--        <button @click="validateForm">validate</button>-->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-        <link ref="bsCSS" rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css'>
-        <link ref="formioCSS" rel='stylesheet' href='https://unpkg.com/formiojs@latest/dist/formio.full.min.css'>
+        <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css'>
+        <link rel='stylesheet' href='https://unpkg.com/formiojs@4.10.0/dist/formio.full.min.css'>
     </v-container>
 </template>
 
 <script>
 
     import { Form } from 'vue-formio';
+    //import { Form, Templates } from 'vue-formio';
+    import Vue from 'vue';
     import {mapActions, mapMutations, mapState} from "vuex";
 
     export default {
@@ -44,6 +48,17 @@
             }
         },
         mounted() {
+            // let self = this;
+            // Templates.current = {
+            //     'input-datetime': {
+            //         form: function(ctx){
+            //             console.log(ctx);
+            //             self.contexts[ctx.input.attr.name] = ctx;
+            //             return '<div id="'+ctx.input.attr.name+'"></div>';
+            //         }
+            //     }
+            // }
+
         },
         methods: {
             ...mapActions({
@@ -55,6 +70,21 @@
             ...mapMutations({
                 resetState: 'uploadForm/resetState',
             }),
+
+            renderDone(){
+                let keys = Object.keys(this.contexts);
+                let dpicker = Vue.component('VDatePicker');
+                for (let i=0; i<keys.length; i++){
+                    let ele = new dpicker();
+                    ele.$vuetify = this.$vuetify;
+                    ele.$mount();
+                    console.log (ele.$el)
+                    document.getElementById(keys[i]).appendChild(ele.$el);
+                    ele.$forceUpdate();
+                }
+                
+            },
+
             async onSubmit(submission) {
                 // console.log("onSubmit submission: ", submission);
                 // console.log(`submission._id: ${submission._id}, newSubmissionCreated: ${this.newSubmissionCreated},
@@ -86,6 +116,7 @@
                 formOptions: {},
                 formDef: {},
                 formSubmission: {},
+                contexts: {}
             }
         },
         computed: {
@@ -124,10 +155,4 @@
         },
     }
 </script>
-
-
-
-
-
-
 

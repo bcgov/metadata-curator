@@ -1,6 +1,6 @@
 <template>
     <v-dialog v-model="dialog" persistent fullscreen>
-        <link ref="bsCSS" rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css'>
+        <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css'>
         <v-card :key="'uploadCard-'+spanKey">
             <v-card-title>
                 <span class="headline">Data Upload <span v-if="uploadStore && uploadStore.name">{{uploadStore.name}}</span></span>
@@ -84,7 +84,6 @@
             onCloseClicked: function(){
                 // console.log("onCloseClicked");
                 // console.log("commentVal: " + this.commentVal);
-                this.$refs.bsCSS.disabled = true;
                 this.$emit('close-button-clicked');
             },
             formatDate(d){
@@ -157,9 +156,6 @@
                 if(oldVal === false && newVal) {
                     // console.log("model opening");
                     // this.$nextTick(() => this.$refs.comment.focus())
-                    if (this.$refs.bsCSS){
-                        this.$refs.bsCSS.disabled = false;
-                    }
                     
                     if (this.$refs.formioObj){
                         this.$refs.formioObj.formio.submission = this.formSubmission;

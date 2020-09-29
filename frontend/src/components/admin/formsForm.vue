@@ -1,7 +1,7 @@
 <template>
     <v-container>
-            <link ref="bsCSS" rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css'>
-            <link ref="formioCSS" rel='stylesheet' href='https://unpkg.com/formiojs@latest/dist/formio.full.min.css'>
+            <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css'>
+            <link rel='stylesheet' href='https://unpkg.com/formiojs@4.10.0/dist/formio.full.min.css'>
             <v-row>
                 <v-col cols="12">
                      <v-switch
@@ -52,9 +52,6 @@ export default {
             type: Object,
             required: true,
         },
-        open: {
-            type: Boolean
-        }
         
     },
 
@@ -87,10 +84,6 @@ export default {
             }
         },
 
-        open: function(newVal){
-            this.$refs['bsCSS'].disabled = !newVal;
-            this.$refs['formioCSS'].disabled = !newVal;
-        },
         name: function(newVal){
             if (this.setId){
                 this.item._id = newVal;
