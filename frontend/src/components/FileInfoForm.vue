@@ -102,13 +102,11 @@
             }
         },
         
-        mounted() {
-            this.buildFiles();
-        },
         methods: {
 
             ...mapActions({
                 modifyStoreUpload: 'upload/modifyStoreUpload',
+                getUploadFormSubmission: 'uploadForm/getUploadFormSubmission',
             }),
 
             async updateFormSubmission(){
@@ -126,21 +124,59 @@
 
             buildFiles(){
                 if ( (typeof(this.formSubmission.files) !== "undefined") && (this.formSubmission.files.length > 0) ){
+                    let usingADefault = false;
                     for (let i=0; i<this.formSubmission.files.length; i++){
 
                         //if its 1 it's only sig
                         if ( (typeof(this.handles[this.formSubmission.files[i].sig]) !== "undefined") && (typeof(this.handles[this.formSubmission.files[i].sig].name) !== "undefined") ){
+                            let formStart = (this.formioSubmission.daterangestart) ? this.formioSubmission.daterangestart : this.formioSubmission.dateRangeStart;
+                            let formEnd = (this.formioSubmission.daterangeend) ? this.formioSubmission.daterangeend : this.formioSubmission.dateRangeEnd;
+                            
+                            let fileName = (this.formSubmission.files[i].title) ? this.formSubmission.files[i].title : ((this.files[i] && this.files[i].name) ? this.files[i].name : '');
+                            let type = (this.formSubmission.files[i].type) ? this.formSubmission.files[i].type : "Other"
+                            let start = (this.formSubmission.files[i].start_date) ? this.formSubmission.files[i].start_date : formStart;
+                            let end = (this.formSubmission.files[i].end_date) ? this.formSubmission.files[i].end_date :  formEnd;
+
+                            
+                            if ( (!this.formSubmission.files[i].title) || (!this.formSubmission.files[i].type) || (!this.formSubmission.files[i].start_date) || (!this.formSubmission.files[i].end_date)){
+                                usingADefault = true;
+                            }
+
+                            if (!this.formSubmission.files[i].type){
+                                if ( (this.files[i]) && (this.files[i].type) ){
+                                    switch(this.files[i].type) {
+                                        case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+                                            type = 'Data';
+                                            break;
+                                        case 'text/plain':
+                                            type = 'Data';
+                                            break;
+                                        case 'text/csv':
+                                            type = 'Data';
+                                            break;
+                                        case 'application/json':
+                                            type = 'Metadata'
+                                            break;
+                                    }
+                                }
+                            }
+                            
+
                             this.files[i] = this.handles[this.formSubmission.files[i].sig]
-                            this.start[i] = this.formSubmission.files[i].start_date;
-                            this.end[i] = this.formSubmission.files[i].end_date;
-                            this.title[i] = this.formSubmission.files[i].title;
-                            this.type[i] = this.formSubmission.files[i].type;
+                            this.start[i] = start;
+                            this.end[i] = end;
+                            this.title[i] = fileName;
+                            this.type[i] = type;
                             this.description[i] = this.formSubmission.files[i].description;
                         }
+                    }
+                    if (usingADefault){
+                        this.updateFormSubmission();
                     }
                 }else{
                     this.files = [];
                 }
+
                 this.spanKey++;
             }
         },
@@ -148,6 +184,7 @@
             return {
                 uploadId: null,
                 formSubmission: {},
+                formioSubmission: {},
                 spanKey: 0,
                 files: [],
                 description: [],
@@ -163,6 +200,7 @@
         computed: {
             ...mapState({
                 uploadStore: state => state.upload.upload,
+                submission: state => state.uploadForm.submission,
                 handles: state => state.file.fileHandles
             }),
         },
@@ -175,7 +213,18 @@
                     // console.log("update  submission");
                     this.formSubmission = {...newVal};
                 }
-                this.buildFiles();
+                this.getUploadFormSubmission(this.formSubmission.upload_submission_id);
+            },
+
+            submission: function (newVal, oldVal) {
+                
+                if( (newVal) && (newVal !== oldVal)) {
+                    if (typeof(newVal) === "string"){
+                        newVal = JSON.parse(newVal);
+                    }
+                    this.formioSubmission = newVal.data;
+                    this.buildFiles();
+                }
             },
         },
     }

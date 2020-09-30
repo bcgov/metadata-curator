@@ -15,8 +15,7 @@
                     </FileReader>
                 </v-col>
                 <v-col cols=1>
-                    <v-checkbox label="Data File" v-model="dataFile[files.length]">
-                    </v-checkbox>
+                    <!-- <v-checkbox label="Data File" v-model="dataFile[files.length]"></v-checkbox> -->
                 </v-col>
             </v-row>
             <v-row v-for="(val, index) in files" :key="'fileReader'+index">
