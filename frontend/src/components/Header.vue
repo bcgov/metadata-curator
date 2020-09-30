@@ -1,13 +1,27 @@
 <template>
     <v-container fluid ma-0 pa-0>
-        <v-app-bar dense>
+        <v-app-bar>
             <v-toolbar-title class="font-weight-light">{{title}}</v-toolbar-title>
+
+            <div v-show="loggedIn && (tabs.length > 0)">
+                <v-tabs v-model="activeTab"
+                        icons-and-text
+                        centered
+                        class="noBack"
+                        grow>
+                    <v-tabs-slider style="opacity: 0;"></v-tabs-slider>
+                    <v-tab v-for="tab of tabs" :key="tab.id" :to="tab.route" exact :disabled="tab.disabled">
+                        {{ tab.name }}
+                        <v-icon>{{tab.icon}}</v-icon>
+                    </v-tab>
+                </v-tabs>
+            </div>
 
             <v-spacer></v-spacer>
 
-            <User></User>
+            <User class="mr-4"></User>
 
-            <v-switch v-model="dark" label="Dark Mode" :class="(this.setTheme ? '' : '')"></v-switch>
+            <v-switch v-model="dark" label="Dark Mode" :class="(this.setTheme ? 'pt-4' : 'pt-4')"></v-switch>
 
         </v-app-bar>
     </v-container>
@@ -35,7 +49,8 @@ export default {
 
     data() {
         return {
-            dark: this.useDark
+            dark: this.useDark,
+            activeTab: null,
         }
     },
 
@@ -53,7 +68,29 @@ export default {
                 this.$store.commit('user/setUseDark', {useDark: this.dark});
             }
             return false;
-        }
+        },
+
+        tabs: function(){
+          let t = [
+              { id: 1, name: "Home", route: `/`, icon: 'mdi-home', disabled: false},
+            //   { id: 2, name: "Upload", route: `/upload/new`, icon: 'mdi-upload', disabled: false},
+            //   { id: 3, name: "Import", route: `/import`, icon: 'mdi-import', disabled: false },
+            //   { id: 4, name: "Guess", route: `/infer`, icon: 'mdi-file-question-outline', disabled: true},
+            //   { id: 5, name: "Column", route: `/column`, icon: 'mdi-view-column', disabled: true},
+            //   { id: 6, name: "Table", route: `/table`, icon: 'mdi-table', disabled: true},
+            //   { id: 7, name: "Provenance", route: `/provenance`, icon: 'mdi-file-document', disabled: true },
+            //   { id: 8, name: "Package", route: `/package`, icon: 'mdi-package-variant-closed', disabled: true },
+            //   { id: 9, name: "Validate", route: `/validate`, icon: 'mdi-checkbox-marked-circle', disabled: true },
+            //   { id: 10, name: "Find & Replace", route: `/findreplace`, icon: 'mdi-file-find', disabled: true },
+            //   { id: 11, name: "Submit", route: `/submit`, icon: 'mdi-send', disabled: true }
+          ];
+
+          if ( (this.user) && (this.user.isAdmin) ){
+              t.push({ id: 12, name: "Admin", route: `/admin`, icon: 'mdi-settings', disabled: false });
+          }
+
+          return t;
+        },
 
     },
 
@@ -93,6 +130,10 @@ export default {
 }
 </script>
 
-<style scoped>
+<style >
+
+.noBack.v-tabs>.v-tabs-bar{
+    background: none;
+}
 
 </style>

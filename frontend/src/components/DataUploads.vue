@@ -3,11 +3,19 @@
         <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Data Uploads</h1>
 
         <v-container v-if="user.isDataProvider" fluid style="margin-left:5px; padding-bottom:0px; margin-bottom:7px;">
-            <p>Filter by:</p>
-            <v-radio-group v-model="filterBy" row style="margin-left:10px;">
-                <v-radio label="My Uploads" value="me"></v-radio>
-                <v-radio label="Team Uploads" value="team"></v-radio>
-            </v-radio-group>
+            <v-row>
+                <v-col cols=10>
+                    <p>Filter by:</p>
+                    <v-radio-group v-model="filterBy" row style="margin-left:10px;">
+                        <v-radio label="My Uploads" value="me"></v-radio>
+                        <v-radio label="Team Uploads" value="team"></v-radio>
+                    </v-radio-group>
+                </v-col>
+                <v-col cols=2>
+                    <v-btn color="primary" to="/upload/new">New Upload</v-btn>
+                </v-col>
+            </v-row>
+            
         </v-container>
 
         <v-container v-if="user.isApprover" fluid style="margin-left:5px; padding-bottom:0px; margin-bottom:7px;">

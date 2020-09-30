@@ -58,7 +58,7 @@ export default {
     data(){
         return {
             setId: (typeof(this.item._id) === "undefined"),
-            json_view: "false",
+            json_view: false,
             itemString: JSON.stringify(this.item),
             errorText: ""
         }
