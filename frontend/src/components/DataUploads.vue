@@ -11,9 +11,6 @@
                         <v-radio label="Team Uploads" value="team"></v-radio>
                     </v-radio-group>
                 </v-col>
-                <v-col cols=2>
-                    <v-btn color="primary" to="/upload/new">New Upload</v-btn>
-                </v-col>
             </v-row>
             
         </v-container>
@@ -59,6 +56,14 @@
                     </template>
                 </template>
             </v-autocomplete>
+        </v-container>
+
+        <v-container>
+            <v-row>
+                <v-col cols=2>
+                    <v-btn color="primary" to="/upload/new">New Upload</v-btn>
+                </v-col>
+            </v-row>
         </v-container>
 
         <v-list three-line>
