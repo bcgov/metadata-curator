@@ -51,6 +51,9 @@ export class Backend {
     }
 
     getDataUploads(query){
+        if (typeof(query) === "undefined"){
+            query = {filterBy: false};
+        }
         let url = '/api/v1/datauploads';
         if(query.filterBy) {
             if (query.filterBy === "provider" && query.providerGroups) {
@@ -164,6 +167,57 @@ export class Backend {
     getDataProviders(){
         let url = '/api/v1/dataproviders';
         return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+
+    getTopics(){
+        const url = `/api/v1/forum/topics`;
+        return axios.get(url,{withCredentials: true}).then(response => response.data)
+    }
+
+    putTopic(id, editedTopic){
+        const url = `/api/v1/forum/topics/${id}`;
+        return axios.put(url, editedTopic, {withCredentials: true}).then(response => response.data)
+    }
+
+    newTopic(newTopic){
+        const url = `/api/v1/forum/topics`;
+        return axios.post(url, newTopic, {withCredentials: true}).then(response => response.data)
+    }
+
+    deleteTopic(id){
+        const url = `/api/v1/forum/topics/${id}`;
+        return axios.delete(url, {}, {withCredentials: true}).then(response => response.data)
+    }
+
+    getComments(topicId){
+        const url = `/api/v1/forum/comments/topic/${topicId}`;
+        return axios.get(url,{withCredentials: true}).then(response => response.data)
+    }
+
+    putComment(id, editedComment){
+        const url = `/api/v1/forum/comments/${id}`;
+        return axios.put(url, editedComment, {withCredentials: true}).then(response => response.data)
+    }
+
+    newComment(newComment){
+        const url = `/api/v1/forum/comments`;
+        return axios.post(url, newComment, {withCredentials: true}).then(response => response.data)
+    }
+
+    deleteComment(id){
+        const url = `/api/v1/forum/comments/${id}`;
+        return axios.delete(url, {}, {withCredentials: true}).then(response => response.data)
+    }
+
+    getFormSubmissions(formName) {
+        const url = `/api/v1/formio/submission/${formName}`;
+        return axios.get(url,{withCredentials: true}).then(response => response.data)
+    }
+
+    deleteFormSubmission(id, formName) {
+        const url = `/api/v1/formio/form/${formName}/submission/${id}`;
+        return axios.delete(url,{withCredentials: true}).then(response => response.data)
     }
 
 }

@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import { Backend } from '../../services/backend';
 const backend = new Backend();
 
@@ -11,13 +12,21 @@ var build = function(getFn, newFn, updateFn, deleteFn){
     const getters = {};
 
     const actions = {
-        getItems({ commit }) {
+        getItems({ commit }, { param }) {
 
-            backend[getFn]().then((data) => {
-                commit('setItems', {items: data});
-            }).catch((e) => {
-                console.error("Retrieve data uploads error: ", e);
-            });
+            if ( (typeof(param) !== 'undefined') && (param !== false) ){
+                backend[getFn](param).then((data) => {
+                    commit('setItems', {items: data});
+                }).catch((e) => {
+                    console.error("Retrieve data uploads error: ", e);
+                });
+            }else{
+                backend[getFn]().then((data) => {
+                    commit('setItems', {items: data});
+                }).catch((e) => {
+                    console.error("Retrieve data uploads error: ", e);
+                });
+            }
         },
 
         newItem({commit}, {item}){
@@ -53,7 +62,7 @@ var build = function(getFn, newFn, updateFn, deleteFn){
 
     let mutations = {
         setItems(state, {items}){
-            state.items = items;
+            Vue.set(state, 'items', items);
         },
 
         setError(state, {error}){

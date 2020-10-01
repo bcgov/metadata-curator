@@ -17,7 +17,10 @@ import { build } from './modules/items';
 
 const permissions = build('getPermissions', 'newPermission', 'putPermission', 'deletePermission');
 const forms = build('getForms', 'newForm', 'putForm', 'deleteForm');
-
+const topics = build('getTopics', 'newTopic', 'putTopic', 'deleteTopic');
+const comments = build('getComments', 'newComment', 'putComment', 'deleteComment');
+const adminDUploads = build('getDataUploads');
+const submissions = build('getFormSubmissions','postFormSubmission', 'putFormSubmission', 'deleteFormSubmission' );
 
 Vue.use(Vuex)
 
@@ -32,6 +35,10 @@ export default new Vuex.Store({
     dataUploadDetail,
     permissions,
     forms,
+    topics,
+    comments,
+    adminDUploads,
+    submissions,
     upload,
     uploadForm
   },

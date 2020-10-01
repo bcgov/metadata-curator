@@ -79,6 +79,165 @@ var addRoutes = function(router){
     });
 
 
+    //topics
+    router.get('/topics', async function(req, res, next){
+        const forumApiConfig = config.get('forumApi');
+        const url = forumApiConfig.baseUrl + "/";
+        if (!req.user || !req.user.jwt){
+            res.status(403);
+            return res.json({error: "Forbidden"})
+        }
+        const options = {
+            headers: {
+                "Authorization": "Bearer " + req.user.jwt
+            }
+        };
+
+        const response = await axios.get(url, options);
+        res.json(response.data);
+    });
+
+    router.put('/topics/:id', async function(req, res, next){
+        const forumApiConfig = config.get('forumApi');
+        const url = forumApiConfig.baseUrl + "/" + req.params.id;
+        
+        console.log("topic put", req.params.id, req.body)
+
+        delete req.body._id;
+
+        if (!req.user || !req.user.jwt){
+            res.status(403);
+            return res.json({error: "Forbidden"})
+        }
+        const options = {
+            headers: {
+                "Authorization": "Bearer " + req.user.jwt
+            }
+        };
+        const response = await axios.put(url, req.body, options);
+        res.json(response.data);
+    });
+
+    router.post('/topics', async function(req, res, next){
+        const forumApiConfig = config.get('forumApi');
+        const url = forumApiConfig.baseUrl + "/"
+        
+        console.log("topic post", req.params.id, req.body)
+
+        if (!req.user || !req.user.jwt){
+            res.status(403);
+            return res.json({error: "Forbidden"})
+        }
+        const options = {
+            headers: {
+                "Authorization": "Bearer " + req.user.jwt
+            }
+        };
+        const response = await axios.post(url, req.body, options);
+        res.json(response.data);
+    });
+
+    router.delete('/topics/:id', async function(req, res, next){
+        const forumApiConfig = config.get('forumApi');
+        const url = forumApiConfig.baseUrl + "/" + req.params.id;
+
+        if (!req.user || !req.user.jwt){
+            res.status(403);
+            return res.json({error: "Forbidden"})
+        }
+        
+        const options = {
+            headers: {
+                "Authorization": "Bearer " + req.user.jwt
+            }
+        };
+
+        const response = await axios.delete(url, options);
+        res.json(response.data);
+    });
+
+    //comments
+    router.get('/comments/topic/:topicId', async function(req, res, next){
+        const forumApiConfig = config.get('forumApi');
+        const url = forumApiConfig.baseUrl + "/comment/" + req.params.topicId;
+        if (!req.user || !req.user.jwt){
+            res.status(403);
+            return res.json({error: "Forbidden"})
+        }
+        const options = {
+            headers: {
+                "Authorization": "Bearer " + req.user.jwt
+            }
+        };
+
+        console.log("Get comments for ", url);
+
+        
+        const response = await axios.get(url, options);
+        
+        res.json(response.data);
+    });
+
+    router.put('/comments/:id', async function(req, res, next){
+        const forumApiConfig = config.get('forumApi');
+        const url = forumApiConfig.baseUrl + "/comment/" + req.params.id;
+        
+        console.log("topic put", req.params.id, req.body)
+
+        delete req.body._id;
+
+        if (!req.user || !req.user.jwt){
+            res.status(403);
+            return res.json({error: "Forbidden"})
+        }
+        const options = {
+            headers: {
+                "Authorization": "Bearer " + req.user.jwt
+            }
+        };
+        const response = await axios.put(url, req.body, options);
+        res.json(response.data);
+    });
+
+    router.post('/comments', async function(req, res, next){
+        const forumApiConfig = config.get('forumApi');
+        const url = forumApiConfig.baseUrl + "/comment"
+        
+        console.log("topic post", req.params.id, req.body)
+
+        if (!req.user || !req.user.jwt){
+            res.status(403);
+            return res.json({error: "Forbidden"})
+        }
+        const options = {
+            headers: {
+                "Authorization": "Bearer " + req.user.jwt
+            }
+        };
+        const response = await axios.post(url, req.body, options);
+        res.json(response.data);
+    });
+
+    router.delete('/comments/:id', async function(req, res, next){
+        const forumApiConfig = config.get('forumApi');
+        const url = forumApiConfig.baseUrl + "/comment" + req.params.id;
+
+        if (!req.user || !req.user.jwt){
+            res.status(403);
+            return res.json({error: "Forbidden"})
+        }
+        
+        const options = {
+            headers: {
+                "Authorization": "Bearer " + req.user.jwt
+            }
+        };
+
+        const response = await axios.delete(url, options);
+        res.json(response.data);
+    });
+
+
     return router;
 }
 
