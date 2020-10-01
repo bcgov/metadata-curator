@@ -214,13 +214,18 @@
                     this.formSubmission = {...newVal};
                 }
                 this.getUploadFormSubmission(this.formSubmission.upload_submission_id);
+                this.buildFiles();
             },
 
             submission: function (newVal, oldVal) {
                 
                 if( (newVal) && (newVal !== oldVal)) {
                     if (typeof(newVal) === "string"){
-                        newVal = JSON.parse(newVal);
+                        try{
+                            newVal = JSON.parse(newVal);
+                        }catch(ex){
+                            oldVal = newVal;
+                        }
                     }
                     this.formioSubmission = newVal.data;
                     this.buildFiles();

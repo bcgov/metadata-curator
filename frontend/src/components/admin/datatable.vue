@@ -3,6 +3,11 @@
         <v-card-title>{{title}}</v-card-title>
         <v-card-text>
             <AlertError v-if="errorText !== ''" :message="errorText"></AlertError>
+            <div v-if="filterRequired !== ''">
+                <span>{{filterRequired}}</span>
+                <v-text-field v-model="filterOn"></v-text-field>
+                <v-btn color="success" @click="searchClick">Search</v-btn>
+            </div>
             <v-data-table
                 dense
                 :headers="headers"
@@ -19,7 +24,7 @@
                         <v-spacer></v-spacer>
                         <v-dialog v-model="dialog" :max-width="dialogSize">
                         <template v-slot:activator="{ on }">
-                            <v-btn color="primary" dark class="mb-2" v-on="on">New Entry</v-btn>
+                            <v-btn v-if="showNew" color="primary" dark class="mb-2" v-on="on">New Entry</v-btn>
                         </template>
                         <v-card>
                             <v-card-title>
@@ -39,8 +44,12 @@
                         </v-dialog>
                     </v-toolbar>
                 </template>
+                <template v-slot:item.data="{ item }">
+                    {{JSON.stringify(item.data)}}
+                </template>
                 <template v-slot:item.actions="{ item }">
                     <v-icon
+                        v-if="showEdit"
                         small
                         class="mr-2"
                         @click="edit(item)"
@@ -50,6 +59,7 @@
                     <v-icon v-if="showDelete"
                         small
                         color="error"
+                        class="mr-2"
                         @click="deleteItem(item)"
                     >
                         mdi-delete
@@ -63,7 +73,6 @@
 </template>
 
 <script>
-
 import AlertError from '../AlertError';
 
     export default {
@@ -102,6 +111,24 @@ import AlertError from '../AlertError';
                 type: String,
                 required: false,
                 default: "500px"
+            },
+
+            showNew: {
+                type: Boolean,
+                required: false,
+                default: true
+            },
+
+            showEdit: {
+                type: Boolean,
+                required: false,
+                default: true
+            },
+
+            filterRequired: {
+                type: String,
+                required: false,
+                default: ""
             }
 
         },
@@ -111,7 +138,8 @@ import AlertError from '../AlertError';
                 editedItem: {},
                 editedIndex: -1,
                 dialog: false,
-                defaultItem: {}
+                defaultItem: {},
+                filterOn: ""
             }
         },
 
@@ -146,6 +174,14 @@ import AlertError from '../AlertError';
                 })
             },
 
+            searchClick(){
+                if (this.filterRequired === ''){
+                    this.$store.dispatch(this.storeName + '/getItems', {param: false});
+                }else{
+                    this.$store.dispatch(this.storeName + '/getItems', {param: this.filterOn});
+                }
+            },
+
             edit(item) {
                 this.editedIndex = this.items.indexOf(item)
                 this.editedItem = Object.assign({}, item)
@@ -167,7 +203,11 @@ import AlertError from '../AlertError';
         },
 
         mounted(){
-            this.$store.dispatch(this.storeName + '/getItems');
+            if (this.filterRequired === ''){
+                this.$store.dispatch(this.storeName + '/getItems', {param: false});
+            }else{
+                this.$store.dispatch(this.storeName + '/getItems', {param: this.filterOn});
+            }
         }
     };
 </script>

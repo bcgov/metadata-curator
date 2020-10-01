@@ -73,6 +73,23 @@ var addRoutes = function(router){
         });
     });
 
+    router.get('/submission/:formName', function(req, res, next){
+        console.log('get submissions!', req.params.formName)
+
+        formio.getSubmissions(req.params.formName, function(err, submissions){
+            if (err){
+                res.status(500);
+                return res.json({error: err});
+            }
+            try{
+                console.log("SUB", submissions);
+                return res.json(JSON.parse(submissions));
+            }catch(e){
+                return res.json(submissions);
+            }
+        });
+    });
+
     router.post('/form/:name/submission', function(req, res, next){
         const formName = req.params.name;
         console.log("formName: " + formName);
