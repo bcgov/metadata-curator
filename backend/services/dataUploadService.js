@@ -43,6 +43,11 @@ const updateDataUpload = async (user, dataUploadId, updatedData) => {
         dataUpload.approver_has_commented = updatedData.approver_has_commented;
         dataUpload.upload_submission_id = updatedData.upload_submission_id ? updatedData.upload_submission_id : null;
 
+        if (dataUpload.status === "submitted"){
+            let notify = require('../notifications/notifications')();
+            notify.notify(dataUpload, user);
+        }
+
         return await dataUpload.save();
 
     } catch(e) {

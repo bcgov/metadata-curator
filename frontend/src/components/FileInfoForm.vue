@@ -137,6 +137,15 @@
                             let start = (this.formSubmission.files[i].start_date) ? this.formSubmission.files[i].start_date : formStart;
                             let end = (this.formSubmission.files[i].end_date) ? this.formSubmission.files[i].end_date :  formEnd;
 
+                            let formST = formStart.indexOf("T");
+                            let formET = formEnd.indexOf("T");
+                            if (formST != -1){
+                                formStart = formStart.substring(0, formST);
+                            }
+
+                            if (formET != -1){
+                                formEnd = formEnd.substring(0, formET);
+                            }
                             
                             if ( (!this.formSubmission.files[i].title) || (!this.formSubmission.files[i].type) || (!this.formSubmission.files[i].start_date) || (!this.formSubmission.files[i].end_date)){
                                 usingADefault = true;
