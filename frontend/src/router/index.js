@@ -147,7 +147,7 @@ r.beforeEach((to, from, next) => {
   }else{
 
     //document.title = i18n.tc(to.meta.title);
-    document.title = "Metadata Generation Tool - " + to.meta.title;
+    document.title = "Metadata Curator - " + to.meta.title;
     next();
   }
 

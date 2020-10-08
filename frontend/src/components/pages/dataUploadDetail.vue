@@ -26,15 +26,23 @@
 <!--                            </v-card-actions>-->
 <!--                        </v-card>-->
 <!--                    </v-col>-->
-                    <v-col cols="12">
+                    <v-col cols="9">
                         <v-card class="scroll card-outter" max-height="600"  height="600">
                             <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Comments</h1>
                             <Comments></Comments>
-                            <v-card-actions class="card-actions">
-                                <v-spacer></v-spacer>
-                                <v-btn color="orange" text @click="showAddCommentDialog()">Add Comment</v-btn>
-                                <v-btn color="orange" text @click="showViewDialog()">View</v-btn>
-                            </v-card-actions>
+                        </v-card>
+                    </v-col>
+                    <v-col cols=3>
+                        <v-card outlined>
+                            <v-card-text>
+                                <v-row>
+                                    <v-btn color="orange" text @click="showAddCommentDialog()">Add Comment</v-btn>
+                                </v-row>
+
+                                <v-row>
+                                    <v-btn color="orange" text @click="showViewDialog()">View Form</v-btn>
+                                </v-row>
+                            </v-card-text>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -50,7 +58,7 @@
 </template>
 <script>
 
-    import {mapActions, mapMutations, mapState} from "vuex";
+import {mapActions, mapMutations, mapState} from "vuex";
 // import MetadataRevisions from "../MetadataRevisions";
 import Comments from "../Comments";
 import CommentAddDialog from "../CommentAddDialog";
