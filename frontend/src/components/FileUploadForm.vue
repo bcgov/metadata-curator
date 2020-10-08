@@ -11,7 +11,7 @@
                         :index="index"
                         :loadFromStore="files[index].sig"
                         :trigger-upload="startUpload[index]"
-                        :disabled="true"
+                        :disabledProp="true"
                         @file-opened="fileOpened"
                         @upload-finished="uploadFinished"
                     >
@@ -129,6 +129,10 @@
                 spanKey: 0,
                 readyToUpload: false,
             }
+        },
+        mounted(){
+            this.formSubmission = {...this.uploadStore};
+            this.buildFiles();
         },
         computed: {
             ...mapState({

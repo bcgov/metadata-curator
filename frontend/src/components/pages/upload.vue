@@ -1,5 +1,8 @@
 <template>
     <v-container>
+        <v-alert class="fixed" v-model="errorAlert" type="error" dismissible>
+            {{errorText}}
+        </v-alert>
         <v-stepper v-model="step">
             <v-stepper-header>
                 <v-stepper-step :step="steps.step1UploadForm" :complete="step > steps.step1UploadForm" >Upload Info</v-stepper-step>
@@ -33,15 +36,15 @@
 
                 <v-stepper-content :step="steps.step3FileLevelForm">
                     <v-card class="mb-12">
-                        <FileInfoForm ref="fileInfoForm"></FileInfoForm>
+                        <FileInfoForm v-if="step === steps.step3FileLevelForm" ref="fileInfoForm"></FileInfoForm>
                     </v-card>
-                    <v-btn color="primary" @click="step=stepSaveFileInfoForm(true)">Start Upload</v-btn>
+                    <v-btn color="primary" @click="step=stepSaveFileInfoForm(true)">Next</v-btn>
                     <v-btn text @click="step=steps.step2FileSelection">Back</v-btn>
                 </v-stepper-content>
 
                 <v-stepper-content :step="steps.step4UploadProgress">
                     <v-card class="mb-12">
-                        <FileUploadForm @uploads-finished="stepSaveFileUploads" :active="step === steps.step4UploadProgress"></FileUploadForm>
+                        <FileUploadForm v-if="step === steps.step4UploadProgress" @uploads-finished="stepSaveFileUploads" :active="step === steps.step4UploadProgress"></FileUploadForm>
                     </v-card>
                     <!--<v-btn color="primary" @click="step=steps.step5UploadSummary">Next</v-btn>
                     <v-btn text @click="step=steps.step3FileLevelForm">Back</v-btn>-->
@@ -88,31 +91,54 @@
             ...mapMutations({
                 resetState: 'upload/resetState'
             }),
-            triggerUploadFormSubmit() {
-                this.$refs.uploadForm.submitForm();
+
+            async triggerUploadFormSubmit() {
+                try{
+                    this.$refs.uploadForm.submitForm();
+                }catch(ex){
+                    this.errorText = "Submission Error - " + ex;
+                    this.errorAlert = true
+                }
             },
             async stepSaveUploadForm(transitionNextStepAfterSave) {
               if(this.$refs.uploadForm.validateForm()) {
                   if((!this.uploadId && !this.newUploadCreated) && !this.createUploadInProgress) {
                       // console.log("create new upload");
                       const submission = this.$refs.uploadForm.getSubmission();
-                      await this.triggerUploadFormSubmit();
-                      const initialUpload = {
-                          name: submission.data.datasetName,
-                          description: submission.data.datasetName,
-                          uploader: this.user.email,
-                          upload_submission_id: this.$refs.uploadForm.submissionId
+                      try{
+                          await this.triggerUploadFormSubmit();
+                      }catch(e){
+                          this.errorAlert = true;
+                          this.errorText = e;
+                          transitionNextStepAfterSave = false;
                       }
-                      await this.createInitialUpload(initialUpload);
                       
-                  }
-                  else {
+                    const initialUpload = {
+                        name: submission.data.datasetName,
+                        description: submission.data.datasetName,
+                        uploader: this.user.email,
+                        upload_submission_id: this.$refs.uploadForm.submissionId
+                    }
+                    try{
+                        await this.createInitialUpload(initialUpload);
+                    }catch(e){
+                        this.errorAlert = true;
+                        this.errorText = e;
+                        transitionNextStepAfterSave = false;
+                    }
+                      
+                  }else{
                       // console.log("update existing upload submission");
-                      await this.triggerUploadFormSubmit();
+                      try{
+                          await this.triggerUploadFormSubmit();
+                      }catch(e){
+                          this.errorAlert = true;
+                          this.errorText = e;
+                          transitionNextStepAfterSave = false;
+                      }
                   }
                   if(transitionNextStepAfterSave) { this.step = this.steps.step2FileSelection; }
-              }
-              else {
+              }else{
                 //still trigger submit so form displays all validation errors on UI
                 this.triggerUploadFormSubmit();
               }
@@ -137,6 +163,8 @@
         data () {
             return {
                 uploadId: null,
+                errorAlert: false,
+                errorText: "",
                 step: 1,
                 steps: {
                     step1UploadForm: 1,
@@ -193,4 +221,7 @@
     }
 </script>
 <style scoped>
+.fixed{
+    position: fixed;
+}
 </style>

@@ -11,6 +11,7 @@
                     v-if="formDef"
                     ref="formioObj"
                     :form="formDef"
+                    @formLoad="formLoad"
                     :submission="formSubmission"
                     v-bind:options="formOptions"
                 >
@@ -49,6 +50,10 @@
                 getUploadFormSubmission: 'uploadForm/getUploadFormSubmission',
             }),
 
+            formLoad(){
+                this.$refs.formioObj.formio.submission = JSON.parse(this.submission);
+            },
+
             formatDate(d){
                 var date = new Date(d);
                 let month = new Array();
@@ -76,6 +81,7 @@
                 formOptions: {
                     readOnly: true
                 },
+                formData: {},
                 formSubmission: {},
             }
         },
@@ -86,6 +92,10 @@
                 submission: state => state.uploadForm.submission,
             }),
         },
+        mounted(){
+            this.formDef = this.uploadForm;
+        },
+
         watch: {
 
             // eslint-disable-next-line no-unused-vars
@@ -94,10 +104,10 @@
                 if(newVal) {
                     // console.log("update  submission");
                     this.formSubmission = {...newVal};
-                    
-                    this.getUploadFormSubmission(this.formSubmission.upload_submission_id);
-                    this.spanKey++;
                 }
+                    
+                this.getUploadFormSubmission(this.formSubmission.upload_submission_id);
+                this.spanKey++;
             },
             // eslint-disable-next-line no-unused-vars
             uploadForm: function (newVal, oldVal) {
@@ -111,9 +121,9 @@
                     if (typeof(newVal) === "string"){
                         newVal = JSON.parse(newVal);
                     }
-                    this.formSubmission = {...newVal};
-                    this.$refs.formioObj.formio.submission = this.formSubmission;
+                    this.formData = {...newVal};
                 }
+                this.$refs.formioObj.formio.submission = this.formData;
             },
 
         },

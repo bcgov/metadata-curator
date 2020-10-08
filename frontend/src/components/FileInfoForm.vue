@@ -204,6 +204,10 @@
                 handles: state => state.file.fileHandles
             }),
         },
+        mounted(){
+            this.formSubmission = {...this.uploadStore};
+            this.buildFiles();
+        },
         watch: {
 
             // eslint-disable-next-line no-unused-vars
@@ -214,7 +218,9 @@
                     this.formSubmission = {...newVal};
                 }
                 this.getUploadFormSubmission(this.formSubmission.upload_submission_id);
-                this.buildFiles();
+                if (JSON.stringify(newVal) !== JSON.stringify(oldVal)){
+                    this.buildFiles();
+                }
             },
 
             submission: function (newVal, oldVal) {

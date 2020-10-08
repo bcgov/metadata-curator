@@ -26,6 +26,7 @@
                 label="Select"
                 item-text="name"
                 item-value="value"
+                @change="loadDataUploads()"
                 multiple
             >
                 <template v-slot:selection="data">
@@ -88,7 +89,7 @@
 
                     </v-list-item-content>
                     <v-btn icon class="mr-4" >
-                        <v-icon>{{item.icon}}</v-icon>
+                        <v-icon :color="item.iconColour">{{item.icon}}</v-icon>
                     </v-btn>
 
 
@@ -192,7 +193,8 @@ export default {
                     dataUploadId: upload._id,
                     uploader: this.getDisplayUploader(upload.uploader),
                     status: upload.status,
-                    icon: this.getDisplayIcon(upload.status)
+                    icon: this.getDisplayIcon(upload.status),
+                    iconColour: (upload.status === 'submitted') ? 'success' : 'text'
                 };
                 items.push(item);
                 if(index <= this.dataUploads.length - 1) {

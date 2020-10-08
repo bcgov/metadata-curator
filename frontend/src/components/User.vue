@@ -12,7 +12,7 @@
             </template>
             <v-list>
                 <v-list-item>
-                    <v-list-item-title>{{user.displayName}}</v-list-item-title>
+                    <v-list-item-title>Signed in as {{user._json.preferred_username}}</v-list-item-title>
                 </v-list-item>
                 <v-list-item
                     v-for="(item, index) in items"

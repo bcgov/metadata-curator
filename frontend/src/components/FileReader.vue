@@ -95,6 +95,10 @@ export default {
         loadFromStore: {
             type: String,
             default: ""
+        },
+        disabledProp: {
+            type: Boolean,
+            default: false
         }
     },
 
@@ -109,12 +113,13 @@ export default {
         let defChunkSize = (5 * 1024 * 1024) + 1; // 5mb
         //ram converted to bytes divided by 128 (arbitrary)
         let customChunkSize = Math.ceil(navigator.deviceMemory * 1024 * 1024 * 1024 / 128);
+        let disProp = this.disabledProp ? this.disabledProp : false;
         return {
             file: null,
             fileContent: "",
             offset: 0,
             chunkSize: (customChunkSize > defChunkSize) ? customChunkSize : defChunkSize,
-            disabled: false,
+            disabled: disProp,
             numChunks: 0,
             uploads: [],
             currChunk: 0,
@@ -186,6 +191,14 @@ export default {
                     await this.openFileSync(true);
                 }
                 this.upload();
+            }
+        },
+
+        disabledProp(newVal, oldVal){
+            if (newVal){
+                this.disabled = true;
+            }else if (oldVal && !newVal){
+                this.disabled = false;
             }
         },
 
@@ -294,7 +307,9 @@ export default {
                         this.currChunk = 0;
                     }
                 }
-                this.disabled = false;
+                if (!this.disabledProp){
+                    this.disabled = false;
+                }
                 this.pleaseWait = false;
             }else if ((!this.file) && (this.readFile)){
                 this.$store.commit('file/clearContent');
@@ -335,7 +350,9 @@ export default {
                             this.currChunk = 0;
                         }
                     }
-                    self.disabled = false;
+                    if (!self.disabledProp){
+                        self.disabled = false;
+                    }
                     self.pleaseWait = false;
                 });
 
@@ -431,7 +448,9 @@ export default {
                 onError: error => {
                     // eslint-disable-next-line
                     console.log("Upload error", error)
-                    self.disabled = false;
+                    if (!self.disabledProp){
+                        self.disabled = false;
+                    }
                 },
                 onProgress: (bytesUploaded, bytesTotal) => {
                     self.up1Progress = bytesUploaded;
@@ -471,11 +490,15 @@ export default {
                                     var plusInd = self.uploads[0].url.lastIndexOf("+");
                                     self.$emit('upload-finished', self.uploads[0].url.substring(slashInd+1, plusInd), this.file.name, this.file.size);
                                     self.numUploaded = self.numChunks+1;
-                                    self.disabled = false;
+                                    if (!self.disabledProp){
+                                        self.disabled = false;
+                                    }
                                 }).catch( (/*e*/) => {
                                     // eslint-disable-next-line
                                     console.log("Concatenation error", error);
-                                    self.disabled = false;
+                                    if (!self.disabledProp){
+                                        self.disabled = false;
+                                    }
                                 });
                             }
                         });
@@ -485,7 +508,9 @@ export default {
                         self.$emit('upload-finished', self.uploads[0].url.substring(slashInd+1, plusInd), this.file.name, this.file.size);
                         self.numUploaded = self.numChunks+1
                         self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
-                        self.disabled = false;
+                        if (!self.disabledProp){
+                            self.disabled = false;
+                        }
                     }                     
                 },
             }
@@ -533,11 +558,15 @@ export default {
                                 var plusInd = self.uploads[0].url.lastIndexOf("+");
                                 self.$emit('upload-finished', self.uploads[0].url.substring(slashInd+1, plusInd), this.file.name, this.file.size);
                                 self.numUploaded = self.numChunks+1;
-                                self.disabled = false;
+                                if (!self.disabledProp){
+                                    self.disabled = false;
+                                }
                             }).catch( (e) => {
                                 // eslint-disable-next-line
                                 console.log("Concatenation error", e);
-                                self.disabled = false;
+                                if (!self.disabledProp){
+                                    self.disabled = false;
+                                }
                             });
                         }
                     }
