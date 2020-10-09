@@ -36,7 +36,6 @@ const updateDataUpload = async (user, dataUploadId, updatedData) => {
         }
     } catch(e) {
         log.error(e);
-        throw new Error(e.message)
     }
 
     dataUpload.name = updatedData.name;
