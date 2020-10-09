@@ -40,7 +40,7 @@
                                 </v-row>
 
                                 <v-row>
-                                    <v-btn color="orange" text @click="showViewDialog()">View Form</v-btn>
+                                    <v-btn color="orange" text @click="showViewDialog()">Upload Info</v-btn>
                                 </v-row>
                             </v-card-text>
                         </v-card>

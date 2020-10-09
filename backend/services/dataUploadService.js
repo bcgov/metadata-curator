@@ -34,26 +34,35 @@ const updateDataUpload = async (user, dataUploadId, updatedData) => {
         if(!dataUpload) {
             throw new Error('Data Upload(' + dataUploadId + ') not found')
         }
-
-        dataUpload.name = updatedData.name;
-        dataUpload.description = updatedData.description;
-        dataUpload.files = updatedData.files;
-        dataUpload.status = updatedData.status;
-        dataUpload.opened_by_approver = updatedData.opened_by_approver;
-        dataUpload.approver_has_commented = updatedData.approver_has_commented;
-        dataUpload.upload_submission_id = updatedData.upload_submission_id ? updatedData.upload_submission_id : null;
-
-        if (dataUpload.status === "submitted"){
-            let notify = require('../notifications/notifications')();
-            notify.notify(dataUpload, user);
-        }
-
-        return await dataUpload.save();
-
     } catch(e) {
         log.error(e);
         throw new Error(e.message)
     }
+
+    dataUpload.name = updatedData.name;
+    dataUpload.description = updatedData.description;
+    dataUpload.files = updatedData.files;
+    dataUpload.status = updatedData.status;
+    dataUpload.opened_by_approver = updatedData.opened_by_approver;
+    dataUpload.approver_has_commented = updatedData.approver_has_commented;
+    dataUpload.upload_submission_id = updatedData.upload_submission_id ? updatedData.upload_submission_id : null;
+
+    try{
+        if (dataUpload.status === "submitted"){
+            let notify = require('../notifications/notifications')();
+            notify.notify(dataUpload, user);
+        }
+    }catch(ex){
+        console.log("Exception emailing", ex);
+    }
+
+    try{
+        return await dataUpload.save();
+    }catch(ex){
+        log.error(e);
+        throw new Error(e.message);
+    }
+    
 }
 
 const listDataUploads = async (user, query) => {
