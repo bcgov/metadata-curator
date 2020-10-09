@@ -51,7 +51,15 @@
             }),
 
             formLoad(){
-                this.$refs.formioObj.formio.submission = JSON.parse(this.submission);
+                try{
+                    this.$refs.formioObj.formio.submission = JSON.parse(this.submission);
+                }catch(ex){
+                    try{
+                        this.$refs.formioObj.formio.submission = this.submission;
+                    }catch(ex2){
+                        console.log("Error loading submission");
+                    }
+                }
             },
 
             formatDate(d){
