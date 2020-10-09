@@ -26,7 +26,16 @@ module.exports = (router) => {
     router.use('/logout', auth.removeExpired,  function(req, res, next){
         req.logout();
         let config = require('config');
-        res.redirect(config.get('frontend'));
+
+        let fe = config.get('frontend');
+
+        if (config.has('oidc.logoutURL')){
+            let logoutUrl = config.get('oidc.logoutURL');
+            logoutUrl += "?redirect_uri=" + fe;
+            res.redirect(logoutUrl);
+        }else{
+            res.redirect(fe);
+        }
     });
 
     router.use('/oauth/token', auth.removeExpired, function(req, res){
