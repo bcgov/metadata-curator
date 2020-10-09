@@ -26,10 +26,11 @@ const createDataUpload = async (user, upload) => {
 }
 
 const updateDataUpload = async (user, dataUploadId, updatedData) => {
+    let dataUpload = null;
     try {
         const response = await forumClient.getTopic(user, dataUploadId);
         if(!response.data || response.data.length === 0) { throw new Error("User not authorized to update this data upload."); }
-        let dataUpload = await db.DataUploadSchema.findOne({_id: dataUploadId});
+        dataUpload = await db.DataUploadSchema.findOne({_id: dataUploadId});
 
         if(!dataUpload) {
             throw new Error('Data Upload(' + dataUploadId + ') not found')
