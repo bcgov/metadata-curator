@@ -129,8 +129,8 @@
 
                         //if its 1 it's only sig
                         if ( (typeof(this.handles[this.formSubmission.files[i].sig]) !== "undefined") && (typeof(this.handles[this.formSubmission.files[i].sig].name) !== "undefined") ){
-                            let formStart = (this.formioSubmission.daterangestart) ? this.formioSubmission.daterangestart : this.formioSubmission.dateRangeStart;
-                            let formEnd = (this.formioSubmission.daterangeend) ? this.formioSubmission.daterangeend : this.formioSubmission.dateRangeEnd;
+                            let formStart = (this.formioSubmission && this.formioSubmission.daterangestart) ? this.formioSubmission.daterangestart : this.formioSubmission.dateRangeStart;
+                            let formEnd = (this.formioSubmission && this.formioSubmission.daterangeend) ? this.formioSubmission.daterangeend : this.formioSubmission.dateRangeEnd;
                             
                             let fileName = (this.formSubmission.files[i].title) ? this.formSubmission.files[i].title : ((this.files[i] && this.files[i].name) ? this.files[i].name : '');
                             let type = (this.formSubmission.files[i].type) ? this.formSubmission.files[i].type : "Other"
