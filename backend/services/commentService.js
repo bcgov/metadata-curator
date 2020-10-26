@@ -11,7 +11,7 @@ const addComment = async (dataUploadId, user, comment) => {
             throw new Error("Invalid data upload ID")
         }
         const alwaysNotifyUninvolvedOnCommentAdd = config.has("alwaysNotifyUninvolvedOnCommentAdd")
-            && config.has("alwaysNotifyUninvolvedOnCommentAdd") === true;
+            && config.get("alwaysNotifyUninvolvedOnCommentAdd") === true;
         const notifyAllApprovers = alwaysNotifyUninvolvedOnCommentAdd && dataUpload.opened_by_approver
             && !dataUpload.approver_has_commented && user.isDataProvider;
 
