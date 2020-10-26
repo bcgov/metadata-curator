@@ -1,6 +1,6 @@
 <template>
     <div style="width:350px;">
-        <ValidationProvider :rules="validationRules" v-slot="{ errors }" :name="label ? label : name">
+        <ValidationProvider ref="provider" :rules="validationRules" v-slot="{ errors }" :name="label ? label : name">
             <v-textarea
                 :label="displayLabel"
                 :placeholder="placeholder"
@@ -9,6 +9,7 @@
                 :outlined="outlined"
                 :auto-grow="autogrow"
                 :error-messages="errors.length > 0 ? [errors[0]] : []"
+                ref="txtArea"
             ></v-textarea>
         </ValidationProvider>
     </div>
@@ -51,13 +52,35 @@
                 required: false,
                 default: () => ''
             },
+            outlined: {
+                type: Boolean,
+                required: false,
+                default: () => true
+            },
+            normal: {
+                type: Boolean,
+                required: false,
+                default: () => true
+            },
         },
         data() {
             return {
                 val: this.value,
-                outlined: true
             }
         },
+
+        methods: {
+            clearValidation() {
+                this.$refs.provider.reset();
+            },
+            reset() {
+                this.$refs.txtArea.reset();
+            },
+            focus() {
+                this.$refs.txtArea.focus();
+            }
+        },
+
         computed: {
             displayLabel: function () {
                 if (this.validationRules.toLowerCase().indexOf("required") >= 0) {
@@ -67,8 +90,12 @@
             }
         },
         watch: {
-            value: function (newVal, oldVal) {
+            value: function (newVal) {
                 this.val = newVal
+            },
+            val(){
+                // console.log("val changed: ", this.val);
+                this.$emit('edited', this.val);
             },
         }
 
