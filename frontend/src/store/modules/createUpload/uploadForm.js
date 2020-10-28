@@ -44,7 +44,7 @@ const actions = {
     async getUploadFormSubmission({ commit }, submissionId) {
 
         try {
-            if ( (typeof(submissionId) !== "undefined") && (submissionId != "undefined") ){
+            if ( (typeof(submissionId) !== "undefined") && (submissionId != "undefined") && (submissionId !== null) ){
                 const data = await backend.getFormSubmission(state.formName, submissionId);
                 commit('setFormSubmission', data);
             }
