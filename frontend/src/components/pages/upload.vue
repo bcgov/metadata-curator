@@ -27,11 +27,11 @@
 
                 <v-stepper-content :step="steps.step2FileSelection">
                     <v-card class="mb-12">
-                        <FileForm v-if="step === steps.step2FileSelection" ref="fileForm" :upload="upload"></FileForm>
+                        <FileForm v-if="step === steps.step2FileSelection" ref="fileForm" @changed="step2Changed" :upload="upload"></FileForm>
                     </v-card>
                     <v-btn color="primary" @click="stepSaveFileForm(false)">Save</v-btn>
                     <v-btn text @click="step=steps.step1UploadForm">Back</v-btn>
-                    <v-btn color="primary" @click="stepSaveFileForm(true)">Next</v-btn>
+                    <v-btn color="primary" :disabled="!validStep3" @click="stepSaveFileForm(true)">Next</v-btn>
                     
                 </v-stepper-content>
 
@@ -80,8 +80,13 @@
             UploadSummaryForm,
         },
         created() {
-            if(this.$route.params.id && this.$route.params.id != 'new') { this.uploadId = this.$route.params.id; }
-            if(this.uploadId) { this.getUpload(this.uploadId); }
+            if(this.$route.params.id && this.$route.params.id != 'new') { 
+                this.uploadId = this.$route.params.id; 
+                this.resetState();
+            }
+            if(this.uploadId) { 
+                this.getUpload(this.uploadId); 
+            }
         },
         methods: {
             ...mapActions({
@@ -94,6 +99,10 @@
                 resetState: 'upload/resetState'
             }),
 
+            step2Changed(numFiles){
+                this.validStep3 = numFiles > 0;
+            },
+
             async triggerUploadFormSubmit() {
                 try{
                     this.$refs.uploadForm.submitForm();
@@ -104,7 +113,7 @@
             },
             async stepSaveUploadForm(transitionNextStepAfterSave) {
               if(this.$refs.uploadForm.validateForm()) {
-                  if((!this.uploadId && !this.newUploadCreated) && !this.createUploadInProgress) {
+                  if((!this.uploadId ) && !this.createUploadInProgress) {
                       // console.log("create new upload");
                       const submission = this.$refs.uploadForm.getSubmission();
                       try{
@@ -168,6 +177,7 @@
                 errorAlert: false,
                 errorText: "",
                 step: 1,
+                validStep3: false,
                 steps: {
                     step1UploadForm: 1,
                     step2FileSelection: 2,
@@ -217,7 +227,7 @@
         },
         beforeDestroy() {
             // console.log("upload reset state");
-            this.resetState();
+            //this.resetState();
         },
 
     }

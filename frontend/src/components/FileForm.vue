@@ -67,6 +67,7 @@
                 delete this.fileReaders.splice(index, 1);
                 delete this.files.splice(index, 1);
                 this.spanKey++
+                this.$emit('changed', this.files.length);
                 this.updateFormSubmission();
             },
 
@@ -79,6 +80,7 @@
                 this.files[index].sig = sig;
                 this.dataFile.push(this.dataFile[this.dataFile.length-1]);
                 this.updateFormSubmission();
+                this.$emit('changed', this.files.length);
                 this.spanKey++;
             },
 

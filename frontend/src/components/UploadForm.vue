@@ -4,8 +4,8 @@
             v-if="formDef"
             ref="formioObj"
             :form="formDef"
-            :submission="formSubmission"
             v-bind:options="formOptions"
+            :submission="formSubmission"
             v-on:submit="onSubmit"
             v-on:render="renderDone"
         >
@@ -19,7 +19,6 @@
 </template>
 
 <script>
-
     import { Form } from 'vue-formio';
     //import { Form, Templates } from 'vue-formio';
     import Vue from 'vue';
@@ -139,14 +138,21 @@
                     this.uploadId = newVal._id;
                     // console.log("assigned upload id: " + this.uploadId);
                 }
+                this.getUploadFormSubmission(this.formSubmission.upload_submission_id);
             },
             // eslint-disable-next-line no-unused-vars
             submission: function (newVal, oldVal) {
                 // eslint-disable-next-line no-undef
                 if(newVal) {
                     // console.log("update  submission");
-                    this.formSubmission = {...newVal};
+                    try{
+                        newVal = JSON.parse(newVal);
+                    }catch(ex){
+                        console.log("");
+                    }
+                    Vue.set(this, 'formSubmission', {...newVal});
                 }
+
             },
         },
         beforeDestroy() {
