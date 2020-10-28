@@ -7,11 +7,11 @@
                 <v-row v-else dense>
                     <v-col cols="12">
                         <v-card outlined max-height="150">
-                            <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:15px;">Data Upload Summary</h1>
-                            <p class="display-5" style="margin-left:15px;">
+                            <h1 class="display-1 font-weight-thin ml-3 my-3">Data Upload Summary</h1>
+                            <p class="display-5 ml-3">
                                 Name: {{dataUpload.name}}
                             </p>
-                            <p class="display-5" style="margin-left:15px;">
+                            <p class="display-5 ml-3">
                                 <v-checkbox label="Approver has viewed (since last update)" v-model="dataUpload.opened_by_approver"></v-checkbox>
                             </p>
                         </v-card>

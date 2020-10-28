@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Data Uploads</h1>
+        <h1 class="display-1 font-weight-thin ml-3 my-3">Data Uploads</h1>
 
         <v-container v-if="user.isDataProvider" fluid style="margin-left:5px; padding-bottom:0px; margin-bottom:7px;">
             <v-row>
@@ -67,7 +67,10 @@
             </v-row>
         </v-container>
 
-        <v-list three-line>
+        <div v-if="dataUploadDisplayItems.length == 0">
+            Looks like there is nothing here why not click New Upload to get started
+        </div>
+        <v-list three-line v-else>
             <template v-for="(item, index) in dataUploadDisplayItems">
                 <v-divider
                     v-if="item.divider"
