@@ -12,7 +12,7 @@
                                 Name: {{dataUpload.name}}
                             </p>
                             <p class="display-5" style="margin-left:15px;">
-                                Approver has opened: {{dataUpload.opened_by_approver}}
+                                <v-checkbox label="Approver has viewed (since last update)" v-model="dataUpload.opened_by_approver"></v-checkbox>
                             </p>
                         </v-card>
                     </v-col>
