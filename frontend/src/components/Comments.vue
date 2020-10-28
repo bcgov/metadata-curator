@@ -1,9 +1,9 @@
 <template>
     <div style="width: 85%;">
-        <div v-if="commentDisplayItems.length == 0">
+        <div v-if="commentDisplayItems.length == 0" class="ml-3">
             Nothing here yet, why not start a discussion with the add comment to discussion button
         </div>
-        <v-list v-else three-line style="margin-bottom: 15px;">
+        <v-list v-else three-line class="mb-3">
             <template v-for="(item, index) in commentDisplayItems">
                     <v-divider
                         v-if="item.divider"
