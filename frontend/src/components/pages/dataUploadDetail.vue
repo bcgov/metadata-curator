@@ -28,7 +28,7 @@
 <!--                    </v-col>-->
                     <v-col cols="9">
                         <v-card class="scroll card-outter" max-height="600"  height="600">
-                            <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Comments</h1>
+                            <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Discussion</h1>
                             <Comments></Comments>
                         </v-card>
                     </v-col>
@@ -36,7 +36,7 @@
                         <v-card outlined>
                             <v-card-text>
                                 <v-row>
-                                    <v-btn color="orange" text @click="showAddCommentDialog()">Add Comment</v-btn>
+                                    <v-btn color="orange" text @click="showAddCommentDialog()">Add Comment to Discussion</v-btn>
                                 </v-row>
 
                                 <v-row>
