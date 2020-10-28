@@ -10,7 +10,7 @@
         </v-row>
         <v-row>
             <v-col cols=12>
-                <v-file-input v-model="file" :disabled="disabled" counter show-size label="File input" style="margin-top:0px;padding-top:0px;"></v-file-input>
+                <v-file-input v-model="file" :disabled="disabled" show-size label="File input" style="margin-top:0px;padding-top:0px;"></v-file-input>
             </v-col>
         </v-row>
         <v-row class="my-0 py-0" v-if="admin">
