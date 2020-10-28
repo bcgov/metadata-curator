@@ -279,6 +279,11 @@ export default {
             formsSubComponent: FormsSubForm,
 
             formioHeaders: [
+                // {
+                //     text: "_id",
+                //     sortable: false,
+                //     value: "_id"
+                // },
                 {
                     text: 'Name',
                     sortable: true,

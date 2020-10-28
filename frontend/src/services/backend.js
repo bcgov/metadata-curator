@@ -122,9 +122,9 @@ export class Backend {
         const url = `/api/v1/formio/forms`;
         return axios.get(url, {withCredentials: true}).then( (response) => {
             let data = response.data;
-            for (let i=0; i<data.length; i++){
-                response.data[i]._id = response.data[i].name
-            }
+            // for (let i=0; i<data.length; i++){
+            //     response.data[i]._id = response.data[i].name
+            // }
             return data;
         })
     }
