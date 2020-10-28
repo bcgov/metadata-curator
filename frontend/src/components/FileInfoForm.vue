@@ -144,18 +144,18 @@
                             let start = (this.formSubmission.files[i].start_date) ? this.formSubmission.files[i].start_date : formStart;
                             let end = (this.formSubmission.files[i].end_date) ? this.formSubmission.files[i].end_date :  formEnd;
 
-                            if (formStart){
-                                let formST = formStart.indexOf("T");
+                            if (start){
+                                let formST = start.indexOf("T");
                                 if (formST != -1){
-                                    formStart = formStart.substring(0, formST);
+                                    start = start.substring(0, formST);
                                 }
                             }
                             
-                            if (formEnd){
-                                let formET = formEnd.indexOf("T");
+                            if (end){
+                                let formET = end.indexOf("T");
 
                                 if (formET != -1){
-                                    formEnd = formEnd.substring(0, formET);
+                                    end = end.substring(0, formET);
                                 }
                             }
                             
