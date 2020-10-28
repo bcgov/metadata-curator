@@ -44,8 +44,10 @@ const actions = {
     async getUploadFormSubmission({ commit }, submissionId) {
 
         try {
-            const data = await backend.getFormSubmission(state.formName, submissionId);
-            commit('setFormSubmission', data);
+            if ( (typeof(submissionId) !== "undefined") && (submissionId != "undefined") ){
+                const data = await backend.getFormSubmission(state.formName, submissionId);
+                commit('setFormSubmission', data);
+            }
         } catch(e) {
             console.log("get upload form submission error: ", e);
             commit('setError', {error: e.response.data.error});
