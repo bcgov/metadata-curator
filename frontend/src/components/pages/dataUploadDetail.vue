@@ -12,7 +12,7 @@
                                 Name: {{dataUpload.name}}
                             </p>
                             <p class="display-5 ml-3">
-                                <v-checkbox label="Approver has viewed (since last update)" v-model="dataUpload.opened_by_approver"></v-checkbox>
+                                <v-checkbox :disabled="true" label="Approver has viewed (since last update)" v-model="dataUpload.opened_by_approver"></v-checkbox>
                             </p>
                         </v-card>
                     </v-col>
@@ -163,4 +163,13 @@ export default {
         right: 0;
     }
 
+</style>
+
+<style>
+    .v-label.v-label--is-disabled.theme--light{
+        color: rgba(0,0,0,.87);
+    }
+    .v-label.v-label--is-disabled.theme--dark{
+        color: var(--v-text-base);
+    }
 </style>

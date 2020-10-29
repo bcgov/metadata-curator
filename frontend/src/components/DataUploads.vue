@@ -6,7 +6,7 @@
             <v-row>
                 <v-col cols=10>
                     <p>Filter by:</p>
-                    <v-radio-group v-model="filterBy" row style="margin-left:10px;">
+                    <v-radio-group v-model="filterBy" row class="ml-2">
                         <v-radio label="My Uploads" value="me"></v-radio>
                         <v-radio label="Team Uploads" value="team"></v-radio>
                     </v-radio-group>

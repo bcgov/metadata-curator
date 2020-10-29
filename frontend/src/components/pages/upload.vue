@@ -21,7 +21,6 @@
                     <v-card class="mb-12">
                         <UploadForm ref="uploadForm" :upload="upload"></UploadForm>
                     </v-card>
-                    <v-btn color="primary" @click="stepSaveUploadForm(false)">Save</v-btn>
                     <v-btn text @click="stepSaveUploadForm(true)">Next</v-btn>
                 </v-stepper-content>
 
@@ -29,7 +28,7 @@
                     <v-card class="mb-12">
                         <FileForm v-if="step === steps.step2FileSelection" ref="fileForm" @changed="step2Changed" :upload="upload"></FileForm>
                     </v-card>
-                    <v-btn color="primary" @click="stepSaveFileForm(false)">Save</v-btn>
+                    
                     <v-btn text @click="step=steps.step1UploadForm">Back</v-btn>
                     <v-btn color="primary" :disabled="!validStep3" @click="stepSaveFileForm(true)">Next</v-btn>
                     
@@ -82,6 +81,8 @@
         created() {
             if(this.$route.params.id && this.$route.params.id != 'new') { 
                 this.uploadId = this.$route.params.id; 
+            }else{
+                this.resetFormState();
                 this.resetState();
             }
             if(this.uploadId) { 
@@ -96,7 +97,8 @@
 
             }),
             ...mapMutations({
-                resetState: 'upload/resetState'
+                resetState: 'upload/resetState',
+                resetFormState: 'uploadForm/resetState'
             }),
 
             step2Changed(numFiles){
