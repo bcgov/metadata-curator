@@ -4,22 +4,12 @@
         <v-card :key="'uploadCard-'+spanKey">
             <v-card-title>
                 <span class="headline">Data Upload <span v-if="uploadStore && uploadStore.name">{{uploadStore.name}}</span></span>
+                <v-spacer></v-spacer>
+                <v-icon @click="onCloseClicked">mdi-close</v-icon>
             </v-card-title>
             <v-card-text>
                 <v-container>
                     <v-row>
-                        <v-col cols="12">
-                            <span>
-                                <formio
-                                    v-if="formDef"
-                                    ref="formioObj"
-                                    :form="formDef"
-                                    :submission="formSubmission"
-                                    v-bind:options="formOptions"
-                                >
-                                </formio>
-                            </span>
-                        </v-col>
                         <v-col cols=12>
                             <span v-if="uploadStore">
                                 <v-row v-for="(file, index) in uploadStore.files" :key="'fileReader'+index">
@@ -34,6 +24,19 @@
                                 </v-row>
                             </span>
                         </v-col>
+                        <v-col cols="12">
+                            <span>
+                                <formio
+                                    v-if="formDef"
+                                    ref="formioObj"
+                                    :form="formDef"
+                                    :submission="formSubmission"
+                                    v-bind:options="formOptions"
+                                >
+                                </formio>
+                            </span>
+                        </v-col>
+                        
                     </v-row>
                 </v-container>
             </v-card-text>

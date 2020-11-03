@@ -6,14 +6,25 @@
                 </v-row>
                 <v-row v-else dense>
                     <v-col cols="12">
-                        <v-card outlined max-height="150">
-                            <h1 class="display-1 font-weight-thin ml-3 my-3">Data Upload Summary</h1>
-                            <p class="display-5 ml-3">
-                                Name: {{dataUpload.name}}
-                            </p>
-                            <p class="display-5 ml-3">
-                                <v-checkbox :disabled="true" label="Approver has viewed (since last update)" v-model="dataUpload.opened_by_approver"></v-checkbox>
-                            </p>
+                        <v-card outlined>
+                            <v-card-text>
+                                <v-row>
+                                    <h1 class="display-1 font-weight-thin ml-3 my-3">Data Upload Summary</h1>
+                                </v-row>
+
+                                <v-row class="ml-3 fixedHeight">
+                                    Name: {{dataUpload.name}}
+                                </v-row>
+                                <v-row class="ml-3 fixedHeight">
+                                    Upload Date: {{uploadDate}}
+                                </v-row>
+                                <v-row class="mb-3 fixedHeight">
+                                    <v-btn color="orange" text @click="showViewDialog()">Upload &amp; File Info</v-btn>
+                                </v-row>
+                                <v-row class="ml-3 fixedHeight">
+                                    <v-checkbox class="mt-0 pt-0" :disabled="true" label="Approver has viewed (since last update)" v-model="dataUpload.opened_by_approver"></v-checkbox>
+                                </v-row>
+                            </v-card-text>
                         </v-card>
                     </v-col>
 <!--                    <v-col cols="6">-->
@@ -26,21 +37,15 @@
 <!--                            </v-card-actions>-->
 <!--                        </v-card>-->
 <!--                    </v-col>-->
-                    <v-col cols="9">
+                    <v-col cols="12">
                         <v-card class="scroll card-outter" max-height="600"  height="600">
-                            <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Discussion</h1>
-                            <Comments></Comments>
-                        </v-card>
-                    </v-col>
-                    <v-col cols=3>
-                        <v-card outlined>
+                            <v-card-title>
+                                <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Discussion</h1>
+                            </v-card-title>
                             <v-card-text>
+                                <Comments></Comments>
                                 <v-row>
-                                    <v-btn color="orange" text @click="showAddCommentDialog()">Add Comment to Discussion</v-btn>
-                                </v-row>
-
-                                <v-row>
-                                    <v-btn color="orange" text @click="showViewDialog()">Upload Info</v-btn>
+                                    <v-btn color="orange" text @click="showAddCommentDialog()">Add Comment</v-btn>
                                 </v-row>
                             </v-card-text>
                         </v-card>
@@ -136,6 +141,9 @@ export default {
             user: state => state.user.user,
             dataUpload: state => state.dataUploadDetail.dataUpload,
         }),
+        uploadDate: function(){
+            return this.dataUpload.upload_date.substring(0, this.dataUpload.upload_date.indexOf(".")).replace("T", " ");
+        }
     },
     created() {
         // console.log("dataUpload id: " + this.$route.params.id);
@@ -161,6 +169,12 @@ export default {
         position: absolute;
         bottom: 0;
         right: 0;
+    }
+    
+    .fixedHeight{
+        height: 36px;
+        line-height: 36px;
+        vertical-align: middle;
     }
 
 </style>
