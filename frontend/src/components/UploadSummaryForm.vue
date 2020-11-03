@@ -6,18 +6,10 @@
                     <v-icon color="primary">mdi-check</v-icon> Data Uploaded Successfully
                 </v-col>
             </v-row>
-            <span>
-                <formio
-                    v-if="formDef"
-                    ref="formioObj"
-                    :form="formDef"
-                    @formLoad="formLoad"
-                    :submission="formSubmission"
-                    v-bind:options="formOptions"
-                >
-                </formio>
-            </span>
             <span v-if="uploadStore">
+                <v-row>
+                    <v-col cols=12>Upload Date: {{uploadDate}}</v-col>
+                </v-row>
                 <v-row v-for="(file, index) in uploadStore.files" :key="'fileReader'+index">
                     <v-col cols=12>
                         <v-row v-if="file.name">{{file.name}}</v-row>
@@ -28,6 +20,17 @@
                         <v-row v-if="file.description">Description: {{file.description}}</v-row>
                     </v-col>
                 </v-row>
+            </span>
+            <span>
+                <formio
+                    v-if="formDef"
+                    ref="formioObj"
+                    :form="formDef"
+                    @formLoad="formLoad"
+                    :submission="formSubmission"
+                    v-bind:options="formOptions"
+                >
+                </formio>
             </span>
         </span>
     </v-container>
@@ -99,6 +102,9 @@
                 uploadForm: state => state.uploadForm.formDef,
                 submission: state => state.uploadForm.submission,
             }),
+            uploadDate: function(){
+                return this.uploadStore.upload_date.substring(0, this.uploadStore.upload_date.indexOf(".")).replace("T", " ");
+            }
         },
         mounted(){
             this.formDef = this.uploadForm;

@@ -50,6 +50,7 @@ const updateDataUpload = async (user, dataUploadId, updatedData) => {
     try{
         if (dataUpload.status === "submitted"){
             let notify = require('../notifications/notifications')();
+            dataUpload.upload_date = new Date();
             notify.notify(dataUpload, user);
         }
     }catch(ex){

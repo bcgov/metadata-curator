@@ -22,6 +22,7 @@ var dataUploadSchema = new Schema({
     opened_by_approver: {type: Boolean, required: true},
     approver_has_commented: {type: Boolean, required: true},
     upload_submission_id: {type: Schema.Types.ObjectId},
+    upload_date: {type: Date, required: false},
     status: {
         type: String,
         enum : ['not_submitted','upload_in_progress', 'upload_error', 'submitted'],

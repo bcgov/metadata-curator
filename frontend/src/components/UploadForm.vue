@@ -37,7 +37,7 @@
             },
         },
         async created() {
-            this.resetState();
+            await this.resetState();
             this.formSubmission = {...this.submission};
             await this.getUploadForm();
 
