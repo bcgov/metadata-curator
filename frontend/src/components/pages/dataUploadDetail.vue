@@ -142,7 +142,10 @@ export default {
             dataUpload: state => state.dataUploadDetail.dataUpload,
         }),
         uploadDate: function(){
-            return this.dataUpload.upload_date.substring(0, this.dataUpload.upload_date.indexOf(".")).replace("T", " ");
+            if (this.dataUpload && this,dataUpload.upload_date){
+                return this.dataUpload.upload_date.substring(0, this.dataUpload.upload_date.indexOf(".")).replace("T", " ");
+            }
+            return "";
         }
     },
     created() {

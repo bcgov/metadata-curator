@@ -103,7 +103,10 @@
                 submission: state => state.uploadForm.submission,
             }),
             uploadDate: function(){
-                return this.uploadStore.upload_date.substring(0, this.uploadStore.upload_date.indexOf(".")).replace("T", " ");
+                if (this.uploadStore && this.uploadStore.upload_date){
+                    return this.uploadStore.upload_date.substring(0, this.uploadStore.upload_date.indexOf(".")).replace("T", " ");
+                }
+                return "";
             }
         },
         mounted(){
