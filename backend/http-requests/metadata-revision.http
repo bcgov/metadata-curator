@@ -1,0 +1,36 @@
+
+#####################################################################################################################
+#
+#   Dataset 1 - Upload 1
+#
+#####################################################################################################################
+
+### /metadatarevisions - default flow
+POST {{base-url}}/repos/5ecc148fedadcc07b812753b/branches/5ecc15943e191307cb0d6e2f/revisions
+Authorization: Bearer {{jwt}}
+Content-Type: application/json
+
+{
+  "type": "tabular_data_package",
+  "change_summary": "Initial upload",
+  "updater": "Jane Doe",
+  "descriptor": {}
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+###
+
+GET {{base-url}}/repos/5ecc148fedadcc07b812753b/branches/5ecc15943e191307cb0d6e2f/revisions
+Authorization: Bearer {{jwt}}
+Content-Type: application/json
+
+{}
+
+
+
+

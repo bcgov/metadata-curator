@@ -1,0 +1,17 @@
+
+### /datauploads - default flow
+GET {{base-url}}/repos
+Cookie: connect.sid={{connect.sid}}
+Content-Type: application/json
+
+{
+  "data_upload_id": "5e7a45e510abf3bbf5068f6f",
+  "name": "Dataset 1 - Upload 1 repo"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+

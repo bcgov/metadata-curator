@@ -8,12 +8,21 @@ let passport = require('passport');
 let OidcStrategy = require('passport-openidconnect').Strategy;
 let history = require('connect-history-api-fallback');
 require('./db/db').init();
+require('./auth/auth');
+const env = process.env.NODE_ENV || 'development';
 
 let backendRouter = require('./routes/backendRouter');
 
+let log = require('npmlog');
+log.level = config.get('logLevel');
+log.addLevel('debug', 2900, { fg: 'green' });
+
+
+
 let app = express();
 
-app.use(logger('dev'));
+
+if(env != 'test') { app.use(logger('dev')); }
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -42,29 +51,68 @@ passport.deserializeUser((obj, next) => {
 
 var strategy = new OidcStrategy(config.get('oidc'), function(issuer, sub, profile, accessToken, refreshToken, done){
 
-  var env = process.env.NODE_ENV || 'development';
+  var jwt = require('jsonwebtoken');
+  profile._json['aud'] = config.get('jwtAud');
+  profile.jwt = jwt.sign(profile._json, config.get('jwtSecret'));
+
+  profile.isAdmin = false;
+
+  profile.isDataProvider = false;
+  profile.isApprover = false;
+  profile.groups = [];
+  if ((typeof(profile._json) !== "undefined") && (typeof(profile._json.groups) !== "undefined")){
+    profile.groups = profile._json.groups;
+  }
+
+  if ((typeof(profile._json) !== "undefined") && (typeof(profile._json.email) !== "undefined")){
+    profile.email = profile._json.email;
+  }
+
+  if (config.has('adminGroup')){
+    profile.isAdmin = (profile.groups.indexOf(config.get('adminGroup')) !== -1);
+  }
+
+  if ( (config.has('orgAttribute')) && (profile._json[config.get('orgAttribute')]) ){
+    profile.organization = profile._json[config.get('orgAttribute')];
+  }
+
+  
+  profile.refreshToken = refreshToken;
 
   if(env == 'development' && config.hasOwnProperty("testJwt")
       && config.get('testJwt') && config.get('testJwt').length > 0) {
     console.log("dev mode");
     const testJwt = config.get("testJwt");
     // console.log("testJwt: ", testJwt);
+    const orgAttribute = config.has('orgAttribute') ? config.get('orgAttribute') : false;
     const secret = config.get("jwtSecret");
-    var orgAttribute = config.has('orgAttribute') ? config.get('orgAttribute') : false;
-
     profile = genProfileFromJwt(profile, testJwt, secret, orgAttribute);
     profile.refreshToken = refreshToken;
   }
-  else {
-    profile.jwt = accessToken;
-    profile.refreshToken = refreshToken;
+
+  const approverGroups = config.get("approverGroups");
+  // console.log("approverGroups: ", approverGroups);
+  const foundApprover = profile.groups.some(group => approverGroups.includes(group));
+  // console.log("FA", foundApprover);
+  // console.log("PG", profile);
+  if(foundApprover) {profile.isApprover = true; }
+  // console.log("foundApprover: " + foundApprover);
+
+
+  if(profile.organization) {
+    const alwaysNotifyList = new Map(Object.entries(config.get("alwaysNotifyList")));
+    // console.log("alwaysNotifyList: ", alwaysNotifyList);
+    profile.isDataProvider = alwaysNotifyList.has(profile.organization) ? true : false;
   }
 
   // console.log("setting token: ", profile);
 
   if ( (typeof(accessToken) === "undefined") || (accessToken === null) || (typeof(refreshToken) === "undefined") || (refreshToken === null) ){
+    console.log("No token");
     return done("No access token", null);
   }
+
+  //console.log("setting profile");
   return done(null, profile);
 });
 
@@ -75,14 +123,10 @@ passport.use('oidc', strategy);
 var genProfileFromJwt = function(profile, jwt, secret, orgAttribute) {
   var jwtLib = require('jsonwebtoken');
   var decoded = jwtLib.verify(jwt, secret);
-  console.log("decoded token: ", decoded);
+  // console.log("decoded token: ", decoded);
 
   profile.displayName = `${decoded.GivenName} ${decoded.Surname}`;
-  profile.name = {
-    familyName: decoded.Surname,
-    givenName: decoded.Givenname,
-    middleName: undefined
-  };
+  profile.name = `${decoded.GivenName} ${decoded.Surname}`;
 
   if (orgAttribute){
     profile.organization = decoded[orgAttribute] ? decoded[orgAttribute] : false;
@@ -97,7 +141,31 @@ var genProfileFromJwt = function(profile, jwt, secret, orgAttribute) {
   return profile;
 }
 
+if (env === "test") {
+    // use JWT auth for testing, rather than OIDC
+    app.use('/api', passport.authenticate(['jwt']));
+}
+
+app.get('/', (req, res) => { res.redirect('/api/v1/api-docs'); });
+
 app.use('/api', backendRouter);
+
+app.use('/api', (err, req, res, next) => {
+    log.debug(typeof err);
+    log.debug(err);
+    err.statusCode = err.statusCode || 500;
+    err.status = err.status || 'error';
+
+    const response = {
+        status: err.status,
+        message: err.message
+    }
+
+    if (err.errors) {
+        response['errors'] = err.errors;
+    }
+    res.status(err.statusCode).json(response);
+});
 
 app.use(history({
   index: 'dist/index.html'

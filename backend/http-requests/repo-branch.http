@@ -1,0 +1,35 @@
+
+### /datauploads - default flow
+POST {{base-url}}/repos/5ecc148fedadcc07b812753b/branches
+Authorization: Bearer {{jwt}}
+Content-Type: application/json
+
+{
+  "repo_id": "5ebb2e0401ef4868d10a41e7",
+  "type": "standard",
+  "name": "edition/standard",
+  "description": "Dataset 1 - Upload 1 repo branch",
+  "revisions": []
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+
+### /datauploads - list branches
+GET {{base-url}}/repos/5ecc148fedadcc07b812753b/branches
+Authorization: Bearer {{jwt}}
+Content-Type: application/json
+
+{}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+

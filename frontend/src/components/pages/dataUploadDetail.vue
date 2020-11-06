@@ -1,35 +1,53 @@
 <template>
 <!--    <div style="width: 75%; alignment: center !important;">-->
             <v-container fluid style="max-width:1500px; width:98%;">
-                <v-row dense>
+                <v-row v-if="!dataUpload" dense>
+                    Loading...
+                </v-row>
+                <v-row v-else dense>
                     <v-col cols="12">
-                        <v-card outlined max-height="250">
-                            <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Data Upload Summary</h1>
-                            <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn color="orange" text>View</v-btn>
-                            </v-card-actions>
+                        <v-card outlined>
+                            <v-card-text>
+                                <v-row>
+                                    <h1 class="display-1 font-weight-thin ml-3 my-3">Data Upload Summary</h1>
+                                </v-row>
+
+                                <v-row class="ml-3 fixedHeight">
+                                    Name: {{dataUpload.name}}
+                                </v-row>
+                                <v-row class="ml-3 fixedHeight">
+                                    Upload Date: {{uploadDate}}
+                                </v-row>
+                                <v-row class="mb-3 fixedHeight">
+                                    <v-btn color="orange" text @click="showViewDialog()">Upload &amp; File Info</v-btn>
+                                </v-row>
+                                <v-row class="ml-3 fixedHeight">
+                                    <v-checkbox class="mt-0 pt-0" :disabled="true" label="Approver has viewed (since last update)" v-model="dataUpload.opened_by_approver"></v-checkbox>
+                                </v-row>
+                            </v-card-text>
                         </v-card>
                     </v-col>
-                    <v-col cols="6">
-                        <v-card class="scroll card-outter" max-height="600" height="600">
-                            <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Metadata Revisions</h1>
-                            <MetadataRevisions></MetadataRevisions>
-                            <v-card-actions class="card-actions">
-                                <v-spacer></v-spacer>
-                                <v-btn color="orange" text>View</v-btn>
-                            </v-card-actions>
-                        </v-card>
-                    </v-col>
-                    <v-col cols="6">
+<!--                    <v-col cols="6">-->
+<!--                        <v-card class="scroll card-outter" max-height="600" height="600">-->
+<!--                            <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Metadata Revisions</h1>-->
+<!--                            <MetadataRevisions></MetadataRevisions>-->
+<!--                            <v-card-actions class="card-actions">-->
+<!--                                <v-spacer></v-spacer>-->
+<!--                                <v-btn color="orange" text>View</v-btn>-->
+<!--                            </v-card-actions>-->
+<!--                        </v-card>-->
+<!--                    </v-col>-->
+                    <v-col cols="12">
                         <v-card class="scroll card-outter" max-height="600"  height="600">
-                            <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Comments</h1>
-                            <Comments></Comments>
-                            <v-card-actions class="card-actions">
-                                <v-spacer></v-spacer>
-                                <v-btn color="orange" text @click="showAddCommentDialog()">Add Comment</v-btn>
-                                <v-btn color="orange" text>View</v-btn>
-                            </v-card-actions>
+                            <v-card-title>
+                                <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Discussion</h1>
+                            </v-card-title>
+                            <v-card-text>
+                                <Comments></Comments>
+                                <v-row>
+                                    <v-btn color="orange" text @click="showAddCommentDialog()">Add Comment</v-btn>
+                                </v-row>
+                            </v-card-text>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -37,68 +55,103 @@
                 <CommentAddDialog :dialog="commentAddDialog"
                                   @close-button-clicked="onCloseButtonClicked"
                                   @save-button-clicked="onSaveButtonClicked"/>
+                <ViewDialog :dialog="viewDialog"
+                                  :uploadId="dataUploadId"
+                                  @close-button-clicked="onViewClosedClick"/>
             </v-container>
 <!--    </div>-->
 </template>
 <script>
 
-import {mapActions, mapMutations} from "vuex";
-import MetadataRevisions from "../MetadataRevisions";
+import {mapActions, mapMutations, mapState} from "vuex";
+// import MetadataRevisions from "../MetadataRevisions";
 import Comments from "../Comments";
 import CommentAddDialog from "../CommentAddDialog";
+import ViewDialog from "../ViewUploadDialog";
 
 export default {
     components:{
-        MetadataRevisions,
+        // MetadataRevisions,
         Comments,
-        CommentAddDialog
+        CommentAddDialog,
+        ViewDialog
     },
     data () {
         return {
             commentAddDialog: false,
-            dataUploadId: null
+            dataUploadId: null,
+            viewDialog: false,
         }
     },
     methods: {
         ...mapActions({
-            getRevisions: 'dataUploadRevisions/getRevisions',
+            getDataUpload: 'dataUploadDetail/getDataUpload',
+            updateDataUpload: 'dataUploadDetail/updateDataUpload',
+            // getRevisions: 'dataUploadRevisions/getRevisions',
             getComments: 'dataUploadComments/getComments',
             addComment: 'dataUploadComments/addComment',
         }),
         ...mapMutations({
-            clearRevisions: 'dataUploadRevisions/clearRevisions',
+            clearDataUpload: 'dataUploadDetail/clearDataUpload',
+            // clearRevisions: 'dataUploadRevisions/clearRevisions',
             clearComments: 'dataUploadComments/clearComments',
         }),
-        loadRevisions() {
-            this.getRevisions(this.$route.params.id);
-            this.getComments(this.$route.params.id);
+        async loadSections() {
+            // this.getRevisions(this.dataUploadId);
+            this.getComments(this.dataUploadId);
+            await this.getDataUpload(this.dataUploadId);
+            if(this.user.isApprover && !this.dataUpload.opened_by_approver) {
+                const data = {...this.dataUpload, opened_by_approver: true};
+                this.updateDataUpload(data);
+            }
         },
         routeToHome() {
             // console.log("routeToHome uploadId");
             this.$router.push({ name: 'home' });
         },
         clearState() {
-            this.clearRevisions();
+            // this.clearRevisions();
             this.clearComments();
+            this.clearDataUpload();
         },
         showAddCommentDialog() {
             this.commentAddDialog = true;
         },
+
+        showViewDialog() {
+            this.viewDialog = true;
+        },
+
         onCloseButtonClicked() {
             this.commentAddDialog = false;
-            // this.comment = null;
         },
-        onSaveButtonClicked(comment) {
-            console.log("save button clicked with val: " + comment);
+        
+        onViewClosedClick(){
+            this.viewDialog = false;
+        },
+
+        async onSaveButtonClicked(comment) {
             this.commentAddDialog = false;
-            this.addComment({dataUploadId: this.dataUploadId, comment: comment});
-            // this.reloadComments();
+            await this.addComment({dataUploadId: this.dataUploadId, comment: comment});
+            this.getDataUpload(this.dataUploadId);
         },
+    },
+    computed: {
+        ...mapState({
+            user: state => state.user.user,
+            dataUpload: state => state.dataUploadDetail.dataUpload,
+        }),
+        uploadDate: function(){
+            if (this.dataUpload && this.dataUpload.upload_date){
+                return this.dataUpload.upload_date.substring(0, this.dataUpload.upload_date.indexOf(".")).replace("T", " ");
+            }
+            return "";
+        }
     },
     created() {
         // console.log("dataUpload id: " + this.$route.params.id);
         this.dataUploadId = this.$route.params.id;
-        this.loadRevisions();
+        this.loadSections();
     },
     beforeDestroy() {
         // console.log("detail view before destroy");
@@ -120,5 +173,20 @@ export default {
         bottom: 0;
         right: 0;
     }
+    
+    .fixedHeight{
+        height: 36px;
+        line-height: 36px;
+        vertical-align: middle;
+    }
 
+</style>
+
+<style>
+    .v-label.v-label--is-disabled.theme--light{
+        color: rgba(0,0,0,.87);
+    }
+    .v-label.v-label--is-disabled.theme--dark{
+        color: var(--v-text-base);
+    }
 </style>
