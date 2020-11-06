@@ -11,7 +11,7 @@ var resourceSchema = new Schema({
            type: tableSchema,
            required: true
        }
-});
+}, { _id : false });
 
 var dataPackageSchema = new Schema({
     profile: {type:String, required: true},
@@ -20,4 +20,7 @@ var dataPackageSchema = new Schema({
 
 var model = mongoose.model('dataPackageSchema', dataPackageSchema, 'dataPackageSchema');
 
-module.exports = model;
+module.exports = {
+    dataPackageSchema,
+    model
+}

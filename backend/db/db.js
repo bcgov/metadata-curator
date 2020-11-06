@@ -12,12 +12,13 @@ dbName = dbProps.dbName;
 
 const db = {};
 
-db.init = function () {
+db.init = function (_connString = null) {
     const logger = require('npmlog');
-    const connString = 'mongodb://' + dbUser + ':' + dbPass + '@' + dbHost + '/' + dbName + '?authSource=' + dbName;
-    console.log("connectionstr: " + connString);
+    const connString = (_connString == null) ? 'mongodb://' + dbUser + ':' + dbPass + '@' + dbHost + '/' + dbName + '?authSource=' + dbName : _connString;
+    // console.log("connectionstr: " + connString);
     mongoose.connect(connString, {
         useUnifiedTopology: true,
+        useFindAndModify: false,
         useNewUrlParser: true,
         bufferMaxEntries: 0
     });
@@ -31,10 +32,10 @@ db.init = function () {
         // logger.debug('DB connection established');
     });
     db.TableSchema = require('./model/tableSchema').model;
-    db.DataPackageSchema = require('./model/dataPackageSchema');
+    db.DataPackageSchema = require('./model/dataPackageSchema').model;
     db.DataUploadSchema = require('./model/dataUpload');
     db.RepoSchema = require('./model/repo');
-    db.RepoBranchSchema = require('./model/repoBranch');
+    db.RepoBranchSchema = require('./model/repoBranch').model;
     db.MetadataRevisionSchema = require('./model/metadataRevision');
 };
 

@@ -16,7 +16,7 @@ export const opts = {
       },
       themes:{
         dark: {
-          primary: '#070707',
+          primary: '#0033cc',
           secondary: '#5475a7',
           tertiary: '#0050a1',
           highlight: '#a5d8ff',

@@ -9,7 +9,9 @@ const data = [
     revision_number: 1,
     change_summary: "Initial upload",
     updater: "Data Provider_1",
-    content: {}
+    content: {
+      profile: "test"
+    }
   },
   {
     create_date: new Date(),
@@ -18,7 +20,9 @@ const data = [
     revision_number: 2,
     change_summary: "Added column",
     updater: "Data Provider_1",
-    content: {}
+    content: {
+      profile: "test"
+    }
   },
   {
     create_date: new Date(),
@@ -27,7 +31,9 @@ const data = [
     revision_number: 3,
     change_summary: "Removed column, change column type",
     updater: "Data Provider_1",
-    content: {}
+    content: {
+      profile: "test"
+    }
   },
   {
     create_date: new Date(),
@@ -36,7 +42,9 @@ const data = [
     revision_number: 4,
     change_summary: "Added columns, column constraints, removed columns",
     updater: "Data Provider_1",
-    content: {}
+    content: {
+      profile: "test"
+    }
   },
   {
     create_date: new Date(),
@@ -45,7 +53,9 @@ const data = [
     revision_number: 5,
     change_summary: "Added columns, column constraints, removed columns",
     updater: "Data Provider_1",
-    content: {}
+    content: {
+      profile: "test"
+    }
   },
   // {
   //   create_date: new Date(),
@@ -91,7 +101,9 @@ const data = [
     revision_number : 1,
     change_summary : "Initial upload",
     updater : "Data Provider_1",
-    content : {}
+    content : {
+      profile: "test"
+    }
   },
   {
     create_date: new Date(),
@@ -100,7 +112,9 @@ const data = [
     revision_number : 2,
     change_summary : "Removed column, change column type",
     updater : "Data Provider_1",
-    content : {}
+    content : {
+      profile: "test"
+    }
   },
   {
     create_date: new Date(),
@@ -109,7 +123,9 @@ const data = [
     revision_number : 1,
     change_summary : "Initial upload",
     updater : "Data Provider_1",
-    content : {}
+    content : {
+      profile: "test"
+    }
   },
   {
     create_date: new Date(),
@@ -118,7 +134,9 @@ const data = [
     revision_number : 2,
     change_summary : "Added column",
     updater : "Data Provider_1",
-    content : {}
+    content : {
+      profile: "test"
+    }
   }
     
     
@@ -145,4 +163,4 @@ class MetadataRevisionsSeeder extends Seeder {
 
 }
 
-module.exports = MetadataRevisionsSeeder;
+module.exports = {MetadataRevisionsSeeder, MetadataRevisionsData: data};

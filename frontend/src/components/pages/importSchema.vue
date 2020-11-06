@@ -11,8 +11,21 @@
         <div style="width:350px; margin-left:15px; margin-bottom: 12px;">
             <FileReader :show-encrypt-button="true"
                         :show-upload-button="true"
-                        :show-import-button="true"
-                        @import-button-clicked="importButtonClicked">
+                        :show-import-button="false"
+                        :read-file="true"
+                        :trigger-upload="upload[0]"
+                        @import-button-clicked="importButtonClicked"
+                        @upload-button-clicked="uploadButtonClicked"
+                        @upload-finished="uploadFinished">
+            </FileReader>
+            <FileReader :show-encrypt-button="true"
+                        :show-upload-button="false"
+                        :show-import-button="false"
+                        :read-file="false"
+                        :trigger-upload="upload[1]"
+                        @import-button-clicked="importButtonClicked"
+                        @upload-button-clicked="uploadButtonClicked"
+                        @upload-finished="uploadFinished">
             </FileReader>
         </div>
 
@@ -38,6 +51,7 @@ import {mapState, mapActions, mapMutations, mapGetters} from 'vuex';
 import AlertSuccess from "../AlertSuccess";
 import AlertError from "../AlertError";
 import AlertValidationError from "../AlertValidationError";
+import Vue from 'vue';
 
 export default {
     components:{
@@ -48,7 +62,10 @@ export default {
     },
     data () {
         return {
-            metadataType: 'table-schema'
+            metadataType: 'table-schema',
+            uploadInProgress: 0,
+            upload: [false, false],
+            qq: false,
         }
     },
     created() {
@@ -66,6 +83,19 @@ export default {
             setDataPackageSchema: 'schemaImport/setDataPackageSchema',
             resetSchemaImportState: 'schemaImport/resetState',
         }),
+
+        uploadButtonClicked(){
+            this.upload[0] = true;
+        },
+
+        uploadFinished(){
+            Vue.set(this.upload, this.uploadInProgress, false);
+            this.uploadInProgress += 1;
+            Vue.set(this.upload, this.uploadInProgress, true);
+        },
+
+
+
         importButtonClicked(content) {
             console.log("importButtonClicked");
             // console.log("schema: ", content);

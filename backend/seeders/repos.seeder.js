@@ -37,4 +37,4 @@ class ReposSeeder extends Seeder {
 
 }
 
-module.exports = ReposSeeder;
+module.exports = {ReposSeeder, ReposData:data};

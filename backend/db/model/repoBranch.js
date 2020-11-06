@@ -33,4 +33,7 @@ var repoBranchSchema = new Schema({
 
 var model = mongoose.model('repoBranch', repoBranchSchema, 'repo_branch');
 
-module.exports = model;
+module.exports = {
+    model,
+    repoBranchSchema
+}

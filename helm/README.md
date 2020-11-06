@@ -1,0 +1,1 @@
+The helm chart is in the https://github.com/bcgov/helm-charts repo it is called metadata-curator

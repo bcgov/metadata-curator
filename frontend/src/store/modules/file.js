@@ -1,127 +1,157 @@
 import { Backend } from '../../services/backend';
 const backend = new Backend();
 
+import Vue from 'vue';
+
 const openpgp = require('openpgp');
 
 const state = {
-    content: "",
+    content: [],
+    fileHandles: {},
     fileName: "",
-    encrypted: false,
     blob: [],
-    uploadContent: "",
     key: null,
     uploadUrl: "",
+    fileSig: {},
+    successfullyUploadedChunks: {},
 };
 
 const getters = {
     getStringContent: (state) => () => {
         var textEncoding = require('text-encoding');
         var TextDecoder = textEncoding.TextDecoder;
-        return new TextDecoder("utf-8").decode(state.content);
+        return new TextDecoder("utf-8").decode(state.content[0]);
+    },
+
+    getPublicKey: (state) => async () => {
+        if (state.key === null){
+            let data = await backend.getPublicKey();
+            console.log("GET PK", data);
+            return data.key;
+        }
+        return state.key;
+    },
+}
+
+async function encrypt(commit, clear, content, key, replaceIndex){
+    await openpgp.initWorker({ path: '/js/openpgp.worker.min.js' }, 3); // set the relative web worker path
+
+    if (clear){
+        commit('clearBlob');
     }
+
+    return openpgp.encrypt({
+        message: await openpgp.message.fromBinary(content), // input as Message object
+        publicKeys: (await openpgp.key.readArmored(key)).keys,
+        compression: openpgp.enums.compression.zip,
+        format: 'binary',
+
+    }).then( async (cipherText) => {
+        if (replaceIndex === -1){
+            commit('addBlob', {blob: new Blob([cipherText.data])} );
+        }else{
+            commit('setBlob', {index: replaceIndex, blob: new Blob([cipherText.data])} );
+        }
+    });
 }
 
 const actions = {
-    async encryptContent({commit, state}){
-        await openpgp.initWorker({ path: '/js/openpgp.worker.min.js' }, 3); // set the relative web worker path
+    async getUploadUrl({commit, state}){
 
-        if (state.encrypted){
-            return true;
+        if ( (state.uploadUrl === null) || (state.uploadUrl === "") ){
+            backend.getUploadUrl().then( (data) => {
+                commit('setUploadUrl', {uploadUrl: data.url});
+            });
         }
+
+
+    },
+    async encryptContent({commit, state}, {index, clear, content}){
 
         if (state.publicKey == null){
             let data = await backend.getPublicKey();
             commit('setPublicKey', {key: data.key});
         }
-
+    
         if (state.uploadUrl === ""){
-            let data = await backend.getUploadUrl();
-            commit('setUploadUrl', {uploadUrl: data.url});
+            backend.getUploadUrl().then( (data) => {
+                commit('setUploadUrl', {uploadUrl: data.url});
+            });
         }
-        commit('clearBlob');
-        // var textEncoding = require('text-encoding');
-        // var TextEncoder = textEncoding.TextEncoder;
 
-        // let uint8 = new TextEncoder("utf-8").encode(state.content);
-        // eslint-disable-next-line
-        // console.log("uint8 size", uint8.length);
-        var cipherText = await openpgp.encrypt({
-            message: await openpgp.message.fromBinary(state.content), // input as Message object
-            publicKeys: (await openpgp.key.readArmored(state.key)).keys,
-            compression: openpgp.enums.compression.zip,
-            format: 'binary',
+        let rI = index;
+        if ( (content.length-1) <= index ){
+            //add blob
+            rI = -1;
+        }
 
-        })//.then( async (cipherText) => {
-            // eslint-disable-next-line
-            //console.log("encrypted text", cipherText.data)
-            //commit('setBlob', {content: cipherText.data} );
+        await encrypt(commit, clear, content, state.key, rI);
 
-            commit('addBlob', {blob: new Blob([cipherText.data])} );
-            // commit('addBlob', {blob: new Blob([state.content])} );
-
-            // openpgp.decrypt({
-            //     message: await openpgp.message.readArmored(cipherText.data),
-            //     passwords: ['secret stuff'],
-            //     armor: true
-            // }).then( decryp => {
-            //     console.log("sanity check", decryp);
-            // });
-
-        //});
-
-        commit('setEncrypted', { encrypted: true });
         return true;
-    },
-
-    async encryptUploadContent({commit, state}){
-        await openpgp.initWorker({ path: '/js/openpgp.worker.min.js' }, 3); // set the relative web worker path
-
-        commit('clearBlob');
-
-        var cipherText = await openpgp.encrypt({
-            message: await openpgp.message.fromBinary(state.uploadContent), // input as Message object
-            publicKeys: (await openpgp.key.readArmored(state.key)).keys,
-            compression: openpgp.enums.compression.zip,
-            format: 'binary',
-        });
-
-        commit('addBlob', {blob: new Blob([cipherText.data])} );
-        // commit('addBlob', {blob: new Blob([state.uploadContent])} );
-    },
+    }
 }
 
 const mutations = {
-    setContent(state, {content}){
-        state.content = content;
-        state.encrypted = false;
+    clearContent(state){
+        state.content = [];
     },
 
-    setUploadContent(state, {content}){
-        var textEncoding = require('text-encoding');
-        var TextDecoder = textEncoding.TextDecoder;
-        
-        var currC = new TextDecoder("utf-8").decode(state.content);
-        var newC = new TextDecoder("utf-8").decode(content);
-
-        console.log("upload c = c", currC === newC);
-        if (state.uploadContent !== ""){
-            var prevC = new TextDecoder("utf-8").decode(state.uploadContent);
-            console.log("upload c = prev upload c", prevC === newC);
+    setContent(state, {content, index}){
+        if (index > state.content.length){
+            state.content[index] = content;
+        }else{
+            state.content.push(content);
         }
-        state.uploadContent = content;
     },
 
     setFileName(state, { fileName }){
         state.fileName = fileName;
     },
-    setEncrypted(state, { encrypted }){
-        state.encrypted = encrypted;
+
+    setFileSig(state, { fileSig }){
+        Vue.set(state.fileSig, fileSig, true);
     },
-    setBlob(state, { content }){
-        let blobParts = [];
-        let piece = content;
-        blobParts.push(new Blob([piece]));
-        state.blob = blobParts;
+
+    clearFileSig(state, { fileSig }){
+        Vue.delete(state.successfullyUploadedChunks, fileSig);
+        Vue.delete(state.fileSig, fileSig);
+    },
+
+    setFileHandles(state, { handles }){
+        state.fileHandles = handles;
+    },
+
+    addFileHandleIfNotPresent(state, { handle, fileSig }){
+        if (typeof(state.fileHandles) !== "object"){
+            state.fileHandles = {};
+        }
+        let keys = Object.keys(state.fileHandles);
+        for (let i=0; i<keys.length; i++){
+            if ( (typeof(state.fileHandles) !== "undefined") && (typeof(state.fileHandles[keys[i]]) !== "undefined") && (state.fileHandles[keys[i]] !== null) ){
+                //if this is true it only has a signature which is what happens when the handle is removed from the store
+                if (typeof(state.fileHandles[keys[i]].name) === "undefined"){
+                    Vue.delete(state.fileHandles, keys[i]);
+                }
+            }
+        }
+        if (typeof(state.fileHandles[fileSig]) === "undefined"){
+            Vue.set(state.fileHandles, fileSig, handle);
+        }
+    },
+
+    clearFileHandles(state){
+        state.fileHandles = {};
+    },
+
+    setSuccessfullyUploadedChunk(state, {fing, index, success}){
+        if (typeof(state.successfullyUploadedChunks[fing]) === "undefined"){
+            state.successfullyUploadedChunks[fing] = [];
+        }
+        state.successfullyUploadedChunks[fing][index] = success;
+    },
+
+    setBlob(state, { blob, index }){
+        state.blob[index] = blob;
     },
     addBlob(state, { blob }){
         state.blob.push(blob);
@@ -135,17 +165,21 @@ const mutations = {
     setUploadUrl(state, { uploadUrl }){
         state.uploadUrl = uploadUrl;
     },
-    // eslint-disable-next-line no-unused-vars
+    
+    // eslint-disable-next-line
     resetState(state){
         console.log("file.js resetState");
-        state =  {
-            content: "",
+
+        state = {
+            content: [],
+            fileHandles: {},
             fileName: "",
-            encrypted: false,
             blob: [],
             key: null,
             uploadUrl: "",
-        };
+            fileSig: {},
+            successfullyUploadedChunks: {},
+        }
     },
 }
 

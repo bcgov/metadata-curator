@@ -8,8 +8,8 @@
                 <v-container>
                     <v-row>
                         <v-col cols="12">
-                            <TextInput name="comment" label="Comment" validationRules="required" :value="commentVal"
-                            @edited="onCommentUpdated" ref="comment"></TextInput>
+                            <TextArea name="comment" label="Comment" validationRules="required" :value="commentVal"
+                            @edited="onCommentUpdated" ref="comment"></TextArea>
                         </v-col>
                     </v-row>
                 </v-container>
@@ -27,12 +27,12 @@
 
     import {mapActions} from "vuex";
     import ValidationRules from "../mixins/ValidationRules";
-    import TextInput from "./TextInput";
+    import TextArea from "./TextArea";
 
     export default {
         mixins: [ValidationRules],
         components:{
-            TextInput
+            TextArea
         },
         props: {
             dialog: {

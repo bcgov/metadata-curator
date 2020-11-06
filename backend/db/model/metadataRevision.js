@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+let {dataPackageSchema} = require('./dataPackageSchema');
 
 var metadataRevisionSchema = new Schema({
     repo_branch_id: {
@@ -21,7 +22,7 @@ var metadataRevisionSchema = new Schema({
         required: true
     },
     content: {
-        type: Object,
+        type: dataPackageSchema,
         required: false
     },
     create_date: {

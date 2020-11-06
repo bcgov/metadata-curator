@@ -9,7 +9,18 @@ import schemaImport from './modules/schemaImport'
 import dataUploads from "./modules/dataUploads";
 import dataUploadRevisions from "./modules/dataUploadRevisions";
 import dataUploadComments from "./modules/dataUploadComments";
+import dataUploadDetail from "./modules/dataUploadDetail";
+import upload from "./modules/createUpload/upload";
+import uploadForm from "./modules/createUpload/uploadForm";
 
+import { build } from './modules/items';
+
+const permissions = build('getPermissions', 'newPermission', 'putPermission', 'deletePermission');
+const forms = build('getForms', 'newForm', 'putForm', 'deleteForm');
+const topics = build('getTopics', 'newTopic', 'putTopic', 'deleteTopic');
+const comments = build('getComments', 'newComment', 'putComment', 'deleteComment');
+const adminDUploads = build('getDataUploads');
+const submissions = build('getFormSubmissions','postFormSubmission', 'putFormSubmission', 'deleteFormSubmission' );
 
 Vue.use(Vuex)
 
@@ -20,7 +31,16 @@ export default new Vuex.Store({
     schemaImport,
     dataUploads,
     dataUploadRevisions,
-    dataUploadComments
+    dataUploadComments,
+    dataUploadDetail,
+    permissions,
+    forms,
+    topics,
+    comments,
+    adminDUploads,
+    submissions,
+    upload,
+    uploadForm
   },
   plugins: [createPersistedState({
     paths: [
@@ -29,7 +49,12 @@ export default new Vuex.Store({
       'user.loggedIn',
       'user.loading',
       'user.useDark',
-      'file.fileName'
+      'file.fileName',
+      'file.fileSig',
+      'file.key',
+      'file.uploadUrl',
+      'file.successfullyUploadedChunks',
+      'file.fileHandles'
     ]
   })],
   strict: process.env.NODE_ENV !== 'production'

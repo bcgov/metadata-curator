@@ -1,8 +1,8 @@
 const db = require('./db/db');
-const DataUploads = require('./seeders/data-uploads.seeder');
-const Repos = require('./seeders/repos.seeder');
-const RepoBranches = require('./seeders/repo-branches.seeder');
-const MetadataRevisions = require('./seeders/metadata-revisions.seeder');
+const {DataUploadsSeeder, DataUploadData} = require('./seeders/data-uploads.seeder');
+const {ReposSeeder, ReposData} = require('./seeders/repos.seeder');
+const {RepoBranchesSeeder, RepoBranchesData} = require('./seeders/repo-branches.seeder');
+const {MetadataRevisionsSeeder, MetadataRevisionsData} = require('./seeders/metadata-revisions.seeder');
 
 /**
  * Seeders List
@@ -10,11 +10,19 @@ const MetadataRevisions = require('./seeders/metadata-revisions.seeder');
  * @type {Object}
  */
 const seedersList = {
-    DataUploads,
-    Repos,
-    RepoBranches,
-    MetadataRevisions
+    DataUploadsSeeder,
+    ReposSeeder,
+    RepoBranchesSeeder,
+    MetadataRevisionsSeeder
 };
+
+const seedersData = {
+    DataUploadData,
+    ReposData,
+    RepoBranchesData,
+    MetadataRevisionsData
+};
+
 
 /**
  * Connect to mongodb implementation
@@ -29,4 +37,4 @@ const connect = async () => db.init();
 const dropdb = async () => db.db.dropDatabase();
 
 
-module.exports = {seedersList, connect, dropdb};
+module.exports = {seedersList, seedersData, connect, dropdb};
