@@ -70,11 +70,11 @@ EOF
     requiredRoleToCreateRequest = "\"requiredRoleToCreateRequest\": \"${var.requiredRoleToCreateRequest}\""
     alwaysNotifyListOnTopicCreate = "\"alwaysNotifyListOnTopicCreate\": ${var.alwaysNotifyListOnTopicCreate}"
     alwaysNotifyUninvolvedOnCommentAdd = "\"alwaysNotifyUninvolvedOnCommentAdd\": ${var.alwaysNotifyUninvolvedOnCommentAdd}"
-    approverGroups = "\"approverGroups\": ${var.approverGroups}"
-    alwaysNotifyList = "\"alwaysNotifyList\": ${var.alwaysNotifyList}"
-    email = "\"email\": ${var.email}"
+    approverGroups = "\"approverGroups\": ${jsonencode(var.approverGroups)}"
+    alwaysNotifyList = "\"alwaysNotifyList\": ${jsonencode(var.alwaysNotifyList)}"
+    email = "\"email\": ${jsonencode(var.email)}"
     adminGroup = "\"adminGroup\": \"${var.adminGroup}\""
-    formio = "\"formio\": ${var.formio}"
+    formio = "\"formio\": ${jsonencode(var.formio)}"
   }
 }
 
