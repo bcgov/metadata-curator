@@ -1,6 +1,5 @@
 <template>
-<!--    <div style="width: 75%; alignment: center !important;">-->
-            <v-container fluid style="max-width:1500px; width:98%;">
+            <v-container fluid>
                 <v-row v-if="!dataUpload" dense>
                     Loading...
                 </v-row>
@@ -27,20 +26,11 @@
                             </v-card-text>
                         </v-card>
                     </v-col>
-<!--                    <v-col cols="6">-->
-<!--                        <v-card class="scroll card-outter" max-height="600" height="600">-->
-<!--                            <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Metadata Revisions</h1>-->
-<!--                            <MetadataRevisions></MetadataRevisions>-->
-<!--                            <v-card-actions class="card-actions">-->
-<!--                                <v-spacer></v-spacer>-->
-<!--                                <v-btn color="orange" text>View</v-btn>-->
-<!--                            </v-card-actions>-->
-<!--                        </v-card>-->
-<!--                    </v-col>-->
+
                     <v-col cols="12">
                         <v-card class="scroll card-outter" max-height="600"  height="600">
                             <v-card-title>
-                                <h1 class="display-1 font-weight-thin" style="margin-left:15px; margin-top:15px; margin-bottom:10px;">Discussion</h1>
+                                <h1 class="display-1 font-weight-thin ml-2 mt-2 mb-2">Discussion</h1>
                             </v-card-title>
                             <v-card-text>
                                 <Comments></Comments>
@@ -51,7 +41,7 @@
                         </v-card>
                     </v-col>
                 </v-row>
-                <v-btn @click="routeToHome()" style="margin-top:5px">Back</v-btn>
+                <v-btn @click="routeToHome()" class="mt-1">Back</v-btn>
                 <CommentAddDialog :dialog="commentAddDialog"
                                   @close-button-clicked="onCloseButtonClicked"
                                   @save-button-clicked="onSaveButtonClicked"/>
@@ -107,7 +97,7 @@ export default {
         },
         routeToHome() {
             // console.log("routeToHome uploadId");
-            this.$router.push({ name: 'home' });
+            this.$router.push({ name: 'uploads' });
         },
         clearState() {
             // this.clearRevisions();

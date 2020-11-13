@@ -19,14 +19,14 @@ describe("RepoServiceTest", function() {
     before(async () => sinon.stub(forumClient, 'addTopic').returns({_id:"0000000009c5d71ee7600000"}))
     beforeEach (async () => {
         duid = await dataUploadService.createDataUpload({},{name:"my_upload",uploader:"joe"})
-        rid = await repoService.createRepo(duid, 'some repo name');
+        rid = await repoService.createRepo('some repo name');
     })
     after(async () => {
         sinon.restore();
     })
 
     it('should succeed creating a new repository', async () => {
-        const result = await repoService.createRepo(duid, 'another repo');
+        const result = await repoService.createRepo('another repo');
         expect(result).to.be.an('object')
         expect(result.name).to.equal('another repo')
     })
@@ -52,7 +52,7 @@ describe("RepoServiceTest", function() {
                 }
             ]
         }
-        const result = await repoService.createRepoWithDataPackage(duid, 'some repo', 'joe@local', descriptor);
+        const result = await repoService.createRepoWithDataPackage('some repo', 'joe@local', descriptor);
         expect(result).to.be.an('object')
         expect(result.change_summary).to.equal('Initial metadata')
     })

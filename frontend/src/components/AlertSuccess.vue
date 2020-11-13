@@ -1,6 +1,6 @@
 <template>
-    <div style="margin-left: 10px; margin-bottom: 12px; width:65%;">
-        <v-alert style="margin-left: 10px; margin-bottom: 12px; width:75%;"
+    <div class="ml-2 mb-2">
+        <v-alert class="ml2 mb-2"
                  text
                  prominent
                  type="success"

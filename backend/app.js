@@ -17,10 +17,7 @@ let log = require('npmlog');
 log.level = config.get('logLevel');
 log.addLevel('debug', 2900, { fg: 'green' });
 
-
-
 let app = express();
-
 
 if(env != 'test') { app.use(logger('dev')); }
 app.use(express.json());
@@ -49,7 +46,7 @@ passport.deserializeUser((obj, next) => {
   next(null, obj);
 });
 
-var strategy = new OidcStrategy(config.get('oidc'), function(issuer, sub, profile, accessToken, refreshToken, done){
+var strategy = new OidcStrategy(config.get('oidc'), async function(issuer, sub, profile, accessToken, refreshToken, done){
 
   var jwt = require('jsonwebtoken');
   profile._json['aud'] = config.get('jwtAud');
@@ -79,25 +76,13 @@ var strategy = new OidcStrategy(config.get('oidc'), function(issuer, sub, profil
   
   profile.refreshToken = refreshToken;
 
-  if(env == 'development' && config.hasOwnProperty("testJwt")
-      && config.get('testJwt') && config.get('testJwt').length > 0) {
-    console.log("dev mode");
-    const testJwt = config.get("testJwt");
-    // console.log("testJwt: ", testJwt);
-    const orgAttribute = config.has('orgAttribute') ? config.get('orgAttribute') : false;
-    const secret = config.get("jwtSecret");
-    profile = genProfileFromJwt(profile, testJwt, secret, orgAttribute);
-    profile.refreshToken = refreshToken;
-  }
-
   const approverGroups = config.get("approverGroups");
-  // console.log("approverGroups: ", approverGroups);
+  
   const foundApprover = profile.groups.some(group => approverGroups.includes(group));
-  // console.log("FA", foundApprover);
-  // console.log("PG", profile);
-  if(foundApprover) {profile.isApprover = true; }
-  // console.log("foundApprover: " + foundApprover);
-
+  
+  if(foundApprover) {
+    profile.isApprover = true; 
+  }
 
   if(profile.organization) {
     const alwaysNotifyList = new Map(Object.entries(config.get("alwaysNotifyList")));
@@ -105,12 +90,41 @@ var strategy = new OidcStrategy(config.get('oidc'), function(issuer, sub, profil
     profile.isDataProvider = alwaysNotifyList.has(profile.organization) ? true : false;
   }
 
-  // console.log("setting token: ", profile);
-
   if ( (typeof(accessToken) === "undefined") || (accessToken === null) || (typeof(refreshToken) === "undefined") || (refreshToken === null) ){
     console.log("No token");
     return done("No access token", null);
   }
+
+  var db = require('./db/db');
+
+  if (profile.email){
+    try{
+      var u = await db.User.findOne({email: profile.email});
+      profile.lastLogin = u.lastLogin;
+    }catch(ex){
+      console.log("No previous user info", ex);
+    }
+    
+  }
+
+  var user = {
+    email: profile.email,
+    name: profile.displayName,
+    groups: profile.groups,
+    lastLogin: new Date()
+  }
+
+  if (profile.email){
+    db.User.update({email: profile.email}, user, {upsert: true, setDefaultsOnInsert: true}, function(e,r){
+      if (e){
+        console.log("Error updating user info", e);
+      }else{
+        console.log("Updated user info");
+      }
+
+    });
+  }
+  
 
   //console.log("setting profile");
   return done(null, profile);

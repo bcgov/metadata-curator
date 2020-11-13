@@ -1,6 +1,6 @@
 <template>
-    <div style="width: 85%;">
-        <v-list three-line style="margin-bottom: 15px;">
+    <div>
+        <v-list three-line class="mb-2">
             <template v-for="(item, index) in revisionDisplayItems">
                     <v-divider
                         v-if="item.divider"

@@ -1,8 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import dataUploadDetail from "../components/pages/dataUploadDetail";
 
 const home = () => import(/* webpackChunkName: "home" */ "../components/pages/home");
+const dataUploadDetail = () => import(/* webpackChunkName: "dataUploadDetail" */ "../components/pages/dataUploadDetail")
+const uploads = () => import(/* webpackChunkName: "uploads" */ "../components/pages/uploads");
+const versions = () => import(/* webpackChunkName: "versions" */ "../components/pages/versions");
+const datasets = () => import(/* webpackChunkName: "datasets" */ "../components/pages/datasets");
 const upload = () => import(/* webpackChunkName: "upload" */ "../components/pages/upload");
 const importSchema = () => import(/* webpackChunkName: "import" */ "../components/pages/importSchema");
 const dataUploadRevisions = () => import(/* webpackChunkName: "dataUploadRevisions" */ "../components/pages/dataUploadRevisions");
@@ -90,6 +93,33 @@ let r = new Router({
       //
       //   next();
       //  },
+    },
+    {
+      path: '/uploads',
+      name: 'uploads',
+      component: uploads,
+      meta: {
+          title: "Uploads",
+          requiresAuth: true
+      }
+    },
+    {
+      path: '/datasets',
+      name: 'datasets',
+      component: datasets,
+      meta: {
+          title: "Datasets",
+          requiresAuth: true
+      }
+    },
+    {
+      path: '/versions',
+      name: 'versions',
+      component: versions,
+      meta: {
+          title: "Versions",
+          requiresAuth: true
+      }
     },
     {
       path: '/upload',

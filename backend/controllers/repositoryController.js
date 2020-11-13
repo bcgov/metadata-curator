@@ -1,7 +1,7 @@
 const { repoService, repoBranchService, revisionService } = require('../services')
 
 const getRepos = async (req, res, next) => {
-    let repos = await repoService.listRepositories();
+    let repos = await repoService.listRepositories(req.user, req.query);
     res.status(200).json(repos);
 }
 

@@ -12,6 +12,7 @@ import dataUploadComments from "./modules/dataUploadComments";
 import dataUploadDetail from "./modules/dataUploadDetail";
 import upload from "./modules/createUpload/upload";
 import uploadForm from "./modules/createUpload/uploadForm";
+import repos from "./modules/repos";
 
 import { build } from './modules/items';
 
@@ -40,7 +41,8 @@ export default new Vuex.Store({
     adminDUploads,
     submissions,
     upload,
-    uploadForm
+    uploadForm,
+    repos,
   },
   plugins: [createPersistedState({
     paths: [

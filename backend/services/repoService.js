@@ -1,21 +1,26 @@
 const db = require('../db/db');
 const log = require('npmlog');
+var mongoose = require('mongoose');
 
 const repoBranchService = require('./repoBranchService');
 const revisionService = require('./revisionService');
 
-const createRepo = async function(dataUploadId, name) {
+const createRepo = async function(name) {
     const repoSchema = new db.RepoSchema;
     repoSchema.name = name;
     repoSchema.create_date = new Date();
-    repoSchema.data_upload_id = dataUploadId;
 
     return await repoSchema.save();
 }
 
-const listRepositories = async () => {
+const listRepositories = async (user, query) => {
     try {
-        return await db.RepoSchema.find({}).sort({ "create_date": 1});
+        if(query && query.filterBy) {
+            //return await db.RepoSchema.find({data_upload_id: mongoose.Types.ObjectId(query.filterBy)}).sort({ "create_date": 1});
+            return await db.RepoSchema.find({}).sort({ "create_date": 1});
+        }else{
+            return await db.RepoSchema.find({}).sort({ "create_date": 1});
+        }
     } catch (e) {
         log.error(e);
         throw new Error(e.message)
@@ -40,8 +45,8 @@ const getRepoById = async (id) => {
     }
 }
 
-const createRepoWithDataPackage = async function(dataUploadId, name, updater, dataPackageDescriptor) {
-    const repo = await createRepo (dataUploadId, name);
+const createRepoWithDataPackage = async function(name, updater, dataPackageDescriptor) {
+    const repo = await createRepo (name);
 
     const branch = await repoBranchService.addBranch(repo._id, "standard", "draft", "Draft " + name).catch ((err) => {
         // delete repo
