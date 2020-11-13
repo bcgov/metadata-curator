@@ -6,10 +6,9 @@ const postDataUpload = async (req, res, next) => {
 }
 
 const postRepository = async (req, res, next) => {
-    const id = req.params.dataUploadId;
     let fields = {...req.body};
 
-    const repo = await repoService.createRepo(id, fields.name);
+    const repo = await repoService.createRepo(fields.name);
     res.status(201).json({id: repo._id.toString()});
 }
 

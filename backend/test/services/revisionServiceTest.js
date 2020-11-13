@@ -21,7 +21,7 @@ describe("RevisionService Test", function() {
     before(async() => sinon.stub(forumClient, 'addTopic').returns({_id:"0000000009c5d71ee7600000"}))
     beforeEach (async () => {
         duid = await dataUploadService.createDataUpload({},{name:"my_upload",uploader:"joe"})
-        rid = await repoService.createRepo(duid._id, 'some repo name');
+        rid = await repoService.createRepo('some repo name');
         bid = await repoBranchService.addBranch(rid._id, 'standard', 'Standard dataset', "Description about the standard metadata");
 
         pkgDesc = {

@@ -73,6 +73,10 @@ export default {
         tabs: function(){
           let t = [
               { id: 1, name: "Home", route: `/`, icon: 'mdi-home', disabled: false},
+              { id: 2, name: "Uploads", route: `/uploads`, icon: 'mdi-cloud-upload', disabled: false},
+              { id: 3, name: "Datasets", route: `/datasets`, icon: 'mdi-folder-open', disabled: false},
+              { id: 4, name: "Versions", route: `/versions`, icon: 'mdi-source-fork', disabled: false},
+
             //   { id: 2, name: "Upload", route: `/upload/new`, icon: 'mdi-upload', disabled: false},
             //   { id: 3, name: "Import", route: `/import`, icon: 'mdi-import', disabled: false },
             //   { id: 4, name: "Guess", route: `/infer`, icon: 'mdi-file-question-outline', disabled: true},

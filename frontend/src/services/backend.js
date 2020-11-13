@@ -220,4 +220,15 @@ export class Backend {
         return axios.delete(url,{withCredentials: true}).then(response => response.data)
     }
 
+    getRepos(query){
+        if (typeof(query) === "undefined"){
+            query = {filterBy: false};
+        }
+        let url = '/api/v1/repos';
+        if(query.filterBy) {
+            url = `${url}/?filterBy=${query.filterBy}`;
+        }
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
 }

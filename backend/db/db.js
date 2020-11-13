@@ -37,6 +37,7 @@ db.init = function (_connString = null) {
     db.RepoSchema = require('./model/repo');
     db.RepoBranchSchema = require('./model/repoBranch').model;
     db.MetadataRevisionSchema = require('./model/metadataRevision');
+    db.User = require('./model/user');
 };
 
 module.exports = db;

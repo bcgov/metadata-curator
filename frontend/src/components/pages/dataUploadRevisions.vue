@@ -1,5 +1,5 @@
 <template>
-    <div style="width: 75%;">
+    <div>
         <MetadataRevisions></MetadataRevisions>
     </div>
 </template>

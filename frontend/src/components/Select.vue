@@ -1,5 +1,5 @@
 <template>
-    <div style="width:350px;">
+    <div>
         <ValidationProvider :rules="validationRules" v-slot="{ errors }" :name="label ? label : name">
             <v-select
                 :label="displayLabel"
