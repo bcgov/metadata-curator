@@ -34,27 +34,27 @@ variable "oidc" {
   type = map(string)
 }
 
-variable "base64EncodedPGPPublicKey"{
+variable "base64EncodedPGPPublicKey" {
   type = string
 }
 
-variable "adminGroup"{
+variable "adminGroup" {
   type = string
 }
 
-variable "orgAttribute"{
+variable "orgAttribute" {
   type = string
 }
 
-variable "requiredRoleToCreateRequest"{
+variable "requiredRoleToCreateRequest" {
   type = string
 }
 
-variable "email"{
+variable "email" {
   type = map(string)
 }
 
-variable "alwaysNotifyList"{
+variable "alwaysNotifyList" {
   type = any
 }
 
