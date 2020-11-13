@@ -6,6 +6,7 @@ const dataUploadDetail = () => import(/* webpackChunkName: "dataUploadDetail" */
 const uploads = () => import(/* webpackChunkName: "uploads" */ "../components/pages/uploads");
 const versions = () => import(/* webpackChunkName: "versions" */ "../components/pages/versions");
 const datasets = () => import(/* webpackChunkName: "datasets" */ "../components/pages/datasets");
+const datasetForm = () => import(/* webpackChunkName: "datasetForm" */ "../components/pages/datasetForm");
 const upload = () => import(/* webpackChunkName: "upload" */ "../components/pages/upload");
 const importSchema = () => import(/* webpackChunkName: "import" */ "../components/pages/importSchema");
 const dataUploadRevisions = () => import(/* webpackChunkName: "dataUploadRevisions" */ "../components/pages/dataUploadRevisions");
@@ -109,6 +110,15 @@ let r = new Router({
       component: datasets,
       meta: {
           title: "Datasets",
+          requiresAuth: true
+      }
+    },
+    {
+      path: '/datasets/:id',
+      name: 'datasets_form',
+      component: datasetForm,
+      meta: {
+          title: "Dataset",
           requiresAuth: true
       }
     },
