@@ -29,12 +29,12 @@ OCWA is written in both node.js and vuejs. Docker is also strongly recommended f
 
 ### Prerequisites
 
-- npm 6.13.7 or newer
-- node 10.15.1 LTS or newer
-- MongoDB 4.0 or newer
-- Docker 18.09.1 or newer
-- Minio (Storage API)
-- Tusd (Storage API)
+- npm 6.13.7 or newer `npm --version`
+- node 10.15.1 LTS or newer; `node --version`
+- MongoDB 4.0 or newer; `mongo --version`
+- Docker 18.09.1 or newer; `docker --version`
+- Minio (Storage API); `minio --version`
+- Tusd (Storage API); `tusd --version`
 
 ### Operating System
 
@@ -46,9 +46,7 @@ Metadata Curator was fully developed on Mac using baremetal, developed with a co
 
 - [README](https://github.com/bcgov/forum-api/blob/master/README.md)
 
-The forum API is a nodejs api providing topics (with subtopics), comments and permissions for them. Api docs are available using the OpenApi v3 specification
-by running the API and visiting /v1/api-docs. The Forum API also provides a websocket interface for being notified when new topics/comments are created
-that are relevant to the user.
+The forum API is a nodejs api providing topics (with subtopics), comments and permissions for them. Api docs are available using the OpenApi v3 specification by running the API and visiting /v1/api-docs. The Forum API also provides a websocket interface for being notified when new topics/comments are created that are relevant to the user.
 
 ### Formio
 
@@ -60,9 +58,7 @@ Formio is a tool that provides custom forms with validation, it is used as a lib
 
 - [README](https://github.com/bcgov/OCWA/blob/master/microservices/storageApi/README.md)
 
-The storage API is from OCWA and is a combination of open source existing products. Minio is used to treat any underlying storage as though it was S3 so that only one
-backend needs to be supported even if the backend is GCP/Azure/Local Disk or actually S3. TUSD is used to support large file uploads so that they can be resumed
-if interrupted due to a connection drop or whatever reason.
+The storage API is from OCWA and is a combination of open source existing products. Minio is used to treat any underlying storage as though it was S3 so that only one backend needs to be supported even if the backend is GCP/Azure/Local Disk or actually S3. TUSD is used to support large file uploads so that they can be resumed if interrupted due to a connection drop or whatever reason.
 
 ### Front End
 
@@ -117,10 +113,10 @@ After ensuring the [prerequisite libraries](#prerequisites) are installed and cl
 
 1. Configure the backend by copying the `default.json.example` file in the `/config` folders,  renaming to `default.json` and modifying or adding their values where appropriate. For the storage API you will need sign into Minio's web interface at `http://localhost:9000` and create a new bucket matching the storage config options defined in the backends `default.json`.
 
-2. Modify `startStorags.sh` to have the storage api information you setup
+2. Modify `startStorage.sh` to have the storage api information you setup
 
-3. Run the `startStorage.sh` script in this directory `$ ./startAll.py`
+3. Run the `startStorage.sh` script in this directory `$ ./startStorage.sh`
 
-4. Start the backend `cd backend; npm run serve`
+4. Start the backend `cd backend; npm install; npm run serve`
 
-5. Start the frontend `cd frontend; npm run serve`
+5. Start the frontend `cd frontend; npm install; npm run serve`
