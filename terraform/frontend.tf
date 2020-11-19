@@ -66,6 +66,7 @@ EOF
 
     logLevel = "\"logLevel\": \"debug\""
     jwtSecret = "\"jwtSecret\": \"${random_string.jwtSecret.result}\""
+    jwtAud = "\"jwtAud\": \"aud\""
     orgAttribute = "\"orgAttribute\": \"${var.orgAttribute}\""
     requiredRoleToCreateRequest = "\"requiredRoleToCreateRequest\": \"${var.requiredRoleToCreateRequest}\""
     alwaysNotifyListOnTopicCreate = "\"alwaysNotifyListOnTopicCreate\": ${var.alwaysNotifyListOnTopicCreate}"
@@ -93,6 +94,7 @@ data "null_data_source" "configValues" {
 
   ${data.null_data_source.feIndConfig.outputs["logLevel"]},
   ${data.null_data_source.feIndConfig.outputs["jwtSecret"]},
+  ${data.null_data_source.feIndConfig.outputs["jwtAud"]},
   ${data.null_data_source.feIndConfig.outputs["orgAttribute"]},
   ${data.null_data_source.feIndConfig.outputs["requiredRoleToCreateRequest"]},
   ${data.null_data_source.feIndConfig.outputs["alwaysNotifyListOnTopicCreate"]},
