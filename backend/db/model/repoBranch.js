@@ -16,10 +16,6 @@ var repoBranchSchema = new Schema({
         type: String,
         required: true
     },
-    revisions: [{
-        type: Schema.Types.ObjectId,
-        ref: 'metadata_revision'
-    }],
     create_date: {
         type: Date,
         required: true

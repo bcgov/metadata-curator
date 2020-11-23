@@ -92,12 +92,8 @@
 
                     </v-list-item-content>
                     <v-btn icon class="mr-4" >
-                        Add Repo
-                    </v-btn>
-                    <v-btn icon class="mr-4" >
                         <v-icon :color="item.iconColour">{{item.icon}}</v-icon>
                     </v-btn>
-
 
                 </v-list-item>
             </template>

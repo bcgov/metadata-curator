@@ -1,155 +1,192 @@
 <template>
-            <v-container fluid>
-                <v-row v-if="!dataUpload" dense>
-                    Loading...
-                </v-row>
-                <v-row v-else dense>
-                    <v-col cols="12">
-                        <v-card outlined>
-                            <v-card-text>
-                                <v-row>
-                                    <h1 class="display-1 font-weight-thin ml-3 my-3">Dataset</h1>
-                                </v-row>
-
-                                <v-row class="ml-3 fixedHeight">
-                                    Name: {{dataUpload.name}}
-                                </v-row>
-                                <v-row class="ml-3 fixedHeight">
-                                    Upload Date: {{uploadDate}}
-                                </v-row>
-                                <v-row class="mb-3 fixedHeight">
-                                    <v-btn color="orange" text @click="showViewDialog()">Upload &amp; File Info</v-btn>
-                                </v-row>
-                                <v-row class="ml-3 fixedHeight">
-                                    <v-checkbox class="mt-0 pt-0" :disabled="true" label="Approver has viewed (since last update)" v-model="dataUpload.opened_by_approver"></v-checkbox>
-                                </v-row>
-                            </v-card-text>
-                        </v-card>
-                    </v-col>
-
-                    <v-col cols="12">
-                        <v-card class="scroll card-outter" max-height="600"  height="600">
-                            <v-card-title>
-                                <h1 class="display-1 font-weight-thin ml-2 mt-2 mb-2">Discussion</h1>
-                            </v-card-title>
-                            <v-card-text>
-                                <Comments></Comments>
-                                <v-row>
-                                    <v-btn color="orange" text @click="showAddCommentDialog()">Add Comment</v-btn>
-                                </v-row>
-                            </v-card-text>
-                        </v-card>
-                    </v-col>
-                </v-row>
+    <v-container fluid>
+        <v-alert
+            :type="alertType"
+            dismissable
+            v-model="alert">
+                {{alertText}}
+        </v-alert>
+        <span v-if="!dataset">
+            <v-row dense>
+                Loading...
+            </v-row>
+            <v-row>
                 <v-btn @click="routeToHome()" class="mt-1">Back</v-btn>
-                <CommentAddDialog :dialog="commentAddDialog"
-                                  @close-button-clicked="onCloseButtonClicked"
-                                  @save-button-clicked="onSaveButtonClicked"/>
-                <ViewDialog :dialog="viewDialog"
-                                  :uploadId="dataUploadId"
-                                  @close-button-clicked="onViewClosedClick"/>
-            </v-container>
-<!--    </div>-->
+            </v-row>
+        </span>
+        <v-row v-else dense>
+            <v-dialog 
+                v-model="branchDia"
+                fullscreen
+                hide-overlay
+                transition="dialog-bottom-transition">
+                    <v-card>
+                        <v-card-text>
+                            <BranchForm :dialog="true" @close="branchDia = false" :branchId="branch"></BranchForm>
+                        </v-card-text>
+                    </v-card>
+            </v-dialog>
+            <v-col cols="12">
+                <v-card outlined>
+                    <v-card-text>
+                        <v-row>
+                            <h1 class="display-1 font-weight-thin ml-3 my-3">{{creating ? "New Dataset" : "Dataset " + id}}</h1>
+                        </v-row>
+
+                        <v-row>
+                            <TextInput
+                                label="Name"
+                                placeholder="My Dataset"
+                                name="name"
+                                :editing="editing"
+                                :value="(dataset) ? dataset.name : ''"
+                                @edited="(newValue) => { updateValues('name', newValue) }"
+                            ></TextInput>
+                        </v-row>
+
+                        <v-row wrap v-if="!creating">
+                            <v-col cols=12>
+                                <h2>Versions</h2>
+                            </v-col>
+                            <v-col cols=12>
+                                <v-btn color="primary" @click="addVersion">Add Version</v-btn>
+                            </v-col>
+
+                            <v-col cols=12 class="pointer" @click="editVersion(branch._id)" v-for="(branch, i) in branches" :key="'branch-'+i">
+                                {{branch.name}} 
+                                - {{branch.type.charAt(0).toUpperCase() + branch.type.slice(1)}} 
+                                - Created {{branch.create_date | formatDate}} 
+                            </v-col>
+                        </v-row>
+
+                    </v-card-text>
+                </v-card>
+                <v-card-actions v-if="editing">
+                    <v-btn @click="routeToHome()" class="mt-1">Cancel</v-btn>
+                    <v-btn @click="save" class="mt-1" color="primary">Save</v-btn>
+                </v-card-actions>
+                <v-card-actions v-else>
+                    <v-btn @click="routeToHome()" class="mt-1">Back</v-btn>
+                    <v-btn @click="editing=!editing" class="mt-1" color="primary">Edit</v-btn>
+                </v-card-actions>
+            </v-col>
+
+        </v-row>
+    </v-container>
 </template>
 <script>
 
 import {mapActions, mapMutations, mapState} from "vuex";
-// import MetadataRevisions from "../MetadataRevisions";
-import Comments from "../Comments";
-import CommentAddDialog from "../CommentAddDialog";
-import ViewDialog from "../ViewUploadDialog";
+import TextInput from '../TextInput';
+import BranchForm from '../BranchForm';
 
 export default {
     components:{
-        // MetadataRevisions,
-        Comments,
-        CommentAddDialog,
-        ViewDialog
+        TextInput,
+        BranchForm,
     },
     data () {
         return {
-            commentAddDialog: false,
-            dataUploadId: null,
-            viewDialog: false,
+            id: null,
+            editing: false,
+            creating: false,
+            branchDia: false,
+            branch: "create",
+            alert: false,
+            alertText: "",
+            alertType: "success",
         }
     },
     methods: {
         ...mapActions({
-            getDataUpload: 'dataUploadDetail/getDataUpload',
-            updateDataUpload: 'dataUploadDetail/updateDataUpload',
-            // getRevisions: 'dataUploadRevisions/getRevisions',
-            getComments: 'dataUploadComments/getComments',
-            addComment: 'dataUploadComments/addComment',
+            getDataset: 'repos/getRepo',
+            saveDataset: 'repos/saveRepo',
+            updateDataset: 'repos/updateRepo',
+            getBranches: 'repos/getBranches',
         }),
-        ...mapMutations({
-            clearDataUpload: 'dataUploadDetail/clearDataUpload',
-            // clearRevisions: 'dataUploadRevisions/clearRevisions',
-            clearComments: 'dataUploadComments/clearComments',
+        ...mapMutations({    
+            editDataset: 'repos/editRepo',
+            clearDataset: 'repos/clearRepo',
         }),
+
         async loadSections() {
-            // this.getRevisions(this.dataUploadId);
-            this.getComments(this.dataUploadId);
-            await this.getDataUpload(this.dataUploadId);
-            if(this.user.isApprover && !this.dataUpload.opened_by_approver) {
-                const data = {...this.dataUpload, opened_by_approver: true};
-                this.updateDataUpload(data);
-            }
+            await this.getDataset({id: this.id});
+            await this.getBranches({repoId: this.id});
         },
+
         routeToHome() {
             // console.log("routeToHome uploadId");
-            this.$router.push({ name: 'uploads' });
-        },
-        clearState() {
-            // this.clearRevisions();
-            this.clearComments();
-            this.clearDataUpload();
-        },
-        showAddCommentDialog() {
-            this.commentAddDialog = true;
+            this.$router.push({ name: 'datasets' });
         },
 
-        showViewDialog() {
-            this.viewDialog = true;
+        updateValues(name, value){
+            this.editDataset({name: name, value: value});
         },
 
-        onCloseButtonClicked() {
-            this.commentAddDialog = false;
-        },
-        
-        onViewClosedClick(){
-            this.viewDialog = false;
+        addVersion(){
+            this.branch = "create";
+            this.branchDia = true;
         },
 
-        async onSaveButtonClicked(comment) {
-            this.commentAddDialog = false;
-            await this.addComment({dataUploadId: this.dataUploadId, comment: comment});
-            this.getDataUpload(this.dataUploadId);
+        editVersion(id){
+            this.branch = id;
+            this.branchDia = true;
         },
+
+        save(){
+            if (this.creating){
+                this.saveDataset().then( () => {
+                        this.alertType = "success"
+                        this.alertText = "Sucessfully created dataset";
+                        this.alert = true;
+                        this.routeToHome();
+
+                    }).catch( err => {
+                        this.alertType = "error"
+                        this.alertText = err.message;
+                        this.alert = true;
+                    });
+            }else{
+                this.updateDataset().then( () => {
+                        this.alertType = "success"
+                        this.alertText = "Sucessfully created dataset";
+                        this.alert = true;
+                        this.routeToHome();
+
+                    }).catch( err => {
+                        this.alertType = "error"
+                        this.alertText = err.message;
+                        this.alert = true;
+                    });
+            }
+                
+        }
     },
     computed: {
         ...mapState({
             user: state => state.user.user,
-            dataUpload: state => state.dataUploadDetail.dataUpload,
+            dataset: state => state.repos.repo,
+            branches: state => state.repos.branches,
         }),
-        uploadDate: function(){
-            if (this.dataUpload && this.dataUpload.upload_date){
-                return this.dataUpload.upload_date.substring(0, this.dataUpload.upload_date.indexOf(".")).replace("T", " ");
-            }
-            return "";
-        }
     },
     created() {
         // console.log("dataUpload id: " + this.$route.params.id);
-        this.dataUploadId = this.$route.params.id;
-        this.loadSections();
-    },
-    beforeDestroy() {
-        // console.log("detail view before destroy");
-        this.clearState();
-    },
+        this.id = this.$route.params.id;
+        if (this.id === 'create'){
+            this.editing = true;
+            this.clearDataset();
+            this.creating = true;
+        }else{
+            this.loadSections();
+        }
+    }
 }
 </script>
 <style scoped>
+    .pointer{
+        cursor: pointer;
+    }
+
     .scroll {
         overflow-y: auto;
     }

@@ -5,6 +5,7 @@ const home = () => import(/* webpackChunkName: "home" */ "../components/pages/ho
 const dataUploadDetail = () => import(/* webpackChunkName: "dataUploadDetail" */ "../components/pages/dataUploadDetail")
 const uploads = () => import(/* webpackChunkName: "uploads" */ "../components/pages/uploads");
 const versions = () => import(/* webpackChunkName: "versions" */ "../components/pages/versions");
+const version = () => import(/* webpackChunkName: "version" */ "../components/pages/version");
 const datasets = () => import(/* webpackChunkName: "datasets" */ "../components/pages/datasets");
 const datasetForm = () => import(/* webpackChunkName: "datasetForm" */ "../components/pages/datasetForm");
 const upload = () => import(/* webpackChunkName: "upload" */ "../components/pages/upload");
@@ -128,6 +129,15 @@ let r = new Router({
       component: versions,
       meta: {
           title: "Versions",
+          requiresAuth: true
+      }
+    },
+    {
+      path: '/version/:id',
+      name: 'version_form',
+      component: version,
+      meta: {
+          title: "Version",
           requiresAuth: true
       }
     },

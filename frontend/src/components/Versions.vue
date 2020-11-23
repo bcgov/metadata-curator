@@ -6,7 +6,7 @@
             <v-row>
                 <v-col cols=10>
                     <p>Upload:</p>
-                    <v-select v-model="filterBy" :items="dataUploads" item-text="name" item-value="_id" class="ml-2"></v-select>
+                    <v-select v-model="filterBy" :items="dataUploadsWithAll" item-text="name" item-value="_id" class="ml-2"></v-select>
                 </v-col>
             </v-row>
             
@@ -21,7 +21,7 @@
         </v-container> -->
 
         <v-list three-line>
-            <template v-for="(item, index) in repoDisplayItems">
+            <template v-for="(item, index) in branchDisplayItems">
                 <v-divider
                     v-if="item.divider"
                     :key="index"
@@ -31,13 +31,12 @@
                 <v-list-item
                     v-else
                     :key="item.id"
-                    @click="routeToRepo(item.id)"
+                    @click="routeToBranch(item.id)"
                 >
                     <v-list-item-content>
                         <v-list-item-title v-html="item.title"></v-list-item-title>
                         <v-list-item-subtitle>
-                            Created on {{item.subtitle | formatDate}}
-                            # Branches: {{item.branches.length}}
+                            {{item.subtitle}}
                         </v-list-item-subtitle>
 
                     </v-list-item-content>
@@ -61,32 +60,32 @@ export default {
     data() {
         return {
             message: '',
-            filterBy: null,
+            filterBy: -1,
             isUpdating: false,
         }
     },
     async mounted(){
         await this.getDataUploads("team");
-        this.loadRepos();
+        this.loadBranches();
     },
     methods: {
         ...mapActions({
-            getRepos: 'repos/getRepos',
+            getBranchesByUpload: 'repos/getBranchesByUpload',
             getDataUploads: 'dataUploads/getDataUploads',
             
         }),
         ...mapMutations({
             setSelectedFilterBy: 'repos/setSelectedFilterBy',
         }),
-        async loadRepos() {
+        async loadBranches() {
             this.message = 'Retrieving Versions...';
             
-            await this.getRepos({filterBy: this.filterBy});
+            await this.getBranchesByUpload({uploadId: this.filterBy});
             this.message = '';
         },
 
-        routeToRepo(id) {
-            this.$router.push({ name: 'data-upload-detail', params: { id: id } })
+        routeToBranch(id) {
+            this.$router.push({ name: 'version', params: { id: id } })
         },
     },
     computed: {
@@ -94,20 +93,26 @@ export default {
             user: state => state.user.user,
             dataUploads: state => state.dataUploads.dataUploads,
             repos: state => state.repos.repos,
+            branches: state => state.repos.branches,
             selectedFilterBy: state => state.repos.selectedFilterBy,
         }),
+
+        dataUploadsWithAll: function(){
+            var u = this.dataUploads.slice();
+            u.unshift({name: "All", _id: -1});
+            return u;
+        },
         
-        repoDisplayItems: function(){
+        branchDisplayItems: function(){
             let items = [];
-            this.repos.forEach( (repo, index) => {
+            this.branches.forEach( (branch, index) => {
                 const item = {
-                    title: `${repo.name}`,
-                    subtitle: repo.create_date,
-                    id: repo._id,
-                    branches: repo.branches,
+                    title: `${branch.name}`,
+                    subtitle: branch.description,
+                    id: branch._id,
                 };
                 items.push(item);
-                if(index <= this.repos.length - 1) {
+                if(index <= this.branches.length - 1) {
                     items.push({ divider: true, inset: true });
                 }
             });
@@ -118,9 +123,7 @@ export default {
         // eslint-disable-next-line no-unused-vars
         filterBy: async function (newVal, oldVal) {
             await this.setSelectedFilterBy(newVal);
-            if(this.user.isDataProvider){
-                this.loadRepos(); 
-            }
+            this.loadBranches(); 
         },
     },
 };

@@ -231,4 +231,56 @@ export class Backend {
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 
+    postRepo(repo){
+        // console.log("BE postdataUpload: " + dataUpload);
+        const url = `/api/v1/repos`;
+        const body = { name: repo.name };
+        return axios.post(url, body, {withCredentials: true}).then(response => response.data)
+    }
+
+    putRepo(repo){
+        // console.log("BE putdataUpload: " + dataUpload);
+        const url = `/api/v1/repos/${repo._id}`;
+        const body = { 
+            name: repo.name,
+        };
+        return axios.put(url, body, {withCredentials: true}).then(response => response.data)
+    }
+
+    getRepoBranches(repoId){
+        // console.log("BE putdataUpload: " + dataUpload);
+        const url = `/api/v1/repos/${repoId}/branches`;
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+    getBranches(filterObj){
+        let url = `/api/v1/repobranches`;
+        if ((filterObj) && (filterObj.upload_id)){
+            url += "?data_upload_id=" + filterObj.upload_id
+        }
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+    postRepoBranch(repoId, branch){
+        const url = `/api/v1/repos/${repoId}/branches`;
+        const body = { 
+            name: branch.name,
+            type: branch.type,
+            description: branch.description,
+            upload_id: branch.upload_id,
+        };
+        return axios.post(url, body, {withCredentials: true}).then(response => response.data)
+    }
+
+    putRepoBranch(repoId, branch){
+        const url = `/api/v1/repobranches/${branch._id}`;
+        const body = { 
+            name: branch.name,
+            type: branch.type,
+            description: branch.description,
+            upload_id: branch.upload_id,
+        };
+        return axios.put(url, body, {withCredentials: true}).then(response => response.data)
+    }
+
 }
