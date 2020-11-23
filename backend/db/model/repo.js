@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-let {branchSchema} = require('./repoBranch');
 
 var repoSchema = new Schema({
     name: {
@@ -11,7 +10,8 @@ var repoSchema = new Schema({
         type: Date,
         required: true
     },
-    branches: {type: [branchSchema], required: true}
+    created_by: {type: String, required: true},
+    topic_id: {type: Schema.Types.ObjectId},
 });
 
 

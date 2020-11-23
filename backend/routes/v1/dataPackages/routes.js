@@ -1,6 +1,6 @@
 
 const { dataPackageController } = require('../../../controllers')
-const { postDataPackage, postRepository, deleteDataPackage, getDataPackage, listDataPackages } = dataPackageController;
+const { postDataPackage, deleteDataPackage, getDataPackage, listDataPackages } = dataPackageController;
 
 module.exports = (router) => {
     router.post('', catchAsync(postDataPackage));

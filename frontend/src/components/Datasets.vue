@@ -10,7 +10,7 @@
             <v-col cols=10>
             </v-col>
             <v-col cols=2>
-                <v-btn color="primary">New Dataset</v-btn>
+                <v-btn color="primary" to="/datasets/create">New Dataset</v-btn>
             </v-col>
         </v-row>
 
@@ -25,7 +25,7 @@
                 <v-list-item
                     v-else
                     :key="item.id"
-                    @click="routeToRepo(item.id)"
+                    :to="{ name: 'datasets_form', params: { id: item.id } }"
                 >
                     <v-list-item-content>
                         <v-list-item-title v-html="item.title"></v-list-item-title>
@@ -75,11 +75,7 @@ export default {
             
             await this.getRepos({filterBy: false});
             this.message = '';
-        },
-
-        routeToRepo(id) {
-            this.$router.push({ name: 'dataset_form', params: { id: id } })
-        },
+        },        
     },
     computed: {
         ...mapState({
