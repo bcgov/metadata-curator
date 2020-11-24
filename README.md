@@ -36,6 +36,10 @@ OCWA is written in both node.js and vuejs. Docker is also strongly recommended f
 - Minio (Storage API); `minio --version`
 - Tusd (Storage API); `tusd --version`
 
+*Local Development macOS < 10.15 (as of 2020/11/24)
+- xcode [reference](https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md#i-did-all-that-and-the-acid-test-still-does-not-pass--)
+    - test: `curl -sL https://github.com/nodejs/node-gyp/raw/master/macOS_Catalina_acid_test.sh | bash`
+
 ### Operating System
 
 Metadata Curator was fully developed on Mac using baremetal, developed with a combo of bare metal and docker on windows (docker for the python apis) and has been deployed on Linux using Terraform, and Kubernetes using Helm.
