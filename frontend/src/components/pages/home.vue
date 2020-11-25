@@ -21,9 +21,6 @@ export default {
     },
     created() {
     },
-    methods: {
-        
-    },
     computed: {
         ...mapState({
             user: state => state.user.user,

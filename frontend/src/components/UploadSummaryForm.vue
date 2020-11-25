@@ -123,7 +123,7 @@
                     this.formSubmission = {...newVal};
                 }
                     
-                this.getUploadFormSubmission(this.formSubmission.upload_submission_id);
+                this.getUploadFormSubmission(this.formSubmission.form_name, this.formSubmission.upload_submission_id);
                 this.spanKey++;
             },
             // eslint-disable-next-line no-unused-vars

@@ -1,5 +1,5 @@
 <template>
-    <v-alert class="ml-2 mb-2">
+    <v-alert class="ml-2 mb-2"
              text
              prominent
              type="error"

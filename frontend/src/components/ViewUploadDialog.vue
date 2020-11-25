@@ -118,7 +118,7 @@
 
         mounted(){
             this.getUpload(this.uploadId);
-            this.getUploadForm();
+            this.getUploadForm(this.uploadStore.form_name);
         },
 
         watch: {
@@ -132,7 +132,7 @@
                     // console.log("update  submission");
                     this.formSubmission = {...newVal};
                     
-                    this.getUploadFormSubmission(this.formSubmission.upload_submission_id);
+                    this.getUploadFormSubmission(this.formSubmission.form_name, this.formSubmission.upload_submission_id);
                 }
             },
             // eslint-disable-next-line no-unused-vars

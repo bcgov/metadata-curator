@@ -8,6 +8,7 @@
             :submission="formSubmission"
             v-on:submit="onSubmit"
             v-on:render="renderDone"
+            :key="'formio'+rerenderKey"
         >
         </formio>
 
@@ -39,12 +40,15 @@
         async created() {
             await this.resetState();
             this.formSubmission = {...this.submission};
-            await this.getUploadForm();
 
             if(this.upload) {
                 this.uploadId = this.upload;
-                this.getUploadFormSubmission(this.upload.upload_submission_id);
+                this.getUploadFormSubmission({formName: this.upload.form_name, submissionId: this.upload.upload_submission_id});
+                await this.getUploadForm(this.upload.form_name);
+            }else{
+                await this.getDefaultUploadForm();
             }
+            
         },
         mounted() {
             // let self = this;
@@ -62,12 +66,14 @@
         methods: {
             ...mapActions({
                 getUploadForm: 'uploadForm/getUploadForm',
+                getDefaultUploadForm: 'uploadForm/getDefaultUploadForm',
                 getUploadFormSubmission: 'uploadForm/getUploadFormSubmission',
                 createUploadFormSubmission: 'uploadForm/createUploadFormSubmission',
                 updateUploadFormSubmission: 'uploadForm/updateUploadFormSubmission',
             }),
             ...mapMutations({
                 resetState: 'uploadForm/resetState',
+                clearUploadForm: 'uploadForm/clearUploadForm',
             }),
 
             renderDone(){
@@ -94,7 +100,7 @@
                 }
                 else {
                     // console.log("update existing upload submission");
-                    await this.updateUploadFormSubmission(this.formSubmission);
+                    await this.updateUploadFormSubmission(this.upload.form_name, this.formSubmission);
                 }
                 // this.$refs.formioObj.formio.emit('submitDone', submission);
             },
@@ -115,7 +121,8 @@
                 formOptions: {},
                 formDef: {},
                 formSubmission: {},
-                contexts: {}
+                contexts: {},
+                rerenderKey: 0
             }
         },
         computed: {
@@ -138,7 +145,7 @@
                     this.uploadId = newVal._id;
                     // console.log("assigned upload id: " + this.uploadId);
                 }
-                this.getUploadFormSubmission(this.formSubmission.upload_submission_id);
+                this.getUploadFormSubmission({formName: this.upload.form_name, submissionId: this.upload.upload_submission_id});
             },
             // eslint-disable-next-line no-unused-vars
             submission: function (newVal, oldVal) {
@@ -151,6 +158,7 @@
                         console.log("");
                     }
                     Vue.set(this, 'formSubmission', {...newVal});
+                    this.rerenderKey++;
                 }
 
             },
@@ -158,6 +166,7 @@
         beforeDestroy() {
             // console.log("uploadform reset state");
             this.resetState();
+            this.clearUploadForm();
         },
     }
 </script>

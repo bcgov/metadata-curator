@@ -20,6 +20,7 @@ let tableSchemasRoutes = require('./tableSchemas/routes');
 let repositoriesRoutes = require('./repositories/routes');
 let repoBranchesRoutes = require('./repoBranches/routes');
 let dataProviderRoutes = require('./dataProviders/routes');
+let configRoutes = require('./config/routes');
 
 module.exports = (router) => {
 
@@ -64,6 +65,8 @@ module.exports = (router) => {
 
     router.use('/repos', auth.requireLoggedIn, repositoriesRoutes(express.Router()));
     router.use('/repobranches', auth.requireLoggedIn, repoBranchesRoutes(express.Router()));
+
+    router.use('/config', auth.requireLoggedIn, configRoutes(express.Router()));
 
     router.use('/token', function(req, res){
         if (req.user && req.user.jwt && req.user.refreshToken) {

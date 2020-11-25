@@ -130,7 +130,8 @@
                         name: submission.data.datasetName,
                         description: submission.data.datasetName,
                         uploader: this.user.email,
-                        upload_submission_id: this.$refs.uploadForm.submissionId
+                        upload_submission_id: this.$refs.uploadForm.submissionId,
+                        form_name: this.formName
                     }
                     try{
                         await this.createInitialUpload(initialUpload);
@@ -196,6 +197,7 @@
                 upload: state => state.upload.upload,
                 createUploadInProgress: state => state.upload.createUploadInProgress,
                 newUploadCreated: state => state.upload.newUploadCreated,
+                formName: state => state.uploadForm.formName,
             }),
         },
         watch: {

@@ -283,4 +283,52 @@ export class Backend {
         return axios.put(url, body, {withCredentials: true}).then(response => response.data)
     }
 
+    getMcVersion(){
+        let url = `/api/version`;
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+    getForumVersion(){
+        let url = `/api/version?type=forum`;
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+    getTusVersion(){
+        let url = `/api/version?type=tusd`;
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+
+    getConfigs(){
+        const url = `/api/v1/config`
+        return axios.get(url, {withCredentials: true}).then( (response) => {
+            let data = response.data;
+            return data;
+        })
+    }
+
+    getConfig(key){
+        const url = `/api/v1/config/${key}`
+        return axios.get(url, {withCredentials: true}).then( (response) => {
+            let data = response.data;
+            return data;
+        })
+    }
+
+    putConfig(id, editedForm){
+        let body = {value: editedForm.value};
+        const url = `/api/v1/config/${editedForm.key}`;
+        return axios.put(url, body, {withCredentials: true}).then(response => response.data)
+    }
+
+    newConfig(newForm){
+        const url = `/api/v1/config`;
+        return axios.post(url, newForm, {withCredentials: true}).then(response => response.data)
+    }
+
+    deleteConfig(id){
+        const url = `/api/v1/config/${id}`;
+        return axios.delete(url, {}, {withCredentials: true}).then(response => response.data)
+    }
+
 }
