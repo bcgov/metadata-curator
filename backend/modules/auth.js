@@ -10,6 +10,23 @@ auth.requireLoggedIn = function(req, res, next){
     next();
 }
 
+auth.requireAdmin = function(req, res, next){
+    if (!req.user){
+        res.status(401);
+        return res.json({error: "Not Authorized"});
+    }
+
+    const config = require('config');
+    let adminGroup = config.get('adminGroup');
+
+    if ( (!req.user.groups) || (req.user.groups.indexOf(adminGroup) === -1) ){
+        res.status(404);
+        return res.json({error: "Not Found"});
+    }
+
+    next();
+}
+
 auth.requireGroup = function(groupName){
 
     return function(req, res, next){

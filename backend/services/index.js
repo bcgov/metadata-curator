@@ -8,6 +8,8 @@ const repoService = require('./repoService');
 const repoBranchService = require('./repoBranchService');
 const revisionService = require('./revisionService');
 
+const configService = require('./configService');
+
 module.exports = {
     commentService,
     dataPackageService,
@@ -17,5 +19,6 @@ module.exports = {
 
     repoService,
     repoBranchService,
-    revisionService
+    revisionService,
+    configService
 }

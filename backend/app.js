@@ -155,10 +155,68 @@ var genProfileFromJwt = function(profile, jwt, secret, orgAttribute) {
   return profile;
 }
 
-if (env === "test") {
-    // use JWT auth for testing, rather than OIDC
-    app.use('/api', passport.authenticate(['jwt']));
-}
+app.get("/api/version", async function(req, res){
+  if (req.query.type){
+    if (req.query.type.toLowerCase() === "forum"){
+      const forumClient = require('./clients/forum_client');
+      let v = await forumClient.getVersion();
+      return res.json(v.data);
+
+    }else if (req.query.type.toLowerCase() === "formio"){
+      // const formioClient = require('./clients/formio_client');
+      // let v = await formioClient.getVersion();
+      // console.log('vvv', v.data);
+      // return res.json(v.data);
+    }else if (req.query.type.toLowerCase() === "minio"){
+    }else if (req.query.type.toLowerCase() === "tusd"){
+      let config = require('config');
+      const tusUrl = config.get("uploadUrl");
+      const axios = require('axios');
+
+      let baseUrl = tusUrl.substring(0, tusUrl.lastIndexOf("/"))
+
+      const url = `${baseUrl}`;
+      let r = await axios.get(url);
+      let resp = r.data;
+
+      let vTag = 'Version = ';
+      let start = resp.indexOf(vTag);
+      let end = resp.indexOf("\n", start);
+      let num = vTag.length;
+      let v = resp.substring(start+num, end)
+
+      let cTag = 'GitCommit = ';
+      start = resp.indexOf(cTag);
+      end = resp.indexOf("\n", start);
+      num = cTag.length;
+      let c = resp.substring(start+num, end)
+
+      let bTag = 'BuildDate = ';
+      start = resp.indexOf(bTag);
+      end = resp.indexOf("\n", start);
+      num = bTag.length;
+      let b = resp.substring(start+num, end)
+
+      return res.json({v: v, hash: c, built: b, name: 'tusd'});
+    }
+  }
+
+  var hash = (process.env.GITHASH) ? process.env.GITHASH : "";
+  var pjson = require('./package.json');
+  var v = pjson.version;
+
+  var version = v
+  if (hash !== ""){
+      version += "-"+hash
+  }
+
+  res.json({
+      v: v,
+      hash: hash,
+      version: version,
+      name: 'Metadata Curator'
+  })
+});
 
 app.get('/', (req, res) => { res.redirect('/api/v1/api-docs'); });
 

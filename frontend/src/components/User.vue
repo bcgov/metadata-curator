@@ -1,5 +1,19 @@
 <template>
     <span>
+
+        <v-dialog v-model="aboutDia">
+            <v-card>
+                <v-card-title>
+                    About
+                    <v-spacer></v-spacer>
+                    <v-btn @click="aboutDia = false">X</v-btn>
+                </v-card-title>
+                <v-card-text>
+                    <About></About>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
+
         <v-progress-circular
             v-if="loading"
             indeterminate
@@ -31,7 +45,12 @@
 <script>
 import { mapState } from 'vuex';
 import md5 from 'md5'
+import About from './About'
 export default {
+
+    components:{
+        About
+    },
 
     props: {
         height: {
@@ -46,7 +65,8 @@ export default {
 
     data() {
         return {
-            showImage: true
+            showImage: true,
+            aboutDia: false
         }
     },
 
@@ -66,7 +86,17 @@ export default {
                 // eslint-disable-next-line
                 self.$router.push({name: "logout"});
             }
+
+            var item2 = {};
+            item2.title = "About";
+            item2.action = function(){
+                // eslint-disable-next-line
+                self.aboutDia = true;
+            }
+
+            items.push(item2);
             items.push(item);
+
             return items;
         },
         buttonImage: function(){
