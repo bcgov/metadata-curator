@@ -55,7 +55,7 @@ EOF
 }
 EOF
 
-    uploadUrl = "\"uploadUrl\": \"http://mc_tusd:1080/files\"",
+    uploadUrl = "\"uploadUrl\": \"${var.host}/files\"",
 
     base64EncodedPGPPublicKey = "\"base64EncodedPGPPublicKey\": \"${var.base64EncodedPGPPublicKey}\"",
 
