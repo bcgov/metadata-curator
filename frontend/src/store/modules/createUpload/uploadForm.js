@@ -1,6 +1,8 @@
 import { Backend } from '../../../services/backend';
 const backend = new Backend();
 
+import Vue from 'vue';
+
 const state = {
     formName: "",
     createSubmissionInProgress: false,
@@ -136,7 +138,7 @@ const mutations = {
         state.createSubmissionInProgress = false;
         state.upload = null;
         state.submission = {data: {}},
-        state.formDef = null;
+        Vue.set(state, 'formDef', null);
         state.error = null;
     }
 }

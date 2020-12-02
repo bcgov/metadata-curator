@@ -31,11 +31,6 @@
             formio: Form
         },
         props: {
-            upload: {
-                type: Object,
-                required: false,
-                default: () => null
-            },
         },
         async created() {
             await this.resetState();
@@ -130,6 +125,7 @@
                 uploadForm: state => state.uploadForm.formDef,
                 submission: state => state.uploadForm.submission,
                 createSubmissionInProgress: state => state.uploadForm.createSubmissionInProgress,
+                upload: state => state.upload.upload,
             }),
         },
         watch: {
@@ -139,12 +135,21 @@
                 this.formDef = JSON.parse(JSON.stringify(newVal));
             },
             // // eslint-disable-next-line no-unused-vars
-            upload: function (newVal, oldVal) {
+            upload: async function (newVal, oldVal) {
                 // console.log('uploadForm prop changed: ', newVal, ' | was: ', oldVal);
                 if(newVal && !oldVal) {
                     this.uploadId = newVal._id;
                     // console.log("assigned upload id: " + this.uploadId);
                 }
+
+                if(this.upload) {
+                    this.uploadId = this.upload;
+                    this.getUploadFormSubmission({formName: this.upload.form_name, submissionId: this.upload.upload_submission_id});
+                    await this.getUploadForm(this.upload.form_name);
+                }else{
+                    await this.getDefaultUploadForm();
+                }
+
                 this.getUploadFormSubmission({formName: this.upload.form_name, submissionId: this.upload.upload_submission_id});
             },
             // eslint-disable-next-line no-unused-vars

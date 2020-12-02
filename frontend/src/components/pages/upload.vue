@@ -230,8 +230,7 @@
             },
         },
         beforeDestroy() {
-            // console.log("upload reset state");
-            //this.resetState();
+            this.resetFormState();
         },
 
     }
