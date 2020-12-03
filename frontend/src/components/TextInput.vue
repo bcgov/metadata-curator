@@ -1,8 +1,23 @@
 <template>
     <div>
         <span v-if="!editing">
-            <span class="mr-2">{{displayLabel}}</span>
-            <span>{{val}}</span>
+            <span class="mr-2">
+                <h2 v-if="large" class="inline">
+                    {{displayLabel}}:
+                </h2>
+                <span v-else>
+                    {{displayLabel}}:
+                </span>
+            </span>
+
+            <span>
+                <h2 v-if="large" class="inline">
+                    {{val}}
+                </h2>
+                <span v-else>
+                    {{val}}
+                </span>
+            </span>
         </span>
 
         <span v-else>
@@ -62,6 +77,11 @@
                 type: Boolean,
                 required: false,
                 default: () => false
+            },
+            large: {
+                type: Boolean,
+                required: false,
+                default: () => false
             }
         },
         data() {
@@ -103,5 +123,8 @@
 </script>
 
 <style scoped>
+    .inline{
+        display: inline-block;
+    }
 
 </style>

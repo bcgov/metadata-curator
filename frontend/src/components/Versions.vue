@@ -9,16 +9,7 @@
                     <v-select v-model="filterBy" :items="dataUploadsWithAll" item-text="name" item-value="_id" class="ml-2"></v-select>
                 </v-col>
             </v-row>
-            
         </v-container>
-
-        <!-- <v-container>
-            <v-row>
-                <v-col cols=2>
-                    <v-btn color="primary" to="/upload/new">New Upload</v-btn>
-                </v-col>
-            </v-row>
-        </v-container> -->
 
         <v-list three-line>
             <template v-for="(item, index) in branchDisplayItems">
@@ -85,7 +76,7 @@ export default {
         },
 
         routeToBranch(id) {
-            this.$router.push({ name: 'version', params: { id: id } })
+            this.$router.push({ name: 'version_form', params: { id: id } })
         },
     },
     computed: {
