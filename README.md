@@ -86,6 +86,22 @@ Visit the following on your local machine to test a successful installation [htt
 _Description:_
 Formio is a tool that provides custom forms with validation, it is used as a library on the frontend for rendering and as an api as well.
 
+_Quick Start:_
+The terraform script contains all the necessary configurations and data that is needed to serve forms. Depending on development need, the quickest way may be to use terraform to build all containers, then shut them down with the exception of the container with the NAME `mc_formio`.
+```
+# start terraform scripts
+cd terraform
+terraform init
+terraform plan -var hostRootPath=`pwd`/_tmp
+terraform apply -var hostRootPath=`pwd`/_tmp -auto-approve
+
+# after a succesful build, stop all containers, with the exception of mc_formio
+docker stop mc_ngnix mc_forum_api mc_backend mc_minio mc_frontend mc_tusd mc_mongodb
+
+# confirm that only mc_formio is running
+docker ps 
+```
+
 ### 3. Storage API (file upload protocol, object storage)
 #### Minio, Tusd
 - [Storage API README](https://github.com/bcgov/OCWA/blob/master/microservices/storageApi/README.md)
