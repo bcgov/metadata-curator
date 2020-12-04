@@ -226,7 +226,11 @@ export class Backend {
         }
         let url = '/api/v1/repos';
         if(query.filterBy) {
-            url = `${url}/?filterBy=${query.filterBy}`;
+            let keys = Object.keys(query.filterBy);
+            for (let i=0; i<keys.length; i++){
+                url += (i==0) ? `/?` : `&`;
+                url += `${keys[i]}=${query.filterBy[keys[i]]}`;
+            }
         }
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }

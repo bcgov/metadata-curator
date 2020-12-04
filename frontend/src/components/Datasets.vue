@@ -31,7 +31,6 @@
                         <v-list-item-title v-html="item.title"></v-list-item-title>
                         <v-list-item-subtitle>
                             Created on {{item.subtitle | formatDate}}
-                            # Branches: {{item.branches.length}}
                         </v-list-item-subtitle>
 
                     </v-list-item-content>

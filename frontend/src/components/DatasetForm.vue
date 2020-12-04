@@ -169,11 +169,13 @@ export default {
         this.id = this.$route.params.id;
         if (this.id === 'create'){
             this.editing = true;
-            this.clearDataset();
             this.creating = true;
         }else{
             this.loadSections();
         }
+    },
+    beforeDestroy(){
+        this.clearDataset();
     }
 }
 </script>

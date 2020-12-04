@@ -92,6 +92,9 @@
             value: function (newVal) {
                 this.val = newVal
             },
+        },
+        mounted(){
+            this.val = this.value;
         }
 
     };
