@@ -20,6 +20,10 @@
                         <v-row v-if="file.description">Description: {{file.description}}</v-row>
                     </v-col>
                 </v-row>
+                <v-row>
+                    <v-btn v-if="!inDataset" color="primary">Create Dataset</v-btn>
+                    <v-btn color="primary">Add Version to Dataset</v-btn>
+                </v-row>
             </span>
             <span>
                 <formio
@@ -51,6 +55,8 @@
         methods: {
             ...mapActions({
                 getUploadFormSubmission: 'uploadForm/getUploadFormSubmission',
+                getRepos: 'repos/getRepos',
+                getAllRepos: 'repos/getAllRepos',
             }),
 
             formLoad(){
@@ -94,6 +100,7 @@
                 },
                 formData: {},
                 formSubmission: {},
+                inDataset: true,
             }
         },
         computed: {
@@ -111,6 +118,8 @@
         },
         mounted(){
             this.formDef = this.uploadForm;
+            this.getAllRepos();
+            this.getRepos({filterBy: {upload_id: this.uploadStore._id}});
         },
 
         watch: {

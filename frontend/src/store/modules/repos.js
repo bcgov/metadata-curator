@@ -4,6 +4,7 @@ const backend = new Backend();
 import Vue from 'vue';
 
 const state = {
+    allRepos: [],
     repos: [],
     branches: [],
     branch: {},
@@ -67,6 +68,20 @@ const actions = {
 
     },
 
+    async getAllRepos({ commit }) {
+        const query = {filterBy: null};
+
+        try {
+            const data = await backend.getRepos(query);
+            commit('setAllRepos', {repos: data});
+
+        } catch(e) {
+            // console.log("Retrieve data uploads error: ", e);
+            commit('setError', {error: e.response.data.error});
+        }
+
+    },
+
     async saveRepo(){
         return backend.postRepo(state.repo);
     },
@@ -88,6 +103,9 @@ const actions = {
 const mutations = {
     setRepos(state, {repos}){
         state.repos = repos;
+    },
+    setAllRepos(state, {repos}){
+        state.allRepos = repos;
     },
     setRepo(state, {repo}){
         state.repo = repo;
@@ -122,7 +140,7 @@ const mutations = {
         state.repo[name] = value;
     },
     editBranch(state, {name, value}){
-        state.branch[name] = value;
+        Vue.set(state.branch, name, value);
     },
     clearRepo(state){
         state.repo = {};

@@ -155,7 +155,6 @@ export default {
             await this.getDataUploads("team");
             if (this.id === 'create'){
                 this.editing = true;
-                this.clearBranch();
                 this.creating = true;
             }else{
                 this.loadSections();
@@ -208,6 +207,10 @@ export default {
     
     created() {
         this.load()
+    },
+
+    beforeDestroy(){
+        this.clearBranch();
     }
 }
 </script>
