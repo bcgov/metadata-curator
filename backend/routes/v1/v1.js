@@ -12,6 +12,8 @@ let formioRouter = express.Router();
 let formioBridge = require('./formio/bridge');
 formioRouter = formioBridge(formioRouter);
 
+let db = require('../../db/db');
+
 let auth = require('../../modules/auth');
 
 let dataUploadRoutes = require('./dataUploads/routes');
@@ -20,7 +22,7 @@ let tableSchemasRoutes = require('./tableSchemas/routes');
 let repositoriesRoutes = require('./repositories/routes');
 let repoBranchesRoutes = require('./repoBranches/routes');
 let dataProviderRoutes = require('./dataProviders/routes');
-let configRoutes = require('./config/routes');
+const { Router } = require('express');
 
 module.exports = (router) => {
 
@@ -66,8 +68,6 @@ module.exports = (router) => {
     router.use('/repos', auth.requireLoggedIn, repositoriesRoutes(express.Router()));
     router.use('/repobranches', auth.requireLoggedIn, repoBranchesRoutes(express.Router()));
 
-    router.use('/config', auth.requireLoggedIn, configRoutes(express.Router()));
-
     router.use('/token', function(req, res){
         if (req.user && req.user.jwt && req.user.refreshToken) {
             res.json(req.user);
@@ -75,6 +75,13 @@ module.exports = (router) => {
             res.json({error: "Not logged in"});
         }
     });
+
+    var configRoutes = require('../base/config');
+    var cfRouter = new Router();
+    cfRouter = configRoutes.buildStatic(db, cfRouter);
+    cfRouter = configRoutes.buildDynamic(db, cfRouter, auth);
+
+    router.use('/config', cfRouter);
 
     return router;
 }
