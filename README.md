@@ -111,11 +111,25 @@ The storage API is from OCWA and is a combination of open source existing produc
 
 _Quick Start:_
 
-**Note:** Values entered in `/metadata-curator/backend/config/default.json` must be consistent with values in `.startStorage.sh`
+**Note:** Values entered in `/metadata-curator/backend/config/default.json` must be consistent with values in `.startStorage.sh` and `backend/config/default.json`
+
 ```
+# mongoDB, the values entered for 'user','pwd' and 'db.createCollection' need to be reflected in `backend/config/default.json` 
+mongo
+db.createCollection("metadataCurator")
+use metadataCurator
+db.createUser({user:"metadataCurator", pwd:"metadataCurator", roles:["dbAdmin", "readWrite"]}) 
+exit
+
+# start minio and tusd
 cd metadata-curator
 ./startStorage.sh
 ```
+
+_Test_
+Ensure that your Minio instance is working and then create a new bucket by going to [http://localhost:9000](http://localhost:9000) 
+Using the web interface for Minio, enter the values stored as `MINIO_ACCESS_KEY` and `MINIO_SECRET_KEY` in `startStorage.sh`. After authentication, use the GUI to create a bucket that matches the value set in `.startStorage.sh`, such as 'files', for example. Ensure that the bucket name created also matches the directory name in `"uploadUrl": "http://localhost:1080/files"` defined in `backend/config/default.json`.
+
 ### 4. Bridge/Api
 #### NodeJS app
 - [Bridge README](/backend/README.md)
