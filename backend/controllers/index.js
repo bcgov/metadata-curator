@@ -4,7 +4,6 @@ const tableSchemaController = require('./tableSchemaController');
 const repositoryController = require('./repositoryController');
 const repoBranchController = require('./repoBranchController');
 const dataProviderController = require('./dataProviderController');
-const configController = require('./configController');
 
 module.exports = {
     dataUploadController,
@@ -12,6 +11,5 @@ module.exports = {
     tableSchemaController,
     repositoryController,
     repoBranchController,
-    dataProviderController,
-    configController
+    dataProviderController
 }
