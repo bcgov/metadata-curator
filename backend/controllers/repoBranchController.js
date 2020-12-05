@@ -1,6 +1,11 @@
 const { repoBranchService, revisionService } = require('../services')
 
 
+const getBranches = async (req, res, next) => {
+    const branches = await repoBranchService.getBranches(req.query.data_upload_id);
+    res.status(200).json(branches);
+}
+
 const getBranch = async (req, res, next) => {
     const branch = await repoBranchService.getBranchById(req.params.branchId);
     res.status(200).json(branch);
@@ -66,6 +71,7 @@ const getRevisions = async (req, res, next) => {
 }
 
 module.exports = {
+    getBranches,
     getBranch,
     deleteBranch,
     putBranch,

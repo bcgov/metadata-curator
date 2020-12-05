@@ -1,7 +1,8 @@
 const { repoBranchController} = require('../../../controllers')
-const { postRevision, getRevisions, getBranch, putBranch, deleteBranch, getRevision, putRevision, deleteRevision } = repoBranchController;
+const { postRevision, getRevisions, getBranches, getBranch, putBranch, deleteBranch, getRevision, putRevision, deleteRevision } = repoBranchController;
 
 module.exports = (router) => {
+    router.get('/', catchAsync(getBranches));
     router.get('/:branchId', catchAsync(getBranch));
     router.put('/:branchId', catchAsync(putBranch));
     router.delete('/:branchId', catchAsync(deleteBranch));

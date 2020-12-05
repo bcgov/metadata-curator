@@ -5,14 +5,6 @@ const postDataUpload = async (req, res, next) => {
     res.status(201).json(dataUpload);
 }
 
-const postRepository = async (req, res, next) => {
-    const id = req.params.dataUploadId;
-    let fields = {...req.body};
-
-    const repo = await repoService.createRepo(id, fields.name);
-    res.status(201).json({id: repo._id.toString()});
-}
-
 const putDataUpload = async (req, res, next) => {
     const dataUpload = await dataUploadService.updateDataUpload(req.user, req.params.dataUploadId, req.body);
     res.status(200).json(dataUpload);
@@ -56,6 +48,5 @@ module.exports = {
     putDataUpload,
     getDataUploadComments,
     postDataUploadComment,
-    postRepository,
     getRevisions
 }

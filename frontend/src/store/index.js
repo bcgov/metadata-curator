@@ -12,6 +12,8 @@ import dataUploadComments from "./modules/dataUploadComments";
 import dataUploadDetail from "./modules/dataUploadDetail";
 import upload from "./modules/createUpload/upload";
 import uploadForm from "./modules/createUpload/uploadForm";
+import repos from "./modules/repos";
+import version from "./modules/version";
 
 import { build } from './modules/items';
 
@@ -21,6 +23,7 @@ const topics = build('getTopics', 'newTopic', 'putTopic', 'deleteTopic');
 const comments = build('getComments', 'newComment', 'putComment', 'deleteComment');
 const adminDUploads = build('getDataUploads');
 const submissions = build('getFormSubmissions','postFormSubmission', 'putFormSubmission', 'deleteFormSubmission' );
+const config = build('getConfigs','newConfig', 'putConfig', 'deleteConfig' );
 
 Vue.use(Vuex)
 
@@ -40,7 +43,10 @@ export default new Vuex.Store({
     adminDUploads,
     submissions,
     upload,
-    uploadForm
+    uploadForm,
+    repos,
+    version,
+    config,
   },
   plugins: [createPersistedState({
     paths: [
