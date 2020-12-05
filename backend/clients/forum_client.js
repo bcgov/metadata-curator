@@ -73,6 +73,16 @@ const getTopic = async (user, name) => {
     return await axios.get(url, options);
 }
 
+const getVersion = async (user) => {
+    let config = require('config');
+    const forumApiConfig = config.get("forumApi");
+
+    let baseUrl = forumApiConfig.baseUrl.substring(0, forumApiConfig.baseUrl.lastIndexOf("/"))
+
+    const url = `${baseUrl}/version`;
+    return await axios.get(url);
+}
+
 const getTopics = async (user) => {
     let config = require('config');
     const forumApiConfig = config.get("forumApi");
@@ -160,6 +170,7 @@ var modifyJWTGroups = function(token, newGroups){
 module.exports = {
     getTopic,
     getTopics,
+    getVersion,
     addTopic,
     addComment,
     getComments

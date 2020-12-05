@@ -1,22 +1,45 @@
 const db = require('../db/db');
+const mongoose = require('mongoose');
 
-const addBranch = async function(repoId, type, name, description) {
+const addBranch = async function(repoId, type, name, description, upload_id) {
     const repoBranchSchema = new db.RepoBranchSchema;
     repoBranchSchema.repo_id = repoId;
     repoBranchSchema.type = type;
     repoBranchSchema.name = name;
     repoBranchSchema.description = description;
-    repoBranchSchema.revisions = [];
+    repoBranchSchema.data_upload_id = upload_id;
     repoBranchSchema.create_date = new Date();
 
     return await repoBranchSchema.save();
 }
 
-const updateBranch = async function(branchId, type, name, description) {
-    const repoBranchSchema = getBranchById(branchId);
-    repoBranchSchema.type = type;
-    repoBranchSchema.name = name;
-    repoBranchSchema.description = description;
+const getBranches = async function(data_upload_id){
+    var q = {};
+    if (typeof(data_upload_id) !== "undefined"){
+        q.data_upload_id = mongoose.Types.ObjectId(data_upload_id);
+    }
+
+    return await db.RepoBranchSchema.find(q).sort({ "create_date": 1});
+}
+
+const updateBranch = async function(branchId, type, name, description, upload_id) {
+    const repoBranchSchema = await getBranchById(branchId);
+    if (type){
+        repoBranchSchema.type = type;
+    }
+    
+    if (name){
+        repoBranchSchema.name = name;
+    }
+
+    if (description){
+        repoBranchSchema.description = description;
+    }
+    
+    if (upload_id){
+        repoBranchSchema.data_upload_id = upload_id;
+    }
+    
     return await repoBranchSchema.save();
 }
 
@@ -65,6 +88,7 @@ const removeRevision = async (branchId, revisionId) => {
 module.exports = {
     addBranch,
     updateBranch,
+    getBranches,
     listBranches,
     getBranchById,
     deleteBranch,

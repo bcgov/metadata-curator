@@ -1,5 +1,5 @@
 <template>
-    <v-alert style="margin-left: 10px; margin-bottom: 12px; width:65%;"
+    <v-alert class="ml-2 mb-2"
              text
              prominent
              type="error"

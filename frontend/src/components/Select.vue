@@ -1,17 +1,25 @@
 <template>
-    <div style="width:350px;">
-        <ValidationProvider :rules="validationRules" v-slot="{ errors }" :name="label ? label : name">
-            <v-select
-                :label="displayLabel"
-                :name="name"
-                v-model="select"
-                :items="items"
-                :item-text="itemText"
-                :item-value="itemValue"
-                :error-messages="errors.length > 0 ? [errors[0]] : []"
-                outlined
-            ></v-select>
-        </ValidationProvider>
+    <div>
+         <span v-if="!editing">
+            <span class="mr-2">{{displayLabel}}</span>
+            <span>{{val}}</span>
+        </span>
+
+        <span v-else>
+            <ValidationProvider :rules="validationRules" v-slot="{ errors }" :name="label ? label : name">
+                <v-select
+                    :label="displayLabel"
+                    :name="name"
+                    v-model="val"
+                    :items="items"
+                    :item-text="itemText"
+                    :item-value="itemValue"
+                    :error-messages="errors.length > 0 ? [errors[0]] : []"
+                    @change="$emit('edited', val)"
+                    outlined
+                ></v-select>
+            </ValidationProvider>
+        </span>
     </div>
 </template>
 
@@ -57,15 +65,19 @@
                 required: false,
                 default: () => 'value'
             },
-            select: {
+            value: {
                 type: String,
-                required: false,
-                default: () => null
             },
+            editing: {
+                type: Boolean,
+                required: false,
+                default: () => false
+            }
 
         },
         data() {
             return {
+                val: null
             }
         },
         computed: {
@@ -76,11 +88,14 @@
                 return this.label;
             }
         },
-        // watch: {
-        //     value: function (newVal, oldVal) {
-        //         this.val = newVal
-        //     },
-        // }
+        watch: {
+            value: function (newVal) {
+                this.val = newVal
+            },
+        },
+        mounted(){
+            this.val = this.value;
+        }
 
     };
 </script>
