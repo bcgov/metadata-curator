@@ -44,14 +44,14 @@
             },
         },
         watch: {
-            checked: function (newVal, oldVal) {
+            checked: function (newVal) {
                 // console.log("watch checked: " + newVal);
                 if(newVal != null) {
                     // console.log("newval update checkbox val");
                    this.checkbox = newVal;
                 }
             },
-            color: function (newVal, oldVal) {
+            color: function (newVal) {
                 // console.log("watch color: " + newVal);
                 this.updateColor(newVal);
              },
