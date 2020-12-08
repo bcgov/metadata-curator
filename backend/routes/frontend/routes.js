@@ -47,6 +47,7 @@ module.exports = (router) => {
         if (req.user && req.user.jwt && req.user.refreshToken) {
             res.json(req.user);
         }else{
+            req.user =  null;
             res.json({error: "Not logged in"});
         }
     });

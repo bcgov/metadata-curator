@@ -19,7 +19,12 @@ log.addLevel('debug', 2900, { fg: 'green' });
 
 let app = express();
 
-if(env != 'test') { app.use(logger('dev')); }
+let logLevel = "dev";
+if (config.has("morganLogType")){
+  logLevel = config.get("morganLogType");
+}
+app.use(logger(logLevel));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
