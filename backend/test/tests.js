@@ -2,7 +2,6 @@ process.env.NODE_ENV = 'test';
 
 describe("MC Unit Tests", function() {
     require('./modules/authTest');
-    require('./modules/semantic_infer');
     require('./modules/resourceDiffTest');
     require('./clients/forumClientTest');
     require('./clients/formioClientTest');
