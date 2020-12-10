@@ -2,7 +2,7 @@ var buildStatic = function(db, router){
     return router;
 }
 
-var buildDynamic = function(db, router, auth){
+var buildDynamic = function(db, router, auth, revisionService){
     
     const getBranches = async function(data_upload_id){
         var q = {};
