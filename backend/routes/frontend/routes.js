@@ -1,6 +1,12 @@
 let passport = require('passport');
 let auth = require('../../modules/auth');
 
+let env = process.env.NODE_ENV || 'development';
+let strategy = 'oidc';
+if (env === "test"){
+    strategy = ['oidc', 'jwt'];
+}
+
 module.exports = (router) => {
 
     router.use('/login', auth.removeExpired, function(req, res, next){
@@ -8,12 +14,12 @@ module.exports = (router) => {
         return res.redirect('/api/log');
     });
     
-    router.use('/log', passport.authenticate('oidc'), function(req, res, next){
+    router.use('/log', passport.authenticate(strategy), function(req, res, next){
         console.log("log", req.user);
         next();
     });
     
-    router.get('/callback', passport.authenticate('oidc', { failureRedirect: '/api/login' }), function(req, res, next){
+    router.get('/callback', passport.authenticate(strategy, { failureRedirect: '/api/login' }), function(req, res, next){
         let config = require('config');
         if (req.session.r){
             return res.redirect(config.get('frontend')+'/'+req.session.r);

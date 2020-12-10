@@ -3,7 +3,7 @@ var buildStatic = function(db, router){
 }
 
 
-var buildDynamic = function(db, router, auth){
+var buildDynamic = function(db, router, auth, forumClient){
     
     router.get('/', async function(req, res, next) {
             let providers = [];

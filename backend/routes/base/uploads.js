@@ -2,11 +2,8 @@ var buildStatic = function(db, router){
     return router;
 }
 
-var buildDynamic = function(db, router, auth){
-
-    const forumClient = require('../../clients/forum_client');
-    let notify = require('../../notifications/notifications')();
-    let revisionService = require('../../services/revisionService');
+var buildDynamic = function(db, router, auth, forumClient, notify, revisionService){
+    var log = require('npmlog');
 
     const createDataUpload = async (user, upload) => {
         try {
@@ -75,10 +72,12 @@ var buildDynamic = function(db, router, auth){
     }
     
     const listDataUploads = async (user, query) => {
-        console.log("X");
         try {
             let topics = [];
+            console.log("LDU");
             const topicResponse = await forumClient.getTopics(user, query);
+            console.log("TR", topicResponse);
+            
             if(query && query.filterBy) {
                 if(query.filterBy === 'me') {
                     topics = topicResponse.data.filter( (item) => {
@@ -111,6 +110,7 @@ var buildDynamic = function(db, router, auth){
             }
     
         } catch (e) {
+            console.log("hi");
             log.error(e);
             throw new Error(e.message)
         }
@@ -174,7 +174,6 @@ var buildDynamic = function(db, router, auth){
     }
     
     router.get('/', async function(req, res, next) {
-        console.log("HI");
         const list = await listDataUploads(req.user, req.query);
         res.json(list);
     });

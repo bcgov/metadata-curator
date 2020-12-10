@@ -3,8 +3,9 @@ var buildStatic = function(db, router){
 }
 
 
-var buildDynamic = function(db, router, auth, ValidationError, tableSchemaService){
+var buildDynamic = function(db, router, auth, ValidationError){
 
+    
     const {Package, Resource} = require('datapackage');
     const {Schema} = require('tableschema');
 
@@ -20,64 +21,15 @@ var buildDynamic = function(db, router, auth, ValidationError, tableSchemaServic
                     const rsrcValid = rsrc.valid;
 
                     if (!rsrcValid) {
-                        const validations = await tableSchemaService.formatValidation(rsrc);
-                        validations.forEach(element => {
-                            element.resourceName = resource.name;
-                        });
-                        let val = resourceErrsMap.get(resource.name);
-                        if (val) {
-                            validations.forEach(err => val.push(err));
-                            resourceErrsMap.set(resource.name, val);
-                        } else {
-                            let newVal = [];
-                            validations.forEach(err => newVal.push(err));
-                            resourceErrsMap.set(resource.name, newVal);
-                        }
                     }
                 }
             } else {
                 let newVal = [];
                 resourceErrsMap.set('package', newVal);
-                const validations = await tableSchemaService.formatValidation(dataPackage);
-                validations.forEach(err => newVal.push(err));
             }
-
-            throw new ValidationError("validation errors", resourceErrsMap)
         }
 
         return dataPackage;
-    }
-
-
-    const addDataPackageFromTableSchema = async function(schemaDescriptor) {
-        
-        let schema = await Schema.load(schemaDescriptor);
-        if (!schema.valid) {
-            let resourceErrsMap = new Map();
-            const validations = await tableSchemaService.formatValidation(schema);
-            resourceErrsMap.set('schema', validations);
-            throw new ValidationError("validation errors", resourceErrsMap)
-        }
-
-        let resources = [
-            {
-                profile: "tabular-data-resource",
-                data: [],
-                schema: schemaDescriptor
-            }
-        ];
-
-        let dataPackageSchema = new db.DataPackageSchema;
-        dataPackageSchema.profile = 'tabular-data-package';
-        dataPackageSchema.resources = transformResources([...resources]);
-
-        return await dataPackageSchema.save().catch (e => {
-            if (e instanceof mongoose.Error.ValidationError) {
-                throw new ValidationError("DB Validation Error", e.errors);
-            } else {
-                throw e;
-            }
-        });
     }
 
     const addDataPackage = async function(descriptor) {
@@ -190,18 +142,18 @@ var buildDynamic = function(db, router, auth, ValidationError, tableSchemaServic
         let descriptor = {...req.body};
         descriptor.profile = "tabular-data-package";
 
-        const pkg = await dataPackageService.addDataPackage(descriptor);
+        const pkg = await addDataPackage(descriptor);
         res.status(201).json({id: pkg._id.toString()});
     });
 
     router.get('/:dataPackageId', async function(req, res, next){
         const id = req.params.dataPackageId;
-        res.status(200).json(await dataPackageService.getDataPackageById(id));
+        res.status(200).json(await getDataPackageById(id));
     });
 
     router.delete('/:dataPackageId', auth.requireAdmin, async function(req, res, next){
         const id = req.params.dataPackageId;
-        res.status(204).json(await dataPackageService.deleteDataPackage(id));
+        res.status(204).json(await deleteDataPackage(id));
     });    
 
     return router;

@@ -1,0 +1,40 @@
+{
+  "logLevel": "debug",
+  "database": {
+      "host": "localhost",
+      "username": "mcUser",
+      "password": "pwd",
+      "dbName": "mcDb"
+  },
+  "sessionSecret": "totally secure",
+  "jwtSecret": "partyWithTheParrot",
+  "jwtAud": "www.example.com",
+  "testJwt": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2MDc1NTMyMDYsImV4cCI6MTYzOTA4OTIwNiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImdpdmVuX25hbWUiOiJKb2hubnkiLCJmYW1pbHlfbmFtZSI6IlJvY2tldCIsImVtYWlsIjoianJvY2tldEBleGFtcGxlLmNvbSIsIm9yZ2FuaXphdGlvbiI6ImRpcCIsImdyb3VwcyI6WyJleHBvcnRlciIsIm1ldGFkYXRhX2FwcHJvdmVyXzFfZGlwIl19._Y6zrbwdFM9hFglL5tiQd2ALzlZacEo_11H7SLlML2A",
+  "testDp1User1Jwt": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2MDc1NTMyMDYsImV4cCI6MTYzOTA4OTIwNiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImdpdmVuX25hbWUiOiJKb2hubnkiLCJmYW1pbHlfbmFtZSI6IlJvY2tldCIsImVtYWlsIjoianJvY2tldEBleGFtcGxlLmNvbSIsIm9yZ2FuaXphdGlvbiI6ImRpcCIsImdyb3VwcyI6WyJleHBvcnRlciIsInByb2plY3RfZHBfMSJdfQ.-od-oi1ixvJL17LSvgYETzmOAocT-__jHEVI5Uzt_9U",
+  "testAdminJwt": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2MDc1NTMyMDYsImV4cCI6MTYzOTA4OTIwNiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImdpdmVuX25hbWUiOiJKb2hubnkiLCJmYW1pbHlfbmFtZSI6IlJvY2tldCIsImVtYWlsIjoianJvY2tldEBleGFtcGxlLmNvbSIsIm9yZ2FuaXphdGlvbiI6ImRpcCIsImdyb3VwcyI6WyJleHBvcnRlciIsIm1jLWFkbWluIl19.l_GEUD9SHm-CQldHgKlPBcAkhIZVSsE7BaOdxolB5KA",
+
+
+  "orgAttribute": "businessCategory",
+  "requiredRoleToCreateRequest": "exporter",
+  "alwaysNotifyListOnTopicCreate": false,
+  "alwaysNotifyUninvolvedOnCommentAdd": true,
+  "approverGroups": [
+    "metadata_approver_1_dip",
+    "metadata_approver_2_dip"
+  ],
+  "email": {
+    "enabled": false,
+    "service": "smtp.gmail.com",
+    "secure": true,
+    "port": 465,
+    "user": "{user}",
+    "pass": "{password}",
+    "from": "{email}",
+    "subject": "Data Upload Update"
+  },
+  "formio": {
+    "url": "http://localhost:3006",
+    "username": "admin@example.com",
+    "password": "CHANGEME"
+  }
+}

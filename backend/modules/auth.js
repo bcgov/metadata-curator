@@ -1,8 +1,11 @@
 let auth = {};
 let atob = require('atob');
-let bent = require('bent')
+let bent = require('bent');
+let passport = require('passport');
 
-auth.requireLoggedIn = function(req, res, next){
+let env = process.env.NODE_ENV || 'development';
+
+auth.requireLoggedIn = async function(req, res, next){
     if (!req.user){
         res.status(401);
         return res.json({error: "Not Authorized"});
@@ -10,7 +13,7 @@ auth.requireLoggedIn = function(req, res, next){
     next();
 }
 
-auth.requireAdmin = function(req, res, next){
+auth.requireAdmin = async function(req, res, next){
     if (!req.user){
         res.status(401);
         return res.json({error: "Not Authorized"});
@@ -27,7 +30,7 @@ auth.requireAdmin = function(req, res, next){
     next();
 }
 
-auth.requireGroup = function(groupName){
+auth.requireGroup = async function(groupName){
 
     return function(req, res, next){
         if ( (!req.user) || (!req.user.groups) || (req.user.groups.indexOf(groupName) === -1) ){
@@ -116,7 +119,17 @@ auth.renew = async function(jwt, token, cb){
     cb(null, at, rt);
 }
 
-auth.removeExpired = function(req, res, next){
+auth.removeExpired = async function(req, res, next){
+    if (env === 'test' && !req.user){
+        passport.authenticate('jwt', function(err, user, info){
+            if (!err && user){
+                req.user = user;
+            }
+            next();
+            return;
+        })(req, res, next);
+    }
+
     console.log("remove expired");
     if ( (typeof(req.user) !== "undefined") && (typeof(req.user.jwt) !== "undefined") && (req.user.jwt !== null) ){
         console.log("remove expired not undef");

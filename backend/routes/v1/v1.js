@@ -16,8 +16,6 @@ let db = require('../../db/db');
 
 let auth = require('../../modules/auth');
 
-let tableSchemasRoutes = require('./tableSchemas/routes');
-
 const { Router } = require('express');
 
 module.exports = (router) => {
@@ -31,8 +29,6 @@ module.exports = (router) => {
         res.send(docs.getDocHTML("v1"));
     });
 
-    
-    router.use('/tableschemas', auth.requireLoggedIn, tableSchemasRoutes(express.Router()));
     router.use('/forum', auth.requireLoggedIn, forumRouter);
     router.use('/formio', auth.requireLoggedIn, formioRouter);
 
@@ -46,6 +42,8 @@ module.exports = (router) => {
 
     var forumClient = require('./clients/forum_client');
     var formioClient = require('./clients/formio_client');
+    var revisionService = require('./services/revisionService');
+    var notify = require('./notify/notify');
 
     var configRoutes = require('../base/config');
     var cfRouter = new Router();
@@ -55,22 +53,22 @@ module.exports = (router) => {
 
     var packageRoutes = require('../base/packages');
     var pRouter = new Router();
-    const tableSchemaService = require('../../services/tableSchemaService');
+
     let ValidationError = require('../../modules/validationError');
     pRouter = packageRoutes.buildStatic(db, pRouter);
-    pRouter = packageRoutes.buildDynamic(db, pRouter, auth, ValidationError, tableSchemaService);
+    pRouter = packageRoutes.buildDynamic(db, pRouter, auth, ValidationError);
     router.use('/datapackages', auth.requireLoggedIn, pRouter);
 
     var dataUploadRoutes = require('../base/uploads');
     var uRouter = new Router();
     uRouter = dataUploadRoutes.buildStatic(db, uRouter);
-    uRouter = dataUploadRoutes.buildDynamic(db, uRouter, auth);
+    uRouter = dataUploadRoutes.buildDynamic(db, uRouter, auth, forumClient, notify, revisionService);
     router.use('/datauploads', auth.requireLoggedIn, uRouter);
 
     var dataProviderRoutes = require('../base/providers');
     var dpRouter = new Router();
     dpRouter = dataProviderRoutes.buildStatic(db, dpRouter);
-    dpRouter = dataProviderRoutes.buildDynamic(db, dpRouter, auth);
+    dpRouter = dataProviderRoutes.buildDynamic(db, dpRouter, auth, forumClient);
     router.use('/dataproviders', auth.requireLoggedIn, dpRouter);
 
     var repositoriesRoutes = require('../base/repo');
@@ -82,9 +80,14 @@ module.exports = (router) => {
     var repoBranchesRoutes = require('../base/branches');
     var branchRouter = new Router();
     branchRouter = repoBranchesRoutes.buildStatic(db, branchRouter);
-    branchRouter = repoBranchesRoutes.buildDynamic(db, branchRouter, auth);
+    branchRouter = repoBranchesRoutes.buildDynamic(db, branchRouter, auth, revisionService);
     router.use('/repobranches', auth.requireLoggedIn, branchRouter);
 
+    var tableSchemasRoutes = require('../base/tableSchema');
+    var tableRouter = new Router();
+    tableRouter = repoBranchesRoutes.buildStatic(db, tableRouter);
+    tableRouter = repoBranchesRoutes.buildDynamic(db, tableRouter, auth);
+    router.use('/tableschemas', auth.requireLoggedIn, tableRouter);
 
     return router;
 }
