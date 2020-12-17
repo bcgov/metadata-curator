@@ -3,7 +3,8 @@ var buildStatic = function(db, router){
 }
 
 var buildDynamic = function(db, router, auth, forumClient, notify, revisionService){
-    var log = require('npmlog');
+    const log = require('npmlog');
+    const mongoose = require('mongoose');
 
     const createDataUpload = async (user, upload) => {
         try {
@@ -24,8 +25,6 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             dataUploadSchema.approver_has_commented = false;
             return await dataUploadSchema.save();
         } catch(e) {
-            console.log("err data upload");
-            log.error(e)
             throw new Error(e.message)
         }
     }
@@ -59,7 +58,7 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
                 notify.notify(dataUpload, user);
             }
         }catch(ex){
-            console.log("Exception emailing", ex);
+            log.error("Exception emailing", ex);
         }
     
         try{
@@ -74,9 +73,8 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
     const listDataUploads = async (user, query) => {
         try {
             let topics = [];
-            console.log("LDU");
+            
             const topicResponse = await forumClient.getTopics(user, query);
-            console.log("TR", topicResponse);
             
             if(query && query.filterBy) {
                 if(query.filterBy === 'me') {
@@ -99,18 +97,18 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             }
     
             const uploadIds = topics.map(item => item.name);
-            if(query.filterBy === 'provider') {
+            if(query && query.filterBy === 'provider') {
                 let results = await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": 1});
                 results = results.filter( (item) => {
                     return item.status === "submitted";
                 });
                 return results;
             }else{
-                return await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": 1});
+                let results = await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": 1});
+                return results;
             }
     
         } catch (e) {
-            console.log("hi");
             log.error(e);
             throw new Error(e.message)
         }
@@ -174,13 +172,20 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
     }
     
     router.get('/', async function(req, res, next) {
-        const list = await listDataUploads(req.user, req.query);
-        res.json(list);
+        let list = null;
+        
+        list = await listDataUploads(req.user, req.query);
+        
+        return res.status(200).json(list);
     });
 
     router.post('/', async function(req, res, next){
-        const dataUpload = await createDataUpload(req.user, req.body);
-        res.status(201).json(dataUpload);
+        try{
+            const dataUpload = await createDataUpload(req.user, req.body);
+            return res.status(201).json(dataUpload);
+        }catch(e){
+            return res.status(400).json({error: e});
+        }
     });
 
     router.get('/:dataUploadId', async function(req, res, next){
@@ -189,29 +194,29 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
         if(!result) {
             throw new Error("Data Upload not found")
         }
-        res.json(result);
+        return res.json(result);
     });
 
     router.put('/:dataUploadId', async function(req, res, next){
         const dataUpload = await updateDataUpload(req.user, req.params.dataUploadId, req.body);
-        res.status(200).json(dataUpload);
+        return res.status(200).json(dataUpload);
     });
 
     router.get('/:dataUploadId/comments', async function(req, res, next){
         const comments = await getComments (req.params.dataUploadId, req.user);
-        res.json(comments);
+        return res.json(comments);
     });
 
     router.post('/:dataUploadId/comments', async function(req, res, next){
         await addComment (req.params.dataUploadId, req.user, req.body.content);
-        res.status(201).json({
+        return res.status(201).json({
             message: 'Comment saved successfully.'
         });
     });
 
     router.get('/:dataUploadId/revisions', async function(req, res, next){
         const result = await revisionService.listRevisionsByDataUpload(req.params.dataUploadId);
-        res.json(result);
+        return res.json(result);
     });
 
     return router;

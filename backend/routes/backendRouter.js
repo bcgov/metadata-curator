@@ -9,9 +9,10 @@ global.catchAsync = fn => {
     };
 };
 
-const v1 = require('./v1/v1');
-router.use('/v1', auth.removeExpired, v1(express.Router()));
 
 frontendRoutes(router);
+
+const v1 = require('./v1/v1');
+router.use('/v1', auth.removeExpired, v1(express.Router()));
 
 module.exports = router;

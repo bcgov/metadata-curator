@@ -43,6 +43,7 @@ auth.requireGroup = async function(groupName){
 }
 
 auth.isTokenExpired = function(token){
+    const log = require('npmlog');
     let currDate = new Date();
 
     let base64Url = token.split('.')[1];
@@ -51,7 +52,7 @@ auth.isTokenExpired = function(token){
     let exp = new Date(0);
     exp.setUTCSeconds(jwtObj.exp);
 
-    console.log("TOK EXP?", (currDate>exp), currDate, exp )
+    log.verbose("TOK EXP?", (currDate>exp), currDate, exp )
 
     return (currDate > exp);
 }
@@ -120,19 +121,17 @@ auth.renew = async function(jwt, token, cb){
 }
 
 auth.removeExpired = async function(req, res, next){
+    const log = require('npmlog');
     if (env === 'test' && !req.user){
         passport.authenticate('jwt', function(err, user, info){
             if (!err && user){
                 req.user = user;
             }
-            next();
-            return;
         })(req, res, next);
     }
 
-    console.log("remove expired");
     if ( (typeof(req.user) !== "undefined") && (typeof(req.user.jwt) !== "undefined") && (req.user.jwt !== null) ){
-        console.log("remove expired not undef");
+        log.verbose("remove expired not undef");
         if (auth.isTokenExpired(req.user.jwt)){
             console.log("remove expired token is expired");
             if ( (typeof(req.user.refreshToken) !== "undefined") && (req.user.refreshToken !== null) ){
@@ -166,11 +165,11 @@ auth.removeExpired = async function(req, res, next){
                 next();
             }
         }else {
-            console.log("remove expired not expired");
+            log.verbose("remove expired not expired");
             next()
         }
     } else {
-        console.log("remove expired not signed in");
+        log.verbose("remove expired not signed in");
         req.user = null;
         delete req.user;
         next()
