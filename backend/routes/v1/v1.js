@@ -1,8 +1,6 @@
-var fs = require('fs');
 var express = require('express');
-
 var path = require('path');
-var config = require('config');
+
 
 let forumRouter = express.Router();
 let forumBridge = require('./forumApi/bridge');

@@ -22,7 +22,10 @@ let logLevel = "dev";
 if (config.has("morganLogType")){
   logLevel = config.get("morganLogType");
 }
-app.use(logger(logLevel));
+
+if (logLevel !== 'none'){
+  app.use(logger(logLevel));
+}
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -49,27 +52,6 @@ passport.serializeUser((user, next) => {
 passport.deserializeUser((obj, next) => {
   next(null, obj);
 });
-
-var genProfileFromJwt = function(profile, jwt, secret, orgAttribute) {
-  var jwtLib = require('jsonwebtoken');
-  var decoded = jwtLib.verify(jwt, secret);
-  // console.log("decoded token: ", decoded);
-
-  profile.displayName = `${decoded.GivenName} ${decoded.Surname}`;
-  profile.name = `${decoded.GivenName} ${decoded.Surname}`;
-
-  if (orgAttribute){
-    profile.organization = decoded[orgAttribute] ? decoded[orgAttribute] : false;
-  }
-
-  profile.groups = decoded.Groups;
-  profile.email = decoded.Email;
-
-  profile._json = decoded;
-  profile.jwt = jwt;
-
-  return profile;
-}
 
 app.get("/api/version", async function(req, res){
   if (req.query.type){
@@ -137,23 +119,6 @@ app.get("/api/version", async function(req, res){
 app.get('/', (req, res) => { res.redirect('/api/v1/api-docs'); });
 
 app.use('/api', backendRouter);
-
-app.use('/api', (err, req, res, next) => {
-    log.debug(typeof err);
-    log.debug(err);
-    err.statusCode = err.statusCode || 500;
-    err.status = err.status || 'error';
-
-    const response = {
-        status: err.status,
-        message: err.message
-    }
-
-    if (err.errors) {
-        response['errors'] = err.errors;
-    }
-    res.status(err.statusCode).json(response);
-});
 
 app.use(history({
   index: 'dist/index.html'
