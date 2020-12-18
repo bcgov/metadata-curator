@@ -7,6 +7,7 @@ var should = chai.should();
 var sinon = require('sinon')
 var axios = require('axios')
 const jwtLib = require('jsonwebtoken');
+const mongoose = require('mongoose');
 
 const dbHandler = require('../db-handler');
 
@@ -17,12 +18,51 @@ let basePath = "/api/v1/datauploads/"
 describe("Upload Routes", function() {
     let sandbox
     let forumResponse = [];
+    let commentResponse = [];
+    let focalId = -1;
+
     beforeEach(async () => {
         sandbox = sinon.createSandbox();
         this.get = sandbox.stub(axios, 'get');
-        this.get.resolves({
-            data: forumResponse
-        });
+        this.get.callsFake(
+            function(url, opts){
+                
+                if (url.indexOf('/v1/comment') !== -1){
+                    return {
+                        data: commentResponse
+                    }
+                }else if (url.indexOf('/v1/?name=') !== -1){
+                    
+                    let n = url.substring(url.indexOf('/v1/?name=')+'/v1/?name='.length);
+                    for (let i=0; i<forumResponse.length; i++){
+                        if (forumResponse[i].name.toString() === n.toString()){
+                            return { data: [forumResponse[i]] };
+                        }
+                    }
+                    return { data: [] }
+                }else{
+                    return {
+                        data: forumResponse
+                    }
+                }
+            }
+        );
+
+        this.post = sandbox.stub(axios, 'post');
+        this.post.callsFake(
+            function(url, body, opts){
+                
+                if (url.indexOf('/v1/comment') !== -1){
+                    body._id = mongoose.Types.ObjectId();
+                    commentResponse.push(body);
+                    return { data: body };
+                }else{
+                    body._id = mongoose.Types.ObjectId();
+                    forumResponse.push(body);
+                    return { data: body };
+                }
+            }
+        );
     })
     afterEach(async () => {
         axios.get.restore();
@@ -100,12 +140,7 @@ describe("Upload Routes", function() {
             .send(body)
             .set('Authorization' , 'Bearer ' + jwt)
             .end(function(err, res){
-                forumResponse.push({
-                    _id: res.body.topic_id, 
-                    name: res.body._id, 
-                    parent_id: -1,
-                    author_groups: [decoded.groups]
-                });
+                focalId = res.body._id;
                 res.should.have.status(201);
                 done();
             })
@@ -125,4 +160,139 @@ describe("Upload Routes", function() {
             })
         })
     })
+
+    describe('PUT /id', function (){
+        it('should get unauthorized', function(done){
+            chai.request(server)
+            .put(basePath+focalId)
+            .end(function(err, res){
+                res.should.have.status(401);
+                done();
+            })
+        })
+
+        it('should update an upload', function(done){
+            var jwt = config.get('testJwt');
+
+            var body = {
+                description: "test update"
+            }
+
+            chai.request(server)
+            .put(basePath+focalId)
+            .send(body)
+            .set('Authorization' , 'Bearer ' + jwt)
+            .end(function(err, res){
+                res.should.have.status(200);
+                res.body.description.should.equal(body.description);
+                done();
+            })
+        })
+
+        it('should get 1 uploads', function (done) {
+            var jwt = config.get('testJwt');
+    
+            chai.request(server)
+            .get(basePath)
+            .set('Authorization' , 'Bearer ' + jwt)
+            .end(function (err, res) {
+                res.should.have.status(200);
+                expect(res.body).to.be.an('array')
+                expect(res.body).has.length(1);
+                done();
+            })
+        })
+    })
+
+    describe('GET /id/comments', function (){
+        it('should get unauthorized', function(done){
+            var url = basePath+focalId+'/comments';
+            chai.request(server)
+            .get(url)
+            .end(function(err, res){
+                res.should.have.status(401);
+                done();
+            })
+        })
+
+        it('should get 0 comments', function(done){
+            var jwt = config.get('testJwt');
+            var url = basePath+focalId+'/comments';
+
+            chai.request(server)
+            .get(url)
+            .set('Authorization' , 'Bearer ' + jwt)
+            .end(function(err, res){
+                res.should.have.status(200);
+                expect(res.body).to.be.an('array')
+                expect(res.body).has.length(0)
+                done();
+            })
+        });
+    });
+
+    describe('POST /id/comments', function (){
+        it('should get unauthorized', function(done){
+            var url = basePath+focalId+'/comments';
+            chai.request(server)
+            .post(url)
+            .end(function(err, res){
+                res.should.have.status(401);
+                done();
+            })
+        })
+
+        it('should fail without a name', function(done){
+            var url = basePath+focalId+'/comments';
+            var jwt = config.get('testJwt');
+            return done();
+            
+
+            chai.request(server)
+            .post(url)
+            .send({})
+            .set('Authorization' , 'Bearer ' + jwt)
+            .end(function(err, res){
+                res.should.have.status(400);
+                done();
+            })
+        })
+
+        it('should create a comment', function(done){
+            var url = basePath+focalId+'/comments';
+            var jwt = config.get('testJwt');
+            var decoded = jwtLib.decode(jwt);
+
+            var body = {
+                
+            }
+
+            chai.request(server)
+            .post(url)
+            .send(body)
+            .set('Authorization' , 'Bearer ' + jwt)
+            .end(function(err, res){
+                res.should.have.status(201);
+                done();
+            })
+        })
+
+        it('should get 1 comment', function (done) {
+            var url = basePath+focalId+'/comments';
+            var jwt = config.get('testJwt');
+    
+            chai.request(server)
+            .get(url)
+            .set('Authorization' , 'Bearer ' + jwt)
+            .end(function (err, res) {
+                res.should.have.status(200);
+                expect(res.body).to.be.an('array')
+                expect(res.body).has.length(1);
+                done();
+            })
+        })
+    })
+
+
+    
 })
