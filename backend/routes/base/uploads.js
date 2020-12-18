@@ -5,13 +5,16 @@ var buildStatic = function(db, router){
 var buildDynamic = function(db, router, auth, forumClient, notify, revisionService){
     const log = require('npmlog');
     const mongoose = require('mongoose');
+    const config = require('config');
 
     const createDataUpload = async (user, upload) => {
         try {
             const dataUploadSchema = new db.DataUploadSchema;
             const id = mongoose.Types.ObjectId();
-            const topic = await forumClient.addTopic(id, user);
             dataUploadSchema._id = id;
+            if (!upload.name){
+                throw new Error("Name is required");
+            }
             dataUploadSchema.name = upload.name;
             dataUploadSchema.description = upload.description;
             dataUploadSchema.uploader = user._json.email;
@@ -19,10 +22,12 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             if (upload.form_name){
                 dataUploadSchema.form_name = upload.form_name;
             }
-            dataUploadSchema.topic_id = topic._id;
             dataUploadSchema.create_date = new Date();
             dataUploadSchema.opened_by_approver = false;
             dataUploadSchema.approver_has_commented = false;
+
+            const topic = await forumClient.addTopic(id, user); 
+            dataUploadSchema.topic_id = topic._id;
             return await dataUploadSchema.save();
         } catch(e) {
             throw new Error(e.message)
@@ -43,14 +48,34 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             log.error(e);
         }
     
-        dataUpload.name = updatedData.name;
-        dataUpload.description = updatedData.description;
-        dataUpload.files = updatedData.files;
-        dataUpload.status = updatedData.status;
-        dataUpload.opened_by_approver = updatedData.opened_by_approver;
-        dataUpload.approver_has_commented = updatedData.approver_has_commented;
-        dataUpload.upload_submission_id = updatedData.upload_submission_id ? updatedData.upload_submission_id : null;
-    
+        if (updatedData.name){
+            dataUpload.name = updatedData.name;
+        }
+
+        if (updatedData.description){
+            dataUpload.description = updatedData.description;
+        }
+
+        if (updatedData.files){
+            dataUpload.files = updatedData.files;
+        }
+
+        if (updatedData.status){
+            dataUpload.status = updatedData.status;
+        }
+
+        if (updatedData.opened_by_approver){
+            dataUpload.opened_by_approver = updatedData.opened_by_approver;
+        }
+
+        if (updatedData.approver_has_commented){
+            dataUpload.approver_has_commented = updatedData.approver_has_commented;
+        }
+
+        if (updatedData.upload_submission_id){
+            dataUpload.upload_submission_id = updatedData.upload_submission_id ? updatedData.upload_submission_id : null;
+        }
+        
         try{
             if (dataUpload.status === "submitted"){
                 let notify = require('../notifications/notifications')();
@@ -64,7 +89,7 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
         try{
             return await dataUpload.save();
         }catch(ex){
-            log.error(e);
+            log.error(ex);
             throw new Error(e.message);
         }
         
@@ -73,6 +98,7 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
     const listDataUploads = async (user, query) => {
         try {
             let topics = [];
+            
             
             const topicResponse = await forumClient.getTopics(user, query);
             
