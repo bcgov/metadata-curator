@@ -4,6 +4,7 @@ var buildStatic = function(db, router){
 
 var buildDynamic = function(db, router, auth, forumClient){
     const log = require('npmlog');
+    const mongoose = require('mongoose');
 
     const createRepo = async function(user, name) {
         const id = mongoose.Types.ObjectId();
@@ -24,7 +25,7 @@ var buildDynamic = function(db, router, auth, forumClient){
         const fields = {...body};
         var record = {};
         try{
-            record = await db.RepoSchema.find({_id: mongoose.Types.ObjectId(id)});
+            record = await db.RepoSchema.findOne({_id: mongoose.Types.ObjectId(id)});
         }catch(ex){
             //record doesn't exist
             log.error(ex);
@@ -36,7 +37,7 @@ var buildDynamic = function(db, router, auth, forumClient){
             record.name = fields.name;
         }
     
-        return await repoSchema.save();
+        return await record.save();
     }
     
     const listRepositories = async (user, query) => {
@@ -62,16 +63,24 @@ var buildDynamic = function(db, router, auth, forumClient){
         res.status(200).json(repos);
     });
 
-    router.post('/', auth.requireAdmin, async function(req, res, next){
+    router.post('/', async function(req, res, next){
         let fields = {...req.body};
+
+        if (!fields.name){
+            return res.status(400).json({error: "Name is required"});
+        }
     
-        const repo = await createRepo(req.user, fields.name);
-        res.status(201).json({id: repo._id.toString()});
+        try{
+            const repo = await createRepo(req.user, fields.name);
+            res.status(201).json({id: repo._id.toString()});
+        }catch(ex){
+            res.status(500).json({error: "Unknown error"});
+        }
     });
 
-    router.put('/:repoId', auth.requireAdmin, async function(req, res, next){
+    router.put('/:repoId', async function(req, res, next){
         const repo = await updateRepo(req.user, req.params.repoId, req.body);
-        res.status(200).json(dataUpload);
+        res.status(200).json(repo);
     });
 
     router.post('/:repoId/branches', auth.requireAdmin, async function(req, res, next){
