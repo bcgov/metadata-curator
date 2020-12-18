@@ -13,10 +13,10 @@ const dbHandler = require('../db-handler');
 
 chai.use(chaiHttp);
 
-let basePath = "/api/v1/datauploads/"
+let basePath = "/api/v1/repos/"
 
-describe("Upload Routes", function() {
-    let sandbox
+describe("Repo Routes", function() {
+    let sandbox;
     let forumResponse = [];
     let commentResponse = [];
     let focalId = -1;
@@ -77,6 +77,11 @@ describe("Upload Routes", function() {
         await dbHandler.clearDatabase()
         await dbHandler.closeDatabase()
     });
+    
+    after(async () => {
+        await dbHandler.clearDatabase()
+        await dbHandler.closeDatabase()
+    });
 
     describe('GET /', function () {
         it('should get unauthorized', function(done){
@@ -88,7 +93,7 @@ describe("Upload Routes", function() {
             })
         })
 
-        it('should get 0 uploads', function (done) {
+        it('should get 0 repos', function (done) {
             var jwt = config.get('testJwt');
     
             chai.request(server)
@@ -128,12 +133,12 @@ describe("Upload Routes", function() {
             })
         })
 
-        it('should create an upload', function(done){
+        it('should create a repo', function(done){
             var jwt = config.get('testJwt');
             var decoded = jwtLib.decode(jwt);
 
             var body = {
-                name: "test upload"
+                name: "test repo"
             }
 
             chai.request(server)
@@ -141,13 +146,14 @@ describe("Upload Routes", function() {
             .send(body)
             .set('Authorization' , 'Bearer ' + jwt)
             .end(function(err, res){
-                focalId = res.body._id;
+                focalId = res.body.id;
                 res.should.have.status(201);
+                res.body.should.have.property('id');
                 done();
             })
         })
 
-        it('should get 1 uploads', function (done) {
+        it('should get 1 repo', function (done) {
             var jwt = config.get('testJwt');
     
             chai.request(server)
@@ -155,129 +161,58 @@ describe("Upload Routes", function() {
             .set('Authorization' , 'Bearer ' + jwt)
             .end(function (err, res) {
                 res.should.have.status(200);
-                expect(res.body).to.be.an('array')
+                expect(res.body).to.be.an('array');
                 expect(res.body).has.length(1);
                 done();
             })
         })
-    })
+    });
 
-    describe('PUT /id', function (){
+    describe('PUT /', function (){
+        
         it('should get unauthorized', function(done){
+            let url = basePath + focalId;
             chai.request(server)
-            .put(basePath+focalId)
+            .put(url)
             .end(function(err, res){
                 res.should.have.status(401);
-                done();
-            })
-        })
-
-        it('should update an upload', function(done){
-            var jwt = config.get('testJwt');
-
-            var body = {
-                description: "test update"
-            }
-
-            chai.request(server)
-            .put(basePath+focalId)
-            .send(body)
-            .set('Authorization' , 'Bearer ' + jwt)
-            .end(function(err, res){
-                res.should.have.status(200);
-                res.body.description.should.equal(body.description);
-                done();
-            })
-        })
-
-        it('should get 1 uploads', function (done) {
-            var jwt = config.get('testJwt');
-    
-            chai.request(server)
-            .get(basePath)
-            .set('Authorization' , 'Bearer ' + jwt)
-            .end(function (err, res) {
-                res.should.have.status(200);
-                expect(res.body).to.be.an('array')
-                expect(res.body).has.length(1);
-                done();
-            })
-        })
-    })
-
-    describe('GET /id/comments', function (){
-        it('should get unauthorized', function(done){
-            var url = basePath+focalId+'/comments';
-            chai.request(server)
-            .get(url)
-            .end(function(err, res){
-                res.should.have.status(401);
-                done();
-            })
-        })
-
-        it('should get 0 comments', function(done){
-            var jwt = config.get('testJwt');
-            var url = basePath+focalId+'/comments';
-
-            chai.request(server)
-            .get(url)
-            .set('Authorization' , 'Bearer ' + jwt)
-            .end(function(err, res){
-                res.should.have.status(200);
-                expect(res.body).to.be.an('array')
-                expect(res.body).has.length(0)
                 done();
             })
         });
-    });
 
-    describe('POST /id/comments', function (){
-        it('should get unauthorized', function(done){
-            var url = basePath+focalId+'/comments';
-            chai.request(server)
-            .post(url)
-            .end(function(err, res){
-                res.should.have.status(401);
-                done();
-            })
-        })
-
-        it('should create a comment', function(done){
-            var url = basePath+focalId+'/comments';
+        it('should update a repo', function(done){
+            let url = basePath + focalId;
             var jwt = config.get('testJwt');
             var decoded = jwtLib.decode(jwt);
 
             var body = {
-                
+                name: "test repo2"
             }
 
             chai.request(server)
-            .post(url)
+            .put(url)
             .send(body)
             .set('Authorization' , 'Bearer ' + jwt)
             .end(function(err, res){
-                res.should.have.status(201);
+                res.should.have.status(200);
+                res.body.should.have.property('name');
+                res.body.name.should.equal(body.name);
                 done();
             })
         })
 
-        it('should get 1 comment', function (done) {
-            var url = basePath+focalId+'/comments';
+        it('should get 1 repo', function (done) {
             var jwt = config.get('testJwt');
     
             chai.request(server)
-            .get(url)
+            .get(basePath)
             .set('Authorization' , 'Bearer ' + jwt)
             .end(function (err, res) {
                 res.should.have.status(200);
-                expect(res.body).to.be.an('array')
+                expect(res.body).to.be.an('array');
                 expect(res.body).has.length(1);
                 done();
             })
         })
-    })
-
-
-    
+    });
 })

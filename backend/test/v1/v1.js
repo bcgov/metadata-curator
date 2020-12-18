@@ -1,5 +1,4 @@
-describe("/v1", function() {
-    // require('./v1/forumApiTest');
-    // require('./v1/formioTest');
+describe("V1", function() {
+    require('./repoTest');
     require('./uploadTest');
 });
