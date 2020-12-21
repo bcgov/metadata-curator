@@ -83,31 +83,6 @@ var buildDynamic = function(db, router, auth, forumClient){
         res.status(200).json(repo);
     });
 
-    router.post('/:repoId/branches', auth.requireAdmin, async function(req, res, next){
-        let f = {...req.body};
-        const repoId = req.params.repoId;
-        const branch = await repoBranchService.addBranch(repoId, f.type, f.name, f.description, f.upload_id);
-        res.status(201).json({
-            id: branch._id.toString()
-        });
-    });
-
-    router.put('/:repoId/branches', auth.requireAdmin, async function(req, res, next){
-        let f = {...req.body};
-        const repoId = req.params.repoId;
-    
-        const branch = await repoBranchService.updateBranch(repoId, f.type, f.name, f.description, f.upload_id);
-        res.status(201).json({
-            id: branch._id.toString()
-        });
-    });
-
-    router.get('/:repoId/branches', auth.requireAdmin, async function(req, res, next){
-        const repoId = req.params.repoId;
-        const branches = await repoBranchService.listBranches(repoId);
-        res.status(200).json(branches);
-    });
-
     return router;
 }
 

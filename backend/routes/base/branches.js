@@ -3,6 +3,18 @@ var buildStatic = function(db, router){
 }
 
 var buildDynamic = function(db, router, auth, revisionService){
+
+    const addBranch = async function(repoId, type, name, description) {
+        const repoBranchSchema = new db.RepoBranchSchema;
+        repoBranchSchema.repo_id = repoId;
+        repoBranchSchema.type = type;
+        repoBranchSchema.name = name;
+        repoBranchSchema.description = description;
+        repoBranchSchema.revisions = [];
+        repoBranchSchema.create_date = new Date();
+    
+        return await repoBranchSchema.save();
+    }
     
     const getBranches = async function(data_upload_id){
         var q = {};
@@ -50,6 +62,15 @@ var buildDynamic = function(db, router, auth, revisionService){
         }
         return await db.RepoBranchSchema.delete({_id: id});
     }
+
+    const listBranches = async (repoId) => {
+        try {
+            return await db.RepoBranchSchema.find({repo_id:repoId}).sort({ "create_date": 1});
+        } catch (e) {
+            log.error(e);
+            throw new Error(e.message)
+        }
+    }
     
     router.get('/', async function(req, res, next) {
         const branches = await getBranches(req.query.data_upload_id);
@@ -70,6 +91,21 @@ var buildDynamic = function(db, router, auth, revisionService){
     router.delete('/:branchId', async function(req, res, next) {
         await deleteBranch(req.params.branchId);
         res.status(204).send();
+    });
+
+    router.post('/:repoId/branches', auth.requireAdmin, async function(req, res, next){
+        let f = {...req.body};
+        const repoId = req.params.repoId;
+        const branch = await addBranch(repoId, f.type, f.name, f.description, f.upload_id);
+        res.status(201).json({
+            id: branch._id.toString()
+        });
+    });
+
+    router.get('/:repoId/branches', auth.requireAdmin, async function(req, res, next){
+        const repoId = req.params.repoId;
+        const branches = await listBranches(repoId);
+        res.status(200).json(branches);
     });
 
     router.post('/:branchId/revisions', async function(req, res, next) {
