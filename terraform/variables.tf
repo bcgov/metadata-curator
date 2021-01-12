@@ -34,6 +34,38 @@ variable "oidc" {
   type = map(string)
 }
 
-variable "base64EncodedPGPPublicKey"{
+variable "base64EncodedPGPPublicKey" {
+  type = string
+}
+
+variable "adminGroup" {
+  type = string
+}
+
+variable "orgAttribute" {
+  type = string
+}
+
+variable "requiredRoleToCreateRequest" {
+  type = string
+}
+
+variable "email" {
+  type = map(string)
+}
+
+variable "alwaysNotifyList" {
+  type = any
+}
+
+variable "approverGroups" {
+  type = list(string)
+}
+
+variable "alwaysNotifyUninvolvedOnCommentAdd" {
+  type = string
+}
+
+variable "alwaysNotifyListOnTopicCreate" {
   type = string
 }
