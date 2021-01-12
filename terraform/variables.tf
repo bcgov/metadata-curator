@@ -69,3 +69,11 @@ variable "alwaysNotifyUninvolvedOnCommentAdd" {
 variable "alwaysNotifyListOnTopicCreate" {
   type = string
 }
+
+variable "userIdField" {
+  type = string
+}
+
+variable "requiredCreateRole" {
+  type = string
+}
