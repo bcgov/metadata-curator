@@ -3,10 +3,6 @@ mongodb = {
     username = "appuser"
 }
 
-formio = {
-    username = "admin@example.com"
-}
-
 hostname = "mc.example.demo"
 host = "https://mc.example.demo"
 
@@ -20,6 +16,7 @@ images = {
     frontend = ":edge"
     tusd = ":latest"
     minio = ":latest"
+    frontend_bridge = ":edge"
 }
 
 oidc = {
