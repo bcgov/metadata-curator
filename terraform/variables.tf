@@ -69,3 +69,35 @@ variable "alwaysNotifyUninvolvedOnCommentAdd" {
 variable "alwaysNotifyListOnTopicCreate" {
   type = string
 }
+
+variable "userIdField" {
+  type = string
+}
+
+variable "requiredCreateRole" {
+  type = string
+}
+
+variable "emailField" {
+  type = string
+}
+
+variable "givenNameField" {
+  type = string
+}
+
+variable "surnameField" {
+  type = string
+}
+
+variable "groupField" {
+  type = string
+}
+
+variable "defaultAccessIsGroup" {
+  type = string
+}
+
+variable "ignoreGroups" {
+  type = string
+}
