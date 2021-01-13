@@ -95,7 +95,7 @@ variable "groupField" {
 }
 
 variable "defaultAccessIsGroup" {
-  type = bool
+  type = string
 }
 
 variable "ignoreGroups" {
