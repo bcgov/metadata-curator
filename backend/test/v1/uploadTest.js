@@ -20,6 +20,7 @@ describe("Upload Routes", function() {
     let forumResponse = [];
     let commentResponse = [];
     let focalId = -1;
+    let focalObj = null;
 
     beforeEach(async () => {
         sandbox = sinon.createSandbox();
@@ -142,6 +143,7 @@ describe("Upload Routes", function() {
             .set('Authorization' , 'Bearer ' + jwt)
             .end(function(err, res){
                 focalId = res.body._id;
+                focalObj = res.body;
                 res.should.have.status(201);
                 done();
             })
@@ -186,6 +188,9 @@ describe("Upload Routes", function() {
             .end(function(err, res){
                 res.should.have.status(200);
                 res.body.description.should.equal(body.description);
+                focalObj = JSON.parse(res.body);
+                console.log(res.body);
+                focalObj.files = [];
                 done();
             })
         })
@@ -200,6 +205,30 @@ describe("Upload Routes", function() {
                 res.should.have.status(200);
                 expect(res.body).to.be.an('array')
                 expect(res.body).has.length(1);
+                done();
+            })
+        })
+    })
+
+    describe('GET /id', function (){
+        it('should get unauthorized', function(done){
+            chai.request(server)
+            .get(basePath+focalId)
+            .end(function(err, res){
+                res.should.have.status(401);
+                done();
+            })
+        })
+
+        it('should get an upload', function(done){
+            var jwt = config.get('testJwt');
+
+            chai.request(server)
+            .get(basePath+focalId)
+            .set('Authorization' , 'Bearer ' + jwt)
+            .end(function(err, res){
+                res.should.have.status(200);
+                res.body.should.equal(focalObj);
                 done();
             })
         })
