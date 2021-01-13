@@ -77,3 +77,27 @@ variable "userIdField" {
 variable "requiredCreateRole" {
   type = string
 }
+
+variable "emailField" {
+  type = string
+}
+
+variable "givenNameField" {
+  type = string
+}
+
+variable "surnameField" {
+  type = string
+}
+
+variable "groupField" {
+  type = string
+}
+
+variable "defaultAccessIsGroup" {
+  type = bool
+}
+
+variable "ignoreGroups" {
+  type = string
+}
