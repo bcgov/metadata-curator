@@ -76,3 +76,25 @@ formio = {
     "username": "admin@example.com",
     "password": "CHANGEME"
 }
+
+postgres = {
+  username = "kcuser"
+}
+
+keycloak = {
+  username = "kcadmin"
+}
+
+requiredCreateRole = "exporter"
+
+userIdField = "preferred_username"
+
+emailField = "email"
+
+givenNameField = "given_name"
+
+surnameField = "family_name"
+
+groupField = "groups"
+
+ignoreGroups = "researchers"
