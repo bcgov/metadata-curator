@@ -2,7 +2,7 @@
     <v-container>
         <h1 class="display-1 font-weight-thin ml-3 my-3">Data Uploads</h1>
 
-        <v-container v-if="user.isDataProvider" fluid style="margin-left:5px; padding-bottom:0px; margin-bottom:7px;">
+        <v-container v-if="user.isDataProvider" fluid class="ml-1 pb-0 mb-1">
             <v-row>
                 <v-col cols=10>
                     <p>Filter by:</p>
@@ -15,7 +15,7 @@
             
         </v-container>
 
-        <v-container v-if="user.isApprover" fluid style="margin-left:5px; padding-bottom:0px; margin-bottom:7px;">
+        <v-container v-if="user.isApprover" fluid class="ml-1 pb-0 mb-1">
             <v-autocomplete
                 v-model="selectedProviders"
                 :disabled="isUpdating"
@@ -94,7 +94,6 @@
                     <v-btn icon class="mr-4" >
                         <v-icon :color="item.iconColour">{{item.icon}}</v-icon>
                     </v-btn>
-
 
                 </v-list-item>
             </template>

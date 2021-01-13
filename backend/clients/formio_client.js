@@ -52,6 +52,21 @@ formio.auth = function(callback){
     });
 }
 
+formio.getVersion = function(callback){
+    var url = config.get('formio.url') + "/version";
+
+    logger.verbose("formio get submissions", url);
+    httpReq.get(url, {}, function(err, res, body){
+        if (err){
+            logger.verbose("formio get version err", err);
+            callback(err);
+        }else{
+            logger.verbose("formio get version success");
+            callback(null, body);
+        }
+    });
+}
+
 formio.getSubmissions = function(formName, callback) {
     this.auth(function(err, jwt){
         if (err){

@@ -12,6 +12,8 @@ let formioRouter = express.Router();
 let formioBridge = require('./formio/bridge');
 formioRouter = formioBridge(formioRouter);
 
+let db = require('../../db/db');
+
 let auth = require('../../modules/auth');
 
 let dataUploadRoutes = require('./dataUploads/routes');
@@ -20,6 +22,7 @@ let tableSchemasRoutes = require('./tableSchemas/routes');
 let repositoriesRoutes = require('./repositories/routes');
 let repoBranchesRoutes = require('./repoBranches/routes');
 let dataProviderRoutes = require('./dataProviders/routes');
+const { Router } = require('express');
 
 module.exports = (router) => {
 
@@ -72,6 +75,13 @@ module.exports = (router) => {
             res.json({error: "Not logged in"});
         }
     });
+
+    var configRoutes = require('../base/config');
+    var cfRouter = new Router();
+    cfRouter = configRoutes.buildStatic(db, cfRouter);
+    cfRouter = configRoutes.buildDynamic(db, cfRouter, auth);
+
+    router.use('/config', cfRouter);
 
     return router;
 }

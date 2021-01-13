@@ -1,11 +1,15 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import dataUploadDetail from "../components/pages/dataUploadDetail";
 
 const home = () => import(/* webpackChunkName: "home" */ "../components/pages/home");
+const dataUploadDetail = () => import(/* webpackChunkName: "dataUploadDetail" */ "../components/pages/dataUploadDetail")
+const uploads = () => import(/* webpackChunkName: "uploads" */ "../components/pages/uploads");
+const versions = () => import(/* webpackChunkName: "versions" */ "../components/pages/versions");
+const version = () => import(/* webpackChunkName: "version" */ "../components/pages/version");
+const datasets = () => import(/* webpackChunkName: "datasets" */ "../components/pages/datasets");
+const datasetForm = () => import(/* webpackChunkName: "datasetForm" */ "../components/pages/datasetForm");
 const upload = () => import(/* webpackChunkName: "upload" */ "../components/pages/upload");
 const importSchema = () => import(/* webpackChunkName: "import" */ "../components/pages/importSchema");
-const dataUploadRevisions = () => import(/* webpackChunkName: "dataUploadRevisions" */ "../components/pages/dataUploadRevisions");
 const Admin = () => import(/* webpackChunkName: "Admin" */ "../components/pages/Admin");
 const NotFound = () => import(/* webpackChunkName: "NotFound" */ "../components/pages/404");
 
@@ -92,6 +96,51 @@ let r = new Router({
       //  },
     },
     {
+      path: '/uploads',
+      name: 'uploads',
+      component: uploads,
+      meta: {
+          title: "Uploads",
+          requiresAuth: true
+      }
+    },
+    {
+      path: '/datasets',
+      name: 'datasets',
+      component: datasets,
+      meta: {
+          title: "Datasets",
+          requiresAuth: true
+      }
+    },
+    {
+      path: '/datasets/:id',
+      name: 'datasets_form',
+      component: datasetForm,
+      meta: {
+          title: "Dataset",
+          requiresAuth: true
+      }
+    },
+    {
+      path: '/versions',
+      name: 'versions',
+      component: versions,
+      meta: {
+          title: "Versions",
+          requiresAuth: true
+      }
+    },
+    {
+      path: '/version/:id',
+      name: 'version_form',
+      component: version,
+      meta: {
+          title: "Version",
+          requiresAuth: true
+      }
+    },
+    {
       path: '/upload',
       name: 'upload',
       component: upload,
@@ -106,15 +155,6 @@ let r = new Router({
       component: dataUploadDetail,
       meta: {
           title: "Data Upload Detail",
-          requiresAuth: true
-      }
-    },
-    {
-      path: '/dataUploadRevisions/:id',
-      name: 'data-upload-revisions',
-      component: dataUploadRevisions,
-      meta: {
-          title: "Data Upload Revisions",
           requiresAuth: true
       }
     },
