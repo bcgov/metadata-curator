@@ -32,7 +32,7 @@ describe("RepoBranchServiceTest", function() {
         }
 
         duid = await dataUploadService.createDataUpload({},{name:"my_upload",uploader:"joe"})
-        rid = await repoService.createRepo(duid, 'some repo name');
+        rid = await repoService.createRepo('some repo name');
         bid = await repoBranchService.addBranch(rid._id, 'standard', 'Standard dataset', "Description about the standard metadata");
 //        revid = await revisionService.createRevisionWithDataPackage(bid, 'Change summary', 'joe@local', descriptor);
     })

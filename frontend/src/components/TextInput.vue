@@ -1,17 +1,38 @@
 <template>
-    <div style="width:350px;">
-        <ValidationProvider ref="provider" :rules="validationRules" v-slot="{ errors }" :name="label ? label : name">
-            <v-text-field
-                :label="displayLabel"
-                :placeholder="placeholder"
-                :name="name"
-                v-model="val"
-                :error-messages="errors.length > 0 ? [errors[0]] : []"
-                :outlined="outlined"
-                :normal="normal"
-                ref="txtField"
-            ></v-text-field>
-        </ValidationProvider>
+    <div>
+        <span v-if="!editing">
+            <span class="mr-2">
+                <h2 v-if="large" class="inline">
+                    {{displayLabel}}:
+                </h2>
+                <span v-else>
+                    {{displayLabel}}:
+                </span>
+            </span>
+
+            <span>
+                <h2 v-if="large" class="inline">
+                    {{val}}
+                </h2>
+                <span v-else>
+                    {{val}}
+                </span>
+            </span>
+        </span>
+
+        <span v-else>
+            <ValidationProvider ref="provider" :rules="validationRules" v-slot="{ errors }" :name="label ? label : name">
+                <v-text-field
+                    :label="displayLabel"
+                    :placeholder="placeholder"
+                    :name="name"
+                    v-model="val"
+                    :error-messages="errors.length > 0 ? [errors[0]] : []"
+                    :outlined="outlined"
+                    ref="txtField"
+                ></v-text-field>
+            </ValidationProvider>
+        </span>
     </div>
 </template>
 
@@ -52,11 +73,16 @@
                 required: false,
                 default: () => false
             },
-            normal: {
+            editing: {
                 type: Boolean,
                 required: false,
-                default: () => true
+                default: () => false
             },
+            large: {
+                type: Boolean,
+                required: false,
+                default: () => false
+            }
         },
         data() {
             return {
@@ -97,5 +123,8 @@
 </script>
 
 <style scoped>
+    .inline{
+        display: inline-block;
+    }
 
 </style>

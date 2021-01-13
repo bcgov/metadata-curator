@@ -1,6 +1,5 @@
 let express = require('express');
 let router = express.Router();
-let passport = require('passport');
 let auth = require('../modules/auth');
 let frontendRoutes = require('./frontend/routes');
 

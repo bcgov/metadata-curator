@@ -46,7 +46,7 @@ export default {
     max-width: 100% !important;
 }
 
-.theme--dark.v-card .v-card__subtitle, .theme--dark.v-card>.v-card__text .formio-component{
+.theme--dark.v-card, .theme--dark.v-card .v-card__subtitle, .theme--dark.v-card>.v-card__text .formio-component{
   color: #495057;
 }
 

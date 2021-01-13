@@ -13,6 +13,9 @@ const createDataUpload = async (user, upload) => {
         dataUploadSchema.description = upload.description;
         dataUploadSchema.uploader = user._json.email;
         dataUploadSchema.files = upload.files;
+        if (upload.form_name){
+            dataUploadSchema.form_name = upload.form_name;
+        }
         dataUploadSchema.topic_id = topic._id;
         dataUploadSchema.create_date = new Date();
         dataUploadSchema.opened_by_approver = false;

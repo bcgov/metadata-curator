@@ -1,17 +1,24 @@
 <template>
-    <div style="width:350px;">
-        <ValidationProvider ref="provider" :rules="validationRules" v-slot="{ errors }" :name="label ? label : name">
-            <v-textarea
-                :label="displayLabel"
-                :placeholder="placeholder"
-                :name="name"
-                v-model="val"
-                :outlined="outlined"
-                :auto-grow="autogrow"
-                :error-messages="errors.length > 0 ? [errors[0]] : []"
-                ref="txtArea"
-            ></v-textarea>
-        </ValidationProvider>
+    <div>
+         <span v-if="!editing">
+            <span class="mr-2">{{displayLabel}}</span>
+            <span>{{val}}</span>
+        </span>
+
+        <span v-else>
+            <ValidationProvider ref="provider" :rules="validationRules" v-slot="{ errors }" :name="label ? label : name">
+                <v-textarea
+                    :label="displayLabel"
+                    :placeholder="placeholder"
+                    :name="name"
+                    v-model="val"
+                    :outlined="outlined"
+                    :auto-grow="autogrow"
+                    :error-messages="errors.length > 0 ? [errors[0]] : []"
+                    ref="txtArea"
+                ></v-textarea>
+            </ValidationProvider>
+        </span>
     </div>
 </template>
 
@@ -62,6 +69,11 @@
                 required: false,
                 default: () => true
             },
+            editing: {
+                type: Boolean,
+                required: false,
+                default: () => false
+            }
         },
         data() {
             return {

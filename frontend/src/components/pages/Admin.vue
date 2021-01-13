@@ -97,6 +97,22 @@
                             :formComponent="permissionSubComponent"
                         ></DataTable>
                     </v-tab-item>
+
+                    <v-tab>
+                        Config
+                    </v-tab>
+                    <v-tab-item>
+                        <DataTable
+                            title="Config"
+                            :headers="configHeaders"
+                            storeName="config"
+                            :showDelete="true"
+                            deleteParam="key"
+                            :showNew="true"
+                            :showEdit="true"
+                            :formComponent="configSubComponent"
+                        ></DataTable>
+                    </v-tab-item>
                 </v-tabs>
             </v-col>
         </v-row>
@@ -110,6 +126,7 @@ import DataTable from '../admin/datatable'
 import PermissionForm from '../admin/permissionForm'
 import FormsSubForm from '../admin/formsForm'
 import TopicsSubForm from '../admin/topicsForm'
+import ConfigSubForm from '../admin/configForm'
 
 export default {
     components: {
@@ -319,7 +336,30 @@ export default {
                     value: 'actions', 
                     sortable: false 
                 }
-            ]
+            ],
+
+            configSubComponent: ConfigSubForm,
+            configHeaders: [
+                {
+                        text: 'ID',
+                        sortable: true,
+                        value: '_id',
+                    },
+                    {
+                        text: 'Key',
+                        sortable: true,
+                        value: 'key'
+                    },
+                    { 
+                        text: 'Value', 
+                        value: 'value' 
+                    },
+                    { 
+                        text: 'Actions', 
+                        value: 'actions', 
+                        sortable: false 
+                    }
+                    ]
         }
     },
 

@@ -129,6 +129,12 @@ import AlertError from '../AlertError';
                 type: String,
                 required: false,
                 default: ""
+            },
+
+            deleteParam: {
+                type: String,
+                required: false,
+                default: "_id"
             }
 
         },
@@ -189,7 +195,8 @@ import AlertError from '../AlertError';
             },
 
             deleteItem(item) {
-                this.$store.dispatch(this.storeName+"/deleteItem", {id: item._id});
+                let param = item[this.deleteParam];
+                this.$store.dispatch(this.storeName+"/deleteItem", {id: param});
             },
 
             save() {
