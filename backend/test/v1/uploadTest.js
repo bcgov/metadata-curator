@@ -188,8 +188,8 @@ describe("Upload Routes", function() {
             .end(function(err, res){
                 res.should.have.status(200);
                 res.body.description.should.equal(body.description);
-                focalObj = JSON.parse(res.body);
-                console.log(res.body);
+                focalObj = res.body;
+                focalObj.__v = focalObj.__v++;
                 focalObj.files = [];
                 done();
             })
@@ -228,7 +228,21 @@ describe("Upload Routes", function() {
             .set('Authorization' , 'Bearer ' + jwt)
             .end(function(err, res){
                 res.should.have.status(200);
-                res.body.should.equal(focalObj);
+                let ok = Object.keys(focalObj);
+                for (let i=0; i<ok.length; i++){
+                    let k = ok[i];
+                    let propType = typeof(focalObj[k]);
+                    let propVal = focalObj[k];
+                    
+                    res.body.should.have.property(k);
+                    if (propType==="object"){
+                        let body = JSON.stringify(res.body[k]);
+                        body.should.equal(JSON.stringify(propVal));
+                    }else{
+                        res.body[k].should.equal(propVal);
+                    }
+                    
+                }
                 done();
             })
         })

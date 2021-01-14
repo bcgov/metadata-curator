@@ -200,19 +200,5 @@ describe("Repo Routes", function() {
                 done();
             })
         })
-
-        it('should get 1 repo', function (done) {
-            var jwt = config.get('testJwt');
-    
-            chai.request(server)
-            .get(basePath)
-            .set('Authorization' , 'Bearer ' + jwt)
-            .end(function (err, res) {
-                res.should.have.status(200);
-                expect(res.body).to.be.an('array');
-                expect(res.body).has.length(1);
-                done();
-            })
-        })
     });
 })
