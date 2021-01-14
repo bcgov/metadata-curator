@@ -4,13 +4,15 @@ var buildStatic = function(db, router){
 
 var buildDynamic = function(db, router, auth, revisionService){
 
-    const addBranch = async function(repoId, type, name, description) {
+    let log = require('npmlog');
+
+    const addBranch = async function(repoId, type, name, description, upload_id) {
         const repoBranchSchema = new db.RepoBranchSchema;
         repoBranchSchema.repo_id = repoId;
         repoBranchSchema.type = type;
         repoBranchSchema.name = name;
         repoBranchSchema.description = description;
-        repoBranchSchema.revisions = [];
+        repoBranchSchema.data_upload_id = upload_id;
         repoBranchSchema.create_date = new Date();
     
         return await repoBranchSchema.save();
@@ -57,10 +59,7 @@ var buildDynamic = function(db, router, auth, revisionService){
     
     const deleteBranch = async (id) => {
         const branch = await db.RepoBranchSchema.findOne({_id: id});
-        if (branch.revisions.length != 0) {
-            throw new Error("Unable to delete a branch that has revisions")
-        }
-        return await db.RepoBranchSchema.delete({_id: id});
+        return await db.RepoBranchSchema.deleteOne({_id: id});
     }
 
     const listBranches = async (repoId) => {
@@ -88,21 +87,41 @@ var buildDynamic = function(db, router, auth, revisionService){
         res.status(200).json(result);
     });
 
-    router.delete('/:branchId', async function(req, res, next) {
+    router.delete('/:branchId', auth.requireAdmin, async function(req, res, next) {
         await deleteBranch(req.params.branchId);
-        res.status(204).send();
+        res.status(200).json({status: "ok"});
     });
 
-    router.post('/:repoId/branches', auth.requireAdmin, async function(req, res, next){
+    router.post('/:repoId/branches', async function(req, res, next){
         let f = {...req.body};
         const repoId = req.params.repoId;
+
+        let error = false;
+        if (!f.name){
+            error = true;
+            error = "Name is required"
+        }else if (!f.type){
+            error = true;
+            error = "Type is required"
+        }else if (!f.upload_id){
+            error = true;
+            error = "Upload id is required";
+        }else if (!f.description){
+            error = true;
+            error = "Description is required";
+        }
+
+        if (error){
+            return res.status(400).json({error: error});
+        }
+
         const branch = await addBranch(repoId, f.type, f.name, f.description, f.upload_id);
         res.status(201).json({
             id: branch._id.toString()
         });
     });
 
-    router.get('/:repoId/branches', auth.requireAdmin, async function(req, res, next){
+    router.get('/:repoId/branches', async function(req, res, next){
         const repoId = req.params.repoId;
         const branches = await listBranches(repoId);
         res.status(200).json(branches);
