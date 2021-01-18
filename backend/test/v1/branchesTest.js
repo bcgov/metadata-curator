@@ -19,22 +19,60 @@ describe("Branch Routes", function() {
     let sandbox;
     let focalId = -1;
     let repoId = -1;
-
-    beforeEach(async () => {
-        sandbox = sinon.createSandbox();
-    })
-
-    afterEach(async () => {
-        sandbox.restore()
-    })
+    let forumResponse = [];
+    let commentResponse = [];
     
     before(async () => {
-        await dbHandler.connect()
+        
+        await dbHandler.connect();
+
+        sandbox = sinon.createSandbox();
+        this.get = sandbox.stub(axios, 'get');
+        this.get.callsFake(
+            function(url, opts){
+                
+                if (url.indexOf('/v1/comment') !== -1){
+                    return {
+                        data: commentResponse
+                    }
+                }else if (url.indexOf('/v1/?name=') !== -1){
+                    
+                    let n = url.substring(url.indexOf('/v1/?name=')+'/v1/?name='.length);
+                    for (let i=0; i<forumResponse.length; i++){
+                        if (forumResponse[i].name.toString() === n.toString()){
+                            return { data: [forumResponse[i]] };
+                        }
+                    }
+                    return { data: [] }
+                }else{
+                    return {
+                        data: forumResponse
+                    }
+                }
+            }
+        );
+
+        this.post = sandbox.stub(axios, 'post');
+        this.post.callsFake(
+            function(url, body, opts){
+                
+                if (url.indexOf('/v1/comment') !== -1){
+                    body._id = mongoose.Types.ObjectId();
+                    commentResponse.push(body);
+                    return { data: body };
+                }else{
+                    body._id = mongoose.Types.ObjectId();
+                    forumResponse.push(body);
+                    return { data: body };
+                }
+            }
+        );
+
         //pre create a repo
         var jwt = config.get('testJwt');
 
         var body = {
-            name: "test repo"
+            name: "test branch repo"
         }
         let u = "/api/v1/repos/"
 
@@ -48,6 +86,7 @@ describe("Branch Routes", function() {
     });
     
     after(async () => {
+        sandbox.restore()
         await dbHandler.clearDatabase()
         await dbHandler.closeDatabase()
     });
