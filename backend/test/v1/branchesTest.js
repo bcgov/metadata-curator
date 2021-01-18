@@ -250,7 +250,7 @@ describe("Branch Routes", function() {
             })
         })
 
-        it('should get not found', function(done){
+        it('should get not found with non admin key', function(done){
             var jwt = config.get('testJwt');
 
             chai.request(server)
