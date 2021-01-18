@@ -13,6 +13,17 @@ var buildDynamic = function(db, router, auth){
 
     router.post('/', auth.requireAdmin, async function(req, res, next){
         let f = {...req.body};
+
+        let error = false;
+        if (!f.key){
+            error = "Key is required";
+        }else if (!f.value){
+            error = "Value is required";
+        }
+
+        if (error !== false){
+            return res.status(400).json({error: error})
+        }
         
         const configSchema = new db.ConfigSchema;
         configSchema.key = f.key;
@@ -31,11 +42,14 @@ var buildDynamic = function(db, router, auth){
     router.put('/:configKey', auth.requireAdmin, async function(req, res, next){
         let f = {...req.body};
         let configSchema = await db.ConfigSchema.findOne({key: req.params.configKey});
+        if (!configSchema){
+            res.status(404).json({error: "No such config"});
+        }
         configSchema.value = f.value;
         
         await configSchema.save();
 
-        res.status(200).json(result);
+        res.status(200).json(configSchema);
     });
 
     router.delete('/:configKey', auth.requireAdmin, async function(req, res, next){

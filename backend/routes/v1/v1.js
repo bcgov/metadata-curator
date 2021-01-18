@@ -47,7 +47,7 @@ module.exports = (router) => {
     var cfRouter = new Router();
     cfRouter = configRoutes.buildStatic(db, cfRouter);
     cfRouter = configRoutes.buildDynamic(db, cfRouter, auth);
-    router.use('/config', cfRouter);
+    router.use('/config', auth.requireLoggedIn, cfRouter);
 
     var packageRoutes = require('../base/packages');
     var pRouter = new Router();
