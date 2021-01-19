@@ -1,19 +1,25 @@
 let passport = require('passport');
 let auth = require('../../modules/auth');
 
+let env = process.env.NODE_ENV || 'development';
+let strategy = 'oidc';
+if (env === "test"){
+    strategy = ['oidc', 'jwt'];
+}
+
 module.exports = (router) => {
 
-    router.use('/login', auth.removeExpired, function(req, res, next){
+    router.get('/login', auth.removeExpired, function(req, res, next){
         req.session.r = req.query.r;
         return res.redirect('/api/log');
     });
     
-    router.use('/log', passport.authenticate('oidc'), function(req, res, next){
+    router.get('/log', passport.authenticate(strategy), function(req, res, next){
         console.log("log", req.user);
         next();
     });
     
-    router.get('/callback', passport.authenticate('oidc', { failureRedirect: '/api/login' }), function(req, res, next){
+    router.get('/callback', passport.authenticate(strategy, { failureRedirect: '/api/login' }), function(req, res, next){
         let config = require('config');
         if (req.session.r){
             return res.redirect(config.get('frontend')+'/'+req.session.r);
@@ -23,7 +29,7 @@ module.exports = (router) => {
         
     });
     
-    router.use('/logout', auth.removeExpired,  function(req, res, next){
+    router.get('/logout', auth.removeExpired,  function(req, res, next){
         req.logout();
         let config = require('config');
 
@@ -38,22 +44,23 @@ module.exports = (router) => {
         }
     });
 
-    router.use('/oauth/token', auth.removeExpired, function(req, res){
+    router.get('/oauth/token', auth.removeExpired, function(req, res){
         let config = require('config');
         res.redirect(config.get("oidc.tokenURL"));
     });
 
-    router.use('/token', auth.removeExpired, function(req, res){
+    router.get('/token', auth.removeExpired, function(req, res){
         if (req.user && req.user.jwt && req.user.refreshToken) {
             res.json(req.user);
         }else{
+            req.user =  null;
             res.json({error: "Not logged in"});
         }
     });
     
     router.get('/', function(req, res){
         if (req.user && req.user.jwt && req.user.refreshToken) {
-            res.send(`
+            return res.send(`
                 <html>
                     <body>
                         <pre>curl http://localhost:9090/api/v1/datauploads -H "Cookie: connect.sid=${req.cookies['connect.sid']}"
@@ -61,11 +68,11 @@ module.exports = (router) => {
                     </body>
                 </html>`)
         }else{
-            res.redirect('/api/login?r=' + encodeURIComponent('api/'));
+            return res.redirect('/api/login?r=' + encodeURIComponent('api/'));
         }
     });
     
-    router.use('/v1/publickey', auth.removeExpired, auth.requireLoggedIn, function(req, res){
+    router.get('/v1/publickey', auth.removeExpired, auth.requireLoggedIn, function(req, res){
         var config = require('config');
         var atob = require('atob');
         if (!config.has('base64EncodedPGPPublicKey')){
@@ -75,7 +82,7 @@ module.exports = (router) => {
         return res.json({key: key});
     });
     
-    router.use('/v1/uploadurl', auth.removeExpired, auth.requireLoggedIn, function(req, res){
+    router.get('/v1/uploadurl', auth.removeExpired, auth.requireLoggedIn, function(req, res){
         var config = require('config');
         if (!config.has('uploadUrl')){
             return res.json({error: "Not configured"});

@@ -1,8 +1,11 @@
 let auth = {};
 let atob = require('atob');
-let bent = require('bent')
+let bent = require('bent');
+let passport = require('passport');
 
-auth.requireLoggedIn = function(req, res, next){
+let env = process.env.NODE_ENV || 'development';
+
+auth.requireLoggedIn = async function(req, res, next){
     if (!req.user){
         res.status(401);
         return res.json({error: "Not Authorized"});
@@ -10,7 +13,7 @@ auth.requireLoggedIn = function(req, res, next){
     next();
 }
 
-auth.requireAdmin = function(req, res, next){
+auth.requireAdmin = async function(req, res, next){
     if (!req.user){
         res.status(401);
         return res.json({error: "Not Authorized"});
@@ -27,7 +30,7 @@ auth.requireAdmin = function(req, res, next){
     next();
 }
 
-auth.requireGroup = function(groupName){
+auth.requireGroup = async function(groupName){
 
     return function(req, res, next){
         if ( (!req.user) || (!req.user.groups) || (req.user.groups.indexOf(groupName) === -1) ){
@@ -40,6 +43,7 @@ auth.requireGroup = function(groupName){
 }
 
 auth.isTokenExpired = function(token){
+    const log = require('npmlog');
     let currDate = new Date();
 
     let base64Url = token.split('.')[1];
@@ -48,7 +52,7 @@ auth.isTokenExpired = function(token){
     let exp = new Date(0);
     exp.setUTCSeconds(jwtObj.exp);
 
-    console.log("TOK EXP?", (currDate>exp), currDate, exp )
+    log.verbose("TOK EXP?", (currDate>exp), currDate, exp )
 
     return (currDate > exp);
 }
@@ -116,10 +120,18 @@ auth.renew = async function(jwt, token, cb){
     cb(null, at, rt);
 }
 
-auth.removeExpired = function(req, res, next){
-    console.log("remove expired");
+auth.removeExpired = async function(req, res, next){
+    const log = require('npmlog');
+    if (env === 'test' && !req.user){
+        passport.authenticate('jwt', function(err, user, info){
+            if (!err && user){
+                req.user = user;
+            }
+        })(req, res, next);
+    }
+
     if ( (typeof(req.user) !== "undefined") && (typeof(req.user.jwt) !== "undefined") && (req.user.jwt !== null) ){
-        console.log("remove expired not undef");
+        log.verbose("remove expired not undef");
         if (auth.isTokenExpired(req.user.jwt)){
             console.log("remove expired token is expired");
             if ( (typeof(req.user.refreshToken) !== "undefined") && (req.user.refreshToken !== null) ){
@@ -153,11 +165,11 @@ auth.removeExpired = function(req, res, next){
                 next();
             }
         }else {
-            console.log("remove expired not expired");
+            log.verbose("remove expired not expired");
             next()
         }
     } else {
-        console.log("remove expired not signed in");
+        log.verbose("remove expired not signed in");
         req.user = null;
         delete req.user;
         next()

@@ -20,7 +20,7 @@
             </v-row>   
             <v-row>
                 <v-col cols="2">
-                    <v-btn color="primary" @click="startUploads">Upload</v-btn>
+                    <v-btn color="primary" @click="startUploads" id="upload">Upload</v-btn>
                 </v-col>
             </v-row>
         </span>    

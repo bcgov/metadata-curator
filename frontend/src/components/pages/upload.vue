@@ -21,7 +21,7 @@
                     <v-card class="mb-12">
                         <UploadForm ref="uploadForm"></UploadForm>
                     </v-card>
-                    <v-btn text @click="stepSaveUploadForm(true)">Next</v-btn>
+                    <v-btn text @click="stepSaveUploadForm(true)" id="next-1">Next</v-btn>
                 </v-stepper-content>
 
                 <v-stepper-content :step="steps.step2FileSelection">
@@ -29,8 +29,8 @@
                         <FileForm v-if="step === steps.step2FileSelection" ref="fileForm" @changed="step2Changed"></FileForm>
                     </v-card>
                     
-                    <v-btn text @click="step=steps.step1UploadForm">Back</v-btn>
-                    <v-btn color="primary" :disabled="!validStep3" @click="stepSaveFileForm(true)">Next</v-btn>
+                    <v-btn text @click="step=steps.step1UploadForm" id="back-2">Back</v-btn>
+                    <v-btn color="primary" :disabled="!validStep3" @click="stepSaveFileForm(true)" id="next-2">Next</v-btn>
                     
                 </v-stepper-content>
 
@@ -38,8 +38,8 @@
                     <v-card class="mb-12">
                         <FileInfoForm v-if="step === steps.step3FileLevelForm" ref="fileInfoForm"></FileInfoForm>
                     </v-card>
-                    <v-btn text @click="step=steps.step2FileSelection">Back</v-btn>
-                    <v-btn color="primary" @click="step=stepSaveFileInfoForm(true)">Next</v-btn>
+                    <v-btn text @click="step=steps.step2FileSelection" id="back-3">Back</v-btn>
+                    <v-btn color="primary" @click="step=stepSaveFileInfoForm(true)" id="next-3">Next</v-btn>
                     
                 </v-stepper-content>
 

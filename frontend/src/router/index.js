@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from '../store/index'
 
 const home = () => import(/* webpackChunkName: "home" */ "../components/pages/home");
 const dataUploadDetail = () => import(/* webpackChunkName: "dataUploadDetail" */ "../components/pages/dataUploadDetail")
@@ -185,7 +186,7 @@ r.beforeEach((to, from, next) => {
   }else if (to.path === "/logout"){
       window.location.href = "/api/logout";
   }else{
-
+    store.dispatch('user/getCurrentUser');
     //document.title = i18n.tc(to.meta.title);
     document.title = "Metadata Curator - " + to.meta.title;
     next();
