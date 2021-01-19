@@ -10,7 +10,7 @@
                         class="noBack"
                         grow>
                     <v-tabs-slider style="opacity: 0;"></v-tabs-slider>
-                    <v-tab v-for="tab of tabs" :key="tab.id" :to="tab.route" exact :disabled="tab.disabled">
+                    <v-tab v-for="tab of tabs" :key="tab.id" :to="tab.route" exact :disabled="tab.disabled" :id="'tab-'+tab.name.toLowerCase()">
                         {{ tab.name }}
                         <v-icon>{{tab.icon}}</v-icon>
                     </v-tab>

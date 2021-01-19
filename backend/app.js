@@ -5,7 +5,6 @@ let logger = require('morgan');
 let config = require('config');
 let session = require('express-session');
 let passport = require('passport');
-let OidcStrategy = require('passport-openidconnect').Strategy;
 let history = require('connect-history-api-fallback');
 require('./db/db').init();
 require('./auth/auth');
@@ -19,7 +18,15 @@ log.addLevel('debug', 2900, { fg: 'green' });
 
 let app = express();
 
-if(env != 'test') { app.use(logger('dev')); }
+let logLevel = "dev";
+if (config.has("morganLogType")){
+  logLevel = config.get("morganLogType");
+}
+
+if (logLevel !== 'none'){
+  app.use(logger(logLevel));
+}
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -45,115 +52,6 @@ passport.serializeUser((user, next) => {
 passport.deserializeUser((obj, next) => {
   next(null, obj);
 });
-
-var strategy = new OidcStrategy(config.get('oidc'), async function(issuer, sub, profile, accessToken, refreshToken, done){
-
-  var jwt = require('jsonwebtoken');
-  profile._json['aud'] = config.get('jwtAud');
-  profile.jwt = jwt.sign(profile._json, config.get('jwtSecret'));
-
-  profile.isAdmin = false;
-
-  profile.isDataProvider = false;
-  profile.isApprover = false;
-  profile.groups = [];
-  if ((typeof(profile._json) !== "undefined") && (typeof(profile._json.groups) !== "undefined")){
-    profile.groups = profile._json.groups;
-  }
-
-  if ((typeof(profile._json) !== "undefined") && (typeof(profile._json.email) !== "undefined")){
-    profile.email = profile._json.email;
-  }
-
-  if (config.has('adminGroup')){
-    profile.isAdmin = (profile.groups.indexOf(config.get('adminGroup')) !== -1);
-  }
-
-  if ( (config.has('orgAttribute')) && (profile._json[config.get('orgAttribute')]) ){
-    profile.organization = profile._json[config.get('orgAttribute')];
-  }
-
-  
-  profile.refreshToken = refreshToken;
-
-  const approverGroups = config.get("approverGroups");
-  
-  const foundApprover = profile.groups.some(group => approverGroups.includes(group));
-  
-  if(foundApprover) {
-    profile.isApprover = true; 
-  }
-
-  if(profile.organization) {
-    const alwaysNotifyList = new Map(Object.entries(config.get("alwaysNotifyList")));
-    // console.log("alwaysNotifyList: ", alwaysNotifyList);
-    profile.isDataProvider = alwaysNotifyList.has(profile.organization) ? true : false;
-  }
-
-  if ( (typeof(accessToken) === "undefined") || (accessToken === null) || (typeof(refreshToken) === "undefined") || (refreshToken === null) ){
-    console.log("No token");
-    return done("No access token", null);
-  }
-
-  var db = require('./db/db');
-
-  if (profile.email){
-    try{
-      var u = await db.User.findOne({email: profile.email});
-      profile.lastLogin = u.lastLogin;
-    }catch(ex){
-      console.log("No previous user info", ex);
-    }
-    
-  }
-
-  var user = {
-    email: profile.email,
-    name: profile.displayName,
-    groups: profile.groups,
-    lastLogin: new Date()
-  }
-
-  if (profile.email){
-    db.User.update({email: profile.email}, user, {upsert: true, setDefaultsOnInsert: true}, function(e,r){
-      if (e){
-        console.log("Error updating user info", e);
-      }else{
-        console.log("Updated user info");
-      }
-
-    });
-  }
-  
-
-  //console.log("setting profile");
-  return done(null, profile);
-});
-
-
-// set up passport
-passport.use('oidc', strategy);
-
-var genProfileFromJwt = function(profile, jwt, secret, orgAttribute) {
-  var jwtLib = require('jsonwebtoken');
-  var decoded = jwtLib.verify(jwt, secret);
-  // console.log("decoded token: ", decoded);
-
-  profile.displayName = `${decoded.GivenName} ${decoded.Surname}`;
-  profile.name = `${decoded.GivenName} ${decoded.Surname}`;
-
-  if (orgAttribute){
-    profile.organization = decoded[orgAttribute] ? decoded[orgAttribute] : false;
-  }
-
-  profile.groups = decoded.Groups;
-  profile.email = decoded.Email;
-
-  profile._json = decoded;
-  profile.jwt = jwt;
-
-  return profile;
-}
 
 app.get("/api/version", async function(req, res){
   if (req.query.type){
@@ -221,23 +119,6 @@ app.get("/api/version", async function(req, res){
 app.get('/', (req, res) => { res.redirect('/api/v1/api-docs'); });
 
 app.use('/api', backendRouter);
-
-app.use('/api', (err, req, res, next) => {
-    log.debug(typeof err);
-    log.debug(err);
-    err.statusCode = err.statusCode || 500;
-    err.status = err.status || 'error';
-
-    const response = {
-        status: err.status,
-        message: err.message
-    }
-
-    if (err.errors) {
-        response['errors'] = err.errors;
-    }
-    res.status(err.statusCode).json(response);
-});
 
 app.use(history({
   index: 'dist/index.html'

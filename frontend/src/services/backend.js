@@ -266,7 +266,7 @@ export class Backend {
     }
 
     postRepoBranch(repoId, branch){
-        const url = `/api/v1/repos/${repoId}/branches`;
+        const url = `/api/v1/repobranches/${repoId}/branches`;
         const body = { 
             name: branch.name,
             type: branch.type,

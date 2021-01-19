@@ -30,7 +30,6 @@ jobs:
         - |-
             cd /home/travis/build/bcgov/metadata-curator/backend
             cp config/default.json.example config/default.json
-            cp config/test.json.example config/test.json
         - |-
             wget -q ${SONAR_URL}${SONAR_APP}-cli-${SONAR_VERSION}.zip
             unzip ${SONAR_APP}-cli-${SONAR_VERSION}.zip
@@ -38,8 +37,7 @@ jobs:
       script:
         - |-
             cd /home/travis/build/bcgov/metadata-curator/backend
-            cat config/default.json
-            npm test || echo "hi"
+            npm test
         - |-
             cd /home/travis/build/bcgov/metadata-curator/backend
             bash docker_quayio_push metadata_curator_api

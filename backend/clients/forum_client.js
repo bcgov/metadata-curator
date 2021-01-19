@@ -96,7 +96,14 @@ const getTopics = async (user) => {
     };
 
     const url = forumApiConfig.baseUrl;
-    return await axios.get(url, options);
+    try{
+        let x = await axios.get(url, options);
+        return x;
+    }catch(ex){
+        console.log("ERROR", ex);
+        return {data: []};
+    }
+    
 }
 
 const createTopic = async function(topicName, parent, user){

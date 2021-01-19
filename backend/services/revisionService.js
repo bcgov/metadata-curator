@@ -3,9 +3,6 @@ const log = require('npmlog');
 const Mongoose = require('mongoose');
 const ObjectId = Mongoose.Types.ObjectId;
 
-const repoBranchService = require('./repoBranchService');
-const dataPackageService = require('./dataPackageService');
-
 const createRevisionWithDataPackage = async function(branch, changeSummary, updater, dataPackageDescriptor) {
     const metadataRevisionSchema = new db.MetadataRevisionSchema;
 
@@ -13,18 +10,18 @@ const createRevisionWithDataPackage = async function(branch, changeSummary, upda
     metadataRevisionSchema.type = 'tabular_data_package';
     metadataRevisionSchema.revision_number = branch.revisions.length + 1;
     metadataRevisionSchema.change_summary = changeSummary;
-    metadataRevisionSchema.content = await dataPackageService.buildDataPackageSchema(dataPackageDescriptor);
+    //metadataRevisionSchema.content = await dataPackageService.buildDataPackageSchema(dataPackageDescriptor);
     metadataRevisionSchema.updater = updater;
     metadataRevisionSchema.create_date = new Date();
 
     const rev = await metadataRevisionSchema.save();
 
-    await repoBranchService.addRevision(branch._id, rev).catch(err => {
-        log.error(err);
-        log.error("Rolling back the revision");
-        rev.delete();
-        throw err;
-    });
+    // await repoBranchService.addRevision(branch._id, rev).catch(err => {
+    //     log.error(err);
+    //     log.error("Rolling back the revision");
+    //     rev.delete();
+    //     throw err;
+    // });
 
     return rev;
 }
@@ -40,7 +37,7 @@ const updateRevision = async function(revId, changeSummary, updater) {
 
 const deleteRevision = async function(revisionId) {
     const rev = await getRevisionById(revisionId)
-    await repoBranchService.removeRevision(rev.repo_branch_id, revisionId);
+    //await repoBranchService.removeRevision(rev.repo_branch_id, revisionId);
     await rev.delete();
 }
 
