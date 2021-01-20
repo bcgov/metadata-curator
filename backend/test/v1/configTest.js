@@ -17,11 +17,11 @@ let basePath = "/api/v1/config/"
 
 describe("Config Routes", function() {
     let focalId = -1;
-    
+
     before(async () => {
         await dbHandler.connect();
     });
-    
+
     after(async () => {
         await dbHandler.clearDatabase()
         await dbHandler.closeDatabase()
@@ -39,7 +39,7 @@ describe("Config Routes", function() {
 
         it('should get 0 config', function (done) {
             var jwt = config.get('testJwt');
-    
+
             chai.request(server)
             .get(basePath)
             .set('Authorization' , 'Bearer ' + jwt)
@@ -128,7 +128,7 @@ describe("Config Routes", function() {
 
         it('should get 1 config', function (done) {
             var jwt = config.get('testJwt');
-    
+
             chai.request(server)
             .get(basePath)
             .set('Authorization' , 'Bearer ' + jwt)
@@ -142,7 +142,7 @@ describe("Config Routes", function() {
     });
 
     describe('PUT /', function (){
-        
+
         it('should get unauthorized', function(done){
             let url = basePath + focalId;
             chai.request(server)
@@ -156,7 +156,6 @@ describe("Config Routes", function() {
         it('should 404 without admin credentials', function(done){
             let url = basePath + focalId;
             var jwt = config.get('testJwt');
-            var decoded = jwtLib.decode(jwt);
 
             var body = {
                 value: "new val"
@@ -175,7 +174,6 @@ describe("Config Routes", function() {
         it('should update a config', function(done){
             let url = basePath + focalId;
             var jwt = config.get('testAdminJwt');
-            var decoded = jwtLib.decode(jwt);
 
             var body = {
                 value: "new val"
@@ -206,7 +204,7 @@ describe("Config Routes", function() {
 
         it('should get a config', function (done) {
             var jwt = config.get('testJwt');
-    
+
             chai.request(server)
             .get(basePath+focalId)
             .set('Authorization' , 'Bearer ' + jwt)
@@ -244,7 +242,7 @@ describe("Config Routes", function() {
 
         it('should delete a config', function (done) {
             var jwt = config.get('testAdminJwt');
-    
+
             chai.request(server)
             .delete(basePath+focalId)
             .set('Authorization' , 'Bearer ' + jwt)
@@ -256,7 +254,7 @@ describe("Config Routes", function() {
 
         it('should get 0 configs', function (done) {
             var jwt = config.get('testJwt');
-    
+
             chai.request(server)
             .get(basePath)
             .set('Authorization' , 'Bearer ' + jwt)
