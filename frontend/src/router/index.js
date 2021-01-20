@@ -13,6 +13,7 @@ const upload = () => import(/* webpackChunkName: "upload" */ "../components/page
 const importSchema = () => import(/* webpackChunkName: "import" */ "../components/pages/importSchema");
 const Admin = () => import(/* webpackChunkName: "Admin" */ "../components/pages/Admin");
 const NotFound = () => import(/* webpackChunkName: "NotFound" */ "../components/pages/404");
+const LoggedOut = () => import(/* webpackChunkName: "LoggedOut" */ "../components/pages/logout");
 
 Vue.use(Router)
 let r = new Router({
@@ -46,6 +47,15 @@ let r = new Router({
       }
     },
     {
+      path: '/loggedout',
+      name: 'loggedout',
+      component: LoggedOut,
+      meta: {
+        title: "Logged out",
+        requiresAuth: true
+      }
+    },
+    {
       path: '/import',
       name: 'import',
       component: importSchema,
@@ -62,39 +72,6 @@ let r = new Router({
           title: "Upload",
           requiresAuth: true
       },
-      // beforeEnter(to, from, next) {
-      //   console.log('beforeEnter: upload');
-      //   // console.log("activeTab: ", $root.activeTab);
-      //   console.log("before route change to: ", to);
-      //   console.log("before route change from: ", from);
-      //
-      //     // console.log("app: ", this.$router.app);
-      //     if(to.name === 'upload') {
-      //         console.log("upload route");
-      //         if (to.path.toString() === '/upload/new') {
-      //             console.log("upload new to path");
-      //             console.log("this.tabs: ", this.tabs);
-      //             const matchTab = this.tabs.find(tabItem => tabItem.name === "Upload");
-      //             console.log("matchTab: ", matchTab);
-      //         } else {
-      //             console.log("else");
-      //             const regex = /\/upload\/(.{21})/;
-      //             const matches = regex.exec(to.path);
-      //             if(matches) {
-      //                 console.log("match: " + matches[1]);
-      //                 let matchTab = this.tabs.find(tabItem => tabItem.name === "Upload");
-      //                 console.log("matchTab: ", matchTab);
-      //                 this.uploadId = matches[1];
-      //                 // matchTab.route = `/upload/${matches[1]}`;
-      //                 console.log("this.tabs: ", this.tabs);
-      //                 // this.$router.push({ name: 'upload', params: { id: this.upload._id } });
-      //                 this.$router.push({ name: 'upload' });
-      //             }
-      //         }
-      //     }
-      //
-      //   next();
-      //  },
     },
     {
       path: '/uploads',
@@ -179,12 +156,16 @@ let r = new Router({
 });
 
 
-r.beforeEach((to, from, next) => {
+r.beforeEach(async(to, from, next) => {
 
   if (to.path === "/login"){
     window.location.href = "/api/login";
   }else if (to.path === "/logout"){
+      await store.dispatch('user/removeUser');
       window.location.href = "/api/logout";
+  }else if (to.path === "/loggedout"){
+    document.title = "Metadata Curator - " + to.meta.title;
+    next();
   }else{
     store.dispatch('user/getCurrentUser');
     //document.title = i18n.tc(to.meta.title);
