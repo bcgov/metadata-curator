@@ -17,6 +17,13 @@ const getters = {
 }
 
 const actions = {
+    removeUser({commit}){
+        commit('setUser', {user: {}});
+        commit('setJWT', {jwt: ""});
+        commit('setLoggedIn', {loggedIn: false});
+        commit('setUserPermissions', {userPermissions: {}});
+    },
+
     async getCurrentUser({ commit, state }) {
         commit('setLoading', {loading: true});
         

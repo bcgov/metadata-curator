@@ -15,25 +15,27 @@ module.exports = (router) => {
     });
     
     router.get('/log', passport.authenticate(strategy), function(req, res, next){
-        console.log("log", req.user);
         next();
     });
     
     router.get('/callback', passport.authenticate(strategy, { failureRedirect: '/api/login' }), function(req, res, next){
         let config = require('config');
         if (req.session.r){
-            return res.redirect(config.get('frontend')+'/'+req.session.r);
+            let r = req.session.r;
+            delete req.session.r;
+            return res.redirect(config.get('frontend')+'/'+r);
         }
-        console.log("Redirect to "+config.get("frontend"));
         return res.redirect(config.get('frontend'));
         
     });
     
     router.get('/logout', auth.removeExpired,  function(req, res, next){
         req.logout();
+        delete req.session;
+
         let config = require('config');
 
-        let fe = config.get('frontend');
+        let fe = config.get('frontend') + '/loggedout';
 
         if (config.has('oidc.logoutURL')){
             let logoutUrl = config.get('oidc.logoutURL');

@@ -41,7 +41,7 @@ module.exports = (router) => {
     var forumClient = require('./clients/forum_client');
     var formioClient = require('./clients/formio_client');
     var revisionService = require('./services/revisionService');
-    var notify = require('./notify/notify');
+    var notify = require('./notify/notify')(db);
 
     var configRoutes = require('../base/config');
     var cfRouter = new Router();

@@ -83,7 +83,7 @@ const getVersion = async (user) => {
     return await axios.get(url);
 }
 
-const getTopics = async (user) => {
+const getTopics = async (user, query) => {
     let config = require('config');
     const forumApiConfig = config.get("forumApi");
 
@@ -95,7 +95,14 @@ const getTopics = async (user) => {
         }
     };
 
-    const url = forumApiConfig.baseUrl;
+    let url = forumApiConfig.baseUrl;
+
+    let queryKeys = Object.keys(query);
+    for (let i=0; i<queryKeys.length; i++){
+        url += (i==0) ? "?" : "&";
+        url += queryKeys[i] + "=" + query[queryKeys[i]];
+    }
+
     try{
         let x = await axios.get(url, options);
         return x;
