@@ -25,7 +25,7 @@ resource "docker_container" "forum_api" {
     "DB_USERNAME=${var.mongodb["username"]}",
     "DB_PASSWORD=${random_string.mongoSuperPassword.result}",
     "USER_ID_FIELD=${var.userIdField}",
-    "EMAIL_FIELD=${var.email}",
+    "EMAIL_FIELD=${var.emailField}",
     "GIVENNAME_FIELD=${var.givenNameField}",
     "SURNAME_FIELD=${var.surnameField}",
     "GROUP_FIELD=${var.groupField}",
