@@ -60,7 +60,8 @@ export default new Vuex.Store({
       'file.key',
       'file.uploadUrl',
       'file.successfullyUploadedChunks',
-      'file.fileHandles'
+      'file.fileHandles',
+      'repos.branches',
     ]
   })],
   strict: process.env.NODE_ENV !== 'production'
