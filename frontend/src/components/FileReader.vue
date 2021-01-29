@@ -439,10 +439,13 @@ export default {
                     "Upload-Concat": "partial"
                 },
                 metadata: {
-                filename: this.file.name,
+                    filename: this.file.name,
                     filetype: this.file.type,
                     jwt: this.jwt
                 },
+                jwt: this.jwt,
+                filename: this.file.name,
+                filetype: this.file.type,
                 retryDelays: [0, 1000, 3000, 5000],
                 chunkSize: this.chunkSize*10,
                 onError: error => {
