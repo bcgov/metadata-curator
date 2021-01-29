@@ -4,6 +4,8 @@ var buildStatic = function(db, router){
 
 var buildDynamic = function(db, router, auth, revisionService){
 
+    let mongoose = require('mongoose');
+
     let log = require('npmlog');
 
     const addBranch = async function(repoId, type, name, description, upload_id) {
@@ -72,6 +74,7 @@ var buildDynamic = function(db, router, auth, revisionService){
     }
     
     router.get('/', async function(req, res, next) {
+        console.log("list branches", req.query.data_upload_id);
         const branches = await getBranches(req.query.data_upload_id);
         res.status(200).json(branches);
     });
