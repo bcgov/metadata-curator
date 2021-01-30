@@ -1,5 +1,5 @@
 data "docker_registry_image" "formio" {
-  name = "${var.images["formio"]}"
+  name = var.images["formio"]
 }
 
 data "null_data_source" "indConfig" {
@@ -12,14 +12,14 @@ data "null_data_source" "indConfig" {
 data "null_data_source" "values" {
   inputs = {
     nodeConfig = <<-EOF
-{ 
-  ${data.null_data_source.indConfig.outputs["mongoConfig"]}, 
+{
+  ${data.null_data_source.indConfig.outputs["mongoConfig"]},
   ${data.null_data_source.indConfig.outputs["jwtConfig"]},
   "host": "${var.hostname}",
   "domain": "${var.host}/formio"
 }
 EOF
-  
+
   }
 }
 
