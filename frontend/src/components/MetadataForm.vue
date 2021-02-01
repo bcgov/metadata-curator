@@ -21,6 +21,18 @@
                         <v-row>
                             <h1 class="display-1 font-weight-thin ml-3 my-3">Metadata</h1>
                         </v-row>
+                        <v-row>
+                            <FileReader
+                                :show-encrypt-button="false"
+                                :show-upload-button="false"
+                                :show-import-button="true"
+                                :read-file="true"
+                                :clear-file="clearFile"
+                                :index="0"
+                                @file-opened="fileOpened"
+                            >
+                            </FileReader>
+                        </v-row>
                     </v-card-text>
                 </v-card>
                 <v-card-actions v-if="editing">
@@ -40,9 +52,11 @@
 <script>
 
 import {mapActions, mapMutations, mapState} from "vuex";
+import FileReader from './FileReader';
 
 export default {
     components:{
+        FileReader
     },
     props: {
         dialog: {
