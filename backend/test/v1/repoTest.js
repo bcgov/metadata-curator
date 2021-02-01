@@ -21,6 +21,8 @@ describe("Repo Routes", function() {
     let commentResponse = [];
     let focalId = -1;
 
+    const util = require('../util');
+
     beforeEach(async () => {
         sandbox = sinon.createSandbox();
         this.get = sandbox.stub(axios, 'get');
@@ -78,12 +80,8 @@ describe("Repo Routes", function() {
         await dbHandler.closeDatabase()
     });
     
-    after(async () => {
-        await dbHandler.clearDatabase()
-        await dbHandler.closeDatabase()
-    });
 
-    describe('GET /', function () {
+    describe('GET /', async function () {
         it('should get unauthorized', function(done){
             chai.request(server)
             .get(basePath)
@@ -92,6 +90,22 @@ describe("Repo Routes", function() {
                 done();
             })
         })
+
+        await util.setEnabledPhase(1);
+
+        it('should 404 if phase not enabled', function (done) {
+            var jwt = config.get('testJwt');
+    
+            chai.request(server)
+            .get(basePath)
+            .set('Authorization' , 'Bearer ' + jwt)
+            .end(function (err, res) {
+                res.should.have.status(404);
+                done();
+            })
+        })
+
+        await util.setEnabledPhase(2);
 
         it('should get 0 repos', function (done) {
             var jwt = config.get('testJwt');
@@ -108,7 +122,7 @@ describe("Repo Routes", function() {
         })
     })
 
-    describe('POST /', function (){
+    describe('POST /', async function (){
         it('should get unauthorized', function(done){
             chai.request(server)
             .post(basePath)
@@ -117,6 +131,28 @@ describe("Repo Routes", function() {
                 done();
             })
         })
+
+        await util.setEnabledPhase(1);
+
+        it('should 404 if phase not enabled', function (done) {
+            var jwt = config.get('testJwt');
+            var decoded = jwtLib.decode(jwt);
+
+            var body = {
+                name: "test repo"
+            }
+
+            chai.request(server)
+            .post(basePath)
+            .send(body)
+            .set('Authorization' , 'Bearer ' + jwt)
+            .end(function(err, res){
+                res.should.have.status(404);
+                done();
+            })
+        })
+
+        await util.setEnabledPhase(2);
 
         it('should fail without a name', function(done){
             var jwt = config.get('testJwt');
@@ -168,8 +204,7 @@ describe("Repo Routes", function() {
         })
     });
 
-    describe('PUT /', function (){
-        
+    describe('PUT /', async function (){
         it('should get unauthorized', function(done){
             let url = basePath + focalId;
             chai.request(server)
@@ -179,6 +214,29 @@ describe("Repo Routes", function() {
                 done();
             })
         });
+
+        await util.setEnabledPhase(1);
+
+        it('should 404 if phase not enabled', function (done) {
+            let url = basePath + focalId;
+            var jwt = config.get('testJwt');
+            var decoded = jwtLib.decode(jwt);
+
+            var body = {
+                name: "test repo2"
+            }
+
+            chai.request(server)
+            .put(url)
+            .send(body)
+            .set('Authorization' , 'Bearer ' + jwt)
+            .end(function(err, res){
+                res.should.have.status(404);
+                done();
+            })
+        })
+
+        await util.setEnabledPhase(2);
 
         it('should update a repo', function(done){
             let url = basePath + focalId;

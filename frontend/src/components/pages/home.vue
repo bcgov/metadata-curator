@@ -6,7 +6,7 @@
             </v-col>
         </v-row>
         <v-row wrap>
-            <v-col v-if="user.lastLogin" cols=12>
+            <v-col v-if="user && user.lastLogin" cols=12>
                 You last logged in: {{user.lastLogin | formatDate}}
             </v-col>
         </v-row>

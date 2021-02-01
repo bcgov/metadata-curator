@@ -63,6 +63,11 @@ export default {
             useDark: state => state.user.useDark
         }),
 
+        enabledPhase(){
+            let en = this.$store.state.config.items.find(item => item['key'] === 'enabledPhase');
+            return (en) ? parseInt(en.value) : 1;
+        },
+
         setTheme(){
             if (typeof(this.dark) !== 'undefined'){
                 this.$store.commit('user/setUseDark', {useDark: this.dark});
@@ -73,11 +78,20 @@ export default {
         tabs: function(){
             let t = [];
             if (this.user){
-                t = [
-                    { id: 1, name: "Home", route: `/`, icon: 'mdi-home', disabled: false},
-                    { id: 2, name: "Uploads", route: `/uploads`, icon: 'mdi-cloud-upload', disabled: false},
-                    { id: 3, name: "Datasets", route: `/datasets`, icon: 'mdi-folder-open', disabled: false},
-                    { id: 4, name: "Versions", route: `/versions`, icon: 'mdi-source-fork', disabled: false},
+                if (this.enabledPhase === 1){
+                    t = [
+                        { id: 2, name: "Uploads", route: `/uploads`, icon: 'mdi-cloud-upload', disabled: false},
+                    ];
+                }
+
+                if (this.enabledPhase === 2){
+                    t = [
+                        { id: 1, name: "Home", route: `/`, icon: 'mdi-home', disabled: false},
+                        { id: 2, name: "Uploads", route: `/uploads`, icon: 'mdi-cloud-upload', disabled: false},
+                        { id: 3, name: "Datasets", route: `/datasets`, icon: 'mdi-folder-open', disabled: false},
+                        { id: 4, name: "Versions", route: `/versions`, icon: 'mdi-source-fork', disabled: false},
+                    ]
+                }
 
                     //   { id: 2, name: "Upload", route: `/upload/new`, icon: 'mdi-upload', disabled: false},
                     //   { id: 3, name: "Import", route: `/import`, icon: 'mdi-import', disabled: false },
@@ -89,7 +103,6 @@ export default {
                     //   { id: 9, name: "Validate", route: `/validate`, icon: 'mdi-checkbox-marked-circle', disabled: true },
                     //   { id: 10, name: "Find & Replace", route: `/findreplace`, icon: 'mdi-file-find', disabled: true },
                     //   { id: 11, name: "Submit", route: `/submit`, icon: 'mdi-send', disabled: true }
-                ];
             }
 
             if ( (this.user) && (this.user.isAdmin) ){

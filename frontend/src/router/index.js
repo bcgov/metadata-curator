@@ -25,7 +25,8 @@ let r = new Router({
       component: home,
       meta: {
           title: "Home",
-          requiresAuth: true
+          requiresAuth: true,
+          phase: 2
       }
     },
     {
@@ -52,7 +53,7 @@ let r = new Router({
       component: LoggedOut,
       meta: {
         title: "Logged out",
-        requiresAuth: true
+        requiresNoUser: true
       }
     },
     {
@@ -61,7 +62,8 @@ let r = new Router({
       component: importSchema,
       meta: {
           title: "Import",
-          requiresAuth: true
+          requiresAuth: true,
+          phase: 2
       }
     },
     {
@@ -88,7 +90,8 @@ let r = new Router({
       component: datasets,
       meta: {
           title: "Datasets",
-          requiresAuth: true
+          requiresAuth: true,
+          phase: 2
       }
     },
     {
@@ -97,7 +100,8 @@ let r = new Router({
       component: datasetForm,
       meta: {
           title: "Dataset",
-          requiresAuth: true
+          requiresAuth: true,
+          phase: 2
       }
     },
     {
@@ -106,7 +110,8 @@ let r = new Router({
       component: versions,
       meta: {
           title: "Versions",
-          requiresAuth: true
+          requiresAuth: true,
+          phase: 2
       }
     },
     {
@@ -115,7 +120,8 @@ let r = new Router({
       component: version,
       meta: {
           title: "Version",
-          requiresAuth: true
+          requiresAuth: true,
+          phase: 2
       }
     },
     {
@@ -167,9 +173,29 @@ r.beforeEach(async(to, from, next) => {
     document.title = "Metadata Curator - " + to.meta.title;
     next();
   }else{
-    store.dispatch('user/getCurrentUser');
+    await store.dispatch('user/getCurrentUser');
+    let enabledPhase = await store.dispatch('config/getItem', {field: 'key', value: 'enabledPhase', def: {key: 'enabledPhase', value: '1'}});
+    let loggedIn = store.state.user.loggedIn;
+    
     //document.title = i18n.tc(to.meta.title);
     document.title = "Metadata Curator - " + to.meta.title;
+    
+    let requiresAuth = to.meta.requiresAuth;
+
+    let requiresNoUser = to.meta.requiresNoUser;
+
+    let phase = (to.meta.phase) ? to.meta.phase : 1;
+
+    if ( (requiresAuth) && (!loggedIn) ){
+      return next('/login');
+    }else if ( (requiresNoUser) && (loggedIn) ){
+      return next('/');
+    }
+
+    if (enabledPhase.value < phase){
+      return next('/uploads');
+    }
+    
     next();
   }
 
