@@ -3,11 +3,14 @@ var buildStatic = function(db, router){
 }
 
 
-var buildDynamic = function(db, router, auth, ValidationError){
+var buildDynamic = function(db, router, auth, ValidationError, cache){
 
     
     const {Package, Resource} = require('datapackage');
     const {Schema} = require('tableschema');
+
+    const util = require('./util');
+    const requiredPhase = 2
 
     const validateDataPackage = async function (descriptor) {
         const dataPackage = await Package.load(descriptor, {strict: false});

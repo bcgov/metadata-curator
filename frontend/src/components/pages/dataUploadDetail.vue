@@ -48,7 +48,7 @@
                                 <v-row class="ml-3 fixedHeight">
                                     <v-checkbox class="mt-0 pt-0" :disabled="true" label="Approver has viewed (since last update)" v-model="dataUpload.opened_by_approver"></v-checkbox>
                                 </v-row>
-                                <v-row>
+                                <v-row v-if="enabledPhase >= 2">
                                     <v-btn v-if="!inDataset" @click="createDataset" color="primary" class="mr-2">Create Dataset</v-btn>
                                     <v-btn @click="createVersion" color="primary">Add Version to Dataset</v-btn>
                                 </v-row>
@@ -215,6 +215,10 @@ export default {
         }),
         inDataset: function(){
             return this.repos.length > 0
+        },
+        enabledPhase(){
+            let en = this.$store.state.config.items.find(item => item['key'] === 'enabledPhase');
+            return (en) ? parseInt(en.value) : 1;
         },
         uploadDate: function(){
             if (this.dataUpload && this.dataUpload.upload_date){
