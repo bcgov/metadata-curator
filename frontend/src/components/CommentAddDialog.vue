@@ -9,7 +9,7 @@
                     <v-row>
                         <v-col cols="12">
                             <TextArea name="comment" label="Comment" validationRules="required" :value="commentVal"
-                            @edited="onCommentUpdated" ref="comment"></TextArea>
+                            :editing="true" @edited="onCommentUpdated" ref="comment"></TextArea>
                         </v-col>
                     </v-row>
                 </v-container>

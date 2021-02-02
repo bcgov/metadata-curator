@@ -78,7 +78,6 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
         
         try{
             if (dataUpload.status === "submitted"){
-                let notify = require('../notifications/notifications')();
                 dataUpload.upload_date = new Date();
                 notify.notify(dataUpload, user);
             }
@@ -100,7 +99,17 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             let topics = [];
             
             
-            const topicResponse = await forumClient.getTopics(user, query);
+            let currentData = await forumClient.getTopics(user, query);
+            let topicResponse = {data: []};
+            let page = 0;
+            
+            while (currentData.data.length >=100){
+                page++;
+                topicResponse.data = topicResponse.data.concat(currentData.data);
+                currentData = await forumClient.getTopics(user, {page: page});
+            }
+            topicResponse.data = topicResponse.data.concat(currentData.data);
+            
             
             if(query && query.filterBy) {
                 if(query.filterBy === 'me') {

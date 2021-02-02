@@ -1,13 +1,30 @@
+const { enabled } = require("../../app");
+
 var buildStatic = function(db, router){
     return router;
 }
 
 
-var buildDynamic = function(db, router, auth){
-    
+var buildDynamic = function(db, router, auth, cache){
+    //cache keys
+    const configListCache = 'config/configs';
+    const enabledPhaseCache = 'config/enabledPhase';
+
     router.get('/', async function(req, res, next) {
+
+        let cVal = cache.get(configListCache);
+        
+        if (cVal !== undefined){
+            res.status(200).json(cVal)
+        }
         var q = {};
         const configs = await db.ConfigSchema.find(q);
+        cache.set(configListCache, configs);
+        let enabledPhase = configs.find(item => item.key === 'enabledPhase');
+        if (enabledPhase){
+            cache.set(enabledPhaseCache, enabledPhase);
+        }
+
         res.status(200).json(configs);
     });
 
@@ -30,6 +47,12 @@ var buildDynamic = function(db, router, auth){
         configSchema.value = f.value;
 
         let conf =  await configSchema.save();
+
+        cache.del(configListCache)
+
+        if (conf.key == 'enabledPhase'){
+            cache.set(enabledPhaseCache, conf);
+        }
     
         res.status(201).json(conf);
     });
@@ -49,11 +72,20 @@ var buildDynamic = function(db, router, auth){
         
         await configSchema.save();
 
+        cache.del(configListCache);
+        if (configSchema.key === "enabledPhase"){
+            cache.set(enabledPhaseCache, configSchema);
+        }
+
         res.status(200).json(configSchema);
     });
 
     router.delete('/:configKey', auth.requireAdmin, async function(req, res, next){
         await db.ConfigSchema.deleteOne({key: req.params.configKey});
+        cache.del(configListCache);
+        if (req.params.configKey === "enabledPhase"){
+            cache.del(enabledPhaseCache);
+        }
         res.status(204).send();
     });    
 
