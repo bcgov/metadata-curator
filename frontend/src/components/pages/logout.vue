@@ -2,13 +2,12 @@
     <v-container>
         <v-row>
             <v-col cols=12>
-                <h1>Welcome to Metadata Curator</h1>
+                <h1> Metadata Curator</h1>
             </v-col>
         </v-row>
         <v-row wrap>
-            <v-col v-if="user && user.lastLogin" cols=12>
-                You last logged in: {{user.lastLogin | formatDate}}
-            </v-col>
+            You have been logged out
+            
         </v-row>
     </v-container>
 </template>

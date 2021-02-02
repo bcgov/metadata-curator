@@ -2,9 +2,14 @@ var buildStatic = function(db, router){
     return router;
 }
 
-var buildDynamic = function(db, router, auth, revisionService){
+var buildDynamic = function(db, router, auth, revisionService, cache){
+
+    let mongoose = require('mongoose');
 
     let log = require('npmlog');
+
+    const util = require('./util');
+    const requiredPhase = 2;
 
     const addBranch = async function(repoId, type, name, description, upload_id) {
         const repoBranchSchema = new db.RepoBranchSchema;
@@ -72,27 +77,48 @@ var buildDynamic = function(db, router, auth, revisionService){
     }
     
     router.get('/', async function(req, res, next) {
+        //version check
+        if (!util.phaseCheck(cache, requiredPhase)){
+            return res.status(404).send(util.phaseText('GET', 'repobranches'));
+        }
+
         const branches = await getBranches(req.query.data_upload_id);
         res.status(200).json(branches);
     });
 
     router.get('/:branchId', async function(req, res, next) {
+        //version check
+        if (!util.phaseCheck(cache, requiredPhase)){
+            return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.branchId)));
+        }
         const branch = await getBranchById(req.params.branchId);
         res.status(200).json(branch);
     });
 
     router.put('/:branchId', async function(req, res, next) {
+        //version check
+        if (!util.phaseCheck(cache, requiredPhase)){
+            return res.status(404).send(util.phaseText('PUT', ('repobranches/'+req.params.branchId)));
+        }
         let f = {...req.body};
         const result = await updateBranch(req.params.branchId, f.type, f.name, f.description);
         res.status(200).json(result);
     });
 
     router.delete('/:branchId', auth.requireAdmin, async function(req, res, next) {
+        //version check
+        if (!util.phaseCheck(cache, requiredPhase)){
+            return res.status(404).send(util.phaseText('DELETE', ('repobranches/'+req.params.branchId)));
+        }
         await deleteBranch(req.params.branchId);
         res.status(200).json({status: "ok"});
     });
 
     router.post('/:repoId/branches', async function(req, res, next){
+        //version check
+        if (!util.phaseCheck(cache, requiredPhase)){
+            return res.status(404).send(util.phaseText('POST', ('repobranches/'+req.params.repoId+"/branches")));
+        }
         let f = {...req.body};
         const repoId = req.params.repoId;
 
@@ -122,12 +148,20 @@ var buildDynamic = function(db, router, auth, revisionService){
     });
 
     router.get('/:repoId/branches', async function(req, res, next){
+        //version check
+        if (!util.phaseCheck(cache, requiredPhase)){
+            return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.repoId+"/branches")));
+        }
         const repoId = req.params.repoId;
         const branches = await listBranches(repoId);
         res.status(200).json(branches);
     });
 
     router.post('/:branchId/revisions', async function(req, res, next) {
+        //version check
+        if (!util.phaseCheck(cache, requiredPhase)){
+            return res.status(404).send(util.phaseText('POST', ('repobranches/'+req.params.branchId+"/revisions")));
+        }
         let f = {...req.body};
         const branchId = req.params.branchId;
         const branch = await getBranchById(branchId);
@@ -139,6 +173,10 @@ var buildDynamic = function(db, router, auth, revisionService){
     });
 
     router.get('/:branchId/revisions', async function(req, res, next) {
+        //version check
+        if (!util.phaseCheck(cache, requiredPhase)){
+            return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.branchId+"/revisions")));
+        }
         const branchId = req.params.branchId;
         await getBranchById(branchId);
         const revisions = await revisionService.listRevisionsByBranch(branchId);
@@ -146,6 +184,10 @@ var buildDynamic = function(db, router, auth, revisionService){
     });
 
     router.put('/:branchId/revisions/:revId', async function(req, res, next) {
+        //version check
+        if (!util.phaseCheck(cache, requiredPhase)){
+            return res.status(404).send(util.phaseText('PUT', ('repobranches/'+req.params.branchId+"/revisions/"+req.params.revId)));
+        }
         let f = {...req.body};
         const branchId = req.params.branchId;
         const revId = req.params.revId;
@@ -156,6 +198,10 @@ var buildDynamic = function(db, router, auth, revisionService){
     });
 
     router.delete('/:branchId/revisions/:revId', async function(req, res, next) {
+        //version check
+        if (!util.phaseCheck(cache, requiredPhase)){
+            return res.status(404).send(util.phaseText('DELETE', ('repobranches/'+req.params.branchId+"/revisions/"+req.params.revId)));
+        }
         const branchId = req.params.branchId;
         const revId = req.params.revId;
         await getBranchById(branchId);

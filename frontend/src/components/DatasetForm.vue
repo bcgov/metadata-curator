@@ -25,7 +25,12 @@
                 <v-card outlined>
                     <v-card-text>
                         <v-row>
-                            <h1 class="display-1 font-weight-thin ml-3 my-3">{{creating ? "New Dataset" : "Dataset " + id}}</h1>
+                            <h1 class="display-1 font-weight-thin ml-3 my-3">{{creating ? "New Dataset" : "Dataset " + dataset.name}}</h1>
+                        </v-row>
+
+                        <v-row v-if="!creating">
+                            <label>ID:</label>
+                            <span>{{id}}</span>
                         </v-row>
 
                         <v-row>

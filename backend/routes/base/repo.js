@@ -2,9 +2,12 @@ var buildStatic = function(db, router){
     return router;
 }
 
-var buildDynamic = function(db, router, auth, forumClient){
+var buildDynamic = function(db, router, auth, forumClient, cache){
     const log = require('npmlog');
     const mongoose = require('mongoose');
+
+    const util = require('./util');
+    const requiredPhase = 2
 
     const createRepo = async function(user, name) {
         const id = mongoose.Types.ObjectId();
@@ -59,11 +62,19 @@ var buildDynamic = function(db, router, auth, forumClient){
     }
     
     router.get('/', async function(req, res, next) {
+        //version check
+        if (!util.phaseCheck(cache, requiredPhase)){
+            return res.status(404).send(util.phaseText('GET', 'repos'));
+        }
         let repos = await listRepositories(req.user, req.query);
         res.status(200).json(repos);
     });
 
     router.post('/', async function(req, res, next){
+        //version check
+        if (!util.phaseCheck(cache, requiredPhase)){
+            return res.status(404).send(util.phaseText('POST', 'repos'));
+        }
         let fields = {...req.body};
 
         if (!fields.name){
@@ -79,6 +90,10 @@ var buildDynamic = function(db, router, auth, forumClient){
     });
 
     router.put('/:repoId', async function(req, res, next){
+        //version check
+        if (!util.phaseCheck(cache, requiredPhase)){
+            return res.status(404).send(util.phaseText('PUT', ('repos/'+req.params.repoId)));
+        }
         const repo = await updateRepo(req.user, req.params.repoId, req.body);
         res.status(200).json(repo);
     });

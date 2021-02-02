@@ -3,7 +3,10 @@ var buildStatic = function(db, router){
 }
 
 
-var buildDynamic = function(db, router, auth){
+var buildDynamic = function(db, router, auth, cache){
+
+    const util = require('./util');
+    const requiredPhase = 2
 
     const addDataPackageFromTableSchema = async function(schemaDescriptor) {
         

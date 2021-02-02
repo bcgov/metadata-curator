@@ -12,20 +12,35 @@ var build = function(getFn, newFn, updateFn, deleteFn){
     const getters = {};
 
     const actions = {
-        getItems({ commit }, { param }) {
+        async getItems({ commit }, { param }) {
 
             if ( (typeof(param) !== 'undefined') && (param !== false) ){
-                backend[getFn](param).then((data) => {
+                try{
+                    let data = await backend[getFn](param);
                     commit('setItems', {items: data});
-                }).catch((e) => {
+                }catch(e){
                     console.error("Retrieve data uploads error: ", e);
-                });
+                }
             }else{
-                backend[getFn]().then((data) => {
+                try{
+                    let data = await backend[getFn]();
                     commit('setItems', {items: data});
-                }).catch((e) => {
+                }catch(e){
                     console.error("Retrieve data uploads error: ", e);
-                });
+                }
+            }
+        },
+
+        async getItem({state, commit, dispatch}, {field, value, def}){
+            if (!state.items || state.items.length === 0){
+                await dispatch('getItems', {});
+            }
+            let rv = state.items.find(item => item[field] === value);
+            if ( (!rv) && (def) ){
+                commit('pushItem', {item: def});
+                return def;
+            }else{
+                return rv;
             }
         },
 
@@ -62,7 +77,31 @@ var build = function(getFn, newFn, updateFn, deleteFn){
 
     let mutations = {
         setItems(state, {items}){
-            Vue.set(state, 'items', items);
+            if (state.items == []){
+                Vue.set(state, 'items', items);
+            }else{
+                let concatItems = [];
+                for (let i=0; i<items.length; i++){
+                    let inArr = false;
+                    for (let j=0; j<state.items.length; j++){
+                        if (JSON.stringify(state.items[j]) === JSON.stringify(items[i])){
+                            inArr = true;
+                            break;
+                        }
+                    }
+                    if (!inArr){
+                        concatItems.push(items[i])
+                    }
+                }
+                var newItems = state.items.concat(concatItems);
+                Vue.set(state, "items", newItems);
+            }
+        },
+
+        pushItem(state, {item}){
+            let x = state.items.concat([item]);
+            console.log("PUSH ITEM", item, x)
+            Vue.set(state, "items", x);
         },
 
         setError(state, {error}){

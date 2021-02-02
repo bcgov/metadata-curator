@@ -12,7 +12,10 @@ global.catchAsync = fn => {
 
 frontendRoutes(router);
 
+const NodeCache = require( "node-cache" );
+const cache = new NodeCache( { /*stdTTL: 100, checkperiod: 120*/ } );
+
 const v1 = require('./v1/v1');
-router.use('/v1', auth.removeExpired, v1(express.Router()));
+router.use('/v1', auth.removeExpired, v1(express.Router(), cache));
 
 module.exports = router;

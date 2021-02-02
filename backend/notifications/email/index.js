@@ -1,5 +1,6 @@
 var notification = function(_config = null){
-    var config = _config == null ? require('config') : _config;
+    //var config = _config == null ? require('config') : _config;
+    var config = require('config');
 
     var notifications = {};
     var fs = require('fs');
@@ -32,8 +33,9 @@ var notification = function(_config = null){
         const dataUploadURL = url.resolve(baseURL, dataUploadPartialUrl);
         const dataUploadName = dataUpload.name;
         const dataUploadId = dataUpload._id.toString();
+
         email = email.replace("{{name}}", user['name']);
-        email = email.replace("{{updater}}", triggeringUser['name']);
+        email = email.replace("{{updater}}", triggeringUser['displayName']);
         email = email.replace("{{baseURL}}", baseURL);
         email = email.replace("{{dataUploadURL}}", dataUploadURL);
         email = email.replace("{{dataUploadName}}", dataUploadName);
@@ -46,16 +48,16 @@ var notification = function(_config = null){
     //user is the user making the change
     notifications.notify = function(dataUpload, user){
 
-        // var logger = require('npmlog');
+        var logger = require('npmlog');
 
         if (!config.has('email')){
-            // logger.debug("Notifications[email] - Triggered but not configured");
+            logger.debug("Notifications[email] - Triggered but not configured");
             return;
         }
 
         var emailConfig = config.get('email');
         if (!emailConfig.enabled){
-            // logger.debug("Notifications[email] - Triggered but not enabled");
+            logger.debug("Notifications[email] - Triggered but not enabled");
             return;
         }
 
@@ -66,12 +68,12 @@ var notification = function(_config = null){
             }
         }
 
-        // logger.verbose("Notification[email] triggered", user);
+        logger.verbose("Notification[email] triggered", user);
 
     };
 
     function sendEmail(dataUpload, userInfo, user, templateName){
-        // var logger = require('npmlog');
+        var logger = require('npmlog');
 
         var emailConfig = config.get('email');
         var emailContent = setTemplate(dataUpload, userInfo, user, templateName);
@@ -110,10 +112,10 @@ var notification = function(_config = null){
 
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
-                // logger.error("Error sending email to " + mailOptions.to, error);
+                logger.error("Error sending email to ", mailOptions.to, error);
                 return;
             }
-            // logger.debug("Email sent: " + info.response);
+            logger.debug("Email sent: " + info.response);
         });
     }
 
