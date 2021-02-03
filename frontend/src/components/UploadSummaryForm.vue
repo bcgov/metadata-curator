@@ -20,6 +20,10 @@
                         <v-row v-if="file.description">Description: {{file.description}}</v-row>
                     </v-col>
                 </v-row>
+                <v-row v-if="enabledPhase >= 2">
+                    <v-btn v-if="!inDataset" color="primary">Create Dataset</v-btn>
+                    <v-btn color="primary">Add Version to Dataset</v-btn>
+                </v-row>
             </span>
             <span>
                 <formio
@@ -51,6 +55,8 @@
         methods: {
             ...mapActions({
                 getUploadFormSubmission: 'uploadForm/getUploadFormSubmission',
+                getRepos: 'repos/getRepos',
+                getAllRepos: 'repos/getAllRepos',
             }),
 
             formLoad(){
@@ -94,6 +100,7 @@
                 },
                 formData: {},
                 formSubmission: {},
+                inDataset: true,
             }
         },
         computed: {
@@ -102,6 +109,10 @@
                 uploadForm: state => state.uploadForm.formDef,
                 submission: state => state.uploadForm.submission,
             }),
+            enabledPhase(){
+                let en = this.$store.state.config.items.find(item => item['key'] === 'enabledPhase');
+                return (en) ? parseInt(en.value) : 1;
+            },
             uploadDate: function(){
                 if (this.uploadStore && this.uploadStore.upload_date){
                     return this.uploadStore.upload_date.substring(0, this.uploadStore.upload_date.indexOf(".")).replace("T", " ");
@@ -111,6 +122,8 @@
         },
         mounted(){
             this.formDef = this.uploadForm;
+            this.getAllRepos();
+            this.getRepos({filterBy: {upload_id: this.uploadStore._id}});
         },
 
         watch: {
@@ -123,7 +136,7 @@
                     this.formSubmission = {...newVal};
                 }
                     
-                this.getUploadFormSubmission(this.formSubmission.upload_submission_id);
+                this.getUploadFormSubmission(this.formSubmission.form_name, this.formSubmission.upload_submission_id);
                 this.spanKey++;
             },
             // eslint-disable-next-line no-unused-vars

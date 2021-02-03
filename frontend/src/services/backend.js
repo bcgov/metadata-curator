@@ -220,4 +220,119 @@ export class Backend {
         return axios.delete(url,{withCredentials: true}).then(response => response.data)
     }
 
+    getRepos(query){
+        if (typeof(query) === "undefined"){
+            query = {filterBy: false};
+        }
+        let url = '/api/v1/repos';
+        if(query.filterBy) {
+            let keys = Object.keys(query.filterBy);
+            for (let i=0; i<keys.length; i++){
+                url += (i==0) ? `/?` : `&`;
+                url += `${keys[i]}=${query.filterBy[keys[i]]}`;
+            }
+        }
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+    postRepo(repo){
+        // console.log("BE postdataUpload: " + dataUpload);
+        const url = `/api/v1/repos`;
+        const body = { name: repo.name };
+        return axios.post(url, body, {withCredentials: true}).then(response => response.data)
+    }
+
+    putRepo(repo){
+        // console.log("BE putdataUpload: " + dataUpload);
+        const url = `/api/v1/repos/${repo._id}`;
+        const body = { 
+            name: repo.name,
+        };
+        return axios.put(url, body, {withCredentials: true}).then(response => response.data)
+    }
+
+    getRepoBranches(repoId){
+        // console.log("BE putdataUpload: " + dataUpload);
+        const url = `/api/v1/repos/${repoId}/branches`;
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+    getBranches(filterObj){
+        let url = `/api/v1/repobranches`;
+        if ((filterObj) && (filterObj.upload_id)){
+            url += "?data_upload_id=" + filterObj.upload_id
+        }
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+    postRepoBranch(repoId, branch){
+        const url = `/api/v1/repobranches/${repoId}/branches`;
+        const body = { 
+            name: branch.name,
+            type: branch.type,
+            description: branch.description,
+            upload_id: branch.upload_id,
+        };
+        return axios.post(url, body, {withCredentials: true}).then(response => response.data)
+    }
+
+    putRepoBranch(repoId, branch){
+        const url = `/api/v1/repobranches/${branch._id}`;
+        const body = { 
+            name: branch.name,
+            type: branch.type,
+            description: branch.description,
+            upload_id: branch.upload_id,
+        };
+        return axios.put(url, body, {withCredentials: true}).then(response => response.data)
+    }
+
+    getMcVersion(){
+        let url = `/api/version`;
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+    getForumVersion(){
+        let url = `/api/version?type=forum`;
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+    getTusVersion(){
+        let url = `/api/version?type=tusd`;
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+
+    getConfigs(){
+        const url = `/api/v1/config`
+        return axios.get(url, {withCredentials: true}).then( (response) => {
+            let data = response.data;
+            return data;
+        })
+    }
+
+    getConfig(key){
+        const url = `/api/v1/config/${key}`
+        return axios.get(url, {withCredentials: true}).then( (response) => {
+            let data = response.data;
+            return data;
+        })
+    }
+
+    putConfig(id, editedForm){
+        let body = {value: editedForm.value};
+        const url = `/api/v1/config/${editedForm.key}`;
+        return axios.put(url, body, {withCredentials: true}).then(response => response.data)
+    }
+
+    newConfig(newForm){
+        const url = `/api/v1/config`;
+        return axios.post(url, newForm, {withCredentials: true}).then(response => response.data)
+    }
+
+    deleteConfig(id){
+        const url = `/api/v1/config/${id}`;
+        return axios.delete(url, {}, {withCredentials: true}).then(response => response.data)
+    }
+
 }

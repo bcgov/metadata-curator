@@ -1,24 +1,30 @@
 <template>
-    <div>
-        <DataUploads></DataUploads>
-    </div>
+    <v-container>
+        <v-row>
+            <v-col cols=12>
+                <h1>Welcome to Metadata Curator</h1>
+            </v-col>
+        </v-row>
+        <v-row wrap>
+            <v-col v-if="user && user.lastLogin" cols=12>
+                You last logged in: {{user.lastLogin | formatDate}}
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
 <script>
 
-import {mapMutations} from 'vuex';
-import DataUploads from "../DataUploads";
+import {mapState} from 'vuex';
 
 export default {
     components:{
-        DataUploads,
     },
     created() {
-        this.resetState();
     },
-    methods: {
-        ...mapMutations({
-            resetState: 'file/resetState'
-        }),
+    computed: {
+        ...mapState({
+            user: state => state.user.user,
+        })
     },
 }
 </script>

@@ -20,3 +20,6 @@ coverage
 
 # nyc test coverage
 .nyc_output
+
+# storybook build files
+frontend/storybook-static

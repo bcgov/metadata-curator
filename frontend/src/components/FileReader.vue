@@ -10,7 +10,7 @@
         </v-row>
         <v-row>
             <v-col cols=12>
-                <v-file-input v-model="file" :disabled="disabled" show-size label="File input" style="margin-top:0px;padding-top:0px;"></v-file-input>
+                <v-file-input v-model="file" :disabled="disabled" show-size label="File input" class="mt-0 pt-0"></v-file-input>
             </v-col>
         </v-row>
         <v-row class="my-0 py-0" v-if="admin">
@@ -35,7 +35,7 @@
                     <br />
                     <span>
                         {{progressMessage2}}
-                    </span> 
+                    </span>
                     <br />
                     <span>
                         {{progressMessage3}}
@@ -160,17 +160,17 @@ export default {
 
         progressMessage1: function(){
             let num = this.numChunks && this.numChunks > 0 ? this.numChunks : 1;
-            return `Encrypted: ${this.numEncrypted}/${num}` 
+            return `Encrypted: ${this.numEncrypted}/${num}`
         },
         progressMessage2: function(){
             let num = this.numChunks && this.numChunks > 1 ? this.numChunks+1 : 1;
-            return `Uploaded: ${this.numUploaded}/${num}` 
+            return `Uploaded: ${this.numUploaded}/${num}`
         },
         progressMessage3: function(){
-            return `Upload 1: ${this.up1Progress}/${this.up1Size}` 
+            return `Upload 1: ${this.up1Progress}/${this.up1Size}`
         },
         progressMessage4: function(){
-            return `Upload 2: ${this.up2Progress}/${this.up2Size}` 
+            return `Upload 2: ${this.up2Progress}/${this.up2Size}`
         },
 
         getFinger: function(){
@@ -226,7 +226,7 @@ export default {
                     this.confirmResume = false;
                     this.openFile(true);
                 }
-                
+
             }else{
                 this.confirmChange = false;
                 this.confirmResume = false;
@@ -278,7 +278,7 @@ export default {
                 resume = false;
             }
 
-            
+
 
             if (this.file){
                 let finger = this.getFinger;
@@ -375,44 +375,44 @@ export default {
 
                     if (self.readFile === true){
                         // console.log("watch filename: " + self.file.name);
-                        
+
                         if (self.offset === 0){
                             let finger = self.getFinger;
                             self.$store.commit('file/setFileName', { fileName: self.file.name});
                             self.$store.commit('file/addFileHandleIfNotPresent', { handle: self.file, fileSig: finger});
                             await self.$store.commit('file/setContent', { content: content, index: index});
-                            
+
                             self.$store.commit('file/setFileSig', {fileSig: finger});
                         }
 
                         self.$store.dispatch('file/encryptContent', {clear: self.offset === 0, index: index, content: content}).then( () => {
                             resolve(e.target.result);
                         });
-                        
+
                     }else{
                         self.encrypt(content, index).then ( () => {
                             resolve(e.target.result);
                         })
-                        
+
                     }
                     //see below comment for why this is floor instead of ceil
                     self.numChunks = Math.floor(self.file.size / self.chunkSize);
                     self.offset += self.chunkSize;
                 }
-                
+
                 this.currChunk += 1;
                 if (this.currChunk < this.numChunks){
                     reader.readAsArrayBuffer(this.file.slice(this.offset, (this.offset + this.chunkSize)));
 
                 }else{
-                    //this last chunk can be bigger than the rest because each chunk needs to 
-                    //be at least 5mb due to s3/minio restrictions 
+                    //this last chunk can be bigger than the rest because each chunk needs to
+                    //be at least 5mb due to s3/minio restrictions
                     //and with ceil that can't be guaranteed
                     //note it can be at most (2*chunkSize)-1
                     reader.readAsArrayBuffer(this.file.slice(this.offset));
                 }
             });
-            
+
         },
 
         upload: function(){
@@ -514,7 +514,7 @@ export default {
                         if (!self.disabledProp){
                             self.disabled = false;
                         }
-                    }                     
+                    }
                 },
             }
 
@@ -528,7 +528,7 @@ export default {
             let initialUpIndex = (this.currChunk > 1) ? 2 : 0;
             if (this.readFile){
                 u = new tus.Upload(this.blob[initialUpIndex], uploadOptions);
-            }else{ 
+            }else{
                 u = new tus.Upload(this.encContentBlobs[initialUpIndex], uploadOptions);
             }
             this.uploads.push(u);
