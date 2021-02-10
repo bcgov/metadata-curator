@@ -19,7 +19,7 @@
     "core-js": "^2.6.10",
     "css-loader": "^3.6.0",
     "es6-promise": "^4.2.8",
-    "formiojs": "^4.12.4",
+    "formiojs": "^4.12.7",
     "handsontable": "6.2.2",
     "js-beautify": "^1.13.0",
     "md5": "^2.3.0",
