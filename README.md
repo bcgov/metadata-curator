@@ -96,7 +96,7 @@ terraform plan -var hostRootPath=`pwd`/_tmp
 terraform apply -var hostRootPath=`pwd`/_tmp -auto-approve
 
 # after a succesful build, stop all containers, with the exception of mc_formio and mc_mongodb
-docker stop mc_ngnix mc_forum_api mc_backend mc_minio mc_frontend mc_tusd
+docker stop mc_nginx mc_forum_api mc_backend mc_minio mc_frontend mc_tusd
 
 # confirm that only `mc_formio` and `mc_mongodb` are running
 docker ps 
