@@ -69,6 +69,7 @@
     "babel-preset-vue": "^2.0.2",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.2.3",
+    "prettier": "^2.2.1",
     "prism-react-renderer": "^0.1.7",
     "prismjs": "^1.23.0",
     "sass": "^1.32.7",
