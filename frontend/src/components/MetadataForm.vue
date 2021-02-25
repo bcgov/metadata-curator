@@ -27,9 +27,9 @@
                                 :show-upload-button="false"
                                 :show-import-button="true"
                                 :read-file="true"
-                                :clear-file="clearFile"
                                 :index="0"
-                                @file-opened="fileOpened"
+                                @import-button-clicked="importButtonClicked"
+                                :ignoreDuplicates="true"
                             >
                             </FileReader>
                         </v-row>
@@ -77,7 +77,8 @@ export default {
             types: [ {text: 'Standard', value: 'standard'}, {text: 'Reserve', value: 'reserve'} ],
             alert: false,
             alertType: "success",
-            alertText: ""
+            alertText: "",
+            metadataType: 'table-schema',
         }
     },
     methods: {
@@ -87,10 +88,13 @@ export default {
             updateBranch: 'repos/updateBranch',
             getBranch: 'repos/getBranch',
             getDataUploads: 'dataUploads/getDataUploads',
+            createTableSchema: 'schemaImport/createTableSchema',
         }),
         ...mapMutations({    
             editBranch: 'repos/editBranch',
             clearBranch: 'repos/clearBranch',
+            setTableSchema: 'schemaImport/setTableSchema',
+            resetSchemaImportState: 'schemaImport/resetState',
         }),
 
         async loadSections() {
@@ -110,7 +114,6 @@ export default {
         },
 
         async load(){
-            // console.log("dataUpload id: " + this.$route.params.id);
             this.id = (this.branchId) ? this.branchId : this.$route.params.id;
             await this.getDataUploads("team");
             if (this.id === 'create'){
@@ -150,7 +153,22 @@ export default {
             
             
             
-        }
+        },
+
+        async importButtonClicked(content) {
+            if(this.metadataType == 'table-schema') {
+                const Schema = require('tableschema').Schema;
+                let json = JSON.parse(content);
+                let s = await Schema.load(json, false);
+                // eslint-disable-next-line
+
+                this.setTableSchema({schema: s});
+                this.saveTableSchema();
+            }
+        },
+        saveTableSchema() {
+            this.createTableSchema();
+        },
     },
     computed: {
         ...mapState({
