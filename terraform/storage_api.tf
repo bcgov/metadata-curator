@@ -33,7 +33,7 @@ resource "docker_container" "minio" {
     timeout      = "5s"
     start_period = "10s"
     retries      = 20
-  }  
+  }
 }
 
 data "local_file" "pre_create_py" {
@@ -70,7 +70,7 @@ resource "docker_container" "tusd" {
     "AWS_SECRET_ACCESS_KEY=${random_string.secretKey.result}",
     "AWS_REGION=not_applicable",
     "JWT_SECRET=${random_string.jwtSecret.result}",
-    "JWT_AUD=outputchecker",
+    "JWT_AUD=aud",
     "S3_ENDPOINT=http://mc_minio:9000",
     "S3_BUCKET=bucket -behind-proxy",
   ]

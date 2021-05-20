@@ -61,7 +61,7 @@
 
         <v-container>
             <v-row>
-                <v-col cols=2>
+                <v-col cols="2">
                     <v-btn color="primary" to="/upload/new" id="newUpload">New Upload</v-btn>
                 </v-col>
             </v-row>
@@ -148,7 +148,7 @@ export default {
         routeToUploadInfo(dataUploadId) {
             const selectedDataUpload = this.getDataUploadById(dataUploadId);
             if(selectedDataUpload.status == 'not_submitted') {
-                this.$router.push({ name: 'upload', params: { id: dataUploadId } })
+                this.$router.push({ name: 'upload_view', params: { id: dataUploadId } })
             }
             else {
                 this.$router.push({ name: 'data-upload-detail', params: { id: dataUploadId } })
