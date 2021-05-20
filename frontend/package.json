@@ -20,7 +20,7 @@
     "css-loader": "^3.6.0",
     "datapackage": "^1.1.10",
     "es6-promise": "^4.2.8",
-    "formiojs": "^4.12.7",
+    "formiojs": "^4.13.1",
     "handsontable": "6.2.2",
     "js-beautify": "^1.13.5",
     "md5": "^2.3.0",
