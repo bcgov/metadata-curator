@@ -6,7 +6,9 @@ let config = require('config');
 let session = require('express-session');
 let passport = require('passport');
 let history = require('connect-history-api-fallback');
-require('./db/db').init();
+if (process.env.NODE_ENV !== "test"){
+  require('./db/db').init();
+}
 require('./auth/auth');
 const env = process.env.NODE_ENV || 'development';
 
