@@ -6,8 +6,9 @@ trap 'echo "\"${last_command}\" command filed with exit code $?."' EXIT
 QUAYIO_REPO=$1
 QUAYIO_BASE="quay.io/h3brandon"
 
-echo "Logging into Quay..."
+echo "Logging into Quay...and Dockerhub"
 echo "$QUAYIO_PASSWORD" | docker login -u "$QUAYIO_USERNAME" --password-stdin quay.io
+echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
 echo "Building Docker image..."
 docker build -t $QUAYIO_BASE/$QUAYIO_REPO .

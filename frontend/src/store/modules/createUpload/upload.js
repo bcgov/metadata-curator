@@ -21,9 +21,11 @@ const actions = {
             commit('setUpload', data);
             commit('setCreateUploadInProgress', false);
             commit('setNewUploadCreated', true);
+            return data;
         } catch(e) {
             console.log("Create initial upload error: ", e);
             commit('setError', {error: e.response.data.error});
+            return e;
         }
     },
     async getUpload({ commit }, id) {
@@ -54,9 +56,11 @@ const actions = {
         try {
             const data = await backend.putDataUpload(upload);
             commit('setUpload', data);
+            return data;
         } catch(e) {
             console.log("addSubmissionIdToUpload error: ", e);
             commit('setError', {error: e.response.data.error});
+            return e;
         }
     },
 

@@ -95,7 +95,7 @@
                 }
                 else {
                     // console.log("update existing upload submission");
-                    await this.updateUploadFormSubmission(this.upload.form_name, this.formSubmission);
+                    await this.updateUploadFormSubmission({formName: this.upload.form_name, submission: this.formSubmission});
                 }
                 // this.$refs.formioObj.formio.emit('submitDone', submission);
             },

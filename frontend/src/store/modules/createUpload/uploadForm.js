@@ -94,7 +94,7 @@ const actions = {
             commit('setError', {error: e.response.data.error});
         }
     },
-    async updateUploadFormSubmission({ commit }, formName, submission) {
+    async updateUploadFormSubmission({ commit }, {formName, submission}) {
         try {
             const data = await backend.putFormSubmission(formName, submission._id, submission.data);
             commit('setFormSubmission', data);

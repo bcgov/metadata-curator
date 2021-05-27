@@ -8,18 +8,17 @@ var buildDynamic = function(db, router, auth, cache){
     const util = require('./util');
     const requiredPhase = 2
 
-    const addDataPackageFromTableSchema = async function(schemaDescriptor) {
+    const addDataPackageFromTableSchema = async function(schema) {
         
-        let schema = await Schema.load(schemaDescriptor);
         if (!schema.valid) {
-        
+            throw new ValidationError("Invalid Schema");
         }
 
         let resources = [
             {
                 profile: "tabular-data-resource",
                 data: [],
-                schema: schemaDescriptor
+                schema: schema
             }
         ];
 
@@ -36,9 +35,9 @@ var buildDynamic = function(db, router, auth, cache){
         });
     }
 
-    router.post('/', auth.requireAdmin, async function(req, res, next){
-        let descriptor = {...req.body};
-        const pkg = await addDataPackageFromTableSchema(descriptor);
+    router.post('/', auth.requireLoggedIn, async function(req, res, next){
+        let schema = {...req.body};
+        const pkg = await addDataPackageFromTableSchema(schema);
         res.status(201).json({id: pkg._id.toString()});
     });   
 

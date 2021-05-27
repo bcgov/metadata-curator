@@ -232,6 +232,10 @@ export default {
         this.dataUploadId = this.$route.params.id;
         this.loadSections();
     },
+    mounted(){
+        this.dataUploadId = this.$route.params.id;
+        this.loadSections();
+    },
     beforeDestroy() {
         // console.log("detail view before destroy");
         this.clearState();

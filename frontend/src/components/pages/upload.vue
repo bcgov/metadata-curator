@@ -128,13 +128,15 @@
                       
                     const initialUpload = {
                         name: submission.data.datasetName,
-                        description: submission.data.datasetName,
+                        description: submission.datauploadDescription,
                         uploader: this.user.email,
                         upload_submission_id: this.$refs.uploadForm.submissionId,
                         form_name: this.formName
                     }
                     try{
-                        await this.createInitialUpload(initialUpload);
+                        let d = await this.createInitialUpload(initialUpload);
+                        this.uploadId = d._id;
+                        this.$router.push('/upload/'+d._id);
                     }catch(e){
                         this.errorAlert = true;
                         this.errorText = e;
@@ -145,6 +147,20 @@
                       // console.log("update existing upload submission");
                       try{
                           await this.triggerUploadFormSubmit();
+                          const submission = this.$refs.uploadForm.getSubmission();
+                          
+                          let changed = false;
+                          if (this.upload.name !== submission.data.datasetName){
+                              changed = true;
+                              this.upload.name = submission.data.datasetName
+                          }
+                          if (this.upload.description !== submission.datauploadDescription){
+                              changed = true;
+                              this.upload.description = submission.datauploadDescription
+                          }
+                          if (changed){
+                              await this.updateUpload(this.upload);
+                          }
                       }catch(e){
                           this.errorAlert = true;
                           this.errorText = e;

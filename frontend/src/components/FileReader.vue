@@ -99,6 +99,10 @@ export default {
         disabledProp: {
             type: Boolean,
             default: false
+        },
+        ignoreDuplicates: {
+            type: Boolean,
+            default: false
         }
     },
 
@@ -159,11 +163,11 @@ export default {
         },
 
         progressMessage1: function(){
-            let num = this.numChunks && this.numChunks > 0 ? this.numChunks : 1;
+            let num = (this.numChunks && this.numChunks > 0) ? this.numChunks : 1;
             return `Encrypted: ${this.numEncrypted}/${num}`
         },
         progressMessage2: function(){
-            let num = this.numChunks && this.numChunks > 1 ? this.numChunks+1 : 1;
+            let num = (this.numChunks && this.numChunks > 1) ? (this.numChunks+1) : 1;
             return `Uploaded: ${this.numUploaded}/${num}`
         },
         progressMessage3: function(){
@@ -218,7 +222,7 @@ export default {
                 //Trying to change upload
                 //this.confirmChange = true;
                 //this.confirmResume = false;
-            }else */if (this.fileSig[newFing]){
+            }else */if ( (this.fileSig[newFing]) && (!this.ignoreDuplicates) ){
                 ///same upload resume
                 this.confirmResume = true;
                 this.confirmChange = false;
