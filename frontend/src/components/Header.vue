@@ -30,6 +30,11 @@
 <script>
 import { mapState } from 'vuex'
 import User from './User'
+
+import { Backend } from '../services/backend';
+const authServ = new Backend();
+
+
 export default {
 
     props: {
@@ -51,6 +56,7 @@ export default {
         return {
             dark: this.useDark,
             activeTab: null,
+            stayLoggedIn: false
         }
     },
 
@@ -128,6 +134,27 @@ export default {
     },
 
     methods: {
+        preserveToken: function(){
+            let timeOut = 1000 * 60 // 1 minute
+            timeOut *= 5; // 5 minutes
+
+            if (this.loggedIn){
+                if (!this.stayLoggedIn){
+                    this.stayLoggedIn = setInterval(this.keepAlive, timeOut);
+                }
+            }else{
+                if (this.stayLoggedIn){
+                    clearInterval(this.stayLoggedIn);
+                    this.stayLoggedIn = false;
+                }
+            }
+        },
+
+        keepAlive: function(){
+            //no need to await as we don't really care about the token here
+            authServ.getToken();
+        },
+
         handleAuth: function(){
             if (this.checkRoute){
                 let requiresAuth = this.$router.currentRoute.path !== '/login';//this.$router.app._route.meta.requiresAuth;
@@ -149,6 +176,7 @@ export default {
     mounted(){
         this.dark = this.useDark;
         this.$vuetify.theme.dark = this.dark
+        this.preserveToken();
         //this.$store.dispatch('user/getCurrentUser');
         //this.handleAuth(this.loading);
     }
