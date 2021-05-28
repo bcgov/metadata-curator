@@ -62,7 +62,7 @@
         <v-container>
             <v-row>
                 <v-col cols="2">
-                    <v-btn color="primary" to="/upload/new" id="newUpload">New Upload</v-btn>
+                    <v-btn color="primary" to="/upload/new" id="newUpload" v-if="canUpload">New Upload</v-btn>
                 </v-col>
             </v-row>
         </v-container>
@@ -179,6 +179,7 @@ export default {
     computed: {
         ...mapState({
             user: state => state.user.user,
+            canUpload: state => state.user.canUpload,
             dataUploads: state => state.dataUploads.dataUploads,
             dataProviders: state => state.dataUploads.dataProviders,
             selectedDataProviders: state => state.dataUploads.selectedDataProviders,
