@@ -1,5 +1,10 @@
 <template>
     <v-container fluid>
+        <v-alert
+            type="error"
+            v-if="error">
+            {{error}}
+        </v-alert>
         <v-row v-if="confirmChange" class="mb-2">
             <span>Warning, you have an upload in progress, if you change to uploading this file some progress will be lost</span>
             <v-btn color="warning" @click="changeConfirmed()">Confirm</v-btn>
@@ -20,8 +25,8 @@
         </v-row>
         <v-row>
             <v-col cols=12>
-                <v-btn v-if="showUploadButton" :disabled="disabled" @click="upload">Upload</v-btn>
-                <v-btn v-if="showImportButton" :disabled="disabled" @click="onImportButtonClicked">Import</v-btn>
+                <v-btn v-if="showUploadButton && !pleaseWait" :disabled="disabled" @click="upload">Upload</v-btn>
+                <v-btn v-if="showImportButton && !pleaseWait" :disabled="disabled" @click="onImportButtonClicked">Import</v-btn>
                 <div v-if="pleaseWait">
                     <v-progress-circular
                         indeterminate
@@ -29,6 +34,11 @@
                     <span>Please wait while the first bit of the file is encrypted...</span>
                 </div>
                 <div v-if="showProgress">
+                    <span>
+                        Please note: encryption and uploading occur in chunks.  It is not unusual for there to be a 
+                        significant delay between one upload progress bar finishing and the next starting as encryption is 
+                        occurring and can take quite some time to complete.
+                    </span>
                     <span>
                         {{progressMessage1}}
                     </span>
@@ -129,6 +139,7 @@ export default {
             currChunk: 0,
             numEncrypted: 0,
             encContentBlobs: [],
+            error: false,
 
             numUploaded: 0,
             up1Size: 0,
@@ -171,10 +182,10 @@ export default {
             return `Uploaded: ${this.numUploaded}/${num}`
         },
         progressMessage3: function(){
-            return `Upload 1: ${this.up1Progress}/${this.up1Size}`
+            return `Upload ${ ((currChunk % 2) === 0) ? currChunk+1 : currChunk }: ${this.up1Progress}/${this.up1Size}`
         },
         progressMessage4: function(){
-            return `Upload 2: ${this.up2Progress}/${this.up2Size}`
+            return `Upload ${((currChunk % 2) === 0) ? currChunk+2 : currChunk+1}: ${this.up2Progress}/${this.up2Size}`
         },
 
         getFinger: function(){
@@ -458,6 +469,7 @@ export default {
                     if (!self.disabledProp){
                         self.disabled = false;
                     }
+                    this.error = error;
                 },
                 onProgress: (bytesUploaded, bytesTotal) => {
                     self.up1Progress = bytesUploaded;

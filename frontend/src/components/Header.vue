@@ -99,7 +99,7 @@ export default {
                     ]
                 }
 
-                    //   { id: 2, name: "Upload", route: `/upload/new`, icon: 'mdi-upload', disabled: false},
+                    //   { id: 2, name: "Upload", route: `/upload`, icon: 'mdi-upload', disabled: false},
                     //   { id: 3, name: "Import", route: `/import`, icon: 'mdi-import', disabled: false },
                     //   { id: 4, name: "Guess", route: `/infer`, icon: 'mdi-file-question-outline', disabled: true},
                     //   { id: 5, name: "Column", route: `/column`, icon: 'mdi-view-column', disabled: true},

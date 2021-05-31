@@ -136,7 +136,13 @@
                     try{
                         let d = await this.createInitialUpload(initialUpload);
                         this.uploadId = d._id;
-                        this.$router.push('/upload/'+d._id);
+                        if (typeof(uploadId) === "undefined"){
+                            this.errorAlert = true;
+                            this.errorText = "Error saving your work has not been saved, please try logging in again";
+                            transitionNextStepAfterSave = false;
+                        }else{
+                            this.$router.push('/upload/'+d._id);
+                        }
                     }catch(e){
                         this.errorAlert = true;
                         this.errorText = e;
