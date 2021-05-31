@@ -182,10 +182,10 @@ export default {
             return `Uploaded: ${this.numUploaded}/${num}`
         },
         progressMessage3: function(){
-            return `Upload ${ ((currChunk % 2) === 0) ? currChunk+1 : currChunk }: ${this.up1Progress}/${this.up1Size}`
+            return `Upload 1 (Chunk): ${this.up1Progress}/${this.up1Size}`
         },
         progressMessage4: function(){
-            return `Upload ${((currChunk % 2) === 0) ? currChunk+2 : currChunk+1}: ${this.up2Progress}/${this.up2Size}`
+            return `Upload 2 (Chunk): ${this.up2Progress}/${this.up2Size}`
         },
 
         getFinger: function(){
