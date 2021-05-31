@@ -18,12 +18,12 @@ export class Backend {
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 
-    concatenateUpload(joinIds, uploadUrl, jwt, resumable){
+    concatenateUpload(joinIds, uploadUrl, jwt, resumable, filename, filetype){
         let uploadOptions = {}
         uploadOptions.headers = {
             "Tus-Resumable": resumable,
             "Upload-Concat": "final;" + joinIds.join(" "),
-            "Upload-Metadata": "jwt " + jwt
+            "Upload-Metadata": "filename "+btoa(filename)+",filetype "+btoa(filetype)+",jwt " + btoa(jwt)
         };
         console.log("concat", uploadUrl, uploadOptions)
         return axios.post(uploadUrl, {}, uploadOptions);
