@@ -67,6 +67,10 @@ var buildProfile = function(token, refreshToken){
     if ( (config.has('orgAttribute')) && (token._json[config.get('orgAttribute')]) ){
         profile.organization = token._json[config.get('orgAttribute')];
     }
+
+    if ((config.has('requiredRoleToCreateRequest')) && (profile.groups.length>0)){
+      profile.canUpload = (profile.groups.indexOf(config.get('requiredRoleToCreateRequest')) !== -1);
+    }
     
     
     profile.refreshToken = refreshToken;

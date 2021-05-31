@@ -7,6 +7,7 @@ const state = {
     userPermissions: {},
     loading: true,
     useDark: false,
+    canUpload: false,
     jwt: ""
 };
 
@@ -45,12 +46,14 @@ const actions = {
                         commit('setUser', { user: data });
                         commit('setJWT', { jwt: data.jwt });
                         commit('setLoggedIn', {loggedIn: true});
+                        commit('setCanUpload', {canUpload: data.canUpload})
                         user = data;
                         loggedIn = true;
                     } else {
                         commit('setUser', {user: null});
                         commit('setJWT', { jwt: "" });
                         commit('setLoggedIn', {loggedIn: false});
+                        commit('setCanUpload', {canUpload: false})
                         user = {};
                         loggedIn = false;
                     }
@@ -62,12 +65,14 @@ const actions = {
                         commit('setUser', { user: data });
                         commit('setJWT', { jwt: data.jwt });
                         commit('setLoggedIn', {loggedIn: true});
+                        commit('setCanUpload', {canUpload: data.canUpload})
                         user = data;
                         loggedIn = true;
                     } else {
                         commit('setUser', {user: null});
                         commit('setJWT', { jwt: "" });
                         commit('setLoggedIn', {loggedIn: false});
+                        commit('setCanUpload', {canUpload: false})
                         user = {};
                         loggedIn = false;
                     }
@@ -79,12 +84,14 @@ const actions = {
                     commit('setUser', { user: data });
                     commit('setJWT', { jwt: data.jwt });
                     commit('setLoggedIn', {loggedIn: true});
+                    commit('setCanUpload', {canUpload: data.canUpload})
                     user = data;
                     loggedIn = true;
                 }else{
                     commit('setUser', { user: null });
                     commit('setJWT', { jwt: "" });
                     commit('setLoggedIn', {loggedIn: false});
+                    commit('setCanUpload', {canUpload: false})
                     user = null;
                     loggedIn = false;
                 }
@@ -124,6 +131,9 @@ const mutations = {
     },
     setJWT(state, { jwt }){
         state.jwt = jwt;
+    },
+    setCanUpload(state, { canUpload }){
+        state.canUpload = canUpload;
     }
 }
 

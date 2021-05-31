@@ -72,6 +72,9 @@
             },
 
             formatDate(d){
+                if (d.substring(d.length-1) === "Z"){
+                    d = d.substring(0,d.length-1);
+                }
                 var date = new Date(d);
                 let month = new Array();
                 month[0] = "January";
