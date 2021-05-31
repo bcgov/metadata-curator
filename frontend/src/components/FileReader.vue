@@ -479,8 +479,10 @@ export default {
                                 }
                                 let u2 = null;
                                 if (this.readFile){
+                                    console.log("UPFRF", chunkIndex, uploadOptions);
                                     u2 = new tus.Upload(self.blob[chunkIndex], uploadOptions);
                                 }else{
+                                    console.log("UPF", chunkIndex, uploadOptions);
                                     u2 = new tus.Upload(self.encContentBlobs[chunkIndex], uploadOptions);
                                 }
                                 u2.start();
@@ -531,8 +533,10 @@ export default {
 
             let initialUpIndex = (this.currChunk > 1) ? 2 : 0;
             if (this.readFile){
+                console.log("UIFRF", initialUpIndex, uploadOptions);
                 u = new tus.Upload(this.blob[initialUpIndex], uploadOptions);
             }else{
+                console.log("UIF", initialUpIndex, uploadOptions);
                 u = new tus.Upload(this.encContentBlobs[initialUpIndex], uploadOptions);
             }
             this.uploads.push(u);
@@ -544,8 +548,10 @@ export default {
                     if (i<self.numChunks){
                         let u2 = null;
                         if (this.readFile){
+                            console.log("UPFRF2", chunkIndex, uploadOptions);
                             u2 = new tus.Upload(self.blob[chunkIndex], uploadOptions);
                         }else{
+                            console.log("UPF2", chunkIndex, uploadOptions);
                             u2 = new tus.Upload(self.encContentBlobs[chunkIndex], uploadOptions);
                         }
                         u2.start();

@@ -25,6 +25,7 @@ export class Backend {
             "Upload-Concat": "final;" + joinIds.join(" "),
             "Upload-Metadata": "jwt " + jwt
         };
+        console.log("concat", uploadUrl, uploadOptions)
         return axios.post(uploadUrl, {}, uploadOptions);
     }
 
