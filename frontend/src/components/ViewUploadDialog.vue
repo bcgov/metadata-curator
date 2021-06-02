@@ -90,6 +90,9 @@
                 this.$emit('close-button-clicked');
             },
             formatDate(d){
+                if (d.substring(d.length-1) === "Z"){
+                    d = d.substring(0,d.length-1);
+                }
                 var date = new Date(d);
                 let month = new Array();
                 month[0] = "January";
@@ -118,7 +121,10 @@
 
         mounted(){
             this.getUpload(this.uploadId);
-            this.getUploadForm();
+            if (this.uploadStore){
+                this.getUploadForm(this.uploadStore.form_name);
+            }
+            
         },
 
         watch: {
@@ -132,8 +138,10 @@
                     // console.log("update  submission");
                     this.formSubmission = {...newVal};
                     
-                    this.getUploadFormSubmission(this.formSubmission.upload_submission_id);
+                    this.getUploadForm(this.uploadStore.form_name);
+                    this.getUploadFormSubmission({formName: this.uploadStore.form_name, submissionId: this.formSubmission.upload_submission_id});
                 }
+            
             },
             // eslint-disable-next-line no-unused-vars
             uploadForm: function (newVal, oldVal) {

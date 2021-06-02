@@ -1,13 +1,21 @@
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 
-const mongod = new MongoMemoryServer();
+const mongod = new MongoMemoryServer({
+    instance: {
+        auth: false,
+    }
+});
 
 /**
  * Connect to the in-memory database.
  */
 module.exports.connect = async () => {
-    const uri = await mongod.getConnectionString();
+    let uri = await mongod.getUri();
+    let lastChar = uri.substring(uri.length-1);
+    if (lastChar == "?"){
+        uri = uri.substring(0, uri.length-1);
+    }
 
     const mongooseOpts = {
         useNewUrlParser: true,

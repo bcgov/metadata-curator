@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <v-alert class="fixed" v-model="errorAlert" type="error" dismissible>
+        <v-alert :class="'fixed' + ((errorAlert) ? ' mb-3' : '')" v-model="errorAlert" type="error" dismissible>
             {{errorText}}
         </v-alert>
         <v-stepper v-model="step">
@@ -19,18 +19,18 @@
             <v-stepper-items>
                 <v-stepper-content :step="steps.step1UploadForm">
                     <v-card class="mb-12">
-                        <UploadForm ref="uploadForm" :upload="upload"></UploadForm>
+                        <UploadForm ref="uploadForm"></UploadForm>
                     </v-card>
-                    <v-btn text @click="stepSaveUploadForm(true)">Next</v-btn>
+                    <v-btn text @click="stepSaveUploadForm(true)" id="next-1">Next</v-btn>
                 </v-stepper-content>
 
                 <v-stepper-content :step="steps.step2FileSelection">
                     <v-card class="mb-12">
-                        <FileForm v-if="step === steps.step2FileSelection" ref="fileForm" @changed="step2Changed" :upload="upload"></FileForm>
+                        <FileForm v-if="step === steps.step2FileSelection" ref="fileForm" @changed="step2Changed"></FileForm>
                     </v-card>
                     
-                    <v-btn text @click="step=steps.step1UploadForm">Back</v-btn>
-                    <v-btn color="primary" :disabled="!validStep3" @click="stepSaveFileForm(true)">Next</v-btn>
+                    <v-btn text @click="step=steps.step1UploadForm" id="back-2">Back</v-btn>
+                    <v-btn color="primary" :disabled="!validStep3" @click="stepSaveFileForm(true)" id="next-2">Next</v-btn>
                     
                 </v-stepper-content>
 
@@ -38,8 +38,8 @@
                     <v-card class="mb-12">
                         <FileInfoForm v-if="step === steps.step3FileLevelForm" ref="fileInfoForm"></FileInfoForm>
                     </v-card>
-                    <v-btn text @click="step=steps.step2FileSelection">Back</v-btn>
-                    <v-btn color="primary" @click="step=stepSaveFileInfoForm(true)">Next</v-btn>
+                    <v-btn text @click="step=steps.step2FileSelection" id="back-3">Back</v-btn>
+                    <v-btn color="primary" @click="step=stepSaveFileInfoForm(true)" id="next-3">Next</v-btn>
                     
                 </v-stepper-content>
 
@@ -128,12 +128,21 @@
                       
                     const initialUpload = {
                         name: submission.data.datasetName,
-                        description: submission.data.datasetName,
+                        description: submission.datauploadDescription,
                         uploader: this.user.email,
-                        upload_submission_id: this.$refs.uploadForm.submissionId
+                        upload_submission_id: this.$refs.uploadForm.submissionId,
+                        form_name: this.formName
                     }
                     try{
-                        await this.createInitialUpload(initialUpload);
+                        let d = await this.createInitialUpload(initialUpload);
+                        this.uploadId = d._id;
+                        if (typeof(this.uploadId) === "undefined"){
+                            this.errorAlert = true;
+                            this.errorText = "Error saving your work has not been saved, please try logging in again";
+                            transitionNextStepAfterSave = false;
+                        }else{
+                            this.$router.push('/upload/'+d._id);
+                        }
                     }catch(e){
                         this.errorAlert = true;
                         this.errorText = e;
@@ -144,6 +153,21 @@
                       // console.log("update existing upload submission");
                       try{
                           await this.triggerUploadFormSubmit();
+                          const submission = this.$refs.uploadForm.getSubmission();
+                          
+                          let changed = false;
+                          let tmpUp = JSON.parse(JSON.stringify(this.upload));
+                          if (this.upload.name !== submission.data.datasetName){
+                              changed = true;
+                              tmpUp.name = submission.data.datasetName
+                          }
+                          if (this.upload.description !== submission.datauploadDescription){
+                              changed = true;
+                              tmpUp.description = submission.datauploadDescription
+                          }
+                          if (changed){
+                              await this.updateUpload(tmpUp);
+                          }
                       }catch(e){
                           this.errorAlert = true;
                           this.errorText = e;
@@ -196,6 +220,7 @@
                 upload: state => state.upload.upload,
                 createUploadInProgress: state => state.upload.createUploadInProgress,
                 newUploadCreated: state => state.upload.newUploadCreated,
+                formName: state => state.uploadForm.formName,
             }),
         },
         watch: {
@@ -218,18 +243,9 @@
                     }
                 }
             },
-            // eslint-disable-next-line no-unused-vars
-            newUploadCreated: function (newVal, oldVal) {
-                if(newVal) {
-                    if(this.$route.params.id != this.upload._id ) {
-                        this.$router.push({ name: 'upload', params: { id: this.upload._id } });
-                    }
-                }
-            },
         },
         beforeDestroy() {
-            // console.log("upload reset state");
-            //this.resetState();
+            this.resetFormState();
         },
 
     }

@@ -33,7 +33,7 @@ data "null_data_source" "feIndConfig" {
   inputs = {
     database =  <<-EOF
 "database": {
-  "host": "mc_mongodb:27017", 
+  "host": "mc_mongodb:27017",
   "username": "${var.mongodb["username"]}",
   "password": "${random_string.mongoSuperPassword.result}",
   "dbName": "oc_db"
@@ -55,7 +55,7 @@ EOF
 }
 EOF
 
-    uploadUrl = "\"uploadUrl\": \"http://mc_tusd:1080/files\"",
+    uploadUrl = "\"uploadUrl\": \"${var.host}/files/\"",
 
     base64EncodedPGPPublicKey = "\"base64EncodedPGPPublicKey\": \"${var.base64EncodedPGPPublicKey}\"",
 
@@ -66,22 +66,23 @@ EOF
 
     logLevel = "\"logLevel\": \"debug\""
     jwtSecret = "\"jwtSecret\": \"${random_string.jwtSecret.result}\""
+    jwtAud = "\"jwtAud\": \"aud\""
     orgAttribute = "\"orgAttribute\": \"${var.orgAttribute}\""
     requiredRoleToCreateRequest = "\"requiredRoleToCreateRequest\": \"${var.requiredRoleToCreateRequest}\""
     alwaysNotifyListOnTopicCreate = "\"alwaysNotifyListOnTopicCreate\": ${var.alwaysNotifyListOnTopicCreate}"
     alwaysNotifyUninvolvedOnCommentAdd = "\"alwaysNotifyUninvolvedOnCommentAdd\": ${var.alwaysNotifyUninvolvedOnCommentAdd}"
-    approverGroups = "\"approverGroups\": ${var.approverGroups}"
-    alwaysNotifyList = "\"alwaysNotifyList\": ${var.alwaysNotifyList}"
-    email = "\"email\": ${var.email}"
+    approverGroups = "\"approverGroups\": ${jsonencode(var.approverGroups)}"
+    alwaysNotifyList = "\"alwaysNotifyList\": ${jsonencode(var.alwaysNotifyList)}"
+    email = "\"email\": ${jsonencode(var.email)}"
     adminGroup = "\"adminGroup\": \"${var.adminGroup}\""
-    formio = "\"formio\": ${var.formio}"
+    formio = "\"formio\": ${jsonencode(var.formio)}"
   }
 }
 
 data "null_data_source" "configValues" {
   inputs = {
     nodeConfig = <<-EOF
-{ 
+{
   ${data.null_data_source.feIndConfig.outputs["database"]},
   ${data.null_data_source.feIndConfig.outputs["sessionSecret"]},
   ${data.null_data_source.feIndConfig.outputs["frontend"]},
@@ -93,6 +94,7 @@ data "null_data_source" "configValues" {
 
   ${data.null_data_source.feIndConfig.outputs["logLevel"]},
   ${data.null_data_source.feIndConfig.outputs["jwtSecret"]},
+  ${data.null_data_source.feIndConfig.outputs["jwtAud"]},
   ${data.null_data_source.feIndConfig.outputs["orgAttribute"]},
   ${data.null_data_source.feIndConfig.outputs["requiredRoleToCreateRequest"]},
   ${data.null_data_source.feIndConfig.outputs["alwaysNotifyListOnTopicCreate"]},
@@ -101,7 +103,7 @@ data "null_data_source" "configValues" {
   ${data.null_data_source.feIndConfig.outputs["email"]},
   ${data.null_data_source.feIndConfig.outputs["adminGroup"]},
   ${data.null_data_source.feIndConfig.outputs["formio"]}
-  
+
 }
 EOF
 

@@ -13,6 +13,7 @@
                         :trigger-upload="startUpload[index]"
                         :disabledProp="true"
                         @file-opened="fileOpened"
+                        @encrypted="encyptedFile"
                         @upload-finished="uploadFinished"
                     >
                     </FileReader>
@@ -20,7 +21,7 @@
             </v-row>   
             <v-row>
                 <v-col cols="2">
-                    <v-btn color="primary" @click="startUploads">Upload</v-btn>
+                    <v-btn color="primary" v-if="readyToUpload" @click="startUploads" id="upload">Upload</v-btn>
                 </v-col>
             </v-row>
         </span>    
@@ -62,16 +63,23 @@
                 }
             },
 
-            fileOpened(index/*, handle, finger*/){
-                if (index === 0){
+            fileOpened(/*index, handle, finger*/){
+                // if (index === 0){
+                //     this.readyToUpload = true;
+                // }
+            },
+            encyptedFile(index, contentIndex){
+                if (index===0 && contentIndex === 0){
                     this.readyToUpload = true;
                 }
+
             },
 
             startUploads(){
                 if (this.readyToUpload){
                     // await this.updateFormSubmission(false, true);
                     // await this.updateUploadFormSubmission(this.formSubmission);
+                    this.readyToUpload = false;
                     Vue.set(this.startUpload, 0, true);
                 }
             },

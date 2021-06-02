@@ -12,11 +12,10 @@ dbName = dbProps.dbName;
 
 const db = {};
 
-db.init = function (_connString = null) {
+db.init = async function (_connString = null) {
     const logger = require('npmlog');
     const connString = (_connString == null) ? 'mongodb://' + dbUser + ':' + dbPass + '@' + dbHost + '/' + dbName + '?authSource=' + dbName : _connString;
-    // console.log("connectionstr: " + connString);
-    mongoose.connect(connString, {
+    await mongoose.connect(connString, {
         useUnifiedTopology: true,
         useFindAndModify: false,
         useNewUrlParser: true,
@@ -37,6 +36,8 @@ db.init = function (_connString = null) {
     db.RepoSchema = require('./model/repo');
     db.RepoBranchSchema = require('./model/repoBranch').model;
     db.MetadataRevisionSchema = require('./model/metadataRevision');
+    db.User = require('./model/user');
+    db.ConfigSchema = require('./model/config');
 };
 
 module.exports = db;
