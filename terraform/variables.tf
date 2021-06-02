@@ -51,7 +51,7 @@ variable "requiredRoleToCreateRequest" {
 }
 
 variable "email" {
-  type = map(string)
+  type = map(any)
 }
 
 variable "alwaysNotifyList" {

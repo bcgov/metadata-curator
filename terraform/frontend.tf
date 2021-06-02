@@ -73,7 +73,7 @@ EOF
     alwaysNotifyUninvolvedOnCommentAdd = "\"alwaysNotifyUninvolvedOnCommentAdd\": ${var.alwaysNotifyUninvolvedOnCommentAdd}"
     approverGroups = "\"approverGroups\": ${jsonencode(var.approverGroups)}"
     alwaysNotifyList = "\"alwaysNotifyList\": ${jsonencode(var.alwaysNotifyList)}"
-    email = "\"email\": ${jsonencode(var.email)}"
+    email = "\"email\": { \"enabled\":${var.email.enabled}, \"service\": \"${var.email.service}\", \"secure\": ${var.email.secure}, \"port\": ${var.email.port}, \"user\": \"${var.email.user}\", \"pass\": \"${var.email.pass}\", \"from\": \"${var.email.from}\", \"subject\": \"${var.email.subject}\"}"
     adminGroup = "\"adminGroup\": \"${var.adminGroup}\""
     formio = "\"formio\": ${jsonencode(var.formio)}"
   }
