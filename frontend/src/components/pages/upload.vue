@@ -156,16 +156,17 @@
                           const submission = this.$refs.uploadForm.getSubmission();
                           
                           let changed = false;
+                          let tmpUp = JSON.parse(JSON.stringify(this.upload));
                           if (this.upload.name !== submission.data.datasetName){
                               changed = true;
-                              this.upload.name = submission.data.datasetName
+                              tmpUp.name = submission.data.datasetName
                           }
                           if (this.upload.description !== submission.datauploadDescription){
                               changed = true;
-                              this.upload.description = submission.datauploadDescription
+                              tmpUp.description = submission.datauploadDescription
                           }
                           if (changed){
-                              await this.updateUpload(this.upload);
+                              await this.updateUpload(tmpUp);
                           }
                       }catch(e){
                           this.errorAlert = true;

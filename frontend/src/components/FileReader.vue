@@ -512,18 +512,21 @@ export default {
                                     let url = self.uploads[j].url.substring(self.uploads[j].url.substring(9).indexOf("/")+9);
                                     joinIds.push(url);
                                 }
-                                backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0", self.file.name, self.file.type).then( () => {
+                                backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0", self.file.name, self.file.type).then( (concatResponse) => {
                                     self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
-                                    var slashInd = self.uploads[0].url.lastIndexOf("/");
-                                    var plusInd = self.uploads[0].url.lastIndexOf("+");
-                                    self.$emit('upload-finished', self.uploads[0].url.substring(slashInd+1, plusInd), this.file.name, this.file.size);
+                                    
+                                    let concatLocation = concatResponse.headers.location;
+                                    var slashInd = concatLocation.lastIndexOf("/");
+                                    var plusInd = concatLocation.lastIndexOf("+");
+                                    
+                                    self.$emit('upload-finished', concatLocation.substring(slashInd+1, plusInd), this.file.name, this.file.size);
                                     self.numUploaded = self.numChunks+1;
                                     if (!self.disabledProp){
                                         self.disabled = false;
                                     }
-                                }).catch( (/*e*/) => {
+                                }).catch( (e) => {
                                     // eslint-disable-next-line
-                                    console.log("Concatenation error", error);
+                                    console.log("Concatenation error", e);
                                     if (!self.disabledProp){
                                         self.disabled = false;
                                     }
@@ -585,11 +588,13 @@ export default {
                             }
                         }
                         if (joinIds.length > 0){
-                            backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0", self.file.name, self.file.type).then( () => {
+                            backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0", self.file.name, self.file.type).then( (concatResponse) => {
                                 self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
-                                var slashInd = self.uploads[0].url.lastIndexOf("/");
-                                var plusInd = self.uploads[0].url.lastIndexOf("+");
-                                self.$emit('upload-finished', self.uploads[0].url.substring(slashInd+1, plusInd), this.file.name, this.file.size);
+                                let concatLocation = concatResponse.headers.location;
+                                var slashInd = concatLocation.lastIndexOf("/");
+                                var plusInd = concatLocation.lastIndexOf("+");
+                                
+                                self.$emit('upload-finished', concatLocation.substring(slashInd+1, plusInd), this.file.name, this.file.size);
                                 self.numUploaded = self.numChunks+1;
                                 if (!self.disabledProp){
                                     self.disabled = false;
