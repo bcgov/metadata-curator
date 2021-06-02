@@ -34,11 +34,11 @@
                     <span>Please wait while the first bit of the file is encrypted...</span>
                 </div>
                 <div v-if="showProgress">
-                    <span>
+                    <div>
                         Please note: encryption and uploading occur in chunks.  It is not unusual for there to be a 
                         significant delay between one upload progress bar finishing and the next starting as encryption is 
                         occurring and can take quite some time to complete.
-                    </span>
+                    </div>
                     <span>
                         {{progressMessage1}}
                     </span>
@@ -402,11 +402,13 @@ export default {
 
                         self.$store.dispatch('file/encryptContent', {clear: self.offset === 0, index: index, content: content}).then( () => {
                             resolve(e.target.result);
+                            self.$emit('encrypted', self.index, index);
                         });
 
                     }else{
                         self.encrypt(content, index).then ( () => {
                             resolve(e.target.result);
+                            self.$emit('encrypted', self.index, index);
                         })
 
                     }
@@ -485,9 +487,16 @@ export default {
                         self.getNextChunk(chunkIndex).then( () => {
                             self.numEncrypted += 1
                             if (i<self.numChunks){
-                                uploadOptions.onProgress = function(byteUp, byteTot){
-                                    self.up2Progress = byteUp;
-                                    self.up2Size = byteTot;
+                                if (i%2 == 0){
+                                    uploadOptions.onProgress = function(byteUp, byteTot){
+                                        self.up1Progress = byteUp;
+                                        self.up1Size = byteTot;
+                                    }
+                                }else{
+                                    uploadOptions.onProgress = function(byteUp, byteTot){
+                                        self.up2Progress = byteUp;
+                                        self.up2Size = byteTot;
+                                    }
                                 }
                                 let u2 = null;
                                 if (this.readFile){
@@ -548,17 +557,22 @@ export default {
                 u = new tus.Upload(this.encContentBlobs[initialUpIndex], uploadOptions);
             }
             this.uploads.push(u);
-            if (size*2 <= this.chunkSize){
+            if (size > this.chunkSize){
                 this.getNextChunk(1).then( () => {
                     self.numEncrypted += 1
                     let chunkIndex = 1;
                     i += 1;
                     if (i<self.numChunks){
                         let u2 = null;
+                        let u2Options = JSON.parse(JSON.stringify(uploadOptions));
+                        u2Options.onProgress = function(byteUp, byteTot){
+                            self.up2Progress = byteUp;
+                            self.up2Size = byteTot;
+                        }
                         if (this.readFile){
-                            u2 = new tus.Upload(self.blob[chunkIndex], uploadOptions);
+                            u2 = new tus.Upload(self.blob[chunkIndex], u2Options);
                         }else{
-                            u2 = new tus.Upload(self.encContentBlobs[chunkIndex], uploadOptions);
+                            u2 = new tus.Upload(self.encContentBlobs[chunkIndex], u2Options);
                         }
                         u2.start();
                         self.uploads.push(u2);

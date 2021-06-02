@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <v-alert class="fixed" v-model="errorAlert" type="error" dismissible>
+        <v-alert :class="'fixed' + ((errorAlert) ? ' mb-3' : '')" v-model="errorAlert" type="error" dismissible>
             {{errorText}}
         </v-alert>
         <v-stepper v-model="step">
@@ -136,7 +136,7 @@
                     try{
                         let d = await this.createInitialUpload(initialUpload);
                         this.uploadId = d._id;
-                        if (typeof(uploadId) === "undefined"){
+                        if (typeof(this.uploadId) === "undefined"){
                             this.errorAlert = true;
                             this.errorText = "Error saving your work has not been saved, please try logging in again";
                             transitionNextStepAfterSave = false;
@@ -239,14 +239,6 @@
                                 this.step = this.steps.step5UploadSummary;
                             }
                         }
-                    }
-                }
-            },
-            // eslint-disable-next-line no-unused-vars
-            newUploadCreated: function (newVal, oldVal) {
-                if(newVal) {
-                    if(this.$route.params.id != this.upload._id ) {
-                        this.$router.push({ name: 'upload', params: { id: this.upload._id } });
                     }
                 }
             },
