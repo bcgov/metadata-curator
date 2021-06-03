@@ -34,7 +34,7 @@ const getters = {
 }
 
 async function encrypt(commit, clear, content, key, replaceIndex){
-    await openpgp.initWorker({ path: '/js/openpgp.worker.min.js' }, 3); // set the relative web worker path
+    //await openpgp.initWorker({ path: '/js/openpgp.worker.min.js' }, 3); // set the relative web worker path
 
     if (clear){
         commit('clearBlob');

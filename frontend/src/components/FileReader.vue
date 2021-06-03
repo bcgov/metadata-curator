@@ -175,11 +175,11 @@ export default {
 
         progressMessage1: function(){
             let num = (this.numChunks && this.numChunks > 0) ? this.numChunks : 1;
-            return `Encrypted: ${this.numEncrypted}/${num}`
+            return `Encrypted: ${(this.numEncrypted>=num) ? num : this.numEncrypted}/${num}`
         },
         progressMessage2: function(){
             let num = (this.numChunks && this.numChunks > 1) ? (this.numChunks+1) : 1;
-            return `Uploaded: ${this.numUploaded}/${num}`
+            return `Uploaded: ${(this.numUploaded>=num) ? num : this.numUploaded}/${num}`
         },
         progressMessage3: function(){
             return `Upload 1 (Chunk): ${this.up1Progress}/${this.up1Size}`
@@ -520,7 +520,7 @@ export default {
                                     var plusInd = concatLocation.lastIndexOf("+");
                                     
                                     self.$emit('upload-finished', concatLocation.substring(slashInd+1, plusInd), this.file.name, this.file.size);
-                                    self.numUploaded = self.numChunks+1;
+                                    self.numUploaded += 1;
                                     if (!self.disabledProp){
                                         self.disabled = false;
                                     }
@@ -537,7 +537,7 @@ export default {
                         var slashInd = self.uploads[0].url.lastIndexOf("/");
                         var plusInd = self.uploads[0].url.lastIndexOf("+");
                         self.$emit('upload-finished', self.uploads[0].url.substring(slashInd+1, plusInd), this.file.name, this.file.size);
-                        self.numUploaded = self.numChunks+1
+                        self.numUploaded += 1;
                         self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
                         if (!self.disabledProp){
                             self.disabled = false;
@@ -595,7 +595,7 @@ export default {
                                 var plusInd = concatLocation.lastIndexOf("+");
                                 
                                 self.$emit('upload-finished', concatLocation.substring(slashInd+1, plusInd), this.file.name, this.file.size);
-                                self.numUploaded = self.numChunks+1;
+                                self.numUploaded += 1;
                                 if (!self.disabledProp){
                                     self.disabled = false;
                                 }

@@ -69,7 +69,7 @@
                 // }
             },
             encyptedFile(index, contentIndex){
-                if (index===0 && contentIndex === 0){
+                if (index===0 && contentIndex === 0 && !this.uploading){
                     this.readyToUpload = true;
                 }
 
@@ -80,6 +80,7 @@
                     // await this.updateFormSubmission(false, true);
                     // await this.updateUploadFormSubmission(this.formSubmission);
                     this.readyToUpload = false;
+                    this.uploading = true;
                     Vue.set(this.startUpload, 0, true);
                 }
             },
@@ -136,6 +137,7 @@
                 fileIds: [],
                 spanKey: 0,
                 readyToUpload: false,
+                uploading: false,
             }
         },
         mounted(){
