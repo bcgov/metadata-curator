@@ -77,7 +77,7 @@
                     <v-row>
                         <v-textarea
                             v-model="description[index]"
-                            label="File"
+                            label="File Description"
                             @change="updateFormSubmission"
                             placeholder="Description">
                         </v-textarea>
