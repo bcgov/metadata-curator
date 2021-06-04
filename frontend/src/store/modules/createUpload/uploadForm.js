@@ -33,7 +33,6 @@ const actions = {
             commit('clearUploadForm');
             commit('setUploadForm', data);
         } catch(e) {
-            console.log("Retrieve upload form error: ", e);
             commit('setError', {error: e.response.data.error});
         }
     },
@@ -58,7 +57,6 @@ const actions = {
             commit('clearUploadForm');
             commit('setUploadForm', data);
         } catch(e) {
-            console.log("Retrieve upload form error: ", e);
             commit('setError', {error: e.response.data.error});
         }
 
@@ -79,7 +77,6 @@ const actions = {
             commit('setFormSubmission', data);
             dispatch('upload/addSubmissionIdToUpload', data._id, {root:true});
         } catch(e) {
-            console.log("Post upload form submission error: ", e);
             commit('setError', {error: e.response.data.error});
         }
     },
@@ -90,7 +87,6 @@ const actions = {
                 commit('setFormSubmission', data);
             }
         } catch(e) {
-            console.log("get upload form submission error: ", e);
             commit('setError', {error: e.response.data.error});
         }
     },
@@ -99,7 +95,6 @@ const actions = {
             const data = await backend.putFormSubmission(formName, submission._id, submission.data);
             commit('setFormSubmission', data);
         } catch(e) {
-            console.log("put upload form submission error: ", e);
             commit('setError', {error: e.response.data.error});
         }
     },

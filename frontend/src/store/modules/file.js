@@ -26,7 +26,6 @@ const getters = {
     getPublicKey: (state) => async () => {
         if (state.key === null){
             let data = await backend.getPublicKey();
-            console.log("GET PK", data);
             return data.key;
         }
         return state.key;
@@ -168,7 +167,6 @@ const mutations = {
     
     // eslint-disable-next-line
     resetState(state){
-        console.log("file.js resetState");
 
         state = {
             content: [],

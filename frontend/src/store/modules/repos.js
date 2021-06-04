@@ -82,19 +82,19 @@ const actions = {
 
     },
 
-    async saveRepo(){
+    async saveRepo({state}){
         return backend.postRepo(state.repo);
     },
 
-    async updateRepo(){
+    async updateRepo({state}){
         return backend.putRepo(state.repo);
     },
 
-    async saveBranch(){
+    async saveBranch({state}){
         return backend.postRepoBranch(state.repo._id, state.branch);
     },
 
-    async updateBranch(){
+    async updateBranch({state}){
         return backend.putRepoBranch(state.repo._id, state.branch);
     },
 }

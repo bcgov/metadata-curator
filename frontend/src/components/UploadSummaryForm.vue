@@ -66,7 +66,7 @@
                     try{
                         this.$refs.formioObj.formio.submission = this.submission;
                     }catch(ex2){
-                        console.log("Error loading submission");
+                        console.error("Error loading submission");
                     }
                 }
             },

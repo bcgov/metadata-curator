@@ -17,7 +17,6 @@ const getters = {
       return null;
     },
     validationErrorMsgs: ({error}) => {
-        console.log("getters.validationErrorMsgs error: ", error);
         // let errorMsgs = [];
 
         if(error && error.validationErrors && error.validationErrors.length > 0) {
@@ -29,7 +28,6 @@ const getters = {
         return [];
     },
     validationErrorsByResource: ({error}) => {
-        console.log("getters.validationErrorsByResource error: ", error);
 
         if(error && error.validationErrorsByResource && error.validationErrorsByResource.length > 0) {
             return error.validationErrorsByResource;
@@ -49,7 +47,6 @@ const actions = {
             commit('clearTableSchema');
             commit('setSuccessMsg', {message: "Successfully saved table schema"});
         }).catch((e) => {
-            console.log("create table schema error: ", e);
             commit('setError', {error: e.response.data.error});
         });
     },
@@ -62,7 +59,6 @@ const actions = {
             commit('clearDataPackageSchema');
             commit('setSuccessMsg', {message: "Successfully saved data package schema"});
         }).catch((e) => {
-            console.log("create data package schema error: ", e);
             commit('setError', {error: e.response.data.error});
         });
     },
@@ -86,7 +82,6 @@ const mutations = {
         state.dataPackageSchema = null;
     },
     setSuccessMsg(state, {message}){
-        console.log("setSuccessMsg: ", message);
         state.successMsg = message;
     },
     clearSuccessMsg(state) {

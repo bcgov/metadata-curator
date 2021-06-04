@@ -24,10 +24,9 @@ const actions = {
     async updateDataUpload({ commit }, dataUpload) {
         try {
             dataUpload = await backend.putDataUpload(dataUpload);
-            console.log("dataupload after update dataupload: ", dataUpload);
             commit('setDataUpload', {dataUpload: dataUpload});
         } catch(e) {
-            console.log("Unable to update data upload error: ", e);
+            console.errpr("Unable to update data upload error: ", e);
             commit('setError', {error: e.response.data.error});
         }
     },

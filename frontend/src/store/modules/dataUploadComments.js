@@ -21,7 +21,7 @@ const actions = {
             commit('clearComments');
             commit('setComments', {comments: data, dataUploadId: dataUploadId});
         } catch(e) {
-            console.log("Retrieve comments error: ", e);
+            console.error("Retrieve comments error: ", e);
             commit('setError', {error: e.response.data.error});
         }
     },
@@ -32,7 +32,7 @@ const actions = {
             // console.log("postCommentByDataUpload action: ", data);
             dispatch('getComments', dataUploadId);
         } catch(e) {
-            console.log("Unable to add comment error: ", e);
+            console.error("Unable to add comment error: ", e);
             commit('setError', {error: e.response.data.error});
         }
     },

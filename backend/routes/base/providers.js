@@ -5,7 +5,10 @@ var buildStatic = function(db, router){
 
 var buildDynamic = function(db, router, auth, forumClient){
     
+    let log = require('npmlog');
+
     router.get('/', async function(req, res, next) {
+            let user = req.user;
             let providers = [];
             try {
                 if(!user.isApprover && !user.isAdmin) { throw new Error("User does not have access."); }

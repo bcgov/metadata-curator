@@ -6,6 +6,7 @@
             v-model="alert">
                 {{alertText}}
         </v-alert>
+
         <span v-if="!branch && !creating">
             <v-row dense>
                 Loading...
@@ -14,73 +15,86 @@
                 <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? 'Close' : 'Back'}}</v-btn>
             </v-row>
         </span>
+
         <v-row v-else dense>
-            <v-col cols="12">
-                <v-card outlined>
-                    <v-card-text>
-                        <v-row>
-                            <h1 class="display-1 font-weight-thin ml-3 my-3">{{creating ? "New Version" : "Version " + id}}</h1>
-                        </v-row>
+            <v-tabs-items v-model="tab" class="fullWidth">
+                <v-tab-item key="version">
+                    <v-col cols="12">
+                        <v-card outlined>
+                            <v-card-text>
+                                <v-row>
+                                    <h1 class="display-1 font-weight-thin ml-3 my-3">{{creating ? "New Version" : "Version " + id}}</h1>
+                                </v-row>
 
-                        <v-row>
-                            <TextInput
-                                label="Name"
-                                placeholder="Default"
-                                name="name"
-                                :editing="editing"
-                                :value="(branch) ? branch.name : ''"
-                                @edited="(newValue) => { updateValues('name', newValue) }"
-                            ></TextInput>
-                        </v-row>
+                                <v-row>
+                                    <TextInput
+                                        label="Name"
+                                        placeholder="Default"
+                                        name="name"
+                                        :editing="editing"
+                                        :value="(branch) ? branch.name : ''"
+                                        @edited="(newValue) => { updateValues('name', newValue) }"
+                                    ></TextInput>
+                                </v-row>
 
-                        <v-row>
-                            <Select
-                                label="Type"
-                                name="type"
-                                :editing="editing"
-                                :value="(branch) ? branch.type : ''"
-                                :items="types"
-                                @edited="(newValue) => { updateValues('type', newValue) }"
-                            ></Select>
-                        </v-row>
+                                <v-row>
+                                    <Select
+                                        label="Type"
+                                        name="type"
+                                        :editing="editing"
+                                        :value="(branch) ? branch.type : ''"
+                                        :items="types"
+                                        @edited="(newValue) => { updateValues('type', newValue) }"
+                                    ></Select>
+                                </v-row>
 
-                        <v-row>
-                            <TextArea
-                                label="Description"
-                                placeholder="description"
-                                name="description"
-                                :editing="editing"
-                                :value="(branch) ? branch.description : ''"
-                                @edited="(newValue) => { updateValues('description', newValue) }"
-                            ></TextArea>
-                        </v-row>
+                                <v-row>
+                                    <TextArea
+                                        label="Description"
+                                        placeholder="description"
+                                        name="description"
+                                        :editing="editing"
+                                        :value="(branch) ? branch.description : ''"
+                                        @edited="(newValue) => { updateValues('description', newValue) }"
+                                    ></TextArea>
+                                </v-row>
 
-                          <v-row>
-                             <Select
-                                label="Data Upload"
-                                name="upload_id"
-                                :editing="editing"
-                                :value="(branch) ? branch.data_upload_id : ''"
-                                :items="dataUploads"
-                                item-text="name"
-                                item-value="_id"
-                                @edited="(newValue) => { updateValues('upload_id', newValue) }"
-                            ></Select>
-                        </v-row>
+                                <v-row>
+                                    <Select
+                                        label="Data Upload"
+                                        name="upload_id"
+                                        :editing="editing"
+                                        :value="(branch) ? branch.data_upload_id : ''"
+                                        :items="dataUploads"
+                                        item-text="name"
+                                        item-value="_id"
+                                        @edited="(newValue) => { updateValues('upload_id', newValue) }"
+                                    ></Select>
+                                </v-row>
 
 
-                    </v-card-text>
-                </v-card>
-                <v-card-actions v-if="editing">
-                    <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? 'Close' : 'Back'}}</v-btn>
-                    <v-btn @click="save" class="mt-1" color="primary">Save</v-btn>
-                </v-card-actions>
-                <v-card-actions v-else>
-                    <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? 'Close' : 'Back'}}</v-btn>
-                    <v-btn @click="editing=!editing" class="mt-1" color="primary">Edit</v-btn>
-                </v-card-actions>
-            </v-col>
+                            </v-card-text>
+                        </v-card>
+                    </v-col>
+                </v-tab-item>
 
+                <v-tab-item key="schema">
+
+                </v-tab-item>
+            </v-tabs-items>
+            <v-row>
+                <v-col cols="12">
+                    <v-card-actions v-if="editing">
+                        <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? 'Close' : 'Back'}}</v-btn>
+                        <v-btn @click="save" class="mt-1" color="primary">Save</v-btn>
+                    </v-card-actions>
+                    <v-card-actions v-else>
+                        <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? 'Close' : 'Back'}}</v-btn>
+                        <v-btn @click="editing=!editing" class="mt-1" color="primary">Edit</v-btn>
+                    </v-card-actions>
+                </v-col>
+
+            </v-row>
         </v-row>
     </v-container>
 </template>
@@ -117,7 +131,8 @@ export default {
             types: [ {text: 'Standard', value: 'standard'}, {text: 'Reserve', value: 'reserve'} ],
             alert: false,
             alertType: "success",
-            alertText: ""
+            alertText: "",
+            tab: 'version'
         }
     },
     methods: {

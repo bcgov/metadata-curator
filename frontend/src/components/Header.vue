@@ -121,15 +121,13 @@ export default {
     },
 
     watch: {
-        loading(){
-            //this.handleAuth();
-        },
-        user(){
-            //this.handleAuth();
-        },
         useDark(newVal){
             this.dark = newVal;
             this.$vuetify.theme.dark = this.dark
+        },
+
+        loggedIn(){
+            this.preserveToken()
         }
     },
 
@@ -154,31 +152,12 @@ export default {
             //no need to await as we don't really care about the token here
             authServ.getToken();
         },
-
-        handleAuth: function(){
-            if (this.checkRoute){
-                let requiresAuth = this.$router.currentRoute.path !== '/login';//this.$router.app._route.meta.requiresAuth;
-                requiresAuth = requiresAuth && (this.$router.currentRoute.path !== '/logout');
-                requiresAuth = requiresAuth && (this.$router.currentRoute.path !== '/loggedout');
-
-                let requiresNoUser = this.$router.currentRoute.path === '/login';//this.$router.app._route.meta.requiresNoUser;
-                requiresNoUser = requiresNoUser && this.$router.currentRoute.path === '/loggedout';
-
-                if ( (requiresAuth) && (!this.loggedIn) ){
-                    this.$router.push('/login');
-                }else if ( (requiresNoUser) && (this.loggedIn) ){
-                    this.$router.push('/');
-                }
-            }
-        }
     },
 
     mounted(){
         this.dark = this.useDark;
         this.$vuetify.theme.dark = this.dark
         this.preserveToken();
-        //this.$store.dispatch('user/getCurrentUser');
-        //this.handleAuth(this.loading);
     }
 }
 </script>

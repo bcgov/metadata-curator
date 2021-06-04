@@ -467,7 +467,7 @@ export default {
                 chunkSize: this.chunkSize*10,
                 onError: error => {
                     // eslint-disable-next-line
-                    console.log("Upload error", error)
+                    console.error("Upload error", error)
                     if (!self.disabledProp){
                         self.disabled = false;
                     }
@@ -526,7 +526,7 @@ export default {
                                     }
                                 }).catch( (e) => {
                                     // eslint-disable-next-line
-                                    console.log("Concatenation error", e);
+                                    console.error("Concatenation error", e);
                                     if (!self.disabledProp){
                                         self.disabled = false;
                                     }
@@ -601,7 +601,7 @@ export default {
                                 }
                             }).catch( (e) => {
                                 // eslint-disable-next-line
-                                console.log("Concatenation error", e);
+                                console.error("Concatenation error", e);
                                 if (!self.disabledProp){
                                     self.disabled = false;
                                 }

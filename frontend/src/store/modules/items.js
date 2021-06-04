@@ -100,7 +100,6 @@ var build = function(getFn, newFn, updateFn, deleteFn){
 
         pushItem(state, {item}){
             let x = state.items.concat([item]);
-            console.log("PUSH ITEM", item, x)
             Vue.set(state, "items", x);
         },
 
