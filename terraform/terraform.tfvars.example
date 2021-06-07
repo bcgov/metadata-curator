@@ -100,3 +100,5 @@ makeKeycloak = true
 keycloak = {
     username = "kcadmin"
 }
+
+defaultAccessIsGroup = "true"
