@@ -101,3 +101,11 @@ variable "defaultAccessIsGroup" {
 variable "ignoreGroups" {
   type = string
 }
+
+variable "makeKeycloak"{
+  type = bool
+}
+
+variable "keycloak" {
+  type = map(string)
+}

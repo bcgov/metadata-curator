@@ -29,6 +29,36 @@ resource "docker_image" "mc_backend" {
   pull_triggers = [data.docker_registry_image.mc_backend.sha256_digest]
 }
 
+data "null_data_source" "oidcConfig" {
+  inputs = {
+    oidc1 = <<-EOF
+"oidc": {
+    "issuer": "${var.oidc["issuer"]}",
+    "authorizationURL": "${var.oidc["authorizationURL"]}",
+    "tokenURL": "${var.oidc["tokenURL"]}",
+    "userInfoURL": "${var.oidc["userInfoURL"]}",
+    "clientID": "${var.oidc["clientID"]}",
+    "clientSecret": "${var.oidc["clientSecret"]}",
+    "callbackURL": "${var.host}/api/callback",
+    "scope": "openid profile offline_access"
+}
+EOF
+
+    oidc2 = <<-EOF
+"oidc": {
+    "issuer": "${var.oidc["issuer"]}",
+    "authorizationURL": "${var.oidc["authorizationURL"]}",
+    "tokenURL": "${var.oidc["tokenURL"]}",
+    "userInfoURL": "${var.oidc["userInfoURL"]}",
+    "clientID": "${var.oidc["clientID"]}",
+    "clientSecret": "${var.oidc["clientSecret"]}",
+    "callbackURL": "${var.host}/api/callback",
+    "scope": "openid profile offline_access"
+}
+EOF
+  }
+}
+
 data "null_data_source" "feIndConfig" {
   inputs = {
     database =  <<-EOF
@@ -42,18 +72,7 @@ EOF
 
     sessionSecret =  "\"sessionSecret\": \"${random_string.jwtSecret.result}\""
     frontend = "\"frontend\": \"${var.host}\""
-    oidc = <<-EOF
-"oidc": {
-    "issuer": "${var.oidc["issuer"]}",
-    "authorizationURL": "${var.oidc["authorizationURL"]}",
-    "tokenURL": "${var.oidc["tokenURL"]}",
-    "userInfoURL": "${var.oidc["userInfoURL"]}",
-    "clientID": "${var.oidc["clientID"]}",
-    "clientSecret": "${var.oidc["clientSecret"]}",
-    "callbackURL": "${var.host}/api/callback",
-    "scope": "openid profile offline_access"
-}
-EOF
+    
 
     uploadUrl = "\"uploadUrl\": \"${var.host}/files/\"",
 
@@ -63,6 +82,7 @@ EOF
 
     forumApi = "\"forumApi\": {\"baseUrl\": \"http://mc_forum_api:3000/v1\"}"
 
+    oidc = "${var.makeKeycloak} ? ${data.null_data_source.oidcConfig.outputs["oidc2"]} : ${data.null_data_source.oidcConfig.outputs["oidc1"]}"
 
     logLevel = "\"logLevel\": \"debug\""
     jwtSecret = "\"jwtSecret\": \"${random_string.jwtSecret.result}\""
@@ -77,6 +97,7 @@ EOF
     adminGroup = "\"adminGroup\": \"${var.adminGroup}\""
     formio = "\"formio\": ${jsonencode(var.formio)}"
   }
+  depends_on = [data.null_data_source.oidcConfig]
 }
 
 data "null_data_source" "configValues" {

@@ -98,3 +98,9 @@ surnameField = "family_name"
 groupField = "groups"
 
 ignoreGroups = "researchers"
+
+makeKeycloak = true
+
+keycloak = {
+    username = "kcadmin"
+}
