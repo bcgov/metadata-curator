@@ -86,6 +86,61 @@ jobs:
             all_branches: true
             condition: "$TRAVIS_BRANCH =~ ^master|develop$ || -n $TRAVIS_TAG"
 
+    - name: Integration Tests
+      stage: Tests
+      language: java
+      addons:
+        hosts:
+        - auth.example.demo
+        - mc.example.demo
+      jdk: openjdk8
+      cache:
+        directories:
+        - "/tmp/traviscache"
+      before_install:
+      - |-
+        sudo -E apt-get -yq --no-install-suggests --no-install-recommends --allow-unauthenticated install dpkg google-chrome-stable
+        if [ ! -d "/tmp/traviscache" ]; then
+          mkdir -p /tmp/traviscache
+        fi
+      - |-
+        cd /tmp
+        sudo wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+      - |-
+        cd /usr/local/bin
+        sudo unzip -o /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+        sudo rm -rf /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+        sudo chmod +x terraform
+      install:
+      - |-
+        cd /home/travis/build/bcgov/metadata-curator/terraform
+        mkdir _tmp
+        cp terraform.tfvars.example terraform.tfvars
+      - terraform init
+      - terraform apply -var hostRootPath=`pwd`/_tmp -auto-approve
+      before_script:
+      - |-
+        if [ ! -d "/tmp/traviscache" ]; then
+          mkdir -p /tmp/traviscache
+        fi
+      - |-
+        if [ ! -f "/tmp/traviscache/Katalon_Studio_Linux_64-${KATALON_VERSION}.tar.gz" ]; then
+          cd /tmp/traviscache
+          sudo wget -q https://download.katalon.com/${KATALON_VERSION}/Katalon_Studio_Linux_64.tar.gz -O Katalon_Studio_Linux_64-${KATALON_VERSION}.tar.gz
+        fi
+      - |-
+        cd /usr/local/bin
+        sudo mkdir -p Katalon_Studio
+        sudo tar -xf /tmp/traviscache/Katalon_Studio_Linux_64-${KATALON_VERSION}.tar.gz -C Katalon_Studio
+        sudo chmod +x Katalon_Studio/katalon
+        sudo chmod -R 777 Katalon_Studio
+      - docker images --digests
+      - docker ps
+      script:
+      - cd /usr/local/bin/Katalon_Studio
+      - |-
+        xvfb-run --auto-servernum --server-args='-screen 0, 1920x1280x24' ./katalon -noSplash -runMode=console -projectPath='/home/travis/build/bcgov/metadata-curator/ui_tests/Metadata Curator/Metadata Curator.proj' -retry=0 -testSuitePath='Test Suites/HappyPathSuite' -executionProfile='Travis' -browserType='Chrome (headless)'
+
 env:
     global:
         - SONAR_APP=sonar-scanner

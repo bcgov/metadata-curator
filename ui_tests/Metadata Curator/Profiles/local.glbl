@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalVariableEntities>
+   <description></description>
+   <name>local</name>
+   <tag></tag>
+   <defaultProfile>false</defaultProfile>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'https://mc-dev.bgddi.com/'</initValue>
+      <name>MC_URL</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'letti'</initValue>
+      <name>DATA_PROVIDER_1_USERNAME</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'letti123'</initValue>
+      <name>DATA_PROVIDER_1_PWD</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'atticus'</initValue>
+      <name>DATA_PROVIDER_2_USERNAME</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'atticus123'</initValue>
+      <name>DATA_PROVIDER_2_PWD</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'C:\\Users\\paulr\\OneDrive - Avocette Technologies Inc\\Documents\\2 - Roadmap stuff\\2 - DataDock\\metadata-curator\\ui_tests\\Metadata Curator\\test_files\\'</initValue>
+      <name>TEST_FILE_PATH</name>
+   </GlobalVariableEntity>
+</GlobalVariableEntities>
