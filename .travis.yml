@@ -116,6 +116,7 @@ jobs:
         cd /home/travis/build/bcgov/metadata-curator/terraform
         mkdir _tmp
         cp terraform.tfvars.example terraform.tfvars
+        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
       - terraform init
       - terraform apply -var hostRootPath=`pwd`/_tmp -auto-approve
       before_script:
@@ -146,6 +147,8 @@ env:
         - SONAR_APP=sonar-scanner
         - SONAR_URL=https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/
         - SONAR_VERSION=4.3.0.2102-linux
+        - KATALON_VERSION=6.0.5
+        - TERRAFORM_VERSION=0.13.6
         #docker
         - secure: "PDYlDhtyWWbVsb0Olbwy3UyQhR83osg9lSrqsNRLjwyJC5WeJX7+pkKxFo5UJOcuCxVXY1T1JxqM3TetgWveiOYfm+QBAAVt4NgLLgaL6bWHT9+vhNe61senkyuwbm1a+S2Ea+i5iea3U/3YMLmrWxQHuGPjSePJhPUYuCvob0ONbt83QQ2odcJsNSIPmYFNnM5tvWm/+jxNfTuA36bVoK0zR6RuEJpmhnkIqcXLrA2b7KWGoWAARt48NjevMK/WVv5jIx3kReQZhZYNj4dvq+zlbMPm3wZhv0zma/4rMbFmtDQOkN6t+Q1NL46gKhvouxZ0UrfTsBsOgYMtkqG84sOvde6vVz6w2hES9ScXJLry8TKW1wgXobt0diueWlpUeh4nXJqFDZjzVZJkRgbMR9+A33xR2P6DfIvwNrSDFq31LutCi7P7c/SXUtDTR+G2pnmcFNULZyGnaasjpbNKwyczRDhaffWts4rQ3cfiXvwdo15zCzOH0dTupZ1iOns4t4IYM7J5TozJ13PPYLqDivvMJ5zg20GqXpVd+KXHJ5cVOOc+ETdqraA+aNt42IQXH+oruRuZt4edg5M6S8RABIZTCgrI8mPjRdzqqMl3EmE+LzySWaluZmn1JoTndTwxieN4W7j0mZZ59gE8p0umYqxBToFe9CE5M2600Gt1DrM="
         - secure: "fMR8Z+bf70t5Uh7ISmJg0YDnO9JtHUY8WHNfMK7QyAQp+1myE42ttz7HT08xs4dkC93JP1hWUlTcSmhM6DACOM8VBvYkF88AgHZ3PR1/5dDxuAi1GsMCi/nUV8Xl6qyHqUzbbcyLudBx0VhWPcwqV2FFBiu7XYt3vio1/i0GziRuVcsHrxJ2NrMLZEVpjYFGwn7Ca7YyeKyt//EMml6B3yomPPsYq3KQmhHyaPJhJ2oz7jHrqItAxM5M9wRxEdtn8s6Fe+zXOtdBkJXQo13pA/rvPvSzLukm4uMu7cKvVbGLFowc51ZVXyrQRdrAnwhwsX/ZP/SmMx8cUJqh0eMNKc6AJpUZ8zNp6WMf/jFec7VrpvvVYIMsldr6Z+TabBRFbUPfUcnX/5M5Kysv2DekXbEvcnOwHS00gnq5tbMbbrgNfmKifSNeXCVKGfBHuhugVEYy+Vzv4ZnSft0NeLFAmy6yoq8EPLwk1sclbhS1czKJSXwl8X3gRuq+BfCCGgzTIs1hMDFpwetQD8yT/ZhQD2Ia/eB+Wb/rk4qVgjH8Cw+WKKH6qqXCyzRuyEV0ikDB3S9MlI91Xpr+DqRj9DKGklccri5yrSGer+pgBWJdyv4BYBwVuOK5Lt2X3NQkLQfl0aF1DmzSdYSxajgv4KdNmKIzU0phrU0U1OVTgVWoWBw="
