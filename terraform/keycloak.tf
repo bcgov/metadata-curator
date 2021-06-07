@@ -2,30 +2,30 @@ resource "random_string" "keycloakAdminPassword" {
   length           = 16
   special          = false
   override_special = "/@\" "
-  count = "${makeKeycloak} ? 1 : 0"
+  count = "${var.makeKeycloak} ? 1 : 0"
 }
 
 resource "random_string" "testUserPassword" {
   length           = 16
   special          = false
   override_special = "/@\" "
-  count = "${makeKeycloak} ? 1 : 0"
+  count = "${var.makeKeycloak} ? 1 : 0"
 }
 
 resource "random_uuid" "outputcheckerClientSecret" {
-    count = "${makeKeycloak} ? 1 : 0"
+    count = "${var.makeKeycloak} ? 1 : 0"
 }
 
 data "docker_registry_image" "keycloak" {
   name = "jboss/keycloak:4.8.3.Final"
-  count = "${makeKeycloak} ? 1 : 0"
+  count = "${var.makeKeycloak} ? 1 : 0"
 }
 
 resource "docker_image" "keycloak" {
   name          = data.docker_registry_image.keycloak.name
   pull_triggers = [data.docker_registry_image.keycloak.sha256_digest]
   keep_locally  = true
-  count = "${makeKeycloak} ? 1 : 0"
+  count = "${var.makeKeycloak} ? 1 : 0"
 }
 
 resource "docker_container" "mc_keycloak" {
@@ -54,7 +54,7 @@ resource "docker_container" "mc_keycloak" {
     retries      = 20
   }
   depends_on = [null_resource.postgres_first_time_install]
-  count = "${makeKeycloak} ? 1 : 0"
+  count = "${var.makeKeycloak} ? 1 : 0"
 }
 
 resource "null_resource" "keycloak_first_time_install" {
@@ -73,5 +73,5 @@ resource "null_resource" "keycloak_first_time_install" {
   }
 
   depends_on = [docker_container.mc_keycloak]
-  count = "${makeKeycloak} ? 1 : 0"
+  count = "${var.makeKeycloak} ? 1 : 0"
 }
