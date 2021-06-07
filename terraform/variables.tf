@@ -109,3 +109,7 @@ variable "makeKeycloak"{
 variable "keycloak" {
   type = map(string)
 }
+
+variable "postgres" {
+  type = map(string)
+}

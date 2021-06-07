@@ -81,10 +81,6 @@ postgres = {
   username = "kcuser"
 }
 
-keycloak = {
-  username = "kcadmin"
-}
-
 requiredCreateRole = "exporter"
 
 userIdField = "preferred_username"
