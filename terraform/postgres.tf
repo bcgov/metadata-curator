@@ -18,14 +18,14 @@ data "docker_registry_image" "postgres" {
 }
 
 resource "docker_image" "postgres" {
-  name          = data.docker_registry_image.postgres.name
-  pull_triggers = [data.docker_registry_image.postgres.sha256_digest]
+  name          = data.docker_registry_image.postgres[0].name
+  pull_triggers = [data.docker_registry_image.postgres[0].sha256_digest]
   keep_locally  = true
   count = "${var.makeKeycloak} ? 1 : 0"
 }
 
 resource "docker_container" "mc_postgres" {
-  image   = docker_image.postgres.latest
+  image   = docker_image.postgres[0].latest
   name    = "mc_postgres"
   restart = "on-failure"
   volumes {
@@ -34,7 +34,7 @@ resource "docker_container" "mc_postgres" {
   }
   env = [
     "POSTGRES_USER=padmin",
-    "POSTGRES_PASSWORD=${random_string.postgresSuperPassword.result}",
+    "POSTGRES_PASSWORD=${random_string.postgresSuperPassword[0].result}",
   ]
   networks_advanced {
     name = docker_network.private_network.name
@@ -54,13 +54,13 @@ data "template_file" "postgres_script" {
   template = file("${path.module}/scripts/psql.tpl")
   vars = {
     POSTGRES_APP_USERNAME = var.postgres["username"]
-    POSTGRES_APP_PASSWORD = random_string.postgresAppPassword.result
+    POSTGRES_APP_PASSWORD = random_string.postgresAppPassword[0].result
   }
   count = "${var.makeKeycloak} ? 1 : 0"
 }
 
 resource "local_file" "postgres_script" {
-  content  = data.template_file.postgres_script.rendered
+  content  = data.template_file.postgres_script[0].rendered
   filename = "${var.hostRootPath}/postgres_script.psql"
   count = "${var.makeKeycloak} ? 1 : 0"
 }
@@ -74,11 +74,11 @@ resource "null_resource" "postgres_first_time_install" {
     environment = {
       SCRIPT_PATH       = var.hostRootPath
       POSTGRES_USER     = "padmin"
-      POSTGRES_PASSWORD = random_string.postgresSuperPassword.result
+      POSTGRES_PASSWORD = random_string.postgresSuperPassword[0].result
     }
     command = "sleep 10 && docker run --net=mc_vnet -v \"$SCRIPT_PATH:/work\" postgres:9.6.9 psql postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@mc_postgres -f /work/postgres_script.psql"
   }
 
-  depends_on = [docker_container.mc_postgres]
+  depends_on = [docker_container.mc_postgres[0]]
   count = "${var.makeKeycloak} ? 1 : 0"
 }
