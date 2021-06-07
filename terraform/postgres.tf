@@ -2,26 +2,26 @@ resource "random_string" "postgresSuperPassword" {
   length           = 16
   special          = false
   override_special = "/@\" "
-  count = "${var.makeKeycloak} ? 1 : 0"
+  count = var.makeKeycloak ? 1 : 0
 }
 
 resource "random_string" "postgresAppPassword" {
   length           = 16
   special          = false
   override_special = "/@\" "
-  count = "${var.makeKeycloak} ? 1 : 0"
+  count = var.makeKeycloak ? 1 : 0
 }
 
 data "docker_registry_image" "postgres" {
   name = "postgres:9.6.9"
-  count = "${var.makeKeycloak} ? 1 : 0"
+  count = var.makeKeycloak ? 1 : 0
 }
 
 resource "docker_image" "postgres" {
   name          = data.docker_registry_image.postgres[0].name
   pull_triggers = [data.docker_registry_image.postgres[0].sha256_digest]
   keep_locally  = true
-  count = "${var.makeKeycloak} ? 1 : 0"
+  count = var.makeKeycloak ? 1 : 0
 }
 
 resource "docker_container" "mc_postgres" {
@@ -47,7 +47,7 @@ resource "docker_container" "mc_postgres" {
     start_period = "5s"
     retries      = 20
   }
-  count = "${var.makeKeycloak} ? 1 : 0"
+  count = var.makeKeycloak ? 1 : 0
 }
 
 data "template_file" "postgres_script" {
@@ -56,13 +56,13 @@ data "template_file" "postgres_script" {
     POSTGRES_APP_USERNAME = var.postgres["username"]
     POSTGRES_APP_PASSWORD = random_string.postgresAppPassword[0].result
   }
-  count = "${var.makeKeycloak} ? 1 : 0"
+  count = var.makeKeycloak ? 1 : 0
 }
 
 resource "local_file" "postgres_script" {
   content  = data.template_file.postgres_script[0].rendered
   filename = "${var.hostRootPath}/postgres_script.psql"
-  count = "${var.makeKeycloak} ? 1 : 0"
+  count = var.makeKeycloak ? 1 : 0
 }
 
 resource "null_resource" "postgres_first_time_install" {
@@ -80,5 +80,5 @@ resource "null_resource" "postgres_first_time_install" {
   }
 
   depends_on = [docker_container.mc_postgres[0]]
-  count = "${var.makeKeycloak} ? 1 : 0"
+  count = var.makeKeycloak ? 1 : 0
 }
