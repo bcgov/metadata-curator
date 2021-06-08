@@ -116,7 +116,8 @@ jobs:
         cd /home/travis/build/bcgov/metadata-curator/terraform
         mkdir _tmp
         cp terraform.tfvars.example terraform.tfvars
-        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        export DOCKER_REGISTRY_USER=$DOCKER_USERNAME
+        export DOCKER_REGISTRY_PASS=$DOCKER_PASSWORD
         chmod 777 ./scripts/keycloak-setup.sh
       - terraform init
       - terraform apply -var hostRootPath=`pwd`/_tmp -auto-approve
