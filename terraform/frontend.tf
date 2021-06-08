@@ -52,7 +52,7 @@ EOF
     "tokenURL": "${var.authHost}/auth/realms/mc/protocol/openid-connect/token",
     "userInfoURL": "${var.authHost}/auth/realms/mc/protocol/openid-connect/userinfo",
     "clientID": "outputchecker",
-    "clientSecret": "${random_uuid.outputcheckerClientSecret.result}",
+    "clientSecret": "${random_uuid.outputcheckerClientSecret[0].result}",
     "callbackURL": "${var.host}/api/callback",
     "logoutURL": "${var.authHost}/auth/realms/mc/protocol/openid-connect/logout?redirect_uri=${var.host}"
     "scope": "openid profile offline_access"
