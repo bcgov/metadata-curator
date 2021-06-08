@@ -40,19 +40,21 @@ data "null_data_source" "oidcConfig" {
     "clientID": "${var.oidc["clientID"]}",
     "clientSecret": "${var.oidc["clientSecret"]}",
     "callbackURL": "${var.host}/api/callback",
+    "logoutURL": "${var.oidc["logoutURL"]}/auth/realms/mc/protocol/openid-connect/logout?redirect_uri=${var.host}"
     "scope": "openid profile offline_access"
 }
 EOF
 
     oidc2 = <<-EOF
 "oidc": {
-    "issuer": "${var.oidc["issuer"]}",
-    "authorizationURL": "${var.oidc["authorizationURL"]}",
-    "tokenURL": "${var.oidc["tokenURL"]}",
-    "userInfoURL": "${var.oidc["userInfoURL"]}",
-    "clientID": "${var.oidc["clientID"]}",
-    "clientSecret": "${var.oidc["clientSecret"]}",
+    "issuer": "${var.authHost}/auth/realms/mc",
+    "authorizationURL": "${var.authHost}/auth/realms/mc/protocol/openid-connect/auth",
+    "tokenURL": "${var.authHost}/auth/realms/mc/protocol/openid-connect/token",
+    "userInfoURL": "${var.authHost}/auth/realms/mc/protocol/openid-connect/userinfo",
+    "clientID": "outputchecker",
+    "clientSecret": "${random_uuid.outputcheckerClientSecret.result}",
     "callbackURL": "${var.host}/api/callback",
+    "logoutURL": "${var.authHost}/auth/realms/mc/protocol/openid-connect/logout?redirect_uri=${var.host}"
     "scope": "openid profile offline_access"
 }
 EOF
