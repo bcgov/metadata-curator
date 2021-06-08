@@ -117,6 +117,7 @@ jobs:
         mkdir _tmp
         cp terraform.tfvars.example terraform.tfvars
         echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        chmod 777 ./scripts/keycloak-setup.sh
       - terraform init
       - terraform apply -var hostRootPath=`pwd`/_tmp -auto-approve
       before_script:
