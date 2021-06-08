@@ -113,3 +113,7 @@ variable "keycloak" {
 variable "postgres" {
   type = map(string)
 }
+
+variable "authHost" {
+  type = string
+}
