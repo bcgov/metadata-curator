@@ -136,7 +136,7 @@
                 uploadIndex: 0,
                 fileIds: [],
                 spanKey: 0,
-                readyToUpload: false,
+                readyToUpload: true,
                 uploading: false,
             }
         },

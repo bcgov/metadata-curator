@@ -120,6 +120,7 @@
                     this.files = [];
                 }
                 this.spanKey++;
+                this.$emit('changed', this.files.length);
             }
         },
         data () {

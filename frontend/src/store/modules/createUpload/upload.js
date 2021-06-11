@@ -27,9 +27,12 @@ const actions = {
             return e;
         }
     },
-    async getUpload({ commit }, id) {
+    async getUpload({ commit, dispatch }, id) {
         try {
             const data = await backend.getDataUpload(id);
+            if (data.topic_id){
+                dispatch('uploadForm/getUploadFormSubmission', {formName: data.form_name, submissionId: data.upload_submission_id}, {root: true})
+            }
             commit('setUpload', data);
         } catch(e) {
             commit('setError', {error: e.response.data.error});
