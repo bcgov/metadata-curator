@@ -37,11 +37,15 @@ jobs:
 
   quay_io_backend:
     runs-on: ubuntu-latest
+    needs: ["unit_tests", "audit"]
     defaults:
       run:
         shell: bash
         working-directory: backend
     steps:
       - uses: actions/checkout@v2
+
       - name: push to quay
-        run: ./docker_quayio_push
+        run: |
+          chmod ugo+x ./docker_quayio_push
+          ./docker_quayio_push
