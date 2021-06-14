@@ -1,0 +1,10 @@
+name: "Backend Api"
+on: ["push", "pull_request"]
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: install dependencies
+        run: npm ci
+      - run: npm audit
