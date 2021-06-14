@@ -34,5 +34,5 @@ provider "docker" {
 
 creds = Template(template2)
 
-with open('regCreds.tf', 'w') as file2:
+with open('docker.tf', 'w') as file2:
     file2.write(creds.substitute(USER=os.environ['QUAYIO_USERNAME'], PASS=os.environ['QUAYIO_PASSWORD']))
