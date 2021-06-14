@@ -22,8 +22,6 @@ with open('terraform.auto.tfvars', 'w') as the_file:
 template2 = """ 
 
 provider "docker" {
-  host = "tcp://localhost:2376"
-
   registry_auth {
     address  = "quay.io:8181"
     username = "${USER}"
