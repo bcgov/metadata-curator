@@ -136,9 +136,9 @@ jobs:
           chmod 777 ./scripts/keycloak-setup.sh
           echo provider "docker" { > docker.tf
           echo registry_auth { >> docker.tf
-          echo address  = "quay.io:8181" >> docker.tf
-          echo username = "${QUAYIO_USERNAME}" >> docker.tf
-          echo password = "${QUAYIO_PASSWORD}" >> docker.tf
+          echo address  = \"quay.io:8181\" >> docker.tf
+          echo username = \"${QUAYIO_USERNAME}\" >> docker.tf
+          echo password = \"${QUAYIO_PASSWORD}\" >> docker.tf
           echo } >> docker.tf
           echo } >> docker.tf
           cat docker.tf
