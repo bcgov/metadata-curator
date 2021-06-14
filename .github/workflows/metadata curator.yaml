@@ -5,7 +5,7 @@ env:
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   QUAYIO_PASSWORD: ${{ secrets.QUAYIO_PASSWORD }}
   QUAYIO_USERNAME: ${{ secrets.QUAYIO_USERNAME }}
-  BRANCH: ${{GITHUB_REF##*/}}
+  BRANCH: ${{ github.ref##*/ }}
 jobs:
   audit:
     runs-on: ubuntu-latest
