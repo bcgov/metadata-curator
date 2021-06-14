@@ -1,0 +1,45 @@
+name: "Metadata Curator"
+on: ["push", "pull_request", "release"]
+env:
+    QUAYIO_PASSWORD: ${{ secrets.QUAYIO_PASSWORD }}
+    QUAYIO_USERNAME: h3brandon
+    DOCKER_USERNAME: h3brandon
+    DOCKER_PASSWORD: ${{ secrets.QUAYIO_PASSWORD }}
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    if: github.event_name != 'release' || github.event.action != 'created'
+    defaults:
+      run:
+        shell: bash
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v2
+      - name: install dependencies
+        run: npm ci
+      - name: audit
+        run: npm audit
+  
+  unit_test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v2
+      - name: install dependencies
+        run: npm ci
+      - name: test
+        run: npm test
+
+  quay_io_backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v2
+      - name: push to quay
+        run: ./docker_quayio_push
