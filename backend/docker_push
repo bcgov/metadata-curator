@@ -12,6 +12,10 @@ QUAYIO_BASE="quay.io/h3brandon"
 
 echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 echo "logged in, building now";
+
+echo "Building Docker image..."
+docker build -t $QUAYIO_BASE/$REPO .
+
 printf "\nENV GITHASH $TRAVIS_COMMIT\n" >> Dockerfile
 
 if [ $TRAVIS_BRANCH == "master" ]; then
