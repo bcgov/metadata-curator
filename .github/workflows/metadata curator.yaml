@@ -141,6 +141,24 @@ jobs:
           echo password = \"${QUAYIO_PASSWORD}\" >> docker.tf
           echo } >> docker.tf
           echo } >> docker.tf
-          cat docker.tf
           terraform init
           terraform apply -var hostRootPath=`pwd`/_tmp -auto-approve
+      
+      - name: katalon
+        env:
+          TERRAFORM_VERSION: "0.13.6"
+          KATALON_VERSION: "6.0.5"
+        run: |
+          docker ps
+          docker images --digests
+          export WD=`pwd`
+          export BRANCH=${GITHUB_REF##*/}
+          cd /tmp
+          wget -q https://download.katalon.com/${KATALON_VERSION}/Katalon_Studio_Linux_64.tar.gz -O Katalon_Studio_Linux_64-${KATALON_VERSION}.tar.gz
+          mkdir /tmp/Katalon_Studio
+          tar -xf /tmp/Katalon_Studio_Linux_64-${KATALON_VERSION}.tar.gz -C Katalon_Studio
+          chmod +x Katalon_Studio/katalon
+          chmod -R 777 Katalon_Studio
+          apt-get -yq --no-install-suggests --no-install-recommends --allow-unauthenticated install dpkg google-chrome-stable
+          cd /tmp/Katalon_Studio
+          xvfb-run --auto-servernum --server-args='-screen 0, 1920x1280x24' ./katalon -noSplash -runMode=console -projectPath="$WD/ui_tests/Metadata Curator/Metadata Curator.prj' -retry=0 -testSuitePath='Test Suites/HappyPathSuite' -executionProfile='Travis' -browserType='Chrome (headless)'
