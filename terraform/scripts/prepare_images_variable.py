@@ -18,3 +18,21 @@ s = Template(template)
 
 with open('terraform.auto.tfvars', 'w') as the_file:
     the_file.write(s.substitute(TAG=os.environ['BRANCH'].replace('/', '-')))
+
+template2 = """ 
+
+provider "docker" {
+  host = "tcp://localhost:2376"
+
+  registry_auth {
+    address  = "quay.io:8181"
+    username = "${USER}"
+    password = "${PASS}"
+  }
+}
+    """
+
+creds = Template(template2)
+
+with open('regCreds.tf', 'w') as file2:
+    file2.write(creds.substitute(USER=os.environ['QUAYIO_USERNAME'], PASS=os.environ['QUAYIO_PASSWORD']))
