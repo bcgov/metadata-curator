@@ -48,4 +48,18 @@ jobs:
       - name: push to quay
         run: |
           chmod ugo+x ./docker_quayio_push
-          ./docker_quayio_push
+          ./docker_quayio_push metadata_curator_api
+  
+  quay_io_frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: push to quay
+        run: |
+          chmod ugo+x ./docker_quayio_push
+          ./docker_quayio_push metadata_curator_ui
