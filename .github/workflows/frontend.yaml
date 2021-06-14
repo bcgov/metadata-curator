@@ -3,10 +3,12 @@ on: ["push", "pull_request"]
 jobs:
   audit:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: frontend
     steps:
       - uses: actions/checkout@v2
-      - name: change to frontend
-        run: cd frontend
       - name: install dependencies
         run: npm ci
       - name: audit
