@@ -37,7 +37,7 @@ jobs:
 
   quay_io_backend:
     runs-on: ubuntu-latest
-    needs: ["unit_tests", "audit"]
+    needs: ["unit_test", "audit"]
     defaults:
       run:
         shell: bash
