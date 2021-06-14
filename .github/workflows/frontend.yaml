@@ -1,12 +1,12 @@
-name: "Backend Api"
+name: "Frontend"
 on: ["push", "pull_request"]
 jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: change to backend
-        run: cd backend
+      - name: change to frontend
+        run: cd frontend
       - name: install dependencies
         run: npm ci
       - name: audit
