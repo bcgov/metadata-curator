@@ -5,7 +5,7 @@ template = """
 
 images = {
     owner = "quay.io/h3brandon"
-    forum_api = "bcgovimages/forum_api:latest"
+    forum_api = "bcgovimages/ocwa_forum_api:latest"
     formio = "h3brandon/formio:latest"
     frontend = ":${TAG}"
     tusd = ":68385adc0cba"

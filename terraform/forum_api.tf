@@ -1,5 +1,5 @@
 data "docker_registry_image" "forum_api" {
-  name = "${var.images["owner"]}/ocwa_forum_api${var.images["forum_api"]}"
+  name = "${var.images["forum_api"]}"
 }
 
 resource "docker_image" "forum_api" {
