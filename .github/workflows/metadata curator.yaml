@@ -31,7 +31,9 @@ jobs:
       - name: install dependencies
         run: npm ci
       - name: test
-        run: npm test
+        run: |
+          cp config/default.json.example config/default.json
+          npm test
 
   quay_io_backend:
     runs-on: ubuntu-latest
