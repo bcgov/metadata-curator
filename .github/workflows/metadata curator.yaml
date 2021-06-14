@@ -104,11 +104,10 @@ jobs:
 
   integration_tests:
     runs-on: ubuntu-latest
-    needs: ["quay_io_backend", "quay_io_frontend"]
+    #needs: ["quay_io_backend", "quay_io_frontend"]
     defaults:
       run:
         shell: bash
-        working-directory: frontend
     steps:
       - uses: actions/checkout@v2
       - name: terraform
