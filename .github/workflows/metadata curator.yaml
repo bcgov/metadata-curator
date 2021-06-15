@@ -94,6 +94,7 @@ jobs:
     env:
       DOCKER_USERNAME: ${{ secrets.DOCKER_DEPLOY_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_DEPLOY_PASSWORD }}
+      WEBHOOK_URL: ${{secrets.WEBHOOK_URL}}
     defaults:
       run:
         shell: bash

@@ -25,17 +25,13 @@ if [ $BRANCH == "master" ]; then
     docker push $BCGOV_BASE/$REPO:latest
     docker push $BCGOV_BASE/$REPO:$TRAVIS_COMMIT
     echo "latest and $TRAVIS_COMMIT pushed successfully"
-fi
-
-if [ $BRANCH == "develop" ]; then
+elif [ $BRANCH == "develop" ]; then
     docker tag $QUAYIO_BASE/$REPO $BCGOV_BASE/$REPO:edge
     echo "dockerfile tagged pushing now"
     docker push $BCGOV_BASE/$REPO:edge
     echo "edge (develop) pushed successfully"
-fi
-
-if [ "$BRANCH" == "$TRAVIS_TAG" ]; then
-    docker tag $QUAYIO_BASE/$REPO $BCGOV_BASE/$REPO:$TRAVIS_TAG
+else
+    docker tag $QUAYIO_BASE/$REPO $BCGOV_BASE/$REPO:$BRANCH
     echo "dockerfile tagged pushing now"
     docker push $BCGOV_BASE/$REPO:$TRAVIS_TAG
     echo "$TRAVIS_TAG pushed successfully"
