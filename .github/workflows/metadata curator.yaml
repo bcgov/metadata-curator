@@ -129,6 +129,7 @@ jobs:
           alias terraform='/tmp/terraform'
           cd $WD/terraform
           mkdir _tmp
+          chmod 777 _tmp
           python scripts/prepare_images_variable.py
           cp terraform.tfvars.example terraform.tfvars
           export DOCKER_REGISTRY_USER=$DOCKER_USERNAME
