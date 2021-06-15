@@ -163,4 +163,4 @@ jobs:
           sudo chmod -R 777 Katalon_Studio
           sudo apt-get -yq --no-install-suggests --no-install-recommends --allow-unauthenticated install dpkg google-chrome-stable
           cd Katalon_Studio
-          xvfb-run --auto-servernum --server-args='-screen 0, 1920x1280x24' ./katalon -noSplash -runMode=console -projectPath="$WD/ui_tests/Metadata Curator/Metadata Curator.prj' -retry=0 -testSuitePath='Test Suites/HappyPathSuite' -executionProfile='Travis' -browserType='Chrome (headless)'
+          xvfb-run --auto-servernum --server-args='-screen 0, 1920x1280x24' ./katalon -noSplash -runMode=console -projectPath="$WD/ui_tests/Metadata Curator/Metadata Curator.prj" -retry=0 -testSuitePath='Test Suites/HappyPathSuite' -executionProfile='Travis' -browserType='Chrome (headless)'
