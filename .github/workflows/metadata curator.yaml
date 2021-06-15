@@ -158,9 +158,9 @@ jobs:
           wget -q https://download.katalon.com/${KATALON_VERSION}/Katalon_Studio_Linux_64.tar.gz -O Katalon_Studio_Linux_64-${KATALON_VERSION}.tar.gz
           cd /usr/local/bin
           sudo mkdir -p Katalon_Studio
-          tar -xf /tmp/Katalon_Studio_Linux_64-${KATALON_VERSION}.tar.gz -C Katalon_Studio
-          chmod +x Katalon_Studio/katalon
-          chmod -R 777 Katalon_Studio
+          sudo tar -xf /tmp/Katalon_Studio_Linux_64-${KATALON_VERSION}.tar.gz -C Katalon_Studio
+          sudo chmod +x Katalon_Studio/katalon
+          sudo chmod -R 777 Katalon_Studio
           sudo apt-get -yq --no-install-suggests --no-install-recommends --allow-unauthenticated install dpkg google-chrome-stable
           cd Katalon_Studio
           xvfb-run --auto-servernum --server-args='-screen 0, 1920x1280x24' ./katalon -noSplash -runMode=console -projectPath="$WD/ui_tests/Metadata Curator/Metadata Curator.prj' -retry=0 -testSuitePath='Test Suites/HappyPathSuite' -executionProfile='Travis' -browserType='Chrome (headless)'
