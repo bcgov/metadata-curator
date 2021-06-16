@@ -26,7 +26,7 @@ const actions = {
             dataUpload = await backend.putDataUpload(dataUpload);
             commit('setDataUpload', {dataUpload: dataUpload});
         } catch(e) {
-            console.errpr("Unable to update data upload error: ", e);
+            console.error("Unable to update data upload error: ", e);
             commit('setError', {error: e.response.data.error});
         }
     },
