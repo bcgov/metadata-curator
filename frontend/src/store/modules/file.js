@@ -39,9 +39,6 @@ async function encrypt(commit, clear, content, key, replaceIndex){
         commit('clearBlob');
     }
 
-    // eslint-disable-next-line
-    console.log("encrypt content length: ", content.length);
-
     return openpgp.encrypt({
         message: await openpgp.message.fromBinary(content), // input as Message object
         publicKeys: (await openpgp.key.readArmored(key)).keys,
