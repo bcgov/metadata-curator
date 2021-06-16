@@ -74,10 +74,6 @@ variable "userIdField" {
   type = string
 }
 
-variable "requiredCreateRole" {
-  type = string
-}
-
 variable "emailField" {
   type = string
 }
