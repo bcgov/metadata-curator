@@ -81,7 +81,7 @@ jobs:
         working-directory: backend
     steps:
       - uses: actions/checkout@v2
-      - name: push to quay
+      - name: push to dockerhub
         run: |
           export BRANCH=${GITHUB_REF##*/}
           chmod ugo+x ./docker_push
@@ -101,7 +101,7 @@ jobs:
         working-directory: frontend
     steps:
       - uses: actions/checkout@v2
-      - name: push to quay
+      - name: push to dockerhub
         run: |
           export BRANCH=${GITHUB_REF##*/}
           chmod ugo+x ./docker_push
