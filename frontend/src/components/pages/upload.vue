@@ -1,8 +1,5 @@
 <template>
     <v-container>
-        <v-alert :class="'fixed' + ((errorAlert) ? ' mb-3' : '')" v-model="errorAlert" type="error" dismissible>
-            {{errorText}}
-        </v-alert>
         <v-stepper v-model="step">
             <v-stepper-header>
                 <v-stepper-step :step="steps.step1UploadForm" :complete="step > steps.step1UploadForm" >Upload Info</v-stepper-step>
@@ -36,10 +33,15 @@
 
                 <v-stepper-content :step="steps.step3FileLevelForm">
                     <v-card class="mb-12">
-                        <FileInfoForm v-if="step === steps.step3FileLevelForm" ref="fileInfoForm"></FileInfoForm>
+                        <v-alert class="fixed" v-model="errorAlert" type="error" dismissible>
+                            {{errorText}}
+                        </v-alert>
+                        <div :class="errorAlert ? 'mt-8': ''">
+                            <FileInfoForm v-if="step === steps.step3FileLevelForm" ref="fileInfoForm"></FileInfoForm>
+                        </div>
                     </v-card>
                     <v-btn text @click="step=steps.step2FileSelection" id="back-3">Back</v-btn>
-                    <v-btn color="primary" @click="step=stepSaveFileInfoForm(true)" id="next-3">Next</v-btn>
+                    <v-btn color="primary" @click="stepSaveFileInfoForm(true)" id="next-3">Next</v-btn>
                     
                 </v-stepper-content>
 
@@ -187,8 +189,21 @@
             },
 
             async stepSaveFileInfoForm(transitionNextStepAfterSave) {
-                await this.updateUpload(this.upload);
-                if(transitionNextStepAfterSave) { this.step = this.steps.step4UploadProgress; }
+                let valid = true;
+                if (this.upload.files){
+                    
+                    for (let i=0; i<this.upload.files.length; i++){
+                        if ((!this.upload.files[i].start_date) || (!this.upload.files[i].end_date)){
+                            this.errorAlert = true;
+                            this.errorText = "All start and end dates are required"
+                            valid = false;
+                        }
+                    }
+                }
+                if (valid){
+                    await this.updateUpload(this.upload);
+                    if(transitionNextStepAfterSave) { this.step = this.steps.step4UploadProgress; }
+                }
             },
 
             async stepSaveFileUploads(){

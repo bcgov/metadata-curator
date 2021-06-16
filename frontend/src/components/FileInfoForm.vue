@@ -38,7 +38,10 @@
                             <template v-slot:activator="{ on, attrs }">
                             <v-text-field
                                 v-model="start[index]"
-                                label="Date Range Start"
+                                :rules="[
+                                    () => !!start[index] || 'This field is required',
+                                ]"
+                                label="Date Range Start*"
                                 prepend-icon="mdi-calendar"
                                 readonly
                                 v-bind="attrs"
@@ -62,7 +65,10 @@
                             <template v-slot:activator="{ on, attrs }">
                             <v-text-field
                                 v-model="end[index]"
-                                label="Date Range End"
+                                :rules="[
+                                    () => !!end[index] || 'This field is required',
+                                ]"
+                                label="Date Range End*"
                                 prepend-icon="mdi-calendar"
                                 readonly
                                 v-bind="attrs"
