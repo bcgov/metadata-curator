@@ -7,6 +7,7 @@
                         :show-encrypt-button="false"
                         :show-upload-button="false"
                         :show-import-button="false"
+                        :appendMetadata="{upload_id: uploadStore._id}"
                         :read-file="false"
                         :index="index"
                         :loadFromStore="files[index].sig"

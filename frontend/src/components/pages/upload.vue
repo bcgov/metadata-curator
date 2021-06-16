@@ -1,66 +1,71 @@
 <template>
     <v-container>
-        <v-stepper v-model="step">
-            <v-stepper-header>
-                <v-stepper-step :step="steps.step1UploadForm" :complete="step > steps.step1UploadForm" >Upload Info</v-stepper-step>
-                <v-divider></v-divider>
-                <v-stepper-step :step="steps.step2FileSelection" :complete="step > steps.step2FileSelection" >File Selection</v-stepper-step>
-                <v-divider></v-divider>
-                <v-stepper-step :step="steps.step3FileLevelForm" :complete="step > steps.step3FileLevelForm" >File Level Info</v-stepper-step>
-                <v-divider></v-divider>
-                <v-stepper-step :step="steps.step4UploadProgress" :complete="step > steps.step4UploadProgress" >Upload Progress</v-stepper-step>
-                <v-divider></v-divider>
-                <v-stepper-step :step="steps.step5UploadSummary">Upload Summary</v-stepper-step>
-            </v-stepper-header>
+        <v-row v-if="errorAlert">
+            <v-col cols=12 class="pa-0">
+                <v-alert class="mb-0" v-model="errorAlert" type="error" dismissible>
+                    {{errorText}}
+                </v-alert>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col cols=12>
+                <v-stepper v-model="step">
+                    <v-stepper-header>
+                        <v-stepper-step :step="steps.step1UploadForm" :complete="step > steps.step1UploadForm" >Upload Info</v-stepper-step>
+                        <v-divider></v-divider>
+                        <v-stepper-step :step="steps.step2FileSelection" :complete="step > steps.step2FileSelection" >File Selection</v-stepper-step>
+                        <v-divider></v-divider>
+                        <v-stepper-step :step="steps.step3FileLevelForm" :complete="step > steps.step3FileLevelForm" >File Level Info</v-stepper-step>
+                        <v-divider></v-divider>
+                        <v-stepper-step :step="steps.step4UploadProgress" :complete="step > steps.step4UploadProgress" >Upload Progress</v-stepper-step>
+                        <v-divider></v-divider>
+                        <v-stepper-step :step="steps.step5UploadSummary">Upload Summary</v-stepper-step>
+                    </v-stepper-header>
 
-            <v-stepper-items>
-                <v-stepper-content :step="steps.step1UploadForm">
-                    <v-card class="mb-12">
-                        <UploadForm ref="uploadForm"></UploadForm>
-                    </v-card>
-                    <v-btn text @click="stepSaveUploadForm(true)" id="next-1">Next</v-btn>
-                </v-stepper-content>
+                    <v-stepper-items>
+                        <v-stepper-content :step="steps.step1UploadForm">
+                            <v-card class="mb-12">
+                                <UploadForm ref="uploadForm"></UploadForm>
+                            </v-card>
+                            <v-btn text @click="stepSaveUploadForm(true)" id="next-1">Next</v-btn>
+                        </v-stepper-content>
 
-                <v-stepper-content :step="steps.step2FileSelection">
-                    <v-card class="mb-12">
-                        <FileForm v-if="step === steps.step2FileSelection" ref="fileForm" @changed="step2Changed"></FileForm>
-                    </v-card>
-                    
-                    <v-btn text @click="step=steps.step1UploadForm" id="back-2">Back</v-btn>
-                    <v-btn color="primary" :disabled="!validStep3" @click="stepSaveFileForm(true)" id="next-2">Next</v-btn>
-                    
-                </v-stepper-content>
+                        <v-stepper-content :step="steps.step2FileSelection">
+                            <v-card class="mb-12">
+                                <FileForm v-if="step === steps.step2FileSelection" ref="fileForm" @changed="step2Changed"></FileForm>
+                            </v-card>
+                            
+                            <v-btn text @click="step=steps.step1UploadForm" id="back-2">Back</v-btn>
+                            <v-btn color="primary" :disabled="!validStep3" @click="stepSaveFileForm(true)" id="next-2">Next</v-btn>
+                            
+                        </v-stepper-content>
 
-                <v-stepper-content :step="steps.step3FileLevelForm">
-                    <v-card class="mb-12">
-                        <v-alert class="fixed" v-model="errorAlert" type="error" dismissible>
-                            {{errorText}}
-                        </v-alert>
-                        <div :class="errorAlert ? 'mt-8': ''">
-                            <FileInfoForm v-if="step === steps.step3FileLevelForm" ref="fileInfoForm"></FileInfoForm>
-                        </div>
-                    </v-card>
-                    <v-btn text @click="step=steps.step2FileSelection" id="back-3">Back</v-btn>
-                    <v-btn color="primary" @click="stepSaveFileInfoForm(true)" id="next-3">Next</v-btn>
-                    
-                </v-stepper-content>
+                        <v-stepper-content :step="steps.step3FileLevelForm">
+                            <v-card class="mb-12">
+                                <FileInfoForm v-if="step === steps.step3FileLevelForm" ref="fileInfoForm"></FileInfoForm>
+                            </v-card>
+                            <v-btn text @click="step=steps.step2FileSelection" id="back-3">Back</v-btn>
+                            <v-btn color="primary" @click="stepSaveFileInfoForm(true)" id="next-3">Next</v-btn>
+                            
+                        </v-stepper-content>
 
-                <v-stepper-content :step="steps.step4UploadProgress">
-                    <v-card class="mb-12">
-                        <FileUploadForm v-if="step === steps.step4UploadProgress" @uploads-finished="stepSaveFileUploads" :active="step === steps.step4UploadProgress"></FileUploadForm>
-                    </v-card>
-                    <!--<v-btn color="primary" @click="step=steps.step5UploadSummary">Next</v-btn>
-                    <v-btn text @click="step=steps.step3FileLevelForm">Back</v-btn>-->
-                </v-stepper-content>
+                        <v-stepper-content :step="steps.step4UploadProgress">
+                            <v-card class="mb-12">
+                                <FileUploadForm v-if="step === steps.step4UploadProgress" @uploads-finished="stepSaveFileUploads" :active="step === steps.step4UploadProgress"></FileUploadForm>
+                            </v-card>
+                            <!--<v-btn color="primary" @click="step=steps.step5UploadSummary">Next</v-btn>
+                            <v-btn text @click="step=steps.step3FileLevelForm">Back</v-btn>-->
+                        </v-stepper-content>
 
-                <v-stepper-content :step="steps.step5UploadSummary">
-                    <v-card class="mb-12">
-                        <UploadSummaryForm v-if="step === steps.step5UploadSummary" ref="uploadSummaryForm"></UploadSummaryForm>
-                    </v-card>
-                </v-stepper-content>
-            </v-stepper-items>
-        </v-stepper>
-
+                        <v-stepper-content :step="steps.step5UploadSummary">
+                            <v-card class="mb-12">
+                                <UploadSummaryForm v-if="step === steps.step5UploadSummary" ref="uploadSummaryForm"></UploadSummaryForm>
+                            </v-card>
+                        </v-stepper-content>
+                    </v-stepper-items>
+                </v-stepper>
+            </v-col>
+        </v-row>
     </v-container>
 </template>
 <script>
@@ -201,6 +206,8 @@
                     }
                 }
                 if (valid){
+                    this.errorAlert = false;
+                    this.errorText = "";
                     await this.updateUpload(this.upload);
                     if(transitionNextStepAfterSave) { this.step = this.steps.step4UploadProgress; }
                 }
@@ -268,5 +275,6 @@
 <style scoped>
 .fixed{
     position: fixed;
+    z-index: 100;
 }
 </style>

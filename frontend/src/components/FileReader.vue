@@ -113,6 +113,10 @@ export default {
         ignoreDuplicates: {
             type: Boolean,
             default: false
+        },
+        appendMetadata: {
+            type: Object,
+            default: () => { return {} }
         }
     },
 
@@ -291,7 +295,6 @@ export default {
                 }else{
                     this.encContentBlobs[index] = new Blob([cipherText.data])
                 }
-                console.log("ENCRYPTED", index, content, message, cipherText.data, cipherText.data.length);
                 if (index <= 0){
                     this.$emit("encrypted", this.index);
                 }
@@ -401,7 +404,6 @@ export default {
 
                 reader.onload = async function(e){
                     let content = new Uint8Array(e.target.result);
-                    console.log("LOADED ", index, e, e.target.result, content.length);
 
                     if (self.readFile === true){
                         // console.log("watch filename: " + self.file.name);
@@ -435,13 +437,11 @@ export default {
                 this.currChunk += 1;
                 if (this.currChunk < this.numChunks){
                     let sli = this.file.slice(this.offset, (this.offset + this.chunkSize));
-                    console.log("GET NEXT CHUNK", this.currChunk, this.numChunks, this.offset, this.chunkSize, sli);
                     this.offset += this.chunkSize;
                     reader.readAsArrayBuffer(sli);
 
                 }else{
                     let sli = this.file.slice(this.offset);
-                    console.log("GET LAST CHUNK", this.currChunk, this.numChunks, this.offset, this.chunkSize);
                     this.offset += 0;
                     //this last chunk can be bigger than the rest because each chunk needs to
                     //be at least 5mb due to s3/minio restrictions
@@ -477,6 +477,7 @@ export default {
                     "Upload-Concat": "partial"
                 },
                 metadata: {
+                    ...this.appendMetadata,
                     filename: this.file.name,
                     filetype: this.file.type,
                     jwt: this.jwt
@@ -505,9 +506,7 @@ export default {
 
                     if (i < self.numChunks){
                         let chunkIndex = ((i%2)==0) ? 2 : 1;
-                        console.log("Getting chunk", i, chunkIndex);
                         await self.getNextChunk(chunkIndex);
-                        console.log("Should be after a loaded");
                         self.numEncrypted += 1
                         
                         if (i%2 == 0){
@@ -587,7 +586,6 @@ export default {
             }else{
                 u = new tus.Upload(this.encContentBlobs[initialUpIndex], uploadOptions);
             }
-            console.log("Uploading chunk", initialUpIndex, this.currChunk, i, this.encContentBlobs[initialUpIndex]);
             this.uploads.push(u);
 
             //is more than one chunk do parallel work

@@ -49,7 +49,7 @@
                                 @change="updateFormSubmission"
                             ></v-text-field>
                             </template>
-                            <v-date-picker v-model="start[index]" @input="menu[index] = false"></v-date-picker>
+                            <v-date-picker v-model="start[index]" @input="menu[index] = false" @change="updateFormSubmission"></v-date-picker>
                         </v-menu>
                     </v-row>
 
@@ -76,7 +76,7 @@
                                 v-on="on"
                             ></v-text-field>
                             </template>
-                            <v-date-picker v-model="end[index]" @input="menu2[index] = false"></v-date-picker>
+                            <v-date-picker v-model="end[index]" @input="menu2[index] = false" @change="updateFormSubmission"></v-date-picker>
                         </v-menu>
                     </v-row>
 
