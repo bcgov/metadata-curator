@@ -68,6 +68,12 @@ resource "null_resource" "keycloak_first_time_install" {
       "KEYCLOAK_USER"          = var.keycloak["username"]
       "KEYCLOAK_PASSWORD"      = random_string.keycloakAdminPassword[0].result
       "KEYCLOAK_CLIENT_SECRET" = random_uuid.outputcheckerClientSecret[0].result
+      "ORG_ATT"                = var.orgAttribute
+      "REQUIRED_CREATE_ROLE"   = var.requiredRoleToCreateRequest
+      "APPROVER_0"             = var.approverGroups[0]
+      "APPROVER_1"             = var.approverGroups[1]
+      "BUSCAT_0"               = var.businessCategories[0]
+      "BUSCAT_1"               = var.businessCategories[1]
     }
     command = "docker run --net=mc_vnet -e TESTUSER_PASSWORD -e KEYCLOAK_USER -e KEYCLOAK_PASSWORD -e KEYCLOAK_CLIENT_SECRET -v \"$PWD:/work\" --entrypoint /bin/bash jboss/keycloak:4.1.0.Final -c /work/scripts/keycloak-setup.sh"
   }

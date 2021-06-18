@@ -1,0 +1,7 @@
+{
+    "url": "https://mc.example.demo",
+    "publisherAccount": "provider_1",
+    "publisherPassword": "provider_1_password",
+    "approverAccount": "approver_1",
+    "approverPassword": "approver_1_password"
+}

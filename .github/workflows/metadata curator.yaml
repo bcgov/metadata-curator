@@ -107,41 +107,47 @@ jobs:
           chmod ugo+x ./docker_push
           ./docker_push metadata_curator_ui
 
-  # integration_tests:
-  #   runs-on: ubuntu-latest
-  #   needs: ["quay_io_backend", "quay_io_frontend"]
-  #   defaults:
-  #     run:
-  #       shell: bash
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: terraform
-  #       env:
-  #         TERRAFORM_VERSION: "0.13.6"
-  #         KATALON_VERSION: "6.0.5"
-  #       run: |
-  #         export WD=`pwd`
-  #         export BRANCH=${GITHUB_REF##*/}
-  #         cd /tmp
-  #         wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-  #         unzip -o /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-  #         rm -rf /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-  #         chmod +x terraform
-  #         alias terraform='/tmp/terraform'
-  #         cd $WD/terraform
-  #         mkdir _tmp
-  #         chmod 777 _tmp
-  #         python scripts/prepare_images_variable.py
-  #         cp terraform.tfvars.example terraform.tfvars
-  #         export DOCKER_REGISTRY_USER=$DOCKER_USERNAME
-  #         export DOCKER_REGISTRY_PASS=$DOCKER_PASSWORD
-  #         chmod 777 ./scripts/keycloak-setup.sh
-  #         echo provider "docker" { > docker.tf
-  #         echo registry_auth { >> docker.tf
-  #         echo address  = \"quay.io\" >> docker.tf
-  #         echo username = \"${QUAYIO_USERNAME}\" >> docker.tf
-  #         echo password = \"${QUAYIO_PASSWORD}\" >> docker.tf
-  #         echo } >> docker.tf
-  #         echo } >> docker.tf
-  #         terraform init
-  #         terraform apply -var hostRootPath=`pwd`/_tmp -auto-approve
+  integration_tests:
+    runs-on: ubuntu-latest
+    needs: ["quay_io_backend", "quay_io_frontend"]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v2
+      - name: terraform
+        env:
+          TERRAFORM_VERSION: "0.13.6"
+          KATALON_VERSION: "6.0.5"
+        run: |
+          export WD=`pwd`
+          export BRANCH=${GITHUB_REF##*/}
+          cd /tmp
+          wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+          unzip -o /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+          rm -rf /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+          chmod +x terraform
+          alias terraform='/tmp/terraform'
+          cd $WD/terraform
+          mkdir _tmp
+          chmod 777 _tmp
+          python scripts/prepare_images_variable.py
+          cp terraform.tfvars.example terraform.tfvars
+          export DOCKER_REGISTRY_USER=$DOCKER_USERNAME
+          export DOCKER_REGISTRY_PASS=$DOCKER_PASSWORD
+          chmod 777 ./scripts/keycloak-setup.sh
+          echo provider "docker" { > docker.tf
+          echo registry_auth { >> docker.tf
+          echo address  = \"quay.io\" >> docker.tf
+          echo username = \"${QUAYIO_USERNAME}\" >> docker.tf
+          echo password = \"${QUAYIO_PASSWORD}\" >> docker.tf
+          echo } >> docker.tf
+          echo } >> docker.tf
+          terraform init
+          terraform apply -var hostRootPath=`pwd`/_tmp -auto-approve
+
+      - name: test
+        run: |
+          cd frontend
+          cp step-definitions/config.json.example step-definitions/config.json
+          npm test

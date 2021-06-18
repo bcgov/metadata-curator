@@ -50,6 +50,8 @@ resource "docker_container" "mc_nginx" {
 data "template_file" "proxy_config" {
   template = file("${path.module}/scripts/nginx-proxy.tpl")
   vars = {
+    authHost          = var.authHost
+    authHostname      = var.authHostname
     host              = var.host
     hostname          = var.hostname
     sslCertificate    = var.sslCertificate

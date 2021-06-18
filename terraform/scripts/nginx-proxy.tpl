@@ -5,6 +5,56 @@ map $http_upgrade $connection_upgrade {
 
 server {
   listen                    443 ssl;
+  server_name               ${authHostname};
+
+  ssl_certificate           ${sslCertificate};
+  ssl_certificate_key       ${sslCertificateKey};
+
+  location = / {
+    return 301 /auth;
+  }
+
+  # Proxy everything over to the service
+  location /auth/ {
+    resolver 127.0.0.11 valid=30s;
+    proxy_set_header        Host            $host;
+    proxy_set_header        X-Real-IP       $remote_addr;
+    proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header        X-Forwarded-Proto $scheme;
+    proxy_http_version      1.1;
+    proxy_set_header         Upgrade $http_upgrade;
+    proxy_set_header         Connection $connection_upgrade;
+    proxy_pass http://mc_keycloak:8080;
+  }
+}
+
+server {
+  listen                    443 ssl;
+  server_name               ${authHostname};
+
+  ssl_certificate           ${sslCertificate};
+  ssl_certificate_key       ${sslCertificateKey};
+
+  location = / {
+    return 301 /auth;
+  }
+
+  # Proxy everything over to the service
+  location /auth/ {
+    resolver 127.0.0.11 valid=30s;
+    proxy_set_header        Host            $host;
+    proxy_set_header        X-Real-IP       $remote_addr;
+    proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header        X-Forwarded-Proto $scheme;
+    proxy_http_version      1.1;
+    proxy_set_header         Upgrade $http_upgrade;
+    proxy_set_header         Connection $connection_upgrade;
+    proxy_pass http://_keycloak:8080;
+  }
+}
+
+server {
+  listen                    443 ssl;
   server_name               ${hostname};
 
   ssl_certificate           ${sslCertificate};
