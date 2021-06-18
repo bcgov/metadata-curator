@@ -136,7 +136,8 @@ keycloak = {
 }
 
 #If setting up keycloak what url should it be hosted on
-authHost = "auth.example.demo"
+authHost = "https://auth.example.demo"
+authHostName = "auth.example.demo"
 
 #Is access group based or individual based
 defaultAccessIsGroup = "true"

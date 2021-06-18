@@ -117,3 +117,7 @@ variable "postgres" {
 variable "authHost" {
   type = string
 }
+
+variable "authHostname" {
+  type = string
+}
