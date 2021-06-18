@@ -10,6 +10,7 @@
                     <v-row>
                         <v-text-field
                             v-model="title[index]"
+                            :id="'fileinfo-'+ index + '-title'"
                             label="Title"
                             @change="updateFormSubmission"
                             placeholder="Title">
@@ -19,6 +20,7 @@
                     <v-row>
                         <v-select
                             v-model="type[index]"
+                            :id="'fileinfo-'+ index + '-type'"
                             :items="typeOptions"
                             label="File Type"
                             @change="updateFormSubmission"
@@ -47,6 +49,7 @@
                                 v-bind="attrs"
                                 v-on="on"
                                 @change="updateFormSubmission"
+                                :id="'fileinfo-'+ index + '-start'"
                             ></v-text-field>
                             </template>
                             <v-date-picker v-model="start[index]" @input="menu[index] = false" @change="updateFormSubmission"></v-date-picker>
@@ -73,6 +76,7 @@
                                 readonly
                                 v-bind="attrs"
                                 @change="updateFormSubmission"
+                                :id="'fileinfo-'+ index + '-end'"
                                 v-on="on"
                             ></v-text-field>
                             </template>
@@ -85,6 +89,7 @@
                             v-model="description[index]"
                             label="File Description"
                             @change="updateFormSubmission"
+                            :id="'fileinfo-'+ index + '-desc'"
                             placeholder="Description">
                         </v-textarea>
                     </v-row>

@@ -7,8 +7,8 @@
                 <v-col cols=10>
                     <p>Filter by:</p>
                     <v-radio-group v-model="filterBy" row class="ml-2">
-                        <v-radio label="My Uploads" value="me"></v-radio>
-                        <v-radio label="Team Uploads" value="team"></v-radio>
+                        <v-radio label="My Uploads" id="filter-me" value="me"></v-radio>
+                        <v-radio label="Team Uploads" id="filter-team" value="team"></v-radio>
                     </v-radio-group>
                 </v-col>
             </v-row>
@@ -44,7 +44,7 @@
                     </v-chip>
                 </template>
                 <template v-slot:item="data">
-                    <template v-if="typeof data.item !== 'object'">
+                    <template v-if="(typeof(data.item) !== 'object')">
                         <v-list-item-content v-text="data.item"></v-list-item-content>
                     </template>
                     <template v-else>
@@ -92,7 +92,7 @@
                         </v-list-item-subtitle>
 
                     </v-list-item-content>
-                    <v-btn icon class="mr-4" >
+                    <v-btn icon class="mr-4">
                         <v-icon :color="item.iconColour">{{item.icon}}</v-icon>
                     </v-btn>
 
@@ -115,6 +115,9 @@ export default {
             await this.getDataProviders();
         } else if(this.user.isDataProvider) {
             if(!this.filterBy || this.filterBy === 'provider') { this.filterBy = 'me'; }
+            await this.loadDataUploads();
+        }else{
+            this.filterBy = 'me';
             await this.loadDataUploads();
         }
     },
