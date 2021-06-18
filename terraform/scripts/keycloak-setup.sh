@@ -48,7 +48,7 @@ echo "Provider User $TUID"
 
 kcadm.sh update users/$TUID/groups/$GID1 -r mc -s realm=mc -s userId=$TUID -s groupId=$GID1 -n
 echo "Provider User Added group 1"
-kcadm.sh update users/$TUID -r apps -s "attributes={\"$ORG_ATT\":[\"$BUSCAT_0\"]}"
+kcadm.sh update users/$TUID -r mc -s "attributes={\"$ORG_ATT\":[\"$BUSCAT_0\"]}"
 echo "Provider User Added attribute"
 kcadm.sh set-password -r mc --username provider_1 --new-password provider_1_password
 echo "Provider User set password"
@@ -57,7 +57,7 @@ TUID=$(kcadm.sh create users -r mc -s username=provider_2 -s enabled=true -s ema
 echo "Provider User 2 $TUID"
 
 kcadm.sh update users/$TUID/groups/$GID1 -r mc -s realm=mc -s userId=$TUID -s groupId=$GID1 -n
-kcadm.sh update users/$TUID -r apps -s "attributes={\"$ORG_ATT\":[\"$BUSCAT_1\"]}"
+kcadm.sh update users/$TUID -r mc -s "attributes={\"$ORG_ATT\":[\"$BUSCAT_1\"]}"
 kcadm.sh set-password -r mc --username provider_2 --new-password provider_2_password
 
 TUID=$(kcadm.sh create users -r mc -s username=approver_1 -s enabled=true -s email=approver_1@nowhere.com -s firstName=Appro -s lastName=Ver1 -i)
