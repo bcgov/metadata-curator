@@ -150,4 +150,5 @@ jobs:
         run: |
           cd frontend
           cp step-definitions/config.json.example step-definitions/config.json
+          npm install
           npm test
