@@ -55,7 +55,7 @@ alwaysNotifyUninvolvedOnCommentAdd = "true"
 approverGroups = ["metadata_approver_1_dip", "metadata_approver_2_dip"]
 
 #Need at least 2 if spinning up keycloak otherwise unused adds these attribtues to exporters in keycloak setup should match the notify list if notifying
-businessCategories = ['business_category_1', 'business_category_2']
+businessCategories = ["business_category_1", "business_category_2"]
 # List of people who are always notified when uploads are created/edited 
 # the person must be in a (typically LDAP) group that matches one of the elements in the object below e.g., "business_category_1" 
 alwaysNotifyList = {
