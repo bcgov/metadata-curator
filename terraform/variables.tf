@@ -62,6 +62,10 @@ variable "approverGroups" {
   type = list(string)
 }
 
+variable "businessCategories" {
+  type = list(string)
+}
+
 variable "alwaysNotifyUninvolvedOnCommentAdd" {
   type = string
 }
