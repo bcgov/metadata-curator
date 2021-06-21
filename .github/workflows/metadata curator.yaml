@@ -153,6 +153,7 @@ jobs:
           npm install
           npm run-script testPub
       - name: "store screens"
+        uses: actions/upload-artifact@v2
         if: failure() && steps.test.outcome == 'failure'
         with:
           name: screenshots
