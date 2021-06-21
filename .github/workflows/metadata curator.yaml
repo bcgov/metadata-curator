@@ -154,12 +154,14 @@ jobs:
           sleep 30
           echo "FORUM API LOGS"
           docker logs mc_forum_api
+          docker exec mc_backend cat config/default.json
           echo "NGINX LOGS"
           docker logs mc_nginx
           echo "FORMIO LOGS"
           docker logs mc_formio
           echo "BACKEND LOGS"
           docker logs mc_backend
+          docker exec mc_backend echo $NODE_CONFIG
           docker ps
           
           cd frontend
