@@ -147,6 +147,7 @@ jobs:
           echo "127.0.0.1 auth.example.demo" | sudo tee -a /etc/hosts
           terraform init
           terraform apply -var hostRootPath=`pwd`/_tmp -auto-approve
+          cat terraform.tfstate
 
       - name: test
         run: |
