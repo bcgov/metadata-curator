@@ -152,7 +152,16 @@ jobs:
         run: |
           docker ps
           sleep 30
+          echo "FORUM API LOGS"
+          docker logs mc_forum_api
+          echo "NGINX LOGS"
+          docker logs mc_nginx
+          echo "FORMIO LOGS"
+          docker logs mc_formio
+          echo "BACKEND LOGS"
+          docker logs mc_backend
           docker ps
+          
           cd frontend
           cp step-definitions/config.json.example step-definitions/config.json
           sudo apt-get install xvfb
