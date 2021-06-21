@@ -10,7 +10,6 @@
     "serve:storybook": "start-storybook -p 6006",
     "storybook": "NODE_PATH=src start-storybook -p 6006 -c .storybook -s ./public",
     "test": "cucumber-js --require cucumber.conf.js --require step-definitions -f @cucumber/pretty-formatter --publish-quiet",
-    "testPub": "cucumber-js --require cucumber.conf.js --require step-definitions -f @cucumber/pretty-formatter --publish"
   },
   "dependencies": {
     "@cucumber/pretty-formatter": "^1.0.0-alpha.0",

@@ -84,7 +84,7 @@ EOF
 
     forumApi = "\"forumApi\": {\"baseUrl\": \"http://mc_forum_api:3000/v1\"}"
 
-    oidc = "${var.makeKeycloak} ? ${data.null_data_source.oidcConfig.outputs["oidc2"]} : ${data.null_data_source.oidcConfig.outputs["oidc1"]}"
+    oidc = "${var.makeKeycloak ? data.null_data_source.oidcConfig.outputs.oidc2 : data.null_data_source.oidcConfig.outputs.oidc1}"
 
     logLevel = "\"logLevel\": \"debug\""
     jwtSecret = "\"jwtSecret\": \"${random_string.jwtSecret.result}\""
