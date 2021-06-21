@@ -143,6 +143,8 @@ jobs:
           echo password = \"${QUAYIO_PASSWORD}\" >> docker.tf
           echo } >> docker.tf
           echo } >> docker.tf
+          echo "127.0.0.1 mc.example.demo" | sudo tee -a /etc/hosts
+          echo "127.0.0.1 auth.example.demo" | sudo tee -a /etc/hosts
           terraform init
           terraform apply -var hostRootPath=`pwd`/_tmp -auto-approve
 
@@ -152,7 +154,7 @@ jobs:
           cp step-definitions/config.json.example step-definitions/config.json
           sudo apt-get install xvfb
           npm install
-          xvfb-run --auto-servernum npm run-script testPub
+          xvfb-run --auto-servernum npm test
       - name: "store screens"
         uses: actions/upload-artifact@v2
         if: ${{ failure() }}
