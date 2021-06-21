@@ -214,8 +214,14 @@
                 if (valid){
                     this.errorAlert = false;
                     this.errorText = "";
-                    await this.updateUpload(this.upload);
-                    if(transitionNextStepAfterSave) { this.step = this.steps.step4UploadProgress; }
+                    try{
+                        await this.updateUpload(this.upload);
+                        if(transitionNextStepAfterSave) { this.step = this.steps.step4UploadProgress; }
+                    }catch(e){
+                        this.errorAlert = true;
+                        this.errorText = "Error updating upload " + e
+                        valid = false;
+                    }
                 }
             },
 

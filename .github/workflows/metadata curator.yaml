@@ -151,4 +151,9 @@ jobs:
           cd frontend
           cp step-definitions/config.json.example step-definitions/config.json
           npm install
-          npm test
+          npm run-script testPub
+      - name: "store screens"
+        if: failure() && steps.test.outcome == 'failure'
+        with:
+          name: screenshots
+          path: frontend/screenshots

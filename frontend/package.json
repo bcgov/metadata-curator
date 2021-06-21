@@ -9,7 +9,8 @@
     "build-storybook": "build-storybook",
     "serve:storybook": "start-storybook -p 6006",
     "storybook": "NODE_PATH=src start-storybook -p 6006 -c .storybook -s ./public",
-    "test": "cucumber-js --require cucumber.conf.js --require step-definitions -f @cucumber/pretty-formatter --publish-quiet"
+    "test": "cucumber-js --require cucumber.conf.js --require step-definitions -f @cucumber/pretty-formatter --publish-quiet",
+    "testPub": "cucumber-js --require cucumber.conf.js --require step-definitions -f @cucumber/pretty-formatter --publish"
   },
   "dependencies": {
     "@cucumber/pretty-formatter": "^1.0.0-alpha.0",
@@ -74,8 +75,11 @@
     "babel-loader": "^8.2.2",
     "babel-preset-vue": "^2.0.2",
     "chromedriver": "^91.0.1",
+    "edgedriver": "^4.17134.1",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.2.3",
+    "geckodriver": "^2.0.0",
+    "iedriver": "^3.150.1",
     "nightwatch": "^1.7.3",
     "nightwatch-api": "^3.0.2",
     "prettier": "^2.2.1",
@@ -83,6 +87,7 @@
     "prismjs": "^1.23.0",
     "sass": "^1.32.7",
     "sass-loader": "^8.0.2",
+    "selenium-server": "^3.141.59",
     "storybook-dark-mode": "^0.3.1",
     "vue-cli-plugin-vuetify-storybook": "~0.2.0",
     "vue-storybook": "^1.1.0",

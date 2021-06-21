@@ -24,3 +24,5 @@ coverage
 # storybook build files
 frontend/storybook-static
 frontend/chromedriver.log
+frontend/screenshots
+frontend/selenium-server.log
