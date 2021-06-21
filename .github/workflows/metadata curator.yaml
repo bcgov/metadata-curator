@@ -150,6 +150,7 @@ jobs:
 
       - name: test
         run: |
+          docker ps
           cd frontend
           cp step-definitions/config.json.example step-definitions/config.json
           sudo apt-get install xvfb
