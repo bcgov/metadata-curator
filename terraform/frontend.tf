@@ -40,7 +40,7 @@ data "null_data_source" "oidcConfig" {
     "clientID": "${var.oidc["clientID"]}",
     "clientSecret": "${var.oidc["clientSecret"]}",
     "callbackURL": "${var.host}/api/callback",
-    "logoutURL": "${var.oidc["logoutURL"]}/auth/realms/mc/protocol/openid-connect/logout?redirect_uri=${var.host}"
+    "logoutURL": "${var.oidc["logoutURL"]}/auth/realms/mc/protocol/openid-connect/logout?redirect_uri=${var.host}",
     "scope": "openid profile offline_access"
 }
 EOF
@@ -54,7 +54,7 @@ EOF
     "clientID": "outputchecker",
     "clientSecret": "${random_uuid.outputcheckerClientSecret[0].result}",
     "callbackURL": "${var.host}/api/callback",
-    "logoutURL": "${var.authHost}/auth/realms/mc/protocol/openid-connect/logout?redirect_uri=${var.host}"
+    "logoutURL": "${var.authHost}/auth/realms/mc/protocol/openid-connect/logout?redirect_uri=${var.host}",
     "scope": "openid profile offline_access"
 }
 EOF

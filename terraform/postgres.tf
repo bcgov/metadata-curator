@@ -72,7 +72,7 @@ resource "null_resource" "postgres_first_time_install" {
 
   provisioner "local-exec" {
     environment = {
-      SCRIPT_PATH       = var.hostRootPath
+      SCRIPT_PATH       = "${var.hostRootPath}/scripts"
       POSTGRES_USER     = "padmin"
       POSTGRES_PASSWORD = random_string.postgresSuperPassword[0].result
     }
