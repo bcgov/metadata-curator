@@ -24,6 +24,8 @@ module.exports = {
             //might have to go through insecure cert link for terraform
             await client.click('#details-button');
             await client.click('#proceed-link');
+            await client.click('#details-button');
+            await client.click('#proceed-link');
         }catch(e){}
 
         await client.waitForElementVisible('input[name="username"]');
@@ -31,12 +33,6 @@ module.exports = {
                 .setValue('input[name="username"]', confGet(userType+"Account"))
                 .setValue('input[name="password"]', confGet(userType+"Password"))
                 .click('input[id="kc-login"]')
-        
-        try {
-            //might have to go through insecure cert link for terraform
-            await client.click('#details-button');
-            await client.click('#proceed-link');
-        }catch(e){}
 
         return true;
                 
