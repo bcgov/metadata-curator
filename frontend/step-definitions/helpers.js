@@ -20,11 +20,25 @@ module.exports = {
 
     //assumes not logged in won't work otherwise
     login: async function(client, userType){
+        try {
+            //might have to go through insecure cert link for terraform
+            await client.click('#details-button');
+            await client.click('#proceed-link');
+        }catch(e){}
+
         await client.waitForElementVisible('input[name="username"]');
-        return client
+        client
                 .setValue('input[name="username"]', confGet(userType+"Account"))
                 .setValue('input[name="password"]', confGet(userType+"Password"))
                 .click('input[id="kc-login"]')
+        
+        try {
+            //might have to go through insecure cert link for terraform
+            await client.click('#details-button');
+            await client.click('#proceed-link');
+        }catch(e){}
+
+        return true;
                 
     },
 
