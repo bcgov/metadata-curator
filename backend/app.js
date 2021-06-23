@@ -12,6 +12,10 @@ if (process.env.NODE_ENV !== "test"){
 require('./auth/auth');
 const env = process.env.NODE_ENV || 'development';
 
+if (env !== "production"){
+  require('https').globalAgent.options.rejectUnauthorized = false;
+}
+
 let backendRouter = require('./routes/backendRouter');
 
 let log = require('npmlog');
