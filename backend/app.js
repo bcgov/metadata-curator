@@ -1,3 +1,4 @@
+const env = process.env.NODE_ENV || 'development';
 if (env !== "production"){
   require('https').globalAgent.options.rejectUnauthorized = false;
 }
@@ -13,7 +14,6 @@ if (process.env.NODE_ENV !== "test"){
   require('./db/db').init();
 }
 require('./auth/auth');
-const env = process.env.NODE_ENV || 'development';
 
 let backendRouter = require('./routes/backendRouter');
 
