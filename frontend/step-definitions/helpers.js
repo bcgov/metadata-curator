@@ -46,6 +46,7 @@ module.exports = {
         try {
             await client.click('#tab-uploads');
         }catch(ex){
+            await client.click('#tab-home');
         }
         
         return client.click('#newUpload');
