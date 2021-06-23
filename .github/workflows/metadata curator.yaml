@@ -152,16 +152,12 @@ jobs:
         run: |
           sleep 30
           docker ps
-          cd backend
-          npm install
-          npm run serve &
-          cd ../frontend
+          cd frontend
           cp step-definitions/config.json.example step-definitions/config.json
           sudo apt-get install xvfb
           export NODE_ENV='development'
           npm install
-          npm run serve &
-          sleep 30
+          npm run ci
           xvfb-run --auto-servernum npm test
       - name: "store screens"
         uses: actions/upload-artifact@v2
