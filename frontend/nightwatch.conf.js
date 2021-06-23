@@ -5,6 +5,7 @@ const ieDriver = require('iedriver');
 const edgeDriver = require('edgedriver');
 
 module.exports = {
+  silent: false,
   test_settings: {
     default: {
         screenshots: {

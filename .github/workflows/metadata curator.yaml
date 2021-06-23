@@ -164,3 +164,15 @@ jobs:
         with:
           name: screenshots
           path: frontend/screenshots
+      - name: "store selenium server info"
+        uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          name: screenshots
+          path: frontend/selenium-server.log
+      - name: "store chrome driver info"
+        uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          name: screenshots
+          path: frontend/chromedriver.log
