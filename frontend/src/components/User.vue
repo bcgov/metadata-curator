@@ -21,8 +21,8 @@
         <v-btn primary class="" v-else-if="!loggedIn" @click="login">Login</v-btn>
         <v-menu v-else offset-y>
             <template v-slot:activator="{ on }">
-                <v-img  v-show="showImage" ma-0 pa-0 :src="buttonImage" :alt="alt" :height="height+'px'" :width="width+'px'" contain v-on="on" v-on:error="onImgError"></v-img>
-                <v-btn  v-show="!showImage" text v-on="on"><v-icon>fa-user</v-icon></v-btn>
+                <v-img id="userMenu" v-if="showImage" ma-0 pa-0 :src="buttonImage" :alt="alt" :height="height+'px'" :width="width+'px'" contain v-on="on" v-on:error="onImgError"></v-img>
+                <v-btn id="userMenu" v-else-if="!showImage" text v-on="on"><v-icon>fa-user</v-icon></v-btn>
             </template>
             <v-list>
                 <v-list-item>
@@ -32,6 +32,7 @@
                     v-for="(item, index) in items"
                     :key="index"
                     @click="item.action"
+                    :id="'userMenu-'+item.title"
                 >
                     <v-list-item-title>{{ item.title }}</v-list-item-title>
                 </v-list-item>

@@ -143,5 +143,36 @@ jobs:
   #         echo password = \"${QUAYIO_PASSWORD}\" >> docker.tf
   #         echo } >> docker.tf
   #         echo } >> docker.tf
+  #         echo "127.0.0.1 mc.example.demo" | sudo tee -a /etc/hosts
+  #         echo "127.0.0.1 auth.example.demo" | sudo tee -a /etc/hosts
   #         terraform init
   #         terraform apply -var hostRootPath=`pwd`/_tmp -auto-approve
+
+  #     - name: test
+  #       run: |
+  #         sleep 30
+  #         docker ps
+  #         cd frontend
+  #         cp step-definitions/config.json.example step-definitions/config.json
+  #         sudo apt-get install xvfb
+  #         export NODE_ENV='development'
+  #         npm ci
+  #         xvfb-run --auto-servernum npm test
+  #     - name: "store screens"
+  #       uses: actions/upload-artifact@v2
+  #       if: ${{ failure() }}
+  #       with:
+  #         name: screenshots
+  #         path: frontend/screenshots
+  #     - name: "store selenium server info"
+  #       uses: actions/upload-artifact@v2
+  #       if: ${{ failure() }}
+  #       with:
+  #         name: selenium-log.log
+  #         path: frontend/selenium-server.log
+  #     - name: "store chrome driver info"
+  #       uses: actions/upload-artifact@v2
+  #       if: ${{ failure() }}
+  #       with:
+  #         name: chromedriver.log
+  #         path: frontend/chromedriver.log

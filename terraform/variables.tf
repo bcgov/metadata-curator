@@ -62,6 +62,10 @@ variable "approverGroups" {
   type = list(string)
 }
 
+variable "businessCategories" {
+  type = list(string)
+}
+
 variable "alwaysNotifyUninvolvedOnCommentAdd" {
   type = string
 }
@@ -111,5 +115,9 @@ variable "postgres" {
 }
 
 variable "authHost" {
+  type = string
+}
+
+variable "authHostname" {
   type = string
 }

@@ -76,6 +76,8 @@
     import FileInfoForm from "../FileInfoForm";
     import FileUploadForm from "../FileUploadForm";
     import UploadSummaryForm from '../UploadSummaryForm';
+    import { Backend } from '../../services/backend';
+    const backend = new Backend();
 
     export default {
         components:{
@@ -114,30 +116,34 @@
 
             async triggerUploadFormSubmit() {
                 try{
-                    this.$refs.uploadForm.submitForm();
+                    //await this.$refs.uploadForm.submitForm();
+                    let submission = await this.$refs.uploadForm.getSubmission()
+                    let data = await backend.postFormSubmission(this.formName, submission.data);
+                    return data;
                 }catch(ex){
                     this.errorText = "Submission Error - " + ex;
                     this.errorAlert = true
+                    return {error: ex};
                 }
             },
             async stepSaveUploadForm(transitionNextStepAfterSave) {
               if(this.$refs.uploadForm.validateForm()) {
                   if((!this.uploadId ) && !this.createUploadInProgress) {
-                      // console.log("create new upload");
-                      const submission = this.$refs.uploadForm.getSubmission();
+                      let data;
                       try{
-                          await this.triggerUploadFormSubmit();
+                          data = await this.triggerUploadFormSubmit();
                       }catch(e){
                           this.errorAlert = true;
                           this.errorText = e;
                           transitionNextStepAfterSave = false;
                       }
+                      const submission = this.$refs.uploadForm.getSubmission();
                       
                     const initialUpload = {
                         name: submission.data.datasetName,
                         description: submission.datauploadDescription,
                         uploader: this.user.email,
-                        upload_submission_id: this.$refs.uploadForm.submissionId,
+                        upload_submission_id: data._id,
                         form_name: this.formName
                     }
                     try{
@@ -208,8 +214,14 @@
                 if (valid){
                     this.errorAlert = false;
                     this.errorText = "";
-                    await this.updateUpload(this.upload);
-                    if(transitionNextStepAfterSave) { this.step = this.steps.step4UploadProgress; }
+                    try{
+                        await this.updateUpload(this.upload);
+                        if(transitionNextStepAfterSave) { this.step = this.steps.step4UploadProgress; }
+                    }catch(e){
+                        this.errorAlert = true;
+                        this.errorText = "Error updating upload " + e
+                        valid = false;
+                    }
                 }
             },
 

@@ -12,10 +12,11 @@ var buildDynamic = function(db, router, auth, revisionService, cache){
     const requiredPhase = 2;
 
     const addBranch = async function(repoId, type, name, description, upload_id) {
-        const repoBranchSchema = new db.RepoBranchSchema;
         if (typeof(repoId) === "undefined"){
             throw new Error ("repo id is required")
         }
+        
+        const repoBranchSchema = new db.RepoBranchSchema;
         repoBranchSchema.repo_id = repoId;
         repoBranchSchema.type = type;
         repoBranchSchema.name = name;

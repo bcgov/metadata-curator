@@ -51,8 +51,11 @@ alwaysNotifyListOnTopicCreate = "false"
 # when a new comment is made on an upload do you want to notify the metadata approvers who haven't reviewed yet?
 alwaysNotifyUninvolvedOnCommentAdd = "true"
 
-# Metadata approver groups (typically LDAP groups) define who can see all the uploads (without being an admin)
+# Metadata approver groups (typically LDAP groups) define who sees the approver interface vs the uploader interface (need at least 2 if spinning up keycloak)
 approverGroups = ["metadata_approver_1_dip", "metadata_approver_2_dip"]
+
+#Need at least 2 if spinning up keycloak otherwise unused adds these attribtues to exporters in keycloak setup should match the notify list if notifying
+businessCategories = ["business_category_1", "business_category_2"]
 
 # List of people who are always notified when uploads are created/edited 
 # the person must be in a (typically LDAP) group that matches one of the elements in the object below e.g., "business_category_1" 
@@ -122,7 +125,7 @@ surnameField = "family_name"
 groupField = "groups"
 
 # When creating a upload/topic these groups should be ignored for group access (normally shared groups)
-ignoreGroups = "researchers"
+ignoreGroups = "\"researchers\""
 
 #Whether or not to install keycloak with this
 makeKeycloak = true
@@ -133,7 +136,8 @@ keycloak = {
 }
 
 #If setting up keycloak what url should it be hosted on
-authHost = "auth.example.demo"
+authHost = "https://auth.example.demo"
+authHostname = "auth.example.demo"
 
 #Is access group based or individual based
 defaultAccessIsGroup = "true"

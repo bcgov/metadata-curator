@@ -5,7 +5,7 @@ var buildStatic = function(db, router){
 
 var buildDynamic = function(db, router, auth, forumClient){
     
-    let log = require('npmlog');
+    const log = require('npmlog');
 
     router.get('/', async function(req, res, next) {
             let user = req.user;

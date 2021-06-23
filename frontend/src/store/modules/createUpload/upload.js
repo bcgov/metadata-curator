@@ -31,7 +31,7 @@ const actions = {
         try {
             const data = await backend.getDataUpload(id);
             if (data.topic_id){
-                dispatch('uploadForm/getUploadFormSubmission', {formName: data.form_name, submissionId: data.upload_submission_id}, {root: true})
+                dispatch('uploadForm/getUploadFormSubmission', {formName: data.form_name, submissionId: data.upload_submission_id}, {root: true});
             }
             commit('setUpload', data);
         } catch(e) {
