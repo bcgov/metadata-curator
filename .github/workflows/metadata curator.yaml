@@ -156,8 +156,7 @@ jobs:
           cp step-definitions/config.json.example step-definitions/config.json
           sudo apt-get install xvfb
           export NODE_ENV='development'
-          npm install
-          npm run ci
+          npm ci
           xvfb-run --auto-servernum npm test
       - name: "store screens"
         uses: actions/upload-artifact@v2
