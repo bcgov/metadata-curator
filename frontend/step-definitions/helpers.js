@@ -29,12 +29,14 @@ module.exports = {
         }catch(e){}
 
         await client.waitForElementVisible('input[name="username"]');
+        await client.waitForElementVisible('input[name="password"]');
+        await client.waitForElementVisible('input[id="kc-login"]');
         client
                 .setValue('input[name="username"]', confGet(userType+"Account"))
                 .setValue('input[name="password"]', confGet(userType+"Password"))
                 .click('input[id="kc-login"]')
 
-        return true;
+        return client.waitForElementVisible('div.v-toolbar__title.font-weight-light', 10000);
                 
     },
 
