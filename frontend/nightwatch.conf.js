@@ -14,7 +14,7 @@ module.exports = {
         selenium: {
             start_process: true,
             server_path: seleniumServer.path,
-            port: 4444,
+            port: 4447,
             cli_args: {
                 'webdriver.chrome.driver': chromeDriver.path,
                 'webdriver.gecko.driver': geckoDriver.path,
