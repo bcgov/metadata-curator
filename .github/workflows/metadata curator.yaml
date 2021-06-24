@@ -154,8 +154,12 @@ jobs:
           docker ps
           cd frontend
           cp step-definitions/config.json.example step-definitions/config.json
-          sudo apt-get install xvfb
+          sudo apt-get install xvfb openssl
           export NODE_ENV='development'
+          
+          cp ../terraform/_tmp/ssl/example.crt /usr/local/share/ca-certificates/.
+          sudo update-ca-certificates
+
           npm ci
           xvfb-run --auto-servernum npm test
       - name: "store screens"
