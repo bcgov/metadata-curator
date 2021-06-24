@@ -62,6 +62,10 @@ variable "approverGroups" {
   type = list(string)
 }
 
+variable "businessCategories" {
+  type = list(string)
+}
+
 variable "alwaysNotifyUninvolvedOnCommentAdd" {
   type = string
 }
@@ -71,10 +75,6 @@ variable "alwaysNotifyListOnTopicCreate" {
 }
 
 variable "userIdField" {
-  type = string
-}
-
-variable "requiredCreateRole" {
   type = string
 }
 
@@ -99,5 +99,25 @@ variable "defaultAccessIsGroup" {
 }
 
 variable "ignoreGroups" {
+  type = string
+}
+
+variable "makeKeycloak"{
+  type = bool
+}
+
+variable "keycloak" {
+  type = map(string)
+}
+
+variable "postgres" {
+  type = map(string)
+}
+
+variable "authHost" {
+  type = string
+}
+
+variable "authHostname" {
   type = string
 }

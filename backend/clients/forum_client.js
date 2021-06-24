@@ -97,10 +97,12 @@ const getTopics = async (user, query) => {
 
     let url = forumApiConfig.baseUrl;
 
-    let queryKeys = Object.keys(query);
-    for (let i=0; i<queryKeys.length; i++){
-        url += (i==0) ? "?" : "&";
-        url += queryKeys[i] + "=" + query[queryKeys[i]];
+    if (typeof(query) === "object"){
+        let queryKeys = Object.keys(query);
+        for (let i=0; i<queryKeys.length; i++){
+            url += (i==0) ? "?" : "&";
+            url += queryKeys[i] + "=" + query[queryKeys[i]];
+        }
     }
 
     try{

@@ -25,14 +25,14 @@
         </v-row>
         <v-row>
             <v-col cols=12>
-                <v-btn v-if="showUploadButton && !pleaseWait" :disabled="disabled" @click="upload">Upload</v-btn>
-                <v-btn v-if="showImportButton && !pleaseWait" :disabled="disabled" @click="onImportButtonClicked">Import</v-btn>
-                <div v-if="pleaseWait">
+                <v-btn v-if="showUploadButton" :disabled="disabled" @click="upload">Upload</v-btn>
+                <v-btn v-if="showImportButton" :disabled="disabled" @click="onImportButtonClicked">Import</v-btn>
+                <!-- <div v-if="pleaseWait">
                     <v-progress-circular
                         indeterminate
                     ></v-progress-circular>
                     <span>Please wait while the first bit of the file is encrypted...</span>
-                </div>
+                </div> -->
                 <div v-if="showProgress">
                     <div>
                         Please note: encryption and uploading occur in chunks.  It is not unusual for there to be a 
@@ -113,6 +113,10 @@ export default {
         ignoreDuplicates: {
             type: Boolean,
             default: false
+        },
+        appendMetadata: {
+            type: Object,
+            default: () => { return {} }
         }
     },
 
@@ -124,7 +128,7 @@ export default {
     },
 
     data() {
-        let defChunkSize = (5 * 1024 * 1024) + 1; // 5mb
+        let defChunkSize = (5 * 1000 * 1000) + 1; // 5mb
         //ram converted to bytes divided by 128 (arbitrary)
         let customChunkSize = Math.ceil(navigator.deviceMemory * 1024 * 1024 * 1024 / 128);
         let disProp = this.disabledProp ? this.disabledProp : false;
@@ -140,6 +144,7 @@ export default {
             numEncrypted: 0,
             encContentBlobs: [],
             error: false,
+            key: null,
 
             numUploaded: 0,
             up1Size: 0,
@@ -175,11 +180,11 @@ export default {
 
         progressMessage1: function(){
             let num = (this.numChunks && this.numChunks > 0) ? this.numChunks : 1;
-            return `Encrypted: ${this.numEncrypted}/${num}`
+            return `Encrypted: ${(this.numEncrypted>=num) ? num : this.numEncrypted}/${num}`
         },
         progressMessage2: function(){
             let num = (this.numChunks && this.numChunks > 1) ? (this.numChunks+1) : 1;
-            return `Uploaded: ${this.numUploaded}/${num}`
+            return `Uploaded: ${(this.numUploaded>=num) ? num : this.numUploaded}/${num}`
         },
         progressMessage3: function(){
             return `Upload 1 (Chunk): ${this.up1Progress}/${this.up1Size}`
@@ -201,8 +206,9 @@ export default {
     watch: {
         async triggerUpload(newVal){
             if (newVal){
-                if ( (this.readFile && this.blob.length <= 0) ||  (this.encContentBlobs.length <= 0) ){
-                    this.currChunk = 0;
+                this.currChunk = 0;
+                this.offset = 0;
+                if (this.readFile){
                     await this.openFileSync(true);
                 }
                 this.upload();
@@ -266,14 +272,21 @@ export default {
         },
 
         encrypt: async function(content, index){
-            await openpgp.initWorker({ path: '/js/openpgp.worker.min.js' }, 3); // set the relative web worker path
-            let key = await this.getPublicKey();
-            this.$store.dispatch('file/getUploadUrl');
+            //await openpgp.initWorker({ path: '/js/openpgp.worker.min.js' }, 3); // set the relative web worker path
+            if (this.key === null){
+                this.key = await this.getPublicKey();
+            }
+
+            if (!this.uploadUrl){
+                this.$store.dispatch('file/getUploadUrl');
+            }
+
+            let message = await openpgp.message.fromBinary(content)
 
             return openpgp.encrypt({
-                message: await openpgp.message.fromBinary(content), // input as Message object
-                publicKeys: (await openpgp.key.readArmored(key)).keys,
-                compression: openpgp.enums.compression.zip,
+                message: message,
+                publicKeys: (await openpgp.key.readArmored(this.key)).keys,
+                compression: openpgp.enums.compression.uncompressed,
                 format: 'binary',
 
             }).then( async (cipherText) => {
@@ -285,6 +298,8 @@ export default {
                 if (index <= 0){
                     this.$emit("encrypted", this.index);
                 }
+            }).catch( (e)=> {
+                console.error("Error encrypting", e);
             });
         },
 
@@ -300,6 +315,7 @@ export default {
                 this.$store.commit('file/addFileHandleIfNotPresent', {handle: this.file, fileSig: finger});
                 this.disabled = true;
                 this.pleaseWait = true;
+                this.offset = 0;
                 await this.getNextChunk(0);
                 this.numEncrypted += 1
                 if ( (resume) && (this.successfullyUploadedChunks[this.getFinger]) ){
@@ -343,6 +359,7 @@ export default {
                 this.disabled = true;
                 var self = this;
                 this.pleaseWait = true;
+                this.offset = 0;
                 this.getNextChunk(0).then( async() => {
                     self.numEncrypted += 1
                     if ( (resume) && (this.successfullyUploadedChunks[this.getFinger]) ){
@@ -376,7 +393,7 @@ export default {
             }
         },
 
-        getNextChunk: async function(index){
+        getNextChunk: function(index){
             return new Promise((resolve, reject) => {
 
                 var reader = new FileReader();
@@ -412,30 +429,34 @@ export default {
                         })
 
                     }
-                    //see below comment for why this is floor instead of ceil
-                    self.numChunks = Math.floor(self.file.size / self.chunkSize);
-                    self.offset += self.chunkSize;
+                    
                 }
 
+                //this is floor because an upload has to be >= 5mb to be partial so need all chunks > 5mb
+                this.numChunks = Math.floor(this.file.size / this.chunkSize);
                 this.currChunk += 1;
                 if (this.currChunk < this.numChunks){
-                    reader.readAsArrayBuffer(this.file.slice(this.offset, (this.offset + this.chunkSize)));
+                    let sli = this.file.slice(this.offset, (this.offset + this.chunkSize));
+                    this.offset += this.chunkSize;
+                    reader.readAsArrayBuffer(sli);
 
                 }else{
+                    let sli = this.file.slice(this.offset);
+                    this.offset += 0;
                     //this last chunk can be bigger than the rest because each chunk needs to
                     //be at least 5mb due to s3/minio restrictions
                     //and with ceil that can't be guaranteed
                     //note it can be at most (2*chunkSize)-1
-                    reader.readAsArrayBuffer(this.file.slice(this.offset));
+                    reader.readAsArrayBuffer(sli);
                 }
             });
 
         },
 
-        upload: function(){
+        upload: async function(){
             this.disabled = true;
             this.showProgress = true;
-            var i = this.currChunk;
+            var i = 0;
             var self = this;
             var tus = require("tus-js-client");
             var fing = function(file, options, callback){
@@ -456,6 +477,7 @@ export default {
                     "Upload-Concat": "partial"
                 },
                 metadata: {
+                    ...this.appendMetadata,
                     filename: this.file.name,
                     filetype: this.file.type,
                     jwt: this.jwt
@@ -467,7 +489,7 @@ export default {
                 chunkSize: this.chunkSize*10,
                 onError: error => {
                     // eslint-disable-next-line
-                    console.log("Upload error", error)
+                    console.error("Upload error", error)
                     if (!self.disabledProp){
                         self.disabled = false;
                     }
@@ -482,62 +504,66 @@ export default {
                     i += 1;
                     self.numUploaded += 1;
 
-                    if (i <= self.numChunks){
-                        let chunkIndex = 2;
-                        self.getNextChunk(chunkIndex).then( () => {
-                            self.numEncrypted += 1
-                            if (i<self.numChunks){
-                                if (i%2 == 0){
-                                    uploadOptions.onProgress = function(byteUp, byteTot){
-                                        self.up1Progress = byteUp;
-                                        self.up1Size = byteTot;
-                                    }
-                                }else{
-                                    uploadOptions.onProgress = function(byteUp, byteTot){
-                                        self.up2Progress = byteUp;
-                                        self.up2Size = byteTot;
-                                    }
-                                }
-                                let u2 = null;
-                                if (this.readFile){
-                                    u2 = new tus.Upload(self.blob[chunkIndex], uploadOptions);
-                                }else{
-                                    u2 = new tus.Upload(self.encContentBlobs[chunkIndex], uploadOptions);
-                                }
-                                u2.start();
-                                self.uploads.push(u2);
-                            }else if ( (i !== 1) && (i >= self.numChunks) ){
-                                let joinIds = [];
-                                for (let j=0; j<self.uploads.length; j++){
-                                    let url = self.uploads[j].url.substring(self.uploads[j].url.substring(9).indexOf("/")+9);
-                                    joinIds.push(url);
-                                }
-                                backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0", self.file.name, self.file.type).then( (concatResponse) => {
-                                    self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
-                                    
-                                    let concatLocation = concatResponse.headers.location;
-                                    var slashInd = concatLocation.lastIndexOf("/");
-                                    var plusInd = concatLocation.lastIndexOf("+");
-                                    
-                                    self.$emit('upload-finished', concatLocation.substring(slashInd+1, plusInd), this.file.name, this.file.size);
-                                    self.numUploaded = self.numChunks+1;
-                                    if (!self.disabledProp){
-                                        self.disabled = false;
-                                    }
-                                }).catch( (e) => {
-                                    // eslint-disable-next-line
-                                    console.log("Concatenation error", e);
-                                    if (!self.disabledProp){
-                                        self.disabled = false;
-                                    }
-                                });
+                    if (i < self.numChunks){
+                        let chunkIndex = ((i%2)==0) ? 2 : 1;
+                        await self.getNextChunk(chunkIndex);
+                        self.numEncrypted += 1
+                        
+                        if (i%2 == 0){
+                            uploadOptions.onProgress = function(byteUp, byteTot){
+                                self.up1Progress = byteUp;
+                                self.up1Size = byteTot;
+                            }
+                        }else{
+                            uploadOptions.onProgress = function(byteUp, byteTot){
+                                self.up2Progress = byteUp;
+                                self.up2Size = byteTot;
+                            }
+                        }
+                        let u2 = null;
+                        if (this.readFile){
+                            u2 = new tus.Upload(self.blob[chunkIndex], uploadOptions);
+                        }else{
+                            u2 = new tus.Upload(self.encContentBlobs[chunkIndex], uploadOptions);
+                        }
+                        u2.start();
+                        self.uploads.push(u2);
+                    
+                    }else if (self.numChunks > 1){
+                        let joinIds = Array(self.uploads.length);
+                        for (let j=0; j<self.uploads.length; j++){
+                            let url = self.uploads[j].url.substring(self.uploads[j].url.substring(9).indexOf("/")+9);
+                            let f = self.uploads[j]._fingerprint
+                            let httpStart = f.indexOf('-http');
+                            let indStart = f.lastIndexOf('-', (httpStart-1));
+                            let ind = parseInt(f.substring((indStart+1), (httpStart)));
+                            
+                            joinIds[ind] = url;
+                        }
+                        backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0", self.file.name, self.file.type).then( (concatResponse) => {
+                            self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
+                            
+                            let concatLocation = concatResponse.headers.location;
+                            var slashInd = concatLocation.lastIndexOf("/");
+                            var plusInd = concatLocation.lastIndexOf("+");
+                            
+                            self.$emit('upload-finished', concatLocation.substring(slashInd+1, plusInd), this.file.name, this.file.size);
+                            self.numUploaded += 1;
+                            if (!self.disabledProp){
+                                self.disabled = false;
+                            }
+                        }).catch( (e) => {
+                            // eslint-disable-next-line
+                            console.error("Concatenation error", e);
+                            if (!self.disabledProp){
+                                self.disabled = false;
                             }
                         });
                     }else{
                         var slashInd = self.uploads[0].url.lastIndexOf("/");
                         var plusInd = self.uploads[0].url.lastIndexOf("+");
                         self.$emit('upload-finished', self.uploads[0].url.substring(slashInd+1, plusInd), this.file.name, this.file.size);
-                        self.numUploaded = self.numChunks+1
+                        self.numUploaded += 1;
                         self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
                         if (!self.disabledProp){
                             self.disabled = false;
@@ -554,60 +580,34 @@ export default {
 
 
             let initialUpIndex = (this.currChunk > 1) ? 2 : 0;
+            await this.getNextChunk(initialUpIndex);
             if (this.readFile){
                 u = new tus.Upload(this.blob[initialUpIndex], uploadOptions);
             }else{
                 u = new tus.Upload(this.encContentBlobs[initialUpIndex], uploadOptions);
             }
             this.uploads.push(u);
-            if (size > this.chunkSize){
+
+            //is more than one chunk do parallel work
+            if (size > ((this.chunkSize*2)-1)){
                 this.getNextChunk(1).then( () => {
                     self.numEncrypted += 1
                     let chunkIndex = 1;
                     i += 1;
-                    if (i<self.numChunks){
-                        let u2 = null;
-                        let u2Options = JSON.parse(JSON.stringify(uploadOptions));
-                        u2Options.onProgress = function(byteUp, byteTot){
-                            self.up2Progress = byteUp;
-                            self.up2Size = byteTot;
-                        }
-                        if (this.readFile){
-                            u2 = new tus.Upload(self.blob[chunkIndex], u2Options);
-                        }else{
-                            u2 = new tus.Upload(self.encContentBlobs[chunkIndex], u2Options);
-                        }
-                        u2.start();
-                        self.uploads.push(u2);
-                    }else if ( (i !== 1) && (i >= self.numChunks) ){
-                        let joinIds = [];
-                        for (let j=0; j<self.uploads.length; j++){
-                            if (self.uploads[j].url){
-                                let url = self.uploads[j].url.substring(self.uploads[j].url.substring(9).indexOf("/")+9);
-                                joinIds.push(url);
-                            }
-                        }
-                        if (joinIds.length > 0){
-                            backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0", self.file.name, self.file.type).then( (concatResponse) => {
-                                self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
-                                let concatLocation = concatResponse.headers.location;
-                                var slashInd = concatLocation.lastIndexOf("/");
-                                var plusInd = concatLocation.lastIndexOf("+");
-                                
-                                self.$emit('upload-finished', concatLocation.substring(slashInd+1, plusInd), this.file.name, this.file.size);
-                                self.numUploaded = self.numChunks+1;
-                                if (!self.disabledProp){
-                                    self.disabled = false;
-                                }
-                            }).catch( (e) => {
-                                // eslint-disable-next-line
-                                console.log("Concatenation error", e);
-                                if (!self.disabledProp){
-                                    self.disabled = false;
-                                }
-                            });
-                        }
+                    
+                    let u2 = null;
+                    let u2Options = JSON.parse(JSON.stringify(uploadOptions));
+                    u2Options.onProgress = function(byteUp, byteTot){
+                        self.up2Progress = byteUp;
+                        self.up2Size = byteTot;
                     }
+                    if (this.readFile){
+                        u2 = new tus.Upload(self.blob[chunkIndex], u2Options);
+                    }else{
+                        u2 = new tus.Upload(self.encContentBlobs[chunkIndex], u2Options);
+                    }
+                    u2.start();
+                    self.uploads.push(u2);
                 });
             }
             u.start();

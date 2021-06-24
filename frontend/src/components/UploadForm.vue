@@ -78,7 +78,6 @@
                     let ele = new dpicker();
                     ele.$vuetify = this.$vuetify;
                     ele.$mount();
-                    console.log (ele.$el)
                     document.getElementById(keys[i]).appendChild(ele.$el);
                     ele.$forceUpdate();
                 }
@@ -154,13 +153,11 @@
             },
             // eslint-disable-next-line no-unused-vars
             submission: function (newVal, oldVal) {
-                // eslint-disable-next-line no-undef
                 if(newVal) {
-                    // console.log("update  submission");
                     try{
                         newVal = JSON.parse(newVal);
+                    // eslint-disable-next-line
                     }catch(ex){
-                        console.log("");
                     }
                     Vue.set(this, 'formSubmission', {...newVal});
                     this.rerenderKey++;

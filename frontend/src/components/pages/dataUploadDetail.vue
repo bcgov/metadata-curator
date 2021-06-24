@@ -37,13 +37,13 @@
                                 </v-row>
 
                                 <v-row class="ml-3 fixedHeight">
-                                    Name: {{dataUpload.name}}
+                                    Name: <span id="uploadDetail-name">{{dataUpload.name}}</span>
                                 </v-row>
                                 <v-row class="ml-3 fixedHeight">
                                     Upload Date: {{uploadDate}}
                                 </v-row>
                                 <v-row class="mb-3 fixedHeight">
-                                    <v-btn color="orange" text @click="showViewDialog()">Upload &amp; File Info</v-btn>
+                                    <v-btn color="orange" id="uploadDetail-showInfo" text @click="showViewDialog()">Upload &amp; File Info</v-btn>
                                 </v-row>
                                 <v-row class="ml-3 fixedHeight">
                                     <v-checkbox class="mt-0 pt-0" :disabled="true" label="Approver has viewed (since last update)" v-model="dataUpload.opened_by_approver"></v-checkbox>

@@ -23,17 +23,18 @@ const actions = {
             commit('setNewUploadCreated', true);
             return data;
         } catch(e) {
-            console.log("Create initial upload error: ", e);
             commit('setError', {error: e.response.data.error});
             return e;
         }
     },
-    async getUpload({ commit }, id) {
+    async getUpload({ commit, dispatch }, id) {
         try {
             const data = await backend.getDataUpload(id);
+            if (data.topic_id){
+                dispatch('uploadForm/getUploadFormSubmission', {formName: data.form_name, submissionId: data.upload_submission_id}, {root: true});
+            }
             commit('setUpload', data);
         } catch(e) {
-            console.log("Get upload error: ", e);
             commit('setError', {error: e.response.data.error});
         }
     },
@@ -43,7 +44,6 @@ const actions = {
             const data = await backend.putDataUpload(upload);
             commit('setUpload', data);
         } catch(e) {
-            console.log("addSubmissionIdToUpload error: ", e);
             commit('setError', {error: e.response.data.error});
         }
     },
@@ -58,7 +58,6 @@ const actions = {
             commit('setUpload', data);
             return data;
         } catch(e) {
-            console.log("addSubmissionIdToUpload error: ", e);
             commit('setError', {error: e.response.data.error});
             return e;
         }

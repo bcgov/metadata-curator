@@ -3,6 +3,7 @@ const backend = new Backend();
 
 import Vue from 'vue';
 
+
 const state = {
     formName: "",
     createSubmissionInProgress: false,
@@ -18,52 +19,65 @@ const getters = {
 
 
 const actions = {
-    async getDefaultUploadForm({commit}){
+    async getDefaultUploadForm({commit, state}){
+        let loadedForm = (state.formName) ? state.formName : false;
+        let formName;
         if ( (typeof(state.formName) === "undefined") || (state.formName === "") ){
             try{
                 let d = await backend.getConfig('uploadForm');
+                formName = d.value;
                 commit('setFormName', d.value);
             }catch(e){
+                formName = 'uploadForm';
                 commit('setFormName', 'uploadForm');
             }
         }
         try {
-            let data = "";
-            data = await backend.getForm(state.formName);
-            commit('clearUploadForm');
-            commit('setUploadForm', data);
-        } catch(e) {
-            console.log("Retrieve upload form error: ", e);
-            commit('setError', {error: e.response.data.error});
-        }
-    },
-
-    async getUploadForm({ commit }, uploadForm) {
-        commit('clearUploadForm');
-        if ( (typeof(state.formName) === "undefined") || (state.formName === "") ){
-            try{
-                let d = await backend.getConfig('uploadForm');
-                commit('setFormName', d.value);
-            }catch(e){
-                commit('setFormName', 'uploadForm');
-            }
-        }
-        try {
-            let data = "";
-            if (typeof(uploadForm) !=="undefined"){
-                data = await backend.getForm(uploadForm);
-            }else{
+            let data = state.formDef;
+            if (loadedForm !== formName){
                 data = await backend.getForm(state.formName);
             }
             commit('clearUploadForm');
             commit('setUploadForm', data);
         } catch(e) {
-            console.log("Retrieve upload form error: ", e);
+            commit('setError', {error: e.response.data.error});
+        }
+    },
+
+    async getUploadForm({ commit, state }, uploadForm) {
+        let loadedForm = (state.formName) ? state.formName : false;
+
+        if ( (uploadForm && (loadedForm !== uploadForm)) || (!uploadForm && (state.formName !== loadedForm)) ){
+            commit('clearUploadForm');
+        }
+
+        if ( (typeof(state.formName) === "undefined") || (state.formName === "") ){
+            try{
+                let d = await backend.getConfig('uploadForm');
+                commit('setFormName', d.value);
+            }catch(e){
+                commit('setFormName', 'uploadForm');
+            }
+        }
+        try {
+            let data = state.formDef;
+            if (typeof(uploadForm) !== "undefined"){
+                if (loadedForm !== uploadForm){
+                    data = await backend.getForm(uploadForm);
+                }
+            }else{
+                if (loadedForm !== uploadForm){
+                    data = await backend.getForm(state.formName);
+                }
+            }
+            commit('clearUploadForm');
+            commit('setUploadForm', data);
+        } catch(e) {
             commit('setError', {error: e.response.data.error});
         }
 
     },
-    async createUploadFormSubmission({ commit, dispatch}, submission) {
+    async createUploadFormSubmission({ commit, dispatch, state}, submission) {
         if ( (typeof(state.formName) === "undefined") || (state.formName === "") ){
             try{
                 let d = await backend.getConfig('uploadForm');
@@ -79,7 +93,6 @@ const actions = {
             commit('setFormSubmission', data);
             dispatch('upload/addSubmissionIdToUpload', data._id, {root:true});
         } catch(e) {
-            console.log("Post upload form submission error: ", e);
             commit('setError', {error: e.response.data.error});
         }
     },
@@ -90,7 +103,6 @@ const actions = {
                 commit('setFormSubmission', data);
             }
         } catch(e) {
-            console.log("get upload form submission error: ", e);
             commit('setError', {error: e.response.data.error});
         }
     },
@@ -99,7 +111,6 @@ const actions = {
             const data = await backend.putFormSubmission(formName, submission._id, submission.data);
             commit('setFormSubmission', data);
         } catch(e) {
-            console.log("put upload form submission error: ", e);
             commit('setError', {error: e.response.data.error});
         }
     },

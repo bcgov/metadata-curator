@@ -97,7 +97,6 @@ export default {
 
 
         importButtonClicked(content) {
-            console.log("importButtonClicked");
             // console.log("schema: ", content);
             if(this.metadataType == 'table-schema') {
                 this.setTableSchema({schema: content});

@@ -12,6 +12,10 @@ var buildDynamic = function(db, router, auth, revisionService, cache){
     const requiredPhase = 2;
 
     const addBranch = async function(repoId, type, name, description, upload_id) {
+        if (typeof(repoId) === "undefined"){
+            throw new Error ("repo id is required")
+        }
+        
         const repoBranchSchema = new db.RepoBranchSchema;
         repoBranchSchema.repo_id = repoId;
         repoBranchSchema.type = type;
@@ -141,10 +145,14 @@ var buildDynamic = function(db, router, auth, revisionService, cache){
             return res.status(400).json({error: error});
         }
 
-        const branch = await addBranch(repoId, f.type, f.name, f.description, f.upload_id);
-        res.status(201).json({
-            id: branch._id.toString()
-        });
+        try{
+            const branch = await addBranch(repoId, f.type, f.name, f.description, f.upload_id);
+            res.status(201).json({
+                id: branch._id.toString()
+            });
+        }catch(ex){
+            res.status(400).json({e: ex});
+        }
     });
 
     router.get('/:repoId/branches', async function(req, res, next){

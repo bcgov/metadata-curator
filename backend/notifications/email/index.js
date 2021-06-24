@@ -40,6 +40,7 @@ var notification = function(_config = null){
         email = email.replace("{{dataUploadURL}}", dataUploadURL);
         email = email.replace("{{dataUploadName}}", dataUploadName);
         email = email.replace("{{dataUploadId}}", dataUploadId);
+        email = email.replace("{{timestamp}}", new Date());
 
         return email;
     };

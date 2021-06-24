@@ -25,7 +25,6 @@ export class Backend {
             "Upload-Concat": "final;" + joinIds.join(" "),
             "Upload-Metadata": "filename "+btoa(filename)+",filetype "+btoa(filetype)+",jwt " + btoa(jwt)
         };
-        console.log("concat", uploadUrl, uploadOptions)
         return axios.post(uploadUrl, {}, uploadOptions);
     }
 
@@ -254,7 +253,7 @@ export class Backend {
 
     getRepoBranches(repoId){
         // console.log("BE putdataUpload: " + dataUpload);
-        const url = `/api/v1/repos/${repoId}/branches`;
+        const url = `/api/v1/repobranches/${repoId}/branches`;
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 

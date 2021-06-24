@@ -43,13 +43,15 @@ resource "docker_container" "mc_nginx" {
 
   depends_on = [
     local_file.proxy,
-    null_resource.minio_first_install,
+    null_resource.minio_first_install
   ]
 }
 
 data "template_file" "proxy_config" {
-  template = file("${path.module}/scripts/nginx-proxy.tpl")
+  template = var.makeKeycloak ? file("${path.module}/scripts/nginx-proxy.tpl") : file("${path.module}/scripts/nginx-proxy-noAuth.tpl")
   vars = {
+    authHost          = var.authHost
+    authHostname      = var.authHostname
     host              = var.host
     hostname          = var.hostname
     sslCertificate    = var.sslCertificate

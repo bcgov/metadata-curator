@@ -26,6 +26,10 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             dataUploadSchema.opened_by_approver = false;
             dataUploadSchema.approver_has_commented = false;
 
+            if (upload.upload_submission_id){
+                dataUploadSchema.upload_submission_id = upload.upload_submission_id ? upload.upload_submission_id : null;
+            }
+
             const topic = await forumClient.addTopic(id, user); 
             dataUploadSchema.topic_id = topic._id;
             return await dataUploadSchema.save();

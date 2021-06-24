@@ -2,7 +2,7 @@
     <v-container>
         <span :key="'uploadSummary'+spanKey">
             <v-row>
-                <v-col cols=12>
+                <v-col cols=12 id="upload-success-indicator">
                     <v-icon color="primary">mdi-check</v-icon> Data Uploaded Successfully
                 </v-col>
             </v-row>
@@ -66,7 +66,7 @@
                     try{
                         this.$refs.formioObj.formio.submission = this.submission;
                     }catch(ex2){
-                        console.log("Error loading submission");
+                        console.error("Error loading submission");
                     }
                 }
             },

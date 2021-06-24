@@ -1,5 +1,5 @@
 data "docker_registry_image" "forum_api" {
-  name = "${var.images["owner"]}/ocwa_forum_api${var.images["forum_api"]}"
+  name = "${var.images["forum_api"]}"
 }
 
 resource "docker_image" "forum_api" {
@@ -30,7 +30,7 @@ resource "docker_container" "forum_api" {
     "SURNAME_FIELD=${var.surnameField}",
     "GROUP_FIELD=${var.groupField}",
     "DEFAULT_ACCESS_IS_GROUP=${var.defaultAccessIsGroup}",
-    "REQUIRED_CREATE_ROLE=${var.requiredCreateRole}",
+    "REQUIRED_CREATE_ROLE=${var.requiredRoleToCreateRequest}",
     "IGNORE_GROUPS=${var.ignoreGroups}",
     "ADMIN_GROUP=${var.adminGroup}",
     "EMAIL_SUBJECT=${var.email["subject"]}",

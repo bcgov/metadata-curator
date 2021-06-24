@@ -1,64 +1,71 @@
 <template>
     <v-container>
-        <v-alert :class="'fixed' + ((errorAlert) ? ' mb-3' : '')" v-model="errorAlert" type="error" dismissible>
-            {{errorText}}
-        </v-alert>
-        <v-stepper v-model="step">
-            <v-stepper-header>
-                <v-stepper-step :step="steps.step1UploadForm" :complete="step > steps.step1UploadForm" >Upload Info</v-stepper-step>
-                <v-divider></v-divider>
-                <v-stepper-step :step="steps.step2FileSelection" :complete="step > steps.step2FileSelection" >File Selection</v-stepper-step>
-                <v-divider></v-divider>
-                <v-stepper-step :step="steps.step3FileLevelForm" :complete="step > steps.step3FileLevelForm" >File Level Info</v-stepper-step>
-                <v-divider></v-divider>
-                <v-stepper-step :step="steps.step4UploadProgress" :complete="step > steps.step4UploadProgress" >Upload Progress</v-stepper-step>
-                <v-divider></v-divider>
-                <v-stepper-step :step="steps.step5UploadSummary">Upload Summary</v-stepper-step>
-            </v-stepper-header>
+        <v-row v-if="errorAlert">
+            <v-col cols=12 class="pa-0">
+                <v-alert class="mb-0" v-model="errorAlert" type="error" dismissible>
+                    {{errorText}}
+                </v-alert>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col cols=12>
+                <v-stepper v-model="step">
+                    <v-stepper-header>
+                        <v-stepper-step :step="steps.step1UploadForm" :complete="step > steps.step1UploadForm" >Upload Info</v-stepper-step>
+                        <v-divider></v-divider>
+                        <v-stepper-step :step="steps.step2FileSelection" :complete="step > steps.step2FileSelection" >File Selection</v-stepper-step>
+                        <v-divider></v-divider>
+                        <v-stepper-step :step="steps.step3FileLevelForm" :complete="step > steps.step3FileLevelForm" >File Level Info</v-stepper-step>
+                        <v-divider></v-divider>
+                        <v-stepper-step :step="steps.step4UploadProgress" :complete="step > steps.step4UploadProgress" >Upload Progress</v-stepper-step>
+                        <v-divider></v-divider>
+                        <v-stepper-step :step="steps.step5UploadSummary">Upload Summary</v-stepper-step>
+                    </v-stepper-header>
 
-            <v-stepper-items>
-                <v-stepper-content :step="steps.step1UploadForm">
-                    <v-card class="mb-12">
-                        <UploadForm ref="uploadForm"></UploadForm>
-                    </v-card>
-                    <v-btn text @click="stepSaveUploadForm(true)" id="next-1">Next</v-btn>
-                </v-stepper-content>
+                    <v-stepper-items>
+                        <v-stepper-content :step="steps.step1UploadForm">
+                            <v-card class="mb-12">
+                                <UploadForm ref="uploadForm"></UploadForm>
+                            </v-card>
+                            <v-btn text @click="stepSaveUploadForm(true)" id="next-1">Next</v-btn>
+                        </v-stepper-content>
 
-                <v-stepper-content :step="steps.step2FileSelection">
-                    <v-card class="mb-12">
-                        <FileForm v-if="step === steps.step2FileSelection" ref="fileForm" @changed="step2Changed"></FileForm>
-                    </v-card>
-                    
-                    <v-btn text @click="step=steps.step1UploadForm" id="back-2">Back</v-btn>
-                    <v-btn color="primary" :disabled="!validStep3" @click="stepSaveFileForm(true)" id="next-2">Next</v-btn>
-                    
-                </v-stepper-content>
+                        <v-stepper-content :step="steps.step2FileSelection">
+                            <v-card class="mb-12">
+                                <FileForm v-if="step === steps.step2FileSelection" ref="fileForm" @changed="step2Changed"></FileForm>
+                            </v-card>
+                            
+                            <v-btn text @click="step=steps.step1UploadForm" id="back-2">Back</v-btn>
+                            <v-btn color="primary" :disabled="!validStep3" @click="stepSaveFileForm(true)" id="next-2">Next</v-btn>
+                            
+                        </v-stepper-content>
 
-                <v-stepper-content :step="steps.step3FileLevelForm">
-                    <v-card class="mb-12">
-                        <FileInfoForm v-if="step === steps.step3FileLevelForm" ref="fileInfoForm"></FileInfoForm>
-                    </v-card>
-                    <v-btn text @click="step=steps.step2FileSelection" id="back-3">Back</v-btn>
-                    <v-btn color="primary" @click="step=stepSaveFileInfoForm(true)" id="next-3">Next</v-btn>
-                    
-                </v-stepper-content>
+                        <v-stepper-content :step="steps.step3FileLevelForm">
+                            <v-card class="mb-12">
+                                <FileInfoForm v-if="step === steps.step3FileLevelForm" ref="fileInfoForm"></FileInfoForm>
+                            </v-card>
+                            <v-btn text @click="step=steps.step2FileSelection" id="back-3">Back</v-btn>
+                            <v-btn color="primary" @click="stepSaveFileInfoForm(true)" id="next-3">Next</v-btn>
+                            
+                        </v-stepper-content>
 
-                <v-stepper-content :step="steps.step4UploadProgress">
-                    <v-card class="mb-12">
-                        <FileUploadForm v-if="step === steps.step4UploadProgress" @uploads-finished="stepSaveFileUploads" :active="step === steps.step4UploadProgress"></FileUploadForm>
-                    </v-card>
-                    <!--<v-btn color="primary" @click="step=steps.step5UploadSummary">Next</v-btn>
-                    <v-btn text @click="step=steps.step3FileLevelForm">Back</v-btn>-->
-                </v-stepper-content>
+                        <v-stepper-content :step="steps.step4UploadProgress">
+                            <v-card class="mb-12">
+                                <FileUploadForm v-if="step === steps.step4UploadProgress" @uploads-finished="stepSaveFileUploads" :active="step === steps.step4UploadProgress"></FileUploadForm>
+                            </v-card>
+                            <!--<v-btn color="primary" @click="step=steps.step5UploadSummary">Next</v-btn>
+                            <v-btn text @click="step=steps.step3FileLevelForm">Back</v-btn>-->
+                        </v-stepper-content>
 
-                <v-stepper-content :step="steps.step5UploadSummary">
-                    <v-card class="mb-12">
-                        <UploadSummaryForm v-if="step === steps.step5UploadSummary" ref="uploadSummaryForm"></UploadSummaryForm>
-                    </v-card>
-                </v-stepper-content>
-            </v-stepper-items>
-        </v-stepper>
-
+                        <v-stepper-content :step="steps.step5UploadSummary">
+                            <v-card class="mb-12">
+                                <UploadSummaryForm v-if="step === steps.step5UploadSummary" ref="uploadSummaryForm"></UploadSummaryForm>
+                            </v-card>
+                        </v-stepper-content>
+                    </v-stepper-items>
+                </v-stepper>
+            </v-col>
+        </v-row>
     </v-container>
 </template>
 <script>
@@ -69,6 +76,8 @@
     import FileInfoForm from "../FileInfoForm";
     import FileUploadForm from "../FileUploadForm";
     import UploadSummaryForm from '../UploadSummaryForm';
+    import { Backend } from '../../services/backend';
+    const backend = new Backend();
 
     export default {
         components:{
@@ -107,30 +116,34 @@
 
             async triggerUploadFormSubmit() {
                 try{
-                    this.$refs.uploadForm.submitForm();
+                    //await this.$refs.uploadForm.submitForm();
+                    let submission = await this.$refs.uploadForm.getSubmission()
+                    let data = await backend.postFormSubmission(this.formName, submission.data);
+                    return data;
                 }catch(ex){
                     this.errorText = "Submission Error - " + ex;
                     this.errorAlert = true
+                    return {error: ex};
                 }
             },
             async stepSaveUploadForm(transitionNextStepAfterSave) {
               if(this.$refs.uploadForm.validateForm()) {
                   if((!this.uploadId ) && !this.createUploadInProgress) {
-                      // console.log("create new upload");
-                      const submission = this.$refs.uploadForm.getSubmission();
+                      let data;
                       try{
-                          await this.triggerUploadFormSubmit();
+                          data = await this.triggerUploadFormSubmit();
                       }catch(e){
                           this.errorAlert = true;
                           this.errorText = e;
                           transitionNextStepAfterSave = false;
                       }
+                      const submission = this.$refs.uploadForm.getSubmission();
                       
                     const initialUpload = {
                         name: submission.data.datasetName,
                         description: submission.datauploadDescription,
                         uploader: this.user.email,
-                        upload_submission_id: this.$refs.uploadForm.submissionId,
+                        upload_submission_id: data._id,
                         form_name: this.formName
                     }
                     try{
@@ -187,8 +200,29 @@
             },
 
             async stepSaveFileInfoForm(transitionNextStepAfterSave) {
-                await this.updateUpload(this.upload);
-                if(transitionNextStepAfterSave) { this.step = this.steps.step4UploadProgress; }
+                let valid = true;
+                if (this.upload.files){
+                    
+                    for (let i=0; i<this.upload.files.length; i++){
+                        if ((!this.upload.files[i].start_date) || (!this.upload.files[i].end_date)){
+                            this.errorAlert = true;
+                            this.errorText = "All start and end dates are required"
+                            valid = false;
+                        }
+                    }
+                }
+                if (valid){
+                    this.errorAlert = false;
+                    this.errorText = "";
+                    try{
+                        await this.updateUpload(this.upload);
+                        if(transitionNextStepAfterSave) { this.step = this.steps.step4UploadProgress; }
+                    }catch(e){
+                        this.errorAlert = true;
+                        this.errorText = "Error updating upload " + e
+                        valid = false;
+                    }
+                }
             },
 
             async stepSaveFileUploads(){
@@ -253,5 +287,6 @@
 <style scoped>
 .fixed{
     position: fixed;
+    z-index: 100;
 }
 </style>

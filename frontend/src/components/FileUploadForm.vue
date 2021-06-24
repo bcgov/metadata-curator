@@ -7,6 +7,7 @@
                         :show-encrypt-button="false"
                         :show-upload-button="false"
                         :show-import-button="false"
+                        :appendMetadata="{upload_id: uploadStore._id}"
                         :read-file="false"
                         :index="index"
                         :loadFromStore="files[index].sig"
@@ -69,7 +70,7 @@
                 // }
             },
             encyptedFile(index, contentIndex){
-                if (index===0 && contentIndex === 0){
+                if (index===0 && contentIndex === 0 && !this.uploading){
                     this.readyToUpload = true;
                 }
 
@@ -80,6 +81,7 @@
                     // await this.updateFormSubmission(false, true);
                     // await this.updateUploadFormSubmission(this.formSubmission);
                     this.readyToUpload = false;
+                    this.uploading = true;
                     Vue.set(this.startUpload, 0, true);
                 }
             },
@@ -135,7 +137,8 @@
                 uploadIndex: 0,
                 fileIds: [],
                 spanKey: 0,
-                readyToUpload: false,
+                readyToUpload: true,
+                uploading: false,
             }
         },
         mounted(){

@@ -11,6 +11,7 @@
                                 :clear-file="clearFile"
                                 :index="files.length"
                                 @file-opened="fileOpened"
+                                id="fileForm-reader"
                     >
                     </FileReader>
                 </v-col>
@@ -120,6 +121,7 @@
                     this.files = [];
                 }
                 this.spanKey++;
+                this.$emit('changed', this.files.length);
             }
         },
         data () {
