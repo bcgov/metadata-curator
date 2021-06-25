@@ -141,7 +141,7 @@ resource "null_resource" "get_nginx_ip" {
 }
 
 data "local_file" "nginx_ip" {
-    filename = " ${var.hostRootPath}/nginx_ip"
+    filename = "${var.hostRootPath}/nginx_ip"
     depends_on = [
       null_resource.get_nginx_ip
     ]
