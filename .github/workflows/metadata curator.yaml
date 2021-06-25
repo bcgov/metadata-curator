@@ -151,7 +151,8 @@ jobs:
 
       - name: test
         run: |
-          sleep 30
+          docker ps
+          sleep 40
           docker ps
           cd frontend
           cp step-definitions/config.json.example step-definitions/config.json
