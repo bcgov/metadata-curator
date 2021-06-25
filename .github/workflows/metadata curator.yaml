@@ -178,5 +178,4 @@ jobs:
       - name: "output mc backend logs"
         if: ${{ failure() }}
         run: |
-          ls /home/runner/work/metadata-curator/metadata-curator/terraform/_tmp
-          cat /home/runner/work/metadata-curator/metadata-curator/terraform/_tmp/nginx_ip
+          docker logs mc_backend
