@@ -134,9 +134,9 @@ EOF
 }
 
 resource "null_resource" "getNginxIp" {
+  depends_on = [docker_container.mc_nginx]
   provisioner "local-exec" {
     command = "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mc_nginx > ${var.hostRootPath}/nginx_ip"
-    depends_on = [docker_container.mc_nginx]
   }
 }
 
@@ -157,7 +157,7 @@ resource "docker_container" "mc_backend" {
 
   host {
     host = var.authHostname
-    ip   = local_file.nginx_ip.content
+    ip   = data.local_file.nginx_ip.content
   }
 
   depends_on = [
