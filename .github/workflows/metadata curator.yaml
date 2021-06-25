@@ -174,9 +174,7 @@ jobs:
         with:
           name: selenium-log.log
           path: frontend/selenium-server.log
-      - name: "store chrome driver info"
-        uses: actions/upload-artifact@v2
+      - name: "output mc backend logs"
         if: ${{ failure() }}
-        with:
-          name: chromedriver.log
-          path: frontend/chromedriver.log
+        run: |
+          docker logs mc_backend
