@@ -133,7 +133,7 @@ EOF
   }
 }
 
-resource "null_resource" "getNginxIp" {
+resource "null_resource" "get_nginx_ip" {
   depends_on = [docker_container.mc_nginx]
   provisioner "local-exec" {
     command = "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mc_nginx > ${var.hostRootPath}/nginx_ip && truncate -s -1 ${var.hostRootPath}/nginx_ip && sudo chmod 777 ${var.hostRootPath}/nginx_ip"
@@ -143,7 +143,7 @@ resource "null_resource" "getNginxIp" {
 data "local_file" "nginx_ip" {
     filename = " ${var.hostRootPath}/nginx_ip"
     depends_on = [
-      null_resource.getNginxIp
+      null_resource.get_nginx_ip
     ]
 }
 
@@ -161,7 +161,7 @@ resource "docker_container" "mc_backend" {
   }
 
   depends_on = [
-    docker_container.mc_nginx
+    local_file.nginx_ip
   ]
 
   env = [
