@@ -21,7 +21,6 @@ resource "docker_container" "mc_nginx" {
   }
   networks_advanced {
     name = docker_network.private_network.name
-    ipv4_address = "4.5.6.7"
   }
   volumes {
     host_path      = "${var.hostRootPath}/ssl"
