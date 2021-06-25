@@ -143,7 +143,7 @@ resource "docker_container" "mc_backend" {
 
   host {
     host = var.authHostname
-    ip   = docker_container.mc_nginx.ip_address
+    ip   = docker_container.mc_nginx.network_data[0].ip_address
   }
 
   depends_on = [
