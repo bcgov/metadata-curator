@@ -133,6 +133,20 @@ EOF
   }
 }
 
+resource "null_resource" "getNginxIp" {
+  provisioner "local-exec" {
+    command = "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mc_nginx > ${var.hostRootPath}/nginx_ip"
+    depends_on = [docker_container.mc_nginx]
+  }
+}
+
+data "local_file" "nginx_ip" {
+    filename = " ${var.hostRootPath}/nginx_ip"
+    depends_on = [
+      null_resource.getNginxIp
+    ]
+}
+
 resource "docker_container" "mc_backend" {
   image   = docker_image.mc_backend.latest
   name    = "mc_backend"
@@ -143,7 +157,7 @@ resource "docker_container" "mc_backend" {
 
   host {
     host = var.authHostname
-    ip   = docker_container.mc_nginx.network_data[0].ip_address
+    ip   = local_file.nginx_ip.content
   }
 
   depends_on = [
