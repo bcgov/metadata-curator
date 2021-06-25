@@ -141,6 +141,11 @@ resource "docker_container" "mc_backend" {
     name = docker_network.private_network.name
   }
 
+  host {
+    host = var.authHostname
+    ip   = docker_container.mc_nginx.ip_address
+  }
+
   env = [
     "NODE_CONFIG=${replace(data.null_data_source.configValues.outputs["nodeConfig"], "\n", "")}",
   ]
