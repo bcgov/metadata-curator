@@ -157,7 +157,7 @@ jobs:
           sudo apt-get install xvfb openssl
           export NODE_ENV='development'
           
-          cp ../terraform/_tmp/ssl/example.crt /usr/local/share/ca-certificates/.
+          sudo cp ../terraform/_tmp/ssl/example.crt /usr/local/share/ca-certificates/example.crt
           sudo update-ca-certificates
 
           npm ci
