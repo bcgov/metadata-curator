@@ -145,6 +145,7 @@ jobs:
           echo } >> docker.tf
           echo "127.0.0.1 mc.example.demo" | sudo tee -a /etc/hosts
           echo "127.0.0.1 auth.example.demo" | sudo tee -a /etc/hosts
+          echo "127.0.0.1 auth.example.demo" | sudo tee -a /etc/hosts
           terraform init
           terraform apply -var hostRootPath=`pwd`/_tmp -auto-approve
 

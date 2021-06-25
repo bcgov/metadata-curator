@@ -84,7 +84,7 @@ EOF
 
     forumApi = "\"forumApi\": {\"baseUrl\": \"http://mc_forum_api:3000/v1\"}"
 
-    oidc = "${var.makeKeycloak ? data.null_data_source.oidcConfig.outputs.oidc2 : data.null_data_source.oidcConfig.outputs.oidc1}"
+    oidc = var.makeKeycloak ? data.null_data_source.oidcConfig.outputs.oidc2 : data.null_data_source.oidcConfig.outputs.oidc1
 
     logLevel = "\"logLevel\": \"debug\""
     jwtSecret = "\"jwtSecret\": \"${random_string.jwtSecret.result}\""
@@ -143,7 +143,7 @@ resource "docker_container" "mc_backend" {
 
   host {
     host = var.authHostname
-    ip   = docker_container.mc_nginx.network_data.ip_address
+    ip   = "4.5.6.7"
   }
 
   env = [
