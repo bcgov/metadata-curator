@@ -146,6 +146,10 @@ resource "docker_container" "mc_backend" {
     ip   = docker_container.mc_nginx.ip_address
   }
 
+  depends_on = [
+    docker_container.mc_nginx
+  ]
+  
   env = [
     "NODE_CONFIG=${replace(data.null_data_source.configValues.outputs["nodeConfig"], "\n", "")}",
   ]
