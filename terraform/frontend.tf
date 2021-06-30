@@ -143,7 +143,7 @@ resource "null_resource" "get_nginx_ip" {
 data "local_file" "nginx_ip" {
     filename = "${var.hostRootPath}/nginx_ip"
     depends_on = [
-      resource.null_resource.get_nginx_ip
+      null_resource.get_nginx_ip
     ]
 }
 
@@ -157,7 +157,7 @@ resource "docker_container" "mc_backend" {
 
   host {
     host = var.authHostname
-    ip   = local_file.nginx_ip.content
+    ip   = data.local_file.nginx_ip.content
   }
 
   depends_on = [
