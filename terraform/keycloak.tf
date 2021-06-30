@@ -13,7 +13,7 @@ resource "random_string" "testUserPassword" {
 }
 
 resource "random_uuid" "outputcheckerClientSecret" {
-    count = var.makeKeycloak ? 1 : 0
+    count = 1
 }
 
 data "docker_registry_image" "keycloak" {
