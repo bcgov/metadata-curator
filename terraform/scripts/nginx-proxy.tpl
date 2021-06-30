@@ -132,6 +132,14 @@ server {
 }
 
 server {
+  listen                    443 ssl default;
+  ssl_certificate           ${sslCertificate};
+  ssl_certificate_key       ${sslCertificateKey};
+
+  return 301 ${authHost};
+}
+
+server {
   listen                    80 default;
 
   return 301 ${host};
