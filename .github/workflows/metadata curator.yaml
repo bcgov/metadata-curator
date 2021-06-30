@@ -183,3 +183,4 @@ jobs:
           cat terraform/_tmp/nginx_ip || echo "No such file"
           docker logs mc_backend || echo "backend container not found"
           docker logs mc_keycloak || echo "keycloak container not found"
+          docker logs mc_nginx || echo "nginx container not found"
