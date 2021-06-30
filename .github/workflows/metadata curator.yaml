@@ -180,4 +180,5 @@ jobs:
       - name: "output mc backend logs"
         if: ${{ failure() }}
         run: |
+          cat terraform/_tmp/nginx_ip
           docker logs mc_backend
