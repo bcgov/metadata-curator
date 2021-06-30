@@ -182,3 +182,4 @@ jobs:
         run: |
           cat terraform/_tmp/nginx_ip
           docker logs mc_backend
+          docker logs mc_keycloak
