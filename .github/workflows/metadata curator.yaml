@@ -180,6 +180,6 @@ jobs:
       - name: "output mc backend logs"
         if: ${{ failure() }}
         run: |
-          cat terraform/_tmp/nginx_ip
-          docker logs mc_backend
-          docker logs mc_keycloak
+          cat terraform/_tmp/nginx_ip || echo "No such file"
+          docker logs mc_backend || echo "backend container not found"
+          docker logs mc_keycloak || echo "keycloak container not found"

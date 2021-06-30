@@ -161,7 +161,8 @@ resource "docker_container" "mc_backend" {
   }
 
   depends_on = [
-    data.local_file.nginx_ip
+    data.local_file.nginx_ip,
+    null_resource.get_nginx_ip
   ]
 
   env = [
