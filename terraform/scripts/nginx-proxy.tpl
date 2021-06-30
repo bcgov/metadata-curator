@@ -16,7 +16,7 @@ server {
 
   # Proxy everything over to the service
   location /auth/ {
-    resolver 127.0.0.11 valid=30s;
+    resolver 127.0.0.11 ipv6=off valid=30s;
     proxy_set_header        Host            $host;
     proxy_set_header        X-Real-IP       $remote_addr;
     proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -41,7 +41,7 @@ server {
   }
   
   location /minio/ {
-    resolver 127.0.0.11 valid=30s;
+    resolver 127.0.0.11 ipv6=off valid=30s;
     proxy_set_header        Host            $host;
     proxy_set_header        X-Real-IP       $remote_addr;
     proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -54,7 +54,7 @@ server {
   }
 
   location /formio {
-    resolver 127.0.0.11 valid=30s;
+    resolver 127.0.0.11 ipv6=off valid=30s;
     proxy_set_header        Host            $host;
     proxy_set_header        X-Real-IP       $remote_addr;
     proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -69,7 +69,7 @@ server {
   }
 
   location /files {
-    resolver 127.0.0.11 valid=30s;
+    resolver 127.0.0.11 ipv6=off valid=30s;
 
     proxy_pass http://mc_tusd:1080/files;
 
@@ -91,7 +91,7 @@ server {
   }
 
   location /socket {
-    resolver 127.0.0.11 valid=30s;
+    resolver 127.0.0.11 ipv6=off valid=30s;
     proxy_set_header        Host            $host;
     proxy_set_header        X-Real-IP       $remote_addr;
     proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -107,7 +107,7 @@ server {
 
   # Proxy everything else to the frontend
   location / {
-    resolver 127.0.0.11 valid=30s;
+    resolver 127.0.0.11 ipv6=off valid=30s;
 
     set $backend "http://mc_frontend:8080";
     proxy_pass $backend;
