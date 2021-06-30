@@ -34,7 +34,7 @@ module.exports = {
         client
                 .setValue('input[name="username"]', confGet(userType+"Account"))
                 .setValue('input[name="password"]', confGet(userType+"Password"))
-                //.click('input[id="kc-login"]')
+                .click('input[id="kc-login"]')
 
         return client.waitForElementVisible('div.v-toolbar__title.font-weight-light', 10000);
                 
