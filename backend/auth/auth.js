@@ -7,6 +7,7 @@ var logger = require('npmlog');
 var jwt = require('jsonwebtoken');
 //let OidcStrategy = require('passport-openidconnect').Strategy;
 let OidcStrategy = require('../modules/passport-openidconnect').Strategy;
+
 var secret = config.get("jwtSecret");
 
 passport.use('jwt', new JWTStrategy({
