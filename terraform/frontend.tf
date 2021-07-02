@@ -131,27 +131,6 @@ EOF
   }
 }
 
-resource "null_resource" "get_nginx_ip" {
-  depends_on = [docker_container.mc_nginx, docker_container.mc_frontend]
-  provisioner "local-exec" {
-    command = "docker exec mc_frontend getent hosts mc_nginx | awk '{ print $1 }' > ${var.hostRootPath}/nginx_ip && truncate -s -1 ${var.hostRootPath}/nginx_ip && chmod 777 ${var.hostRootPath}/nginx_ip"
-  }
-}
-
-resource "null_resource" "get_nginx_ip_old" {
-  depends_on = [docker_container.mc_nginx]
-  provisioner "local-exec" {
-    command = "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mc_nginx > ${var.hostRootPath}/nginx_ip_old && truncate -s -1 ${var.hostRootPath}/nginx_ip_old && chmod 777 ${var.hostRootPath}/nginx_ip_old"
-  }
-}
-
-data "local_file" "nginx_ip" {
-    filename = "${var.hostRootPath}/nginx_ip"
-    depends_on = [
-      null_resource.get_nginx_ip
-    ]
-}
-
 resource "docker_container" "mc_backend" {
   image   = docker_image.mc_backend.latest
   name    = "mc_backend"
@@ -162,13 +141,8 @@ resource "docker_container" "mc_backend" {
 
   host {
     host = var.authHostname
-    ip   = data.local_file.nginx_ip.content
+    ip   = "172.25.0.10" //nginx ip
   }
-
-  depends_on = [
-    data.local_file.nginx_ip,
-    null_resource.get_nginx_ip
-  ]
 
   env = var.makeKeycloak ? ["NODE_CONFIG=${replace(data.null_data_source.configValues.outputs["nodeConfig"], "\n", "")}", "NODE_TLS_REJECT_UNAUTHORIZED=0"] : ["NODE_CONFIG=${replace(data.null_data_source.configValues.outputs["nodeConfig"], "\n", "")}"]
 }
