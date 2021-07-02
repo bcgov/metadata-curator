@@ -76,7 +76,7 @@ resource "null_resource" "keycloak_first_time_install" {
       "BUSCAT_0"               = var.businessCategories[0]
       "BUSCAT_1"               = var.businessCategories[1]
     }
-    command = "docker run --net=mc_vnet -e ORG_ATT -e REQUIRED_CREATE_ROLE -e APPROVER_0 -e APPROVER_1 -e BUSCAT_0 -e BUSCAT_1 -e TESTUSER_PASSWORD -e KEYCLOAK_USER -e KEYCLOAK_PASSWORD -e KEYCLOAK_CLIENT_SECRET -v \"$PWD:/work\" --entrypoint /bin/bash jboss/keycloak:4.8.3.Final -c /work/scripts/keycloak-setup.sh"
+    command = "docker run --net=mc_vnet -e ORG_ATT -e REQUIRED_CREATE_ROLE -e APPROVER_0 -e APPROVER_1 -e BUSCAT_0 -e BUSCAT_1 -e TESTUSER_PASSWORD -e KEYCLOAK_USER -e KEYCLOAK_PASSWORD -e KEYCLOAK_CLIENT_SECRET -v \"$PWD:/work\" --entrypoint /bin/bash jboss/keycloak:4.8.3.Final -c /work/scripts/keycloak-setup.sh && docker restart mc_keycloak"
   }
 
   depends_on = [docker_container.mc_keycloak]
