@@ -180,4 +180,4 @@ jobs:
       - name: "output mc backend logs"
         if: ${{ failure() }}
         run: |
-          docker logs --until 40m mc_backend || echo "backend container not found"
+          docker logs --since 40m mc_backend || echo "backend container not found"
