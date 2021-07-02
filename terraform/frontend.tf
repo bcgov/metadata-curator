@@ -144,5 +144,9 @@ resource "docker_container" "mc_backend" {
     ip   = "172.25.0.10" //nginx ip
   }
 
+  depends_on = [
+    docket_container.mc_mongodb
+  ]
+
   env = var.makeKeycloak ? ["NODE_CONFIG=${replace(data.null_data_source.configValues.outputs["nodeConfig"], "\n", "")}", "NODE_TLS_REJECT_UNAUTHORIZED=0"] : ["NODE_CONFIG=${replace(data.null_data_source.configValues.outputs["nodeConfig"], "\n", "")}"]
 }
