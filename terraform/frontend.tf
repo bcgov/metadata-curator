@@ -15,9 +15,7 @@ resource "docker_container" "mc_frontend" {
     name = docker_network.private_network.name
   }
 
-  env = [
-    "HOSTNAME=mc_backend",
-  ]
+  env = var.makeKeycloak ? ["HOSTNAME=mc_backend","NODE_TLS_REJECT_UNAUTHORIZED=0"] : ["HOSTNAME=mc_backend"]
 }
 
 data "docker_registry_image" "mc_backend" {
@@ -136,7 +134,7 @@ EOF
 resource "null_resource" "get_nginx_ip" {
   depends_on = [docker_container.mc_nginx]
   provisioner "local-exec" {
-    command = "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mc_nginx > ${var.hostRootPath}/nginx_ip && truncate -s -1 ${var.hostRootPath}/nginx_ip && sudo chmod 777 ${var.hostRootPath}/nginx_ip"
+    command = "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mc_nginx > ${var.hostRootPath}/nginx_ip && truncate -s -1 ${var.hostRootPath}/nginx_ip && chmod 777 ${var.hostRootPath}/nginx_ip"
   }
 }
 
@@ -165,7 +163,5 @@ resource "docker_container" "mc_backend" {
     null_resource.get_nginx_ip
   ]
 
-  env = [
-    "NODE_CONFIG=${replace(data.null_data_source.configValues.outputs["nodeConfig"], "\n", "")}",
-  ]
+  env = var.makeKeycloak ? ["NODE_CONFIG=${replace(data.null_data_source.configValues.outputs["nodeConfig"], "\n", "")}", "NODE_TLS_REJECT_UNAUTHORIZED=0"] : ["NODE_CONFIG=${replace(data.null_data_source.configValues.outputs["nodeConfig"], "\n", "")}"]
 }
