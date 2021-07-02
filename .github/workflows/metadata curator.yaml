@@ -183,3 +183,4 @@ jobs:
           cat terraform/_tmp/nginx_ip || echo "No such file"
           docker logs mc_backend || echo "backend container not found"
           docker exec mc_backend /usr/bin/wget --no-check-certificate https://auth.example.demo -O -
+          docker inspect mc_vnet
