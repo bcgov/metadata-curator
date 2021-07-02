@@ -132,9 +132,16 @@ EOF
 }
 
 resource "null_resource" "get_nginx_ip" {
+  depends_on = [docker_container.mc_nginx, docker_container.mc_frontend]
+  provisioner "local-exec" {
+    command = "docker exec mc_frontend getent hosts mc_nginx | awk '{ print $1 }' > ${var.hostRootPath}/nginx_ip && truncate -s -1 ${var.hostRootPath}/nginx_ip && chmod 777 ${var.hostRootPath}/nginx_ip"
+  }
+}
+
+resource "null_resource" "get_nginx_ip_old" {
   depends_on = [docker_container.mc_nginx]
   provisioner "local-exec" {
-    command = "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mc_nginx > ${var.hostRootPath}/nginx_ip && truncate -s -1 ${var.hostRootPath}/nginx_ip && chmod 777 ${var.hostRootPath}/nginx_ip"
+    command = "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mc_nginx > ${var.hostRootPath}/nginx_ip_old && truncate -s -1 ${var.hostRootPath}/nginx_ip_old && chmod 777 ${var.hostRootPath}/nginx_ip_old"
   }
 }
 
