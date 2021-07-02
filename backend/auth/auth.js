@@ -5,8 +5,8 @@ const ExtractJWT = passJwt.ExtractJwt;
 var config = require('config');
 var logger = require('npmlog');
 var jwt = require('jsonwebtoken');
-//let OidcStrategy = require('passport-openidconnect').Strategy;
-let OidcStrategy = require('../modules/passport-openidconnect').Strategy;
+let OidcStrategy = require('passport-openidconnect').Strategy;
+
 
 var secret = config.get("jwtSecret");
 
@@ -111,7 +111,7 @@ var strategy = new OidcStrategy(config.get('oidc'), async function(issuer, sub, 
         var u = await db.User.findOne({email: profile.email});
         profile.lastLogin = u.lastLogin;
       }catch(ex){
-        console.log("No previous user info", ex);
+        console.log("No previous user info", ex, db, db.User);
       }
       
     }
@@ -124,6 +124,7 @@ var strategy = new OidcStrategy(config.get('oidc'), async function(issuer, sub, 
     }
   
     if (profile.email){
+      console.log("before user update", db, db.User);
       db.User.update({email: profile.email}, user, {upsert: true, setDefaultsOnInsert: true}, function(e,r){
         if (e){
           console.log("Error updating user info", e);

@@ -180,8 +180,4 @@ jobs:
       - name: "output mc backend logs"
         if: ${{ failure() }}
         run: |
-          (echo "NEW:" && cat terraform/_tmp/nginx_ip) || echo "No such file"
-          (echo "OLD:" && cat terraform/_tmp/nginx_ip_old) || echo "No such file"
-          docker logs mc_backend || echo "backend container not found"
-          docker exec mc_backend /usr/bin/wget --no-check-certificate https://auth.example.demo -O - || echo "failed wget"
-          docker inspect mc_vnet
+          docker logs --until 40m mc_backend || echo "backend container not found"
