@@ -45,7 +45,6 @@
                                 ]"
                                 label="Date Range Start*"
                                 prepend-icon="mdi-calendar"
-                                readonly
                                 v-bind="attrs"
                                 v-on="on"
                                 @change="updateFormSubmission"
@@ -73,7 +72,6 @@
                                 ]"
                                 label="Date Range End*"
                                 prepend-icon="mdi-calendar"
-                                readonly
                                 v-bind="attrs"
                                 @change="updateFormSubmission"
                                 :id="'fileinfo-'+ index + '-end'"

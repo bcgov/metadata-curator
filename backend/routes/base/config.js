@@ -15,7 +15,7 @@ var buildDynamic = function(db, router, auth, cache){
         let cVal = cache.get(configListCache);
         
         if (cVal !== undefined){
-            res.status(200).json(cVal)
+            return res.status(200).json(cVal)
         }
         var q = {};
         const configs = await db.ConfigSchema.find(q);
