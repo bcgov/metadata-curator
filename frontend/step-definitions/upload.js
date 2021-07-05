@@ -35,7 +35,9 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
 
     await helpers.open(client);
     await helpers.login(client, 'publisher');
+    await client.saveScreenshot("./"+path+"/preNewUpload.png");
     await helpers.newUpload(client);
+    await client.saveScreenshot("./"+path+"/postNewUpload.png");
     for (const property in data1){
         await client.setValue(data1[property].selector, data1[property].value)
     }
