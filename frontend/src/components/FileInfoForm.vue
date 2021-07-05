@@ -34,7 +34,7 @@
                             :close-on-content-click="false"
                             :nudge-right="40"
                             transition="scale-transition"
-                            absolute
+                            offset-y
                             min-width="290px"
                         >
                             <template v-slot:activator="{ on, attrs }">
@@ -62,7 +62,7 @@
                             :close-on-content-click="false"
                             :nudge-right="40"
                             transition="scale-transition"
-                            absolute
+                            offset-y
                             min-width="290px"
                         >
                             <template v-slot:activator="{ on, attrs }">
@@ -160,6 +160,13 @@
                                 if (formST != -1){
                                     start = start.substring(0, formST);
                                 }
+                            }else{
+                                let d = new Date();
+                                let m = (d.getMonth()+1)
+                                m = m<10 ? "0"+m : m;
+                                let day = d.getDate();
+                                day = day<10 ? "0"+day : day
+                                start = d.getFullYear() + "-" + m + "-" + day;
                             }
                             
                             if (end){
@@ -168,6 +175,13 @@
                                 if (formET != -1){
                                     end = end.substring(0, formET);
                                 }
+                            }else{
+                                let d = new Date();
+                                let m = (d.getMonth()+1)
+                                m = m<10 ? "0"+m : m;
+                                let day = d.getDate();
+                                day = day<10 ? "0"+day : day
+                                end = d.getFullYear() + "-" + m + "-" + day;
                             }
                             
                             if ( (!this.formSubmission.files[i].title) || (!this.formSubmission.files[i].type) || (!this.formSubmission.files[i].start_date) || (!this.formSubmission.files[i].end_date)){
