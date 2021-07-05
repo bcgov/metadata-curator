@@ -70,7 +70,7 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
         return res;
     }catch(ex){
         let p = "./"+path+"/"+new Date().toString()+".png"
-        p.replace(":", "");
+        p = p.replace(/:/g, "");
         await client.saveScreenshot(p);
         throw ex;
     }
