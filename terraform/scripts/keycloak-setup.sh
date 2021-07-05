@@ -13,10 +13,19 @@ echo "Client = $CID"
 
 kcadm.sh get clients/$CID -r mc
 
+echo "CREATE GID1 $REQUIRED_CREATE_ROLE"
 GID1=$(kcadm.sh create groups -r mc -s name=$REQUIRED_CREATE_ROLE -i)
+
+echo "CREATE GID2 $APPROVER_0"
 GID2=$(kcadm.sh create groups -r mc -s name=$APPROVER_0 -i)
+
+echo "CREATE GID3 $APPROVER_1"
 GID3=$(kcadm.sh create groups -r mc -s name=$APPROVER_1 -i)
+
+echo "CREATE GID4 $BUSCAT_0"
 GID4=$(kcadm.sh create groups -r mc -s name=$BUSCAT_0 -i)
+
+echo "CREATE GID5 $BUSCAT_1"
 GID5=$(kcadm.sh create groups -r mc -s name=$BUSCAT_1 -i)
 
 echo "Group = $GID1"
