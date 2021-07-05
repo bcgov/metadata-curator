@@ -4,5 +4,5 @@
     "publisherPassword": "provider_1_password",
     "approverAccount": "approver_1",
     "approverPassword": "approver_1_password",
-    "browser": "chrome"
+    "browser": "chromeHeadless"
 }
