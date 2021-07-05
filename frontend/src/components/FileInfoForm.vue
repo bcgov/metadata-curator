@@ -34,23 +34,23 @@
                             :close-on-content-click="false"
                             :nudge-right="40"
                             transition="scale-transition"
-                            offset-y
+                            absolute
                             min-width="290px"
                         >
                             <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
-                                v-model="start[index]"
-                                :rules="[
-                                    () => !!start[index] || 'This field is required',
-                                ]"
-                                label="Date Range Start*"
-                                prepend-icon="mdi-calendar"
-                                autocomplete="off"
-                                v-bind="attrs"
-                                v-on="on"
-                                @change="updateFormSubmission"
-                                :id="'fileinfo-'+ index + '-start'"
-                            ></v-text-field>
+                                <v-text-field
+                                    v-model="start[index]"
+                                    :rules="[
+                                        () => !!start[index] || 'This field is required',
+                                    ]"
+                                    label="Date Range Start*"
+                                    prepend-icon="mdi-calendar"
+                                    autocomplete="off"
+                                    v-bind="attrs"
+                                    v-on="on"
+                                    @change="updateFormSubmission"
+                                    :id="'fileinfo-'+ index + '-start'"
+                                ></v-text-field>
                             </template>
                             <v-date-picker v-model="start[index]" @input="menu[index] = false" @change="updateFormSubmission"></v-date-picker>
                         </v-menu>
@@ -62,23 +62,23 @@
                             :close-on-content-click="false"
                             :nudge-right="40"
                             transition="scale-transition"
-                            offset-y
+                            absolute
                             min-width="290px"
                         >
                             <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
-                                v-model="end[index]"
-                                :rules="[
-                                    () => !!end[index] || 'This field is required',
-                                ]"
-                                label="Date Range End*"
-                                autocomplete="off"
-                                prepend-icon="mdi-calendar"
-                                v-bind="attrs"
-                                @change="updateFormSubmission"
-                                :id="'fileinfo-'+ index + '-end'"
-                                v-on="on"
-                            ></v-text-field>
+                                <v-text-field
+                                    v-model="end[index]"
+                                    :rules="[
+                                        () => !!end[index] || 'This field is required',
+                                    ]"
+                                    label="Date Range End*"
+                                    autocomplete="off"
+                                    prepend-icon="mdi-calendar"
+                                    v-bind="attrs"
+                                    @change="updateFormSubmission"
+                                    :id="'fileinfo-'+ index + '-end'"
+                                    v-on="on"
+                                ></v-text-field>
                             </template>
                             <v-date-picker v-model="end[index]" @input="menu2[index] = false" @change="updateFormSubmission"></v-date-picker>
                         </v-menu>

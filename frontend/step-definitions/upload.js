@@ -55,10 +55,19 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
 
     await client.click('#next-3');
 
+    await client.screenshot();
+
     await client.click('#upload');
 
-    
-  return await client.waitForElementVisible('#upload-success-indicator', 30000);
+    await client.screenshot();
+    var res;
+    try{
+        res = await client.waitForElementVisible('#upload-success-indicator', 30000);
+        return res;
+    }catch(ex){
+        await client.screenshot();
+        throw ex;
+    }
 });
 
 When(/^Data provider chooses to see the details of the upload$/, async () => {
