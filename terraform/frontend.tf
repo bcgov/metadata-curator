@@ -145,7 +145,8 @@ resource "docker_container" "mc_backend" {
   }
 
   depends_on = [
-    docker_container.mc_mongodb
+    docker_container.mc_mongodb,
+    null_resource.mongodb_first_time_install
   ]
 
   env = var.makeKeycloak ? ["NODE_CONFIG=${replace(data.null_data_source.configValues.outputs["nodeConfig"], "\n", "")}", "NODE_TLS_REJECT_UNAUTHORIZED=0"] : ["NODE_CONFIG=${replace(data.null_data_source.configValues.outputs["nodeConfig"], "\n", "")}"]
