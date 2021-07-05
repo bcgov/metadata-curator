@@ -48,24 +48,28 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
     await client.click('#next-2');
 
     let d = new Date();
-    await client.setValue('#fileinfo-0-start', (d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate()));
+    let da = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate()
     
-    await client.setValue('#fileinfo-0-end', (d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate()));
+    // await client.click('#fileinfo-0-start');
+    // await client.setValue('#fileinfo-0-start', da);
     
+    // await client.click('#fileinfo-0-end');
+    // await client.setValue('#fileinfo-0-end', da);
+    let path = helpers.confGet('screenshotPath');
 
+    await client.pause(100);
+    
+    await client.pause(1);
     await client.click('#next-3');
-
-    await client.screenshot().pause(1);
 
     await client.click('#upload');
 
-    await client.screenshot().pause(1);
     var res;
     try{
         res = await client.waitForElementVisible('#upload-success-indicator', 30000);
         return res;
     }catch(ex){
-        await client.screenshot();
+        await client.saveScreenshot("./"+path+"/"+new Date().toString()+".png");
         throw ex;
     }
 });
@@ -94,6 +98,7 @@ Then(/^Data provider should see information on the characteristics of the data u
     await client.pause(5000);
     await client.click('#uploadDetail-showInfo');
     await client.waitForElementVisible('input[name="data[ministryOrganization]"]', 10000)
+    await client.pause(200);
 
     var success = true;
     for (var property in data1){
