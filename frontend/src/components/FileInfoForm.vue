@@ -45,6 +45,7 @@
                                 ]"
                                 label="Date Range Start*"
                                 prepend-icon="mdi-calendar"
+                                autocomplete="off"
                                 v-bind="attrs"
                                 v-on="on"
                                 @change="updateFormSubmission"
@@ -71,6 +72,7 @@
                                     () => !!end[index] || 'This field is required',
                                 ]"
                                 label="Date Range End*"
+                                autocomplete="off"
                                 prepend-icon="mdi-calendar"
                                 v-bind="attrs"
                                 @change="updateFormSubmission"

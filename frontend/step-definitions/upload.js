@@ -47,30 +47,11 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
 
     await client.click('#next-2');
 
-    await client.click('#fileinfo-0-start');
-    let setDate = false;
-    try{
-        await client.waitForElementVisible('.v-date-picker-table.v-date-picker-table--date button', 1000);
-        await client.click('.v-date-picker-table.v-date-picker-table--date button');
-        setDate = true;
-    }catch(ex){}
-    if (!setDate){
-        let d = new Date();
-        await client.setValue('#fileinfo-0-start', (d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate()));
-    }
-
+    let d = new Date();
+    await client.setValue('#fileinfo-0-start', (d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate()));
     
-    await client.click('#fileinfo-0-end');
-    setDate = false;
-    try{
-        await client.waitForElementVisible('.v-date-picker-table.v-date-picker-table--date button', 1000);
-        await client.click('.v-date-picker-table.v-date-picker-table--date button');
-        setDate = true;
-    }catch(ex){}
-    if (!setDate){
-        let d = new Date();
-        await client.setValue('#fileinfo-0-end', (d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate()));
-    }
+    await client.setValue('#fileinfo-0-end', (d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate()));
+    
 
     await client.click('#next-3');
 
