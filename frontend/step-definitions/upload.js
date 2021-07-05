@@ -60,7 +60,10 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
     await client.pause(100);
     
     await client.pause(1);
+    await client.saveScreenshot("./"+path+"/preNext3.png");
     await client.click('#next-3');
+    await client.saveScreenshot("./"+path+"/postNext3.png").pause(1);
+
 
     await client.click('#upload');
 
