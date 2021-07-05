@@ -69,6 +69,8 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
         res = await client.waitForElementVisible('#upload-success-indicator', 30000);
         return res;
     }catch(ex){
+        let p = "./"+path+"/"+new Date().toString()+".png"
+        p.replace(":", "");
         await client.saveScreenshot("./"+path+"/"+new Date().toString()+".png");
         throw ex;
     }
