@@ -55,11 +55,11 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
 
     await client.click('#next-3');
 
-    await client.screenshot();
+    await client.screenshot().pause(1);
 
     await client.click('#upload');
 
-    await client.screenshot();
+    await client.screenshot().pause(1);
     var res;
     try{
         res = await client.waitForElementVisible('#upload-success-indicator', 30000);
