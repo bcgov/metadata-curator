@@ -35,6 +35,7 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
 
     await helpers.open(client);
     await helpers.login(client, 'publisher');
+    let path = helpers.confGet('screenshotPath');
     await client.saveScreenshot("./"+path+"/preNewUpload.png");
     await helpers.newUpload(client);
     await client.saveScreenshot("./"+path+"/postNewUpload.png");
@@ -57,7 +58,6 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
     
     // await client.click('#fileinfo-0-end');
     // await client.setValue('#fileinfo-0-end', da);
-    let path = helpers.confGet('screenshotPath');
 
     await client.pause(100);
     
