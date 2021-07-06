@@ -180,7 +180,6 @@ jobs:
       - name: "output mc backend logs"
         if: ${{ failure() }}
         run: |
-          docker exec mc_backend env || echo "backend container not found"
           docker logs --since 40m mc_backend || echo "backend container not found"
       - name: "output mc formio logs"
         if: ${{ failure() }}
@@ -200,4 +199,5 @@ jobs:
       - name: "output mc forum api logs"
         if: ${{ failure() }}
         run: |
+          docker exec mc_forum_api env || echo "forum api container not found"
           docker logs --since 40m mc_forum_api || echo "forum api container not found"
