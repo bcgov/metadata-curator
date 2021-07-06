@@ -70,11 +70,11 @@ resource "null_resource" "keycloak_first_time_install" {
       "KEYCLOAK_CLIENT_SECRET" = random_uuid.outputcheckerClientSecret[0].result
 
       "ORG_ATT"                = var.orgAttribute
-      "REQUIRED_CREATE_ROLE"   = var.requiredRoleToCreateRequest
-      "APPROVER_0"             = var.approverGroups[0]
-      "APPROVER_1"             = var.approverGroups[1]
-      "BUSCAT_0"               = var.businessCategories[0]
-      "BUSCAT_1"               = var.businessCategories[1]
+      "REQUIRED_CREATE_ROLE"   = replace(var.requiredRoleToCreateRequest, "/", "")
+      "APPROVER_0"             = replace(var.approverGroups[0], "/", "")
+      "APPROVER_1"             = replace(var.approverGroups[1], "/", "")
+      "BUSCAT_0"               = replace(var.businessCategories[0], "/", "")
+      "BUSCAT_1"               = replace(var.businessCategories[1], "/", "")
     }
     command = "docker run --net=mc_vnet -e ORG_ATT -e REQUIRED_CREATE_ROLE -e APPROVER_0 -e APPROVER_1 -e BUSCAT_0 -e BUSCAT_1 -e TESTUSER_PASSWORD -e KEYCLOAK_USER -e KEYCLOAK_PASSWORD -e KEYCLOAK_CLIENT_SECRET -v \"$PWD:/work\" --entrypoint /bin/bash jboss/keycloak:4.8.3.Final -c /work/scripts/keycloak-setup.sh && docker restart mc_keycloak"
   }
