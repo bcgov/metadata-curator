@@ -100,7 +100,7 @@ adminGroup = "/mc-admin"
 # Form.io connection information.  Form.io has been integrated into Metadata Curator and is used for managing the dataset fields
 formio = {
     "url": "http://mc_formio:3001",
-    "username": "admin@example.com",
+    "username": "admin@ocwa.local",
 }
 
 # Postgres user to use.  Postgres is used for keycloak only so requires keycloak true
