@@ -4,6 +4,8 @@ const { Given, Then, When } = require('@cucumber/cucumber');
 const helpers = require('./helpers');
 const { captureRejectionSymbol } = require('events');
 
+const path = helpers.confGet('screenshotPath');
+
 const data1 = {
     ministryOrganization: {
         selector: 'input[name="data[ministryOrganization]"]',
@@ -35,7 +37,6 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
 
     await helpers.open(client);
     await helpers.login(client, 'publisher');
-    let path = helpers.confGet('screenshotPath');
     await client.saveScreenshot("./"+path+"/preNewUpload.png");
     client.click('#userMenu').pause(10)
     client.click('#toUserPage').pause(100).saveScreenshot('./'+confGet('screenshotPath')+'/uploadUserInfo.png');
@@ -94,7 +95,8 @@ When(/^Data provider chooses to see the details of the upload$/, async () => {
     }
     
     //click the upload in the list
-    await client.waitForElementVisible(('#upload-'+id), 10000);
+    await client.waitForElementVisible(('#upload-'+id), 5000);
+    await client.saveScreenshot("./"+path+"/checkingForUpload.png");
     await client.waitForElementVisible('#upload-'+id+' i.mdi-checkbox-marked-circle', 1000);
     await client.pause(25000);
     return client.click('#upload-'+id);
