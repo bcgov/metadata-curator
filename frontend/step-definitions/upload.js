@@ -37,6 +37,9 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
     await helpers.login(client, 'publisher');
     let path = helpers.confGet('screenshotPath');
     await client.saveScreenshot("./"+path+"/preNewUpload.png");
+    client.click('#userMenu').pause(10)
+    client.click('#toUserPage').pause(100).saveScreenshot('./'+confGet('screenshotPath')+'/uploadUserInfo.png');
+    
     await helpers.newUpload(client);
     await client.saveScreenshot("./"+path+"/postNewUpload.png");
     for (const property in data1){

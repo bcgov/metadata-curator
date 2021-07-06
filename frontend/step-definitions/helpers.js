@@ -37,8 +37,8 @@ module.exports = {
                 .setValue('input[name="password"]', confGet(userType+"Password"))
                 .click('input[id="kc-login"]')
 
+
         return client.waitForElementVisible('div.v-toolbar__title.font-weight-light', 1000);
-                
     },
 
     logout: function(client){
