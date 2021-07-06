@@ -184,5 +184,4 @@ jobs:
       - name: "output mc formio logs"
         if: ${{ failure() }}
         run: |
-          docker exec mc_formio wget https://codeload.github.com/formio/formio-app-formio/zip/master || echo "failed fetch"
           docker logs --since 40m mc_formio || echo "formio container not found"
