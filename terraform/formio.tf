@@ -50,7 +50,7 @@ resource "docker_container" "formio" {
   depends_on = [docker_container.mc_mongodb]
 }
 
-resource "null_resource" "mongodb_formio_first_Time_install" {
+resource "null_resource" "formio_first_time_install" {
   provisioner "local-exec" {
     command = "docker exec mc_formio wget https://codeload.github.com/formio/formio-app-formio/zip/master -O client.zip"
   }

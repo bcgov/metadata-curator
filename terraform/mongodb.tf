@@ -150,6 +150,6 @@ resource "null_resource" "mongodb_formio_first_Time_install" {
   }
 
 
-  depends_on = [docker_container.mc_mongodb, docker_container.formio, local_file.formio_script]
+  depends_on = [docker_container.mc_mongodb, null_resource.formio_first_time_install, local_file.formio_script]
 }
 
