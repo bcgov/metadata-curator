@@ -62,9 +62,6 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
     // await client.click('#fileinfo-0-end');
     // await client.setValue('#fileinfo-0-end', da);
 
-    await client.pause(100);
-    
-    await client.pause(1);
     await client.saveScreenshot("./"+path+"/preNext3.png");
     await client.click('#next-3');
     await client.saveScreenshot("./"+path+"/postNext3.png").pause(1);
@@ -74,7 +71,7 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
 
     var res;
     try{
-        res = await client.waitForElementVisible('#upload-success-indicator', 30000);
+        res = await client.waitForElementVisible('#upload-success-indicator', 15000);
         return res;
     }catch(ex){
         let p = "./"+path+"/"+new Date().toString()+".png"

@@ -152,7 +152,7 @@ jobs:
       - name: test
         run: |
           docker ps
-          sleep 40
+          sleep 10
           docker ps
           docker logs mc_backend
           cd frontend
@@ -196,3 +196,8 @@ jobs:
         if: ${{ failure() }}
         run: |
           docker logs --since 40m mc_nginx || echo "nginx container not found"
+
+      - name: "output mc forum api logs"
+        if: ${{ failure() }}
+        run: |
+          docker logs --since 40m mc_forum_api || echo "forum api container not found"
