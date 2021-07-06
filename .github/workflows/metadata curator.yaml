@@ -181,3 +181,7 @@ jobs:
         if: ${{ failure() }}
         run: |
           docker logs --since 40m mc_backend || echo "backend container not found"
+      - name: "output mc formio logs"
+        if: ${{ failure() }}
+        run: |
+          docker logs --since 40m mc_formio || echo "formio container not found"
