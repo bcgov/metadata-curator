@@ -97,7 +97,7 @@ EOF
     adminGroup = "\"adminGroup\": \"${var.adminGroup}\""
     formio = "\"formio\": { \"url\": \"${var.formio.url}\", \"username\": \"${var.formio.username}\", \"password\": \"${random_string.formioSuperPassword.result}\" }"
   }
-  depends_on = [data.null_data_source.oidcConfig]
+  depends_on = [data.null_data_source.oidcConfig, random_string.formioSuperPassword]
 }
 
 data "null_data_source" "configValues" {
