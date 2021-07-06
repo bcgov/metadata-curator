@@ -83,7 +83,7 @@ resource "null_resource" "keycloak_first_time_install" {
   count = var.makeKeycloak ? 1 : 0
 }
 
-resource "null_resource" "keycloak_first_time_install" {
+resource "null_resource" "keycloak_restart" {
   provisioner "local-exec" {
     command = "scripts/wait-for-healthy.sh mc_keycloak"
   }
