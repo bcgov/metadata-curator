@@ -82,3 +82,16 @@ resource "null_resource" "keycloak_first_time_install" {
   depends_on = [docker_container.mc_keycloak]
   count = var.makeKeycloak ? 1 : 0
 }
+
+resource "null_resource" "keycloak_first_time_install" {
+  provisioner "local-exec" {
+    command = "scripts/wait-for-healthy.sh mc_keycloak"
+  }
+
+  provisioner "local-exec" {
+    command = "docker restart mc_keycloak"
+  }
+
+  depends_on = [null_resource.keycloak_first_time_install[0]]
+  count = var.makeKeycloak ? 1 : 0
+}
