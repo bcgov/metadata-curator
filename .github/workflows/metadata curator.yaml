@@ -180,7 +180,7 @@ jobs:
       - name: "output mc backend logs"
         if: ${{ failure() }}
         run: |
-          docker exec mc_backend $NODE_CONFIG || echo "backend container not found"
+          docker exec mc_backend echo $NODE_CONFIG || echo "backend container not found"
           docker logs --since 40m mc_backend || echo "backend container not found"
       - name: "output mc formio logs"
         if: ${{ failure() }}
