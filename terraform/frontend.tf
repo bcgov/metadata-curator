@@ -95,7 +95,7 @@ EOF
     alwaysNotifyList = "\"alwaysNotifyList\": ${jsonencode(var.alwaysNotifyList)}"
     email = "\"email\": { \"enabled\":${var.email.enabled}, \"service\": \"${var.email.service}\", \"secure\": ${var.email.secure}, \"port\": ${var.email.port}, \"user\": \"${var.email.user}\", \"pass\": \"${var.email.pass}\", \"from\": \"${var.email.from}\", \"subject\": \"${var.email.subject}\"}"
     adminGroup = "\"adminGroup\": \"${var.adminGroup}\""
-    formio = "\"formio\": { \"url\": \"${var.formio.url}\", \"username\": \"${var.formio.username}\", \"password\": \"${random_string.formioSuperPassword.result}\" }"
+    formio = "\"formio\": { \"url\": \"${var.host}/formio\", \"username\": \"${var.formio.username}\", \"password\": \"${random_string.formioSuperPassword.result}\" }"
   }
   depends_on = [data.null_data_source.oidcConfig, random_string.formioSuperPassword]
 }
