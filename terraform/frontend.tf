@@ -143,6 +143,11 @@ resource "docker_container" "mc_backend" {
     host = var.authHostname
     ip   = "172.25.0.10" //nginx ip
   }
+  
+  host {
+    host = var.hostname
+    ip   = "172.25.0.10" //nginx ip
+  }
 
   depends_on = [
     docker_container.mc_mongodb,
