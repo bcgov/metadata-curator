@@ -111,7 +111,7 @@ var strategy = new OidcStrategy(config.get('oidc'), async function(issuer, sub, 
         var u = await db.User.findOne({email: profile.email});
         profile.lastLogin = u.lastLogin;
       }catch(ex){
-        console.log("No previous user info", ex, db, db.User);
+        console.log("No previous user info", ex);
       }
       
     }
