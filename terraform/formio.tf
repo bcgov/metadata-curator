@@ -45,7 +45,6 @@ resource "docker_container" "formio" {
     "MONGO=mongodb://${var.mongodb["username"]}:${random_string.mongoSuperPassword.result}@mc_mongodb:27017/formioapp",
     "ROOT_EMAIL=admin@ocwa.local",
     "ROOT_PASSWORD=${random_string.formioSuperPassword.result}",
-    "NO_INSTALL=1"
   ]
 
   depends_on = [docker_container.mc_mongodb]
