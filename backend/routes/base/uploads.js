@@ -41,14 +41,19 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
     const updateDataUpload = async (user, dataUploadId, updatedData) => {
         let dataUpload = null;
         try {
+            console.log("update data upload 1");
             const response = await forumClient.getTopic(user, dataUploadId);
+            console.log("update data upload 2", response);
             if(!response.data || response.data.length === 0) { throw new Error("User not authorized to update this data upload."); }
+            console.log("update data upload 3");
             dataUpload = await db.DataUploadSchema.findOne({_id: dataUploadId});
+            console.log("update data upload 4", dataUpload);
     
             if(!dataUpload) {
                 throw new Error('Data Upload(' + dataUploadId + ') not found')
             }
         } catch(e) {
+            console.log("update data upload 5", e);
             log.error(e);
         }
     
@@ -79,6 +84,8 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
         if (updatedData.upload_submission_id){
             dataUpload.upload_submission_id = updatedData.upload_submission_id ? updatedData.upload_submission_id : null;
         }
+
+        console.log("update data upload 7");
         
         try{
             if (dataUpload.status === "submitted"){
@@ -88,10 +95,12 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
         }catch(ex){
             log.error("Exception emailing", ex);
         }
+        console.log("update data upload 8");
     
         try{
             return await dataUpload.save();
         }catch(ex){
+            console.log("update data upload 9", ex);
             log.error(ex);
             throw new Error(e.message);
         }
