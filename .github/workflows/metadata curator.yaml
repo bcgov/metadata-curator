@@ -191,3 +191,8 @@ jobs:
         if: ${{ failure() }}
         run: |
           docker logs --since 40m mc_keycloak || echo "formio container not found"
+
+      - name: "output mc nginx logs"
+        if: ${{ failure() }}
+        run: |
+          docker logs --since 40m mc_nginx || echo "nginx container not found"
