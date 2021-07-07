@@ -82,6 +82,20 @@
         }
       },
       {
+        "name": "businessCategory",
+        "protocol": "openid-connect",
+        "protocolMapper": "oidc-usermodel-attribute-mapper",
+        "consentRequired": false,
+        "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "businessCategory",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "businessCategory",
+            "jsonType.label": "String"
+        }
+      },
+      {
         "name": "email",
         "protocol": "openid-connect",
         "protocolMapper": "oidc-usermodel-property-mapper",

@@ -17,7 +17,7 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             }
             dataUploadSchema.name = upload.name;
             dataUploadSchema.description = upload.description;
-            dataUploadSchema.uploader = user._json.email;
+            dataUploadSchema.uploader = user.id;
             dataUploadSchema.files = upload.files;
             if (upload.form_name){
                 dataUploadSchema.form_name = upload.form_name;
@@ -118,7 +118,7 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             if(query && query.filterBy) {
                 if(query.filterBy === 'me') {
                     topics = topicResponse.data.filter( (item) => {
-                        return (item.contributors.indexOf(user.email) !== -1 && item.parent_id);
+                        return (item.contributors.indexOf(user.id) !== -1 && item.parent_id);
                     });
                 } else if(query.filterBy === 'provider') {
                     if(query.providerGroups && query.providerGroups.includes('all') ) {

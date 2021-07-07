@@ -14,6 +14,7 @@ const importSchema = () => import(/* webpackChunkName: "import" */ "../component
 const Admin = () => import(/* webpackChunkName: "Admin" */ "../components/pages/Admin");
 const NotFound = () => import(/* webpackChunkName: "NotFound" */ "../components/pages/404");
 const LoggedOut = () => import(/* webpackChunkName: "LoggedOut" */ "../components/pages/logout");
+const user = () => import(/* webpackChunkName: "user" */ "../components/pages/user");
 
 Vue.use(Router)
 let r = new Router({
@@ -81,6 +82,15 @@ let r = new Router({
       component: uploads,
       meta: {
           title: "Uploads",
+          requiresAuth: true
+      }
+    },
+    {
+      path: '/user',
+      name: 'user',
+      component: user,
+      meta: {
+          title: "User Info",
           requiresAuth: true
       }
     },

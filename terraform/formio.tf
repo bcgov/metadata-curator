@@ -44,9 +44,15 @@ resource "docker_container" "formio" {
     "DEBUG=formio:*",
     "MONGO=mongodb://${var.mongodb["username"]}:${random_string.mongoSuperPassword.result}@mc_mongodb:27017/formioapp",
     "ROOT_EMAIL=admin@ocwa.local",
-    "ROOT_PASSWORD=${random_string.formioSuperPassword.result}"
+    "ROOT_PASSWORD=${random_string.formioSuperPassword.result}",
   ]
 
   depends_on = [docker_container.mc_mongodb]
 }
 
+resource "null_resource" "formio_first_time_install" {
+  provisioner "local-exec" {
+    command = "docker exec mc_formio wget https://codeload.github.com/formio/formio-app-formio/zip/master -O client.zip"
+  }
+  depends_on = [docker_container.formio]
+}

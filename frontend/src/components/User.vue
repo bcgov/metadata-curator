@@ -25,7 +25,7 @@
                 <v-btn id="userMenu" v-else-if="!showImage" text v-on="on"><v-icon>fa-user</v-icon></v-btn>
             </template>
             <v-list>
-                <v-list-item>
+                <v-list-item id="toUserPage" @click="$router.push('/user')">
                     <v-list-item-title>Signed in as {{user._json.preferred_username}}</v-list-item-title>
                 </v-list-item>
                 <v-list-item

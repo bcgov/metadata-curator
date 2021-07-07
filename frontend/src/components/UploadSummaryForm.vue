@@ -118,7 +118,8 @@
             },
             uploadDate: function(){
                 if (this.uploadStore && this.uploadStore.upload_date){
-                    return this.uploadStore.upload_date.substring(0, this.uploadStore.upload_date.indexOf(".")).replace("T", " ");
+                    return new Date(this.uploadStore.upload_date).toString();
+                    //return this.uploadStore.upload_date.substring(0, this.uploadStore.upload_date.indexOf(".")).replace("T", " ");
                 }
                 return "";
             }

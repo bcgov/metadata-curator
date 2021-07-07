@@ -85,7 +85,7 @@ resource "null_resource" "minio_first_install" {
     environment = {
       MC_HOST_PRIMARY = "http://${random_id.accessKey.hex}:${random_string.secretKey.result}@mc_minio:9000"
     }
-    command = "docker run -e MC_HOST_PRIMARY --net=mc_vnet minio/mc mb PRIMARY/bucket"
+    command = "docker run -e MC_HOST_PRIMARY --net=mc_vnet minio/mc mb PRIMARY/bucket || echo \"owned\""
   }
 
   depends_on = [docker_container.minio]

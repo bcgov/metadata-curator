@@ -38,19 +38,19 @@
                             min-width="290px"
                         >
                             <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
-                                v-model="start[index]"
-                                :rules="[
-                                    () => !!start[index] || 'This field is required',
-                                ]"
-                                label="Date Range Start*"
-                                prepend-icon="mdi-calendar"
-                                readonly
-                                v-bind="attrs"
-                                v-on="on"
-                                @change="updateFormSubmission"
-                                :id="'fileinfo-'+ index + '-start'"
-                            ></v-text-field>
+                                <v-text-field
+                                    v-model="start[index]"
+                                    :rules="[
+                                        () => !!start[index] || 'This field is required',
+                                    ]"
+                                    label="Date Range Start*"
+                                    prepend-icon="mdi-calendar"
+                                    autocomplete="off"
+                                    v-bind="attrs"
+                                    v-on="on"
+                                    @change="updateFormSubmission"
+                                    :id="'fileinfo-'+ index + '-start'"
+                                ></v-text-field>
                             </template>
                             <v-date-picker v-model="start[index]" @input="menu[index] = false" @change="updateFormSubmission"></v-date-picker>
                         </v-menu>
@@ -66,19 +66,19 @@
                             min-width="290px"
                         >
                             <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
-                                v-model="end[index]"
-                                :rules="[
-                                    () => !!end[index] || 'This field is required',
-                                ]"
-                                label="Date Range End*"
-                                prepend-icon="mdi-calendar"
-                                readonly
-                                v-bind="attrs"
-                                @change="updateFormSubmission"
-                                :id="'fileinfo-'+ index + '-end'"
-                                v-on="on"
-                            ></v-text-field>
+                                <v-text-field
+                                    v-model="end[index]"
+                                    :rules="[
+                                        () => !!end[index] || 'This field is required',
+                                    ]"
+                                    label="Date Range End*"
+                                    autocomplete="off"
+                                    prepend-icon="mdi-calendar"
+                                    v-bind="attrs"
+                                    @change="updateFormSubmission"
+                                    :id="'fileinfo-'+ index + '-end'"
+                                    v-on="on"
+                                ></v-text-field>
                             </template>
                             <v-date-picker v-model="end[index]" @input="menu2[index] = false" @change="updateFormSubmission"></v-date-picker>
                         </v-menu>
@@ -160,6 +160,13 @@
                                 if (formST != -1){
                                     start = start.substring(0, formST);
                                 }
+                            }else{
+                                let d = new Date();
+                                let m = (d.getMonth()+1)
+                                m = m<10 ? "0"+m : m;
+                                let day = d.getDate();
+                                day = day<10 ? "0"+day : day
+                                start = d.getFullYear() + "-" + m + "-" + day;
                             }
                             
                             if (end){
@@ -168,6 +175,13 @@
                                 if (formET != -1){
                                     end = end.substring(0, formET);
                                 }
+                            }else{
+                                let d = new Date();
+                                let m = (d.getMonth()+1)
+                                m = m<10 ? "0"+m : m;
+                                let day = d.getDate();
+                                day = day<10 ? "0"+day : day
+                                end = d.getFullYear() + "-" + m + "-" + day;
                             }
                             
                             if ( (!this.formSubmission.files[i].title) || (!this.formSubmission.files[i].type) || (!this.formSubmission.files[i].start_date) || (!this.formSubmission.files[i].end_date)){
