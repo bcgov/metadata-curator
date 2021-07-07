@@ -119,6 +119,7 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             if(query && query.filterBy) {
                 if(query.filterBy === 'me') {
                     topics = topicResponse.data.filter( (item) => {
+                        console.log("filtering on ", user.email, item.contributors);
                         return (item.contributors.indexOf(user.email) !== -1 && item.parent_id);
                     });
                 } else if(query.filterBy === 'provider') {
