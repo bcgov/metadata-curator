@@ -237,7 +237,7 @@ formio.getForm = function(formName, callback) {
                 logger.verbose("formio get form err", err);
                 callback(err);
             }else{
-                logger.verbose("formio get form success", err, res, body);
+                logger.verbose("formio get form success");
                 formioCache.set(cacheKey, body);
                 callback(null, body);
             }
