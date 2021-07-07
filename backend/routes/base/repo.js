@@ -16,7 +16,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         repoSchema._id = id;
         repoSchema.name = name;
         repoSchema.create_date = new Date();
-        repoSchema.created_by = user.email;
+        repoSchema.created_by = user.id;
         repoSchema.topic_id = topic._id;
     
         return await repoSchema.save();

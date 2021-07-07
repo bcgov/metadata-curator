@@ -96,6 +96,7 @@ EOF
     email = "\"email\": { \"enabled\":${var.email.enabled}, \"service\": \"${var.email.service}\", \"secure\": ${var.email.secure}, \"port\": ${var.email.port}, \"user\": \"${var.email.user}\", \"pass\": \"${var.email.pass}\", \"from\": \"${var.email.from}\", \"subject\": \"${var.email.subject}\"}"
     adminGroup = "\"adminGroup\": \"${var.adminGroup}\""
     formio = "\"formio\": { \"url\": \"${var.formio.url}\", \"username\": \"${var.formio.username}\", \"password\": \"${random_string.formioSuperPassword.result}\" }"
+    userIdField = "\"userIdField\": \"${var.userIdField}\""
   }
   depends_on = [data.null_data_source.oidcConfig, random_string.formioSuperPassword]
 }
@@ -123,7 +124,8 @@ data "null_data_source" "configValues" {
   ${data.null_data_source.feIndConfig.outputs["alwaysNotifyList"]},
   ${data.null_data_source.feIndConfig.outputs["email"]},
   ${data.null_data_source.feIndConfig.outputs["adminGroup"]},
-  ${data.null_data_source.feIndConfig.outputs["formio"]}
+  ${data.null_data_source.feIndConfig.outputs["formio"]},
+  ${data.null_data_source.feIndConfig.outputs["userIdField"]}
 
 }
 EOF
