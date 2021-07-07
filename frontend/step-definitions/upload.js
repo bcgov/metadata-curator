@@ -95,8 +95,10 @@ When(/^Data provider chooses to see the details of the upload$/, async () => {
     }
     
     //click the upload in the list
+    await client.pause(2500);
+    await client.saveScreenshot("./"+path+"/checkingForUpload1.png");
     await client.waitForElementVisible(('#upload-'+id), 5000);
-    await client.saveScreenshot("./"+path+"/checkingForUpload.png");
+    await client.saveScreenshot("./"+path+"/checkingForUpload2.png");
     await client.waitForElementVisible('#upload-'+id+' i.mdi-checkbox-marked-circle', 1000);
     await client.pause(25000);
     return client.click('#upload-'+id);
