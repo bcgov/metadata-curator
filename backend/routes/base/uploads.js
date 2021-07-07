@@ -113,7 +113,6 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
                 currentData = await forumClient.getTopics(user, {page: page});
             }
             topicResponse.data = topicResponse.data.concat(currentData.data);
-            console.log("list topicResponse", topicResponse);
             
             
             if(query && query.filterBy) {
