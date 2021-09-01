@@ -57,8 +57,8 @@
                                     item-value="_id"
                                     label="Dataset">
                                 </v-select>
-                                <v-btn v-if="allowCreate" @click="createDataset">New Dataset</v-btn>
-                                <v-btn v-if="allowInfer" @click="infer">Infer</v-btn>
+                                <v-btn v-if="allowCreate" id="newDatasetButton" @click="createDataset">New Dataset</v-btn>
+                                <v-btn v-if="allowInfer" id="inferButton" @click="infer">Infer</v-btn>
                                 <JsonEditor :key="'jsonEditor-'+jsonRedraw" :val="schema" @edited="updateSchema" :raw="false"></JsonEditor>
                             </v-card>
                             
