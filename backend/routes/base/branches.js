@@ -32,8 +32,9 @@ var buildDynamic = function(db, router, auth, revisionService, cache){
         if (typeof(data_upload_id) !== "undefined"){
             q.data_upload_id = mongoose.Types.ObjectId(data_upload_id);
         }
-    
-        return await db.RepoBranchSchema.find(q).sort({ "create_date": 1});
+        console.log("GET BRANCHES", q);
+        let res = await db.RepoBranchSchema.find(q).sort({ create_date: "desc"});
+        return res;
     }
     
     const updateBranch = async function(branchId, type, name, description, upload_id) {
@@ -73,7 +74,7 @@ var buildDynamic = function(db, router, auth, revisionService, cache){
 
     const listBranches = async (repoId) => {
         try {
-            return await db.RepoBranchSchema.find({repo_id:repoId}).sort({ "create_date": 1});
+            return await db.RepoBranchSchema.find({repo_id:repoId}).sort({ "create_date": -1});
         } catch (e) {
             log.error(e);
             throw new Error(e.message)
@@ -160,6 +161,7 @@ var buildDynamic = function(db, router, auth, revisionService, cache){
         if (!util.phaseCheck(cache, requiredPhase)){
             return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.repoId+"/branches")));
         }
+
         const repoId = req.params.repoId;
         const branches = await listBranches(repoId);
         res.status(200).json(branches);

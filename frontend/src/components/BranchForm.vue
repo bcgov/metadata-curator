@@ -1,5 +1,5 @@
 <template>
-    <v-container fluid>
+    <v-container fluid :key="'branch-'+reIndex">
         <v-alert
             :type="alertType"
             dismissable
@@ -7,7 +7,7 @@
                 {{alertText}}
         </v-alert>
 
-        <span v-if="!branch && !creating">
+        <span v-if="(loading || !branch) && !creating">
             <v-row dense>
                 Loading...
             </v-row>
@@ -17,9 +17,13 @@
         </span>
 
         <v-row v-else dense>
-            <v-tabs-items v-model="tab" class="fullWidth">
-                <v-tab-item key="version">
-                    <v-col cols="12">
+            <v-col cols="12">
+                <v-tabs v-model="tab">
+                    <v-tab key="version">Version</v-tab>
+                    <v-tab key="schema">Schema</v-tab>
+                </v-tabs>
+                <v-tabs-items v-model="tab" class="fullWidth">
+                    <v-tab-item key="version">
                         <v-card outlined>
                             <v-card-text>
                                 <v-row>
@@ -74,27 +78,22 @@
 
 
                             </v-card-text>
+                             <v-card-actions v-if="editing">
+                                <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? 'Close' : 'Back'}}</v-btn>
+                                <v-btn @click="save" class="mt-1" color="primary">Save</v-btn>
+                            </v-card-actions>
+                            <v-card-actions v-else>
+                                <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? 'Close' : 'Back'}}</v-btn>
+                                <v-btn @click="editing=!editing" class="mt-1" color="primary">Edit</v-btn>
+                            </v-card-actions>
                         </v-card>
-                    </v-col>
-                </v-tab-item>
+                    </v-tab-item>
 
-                <v-tab-item key="schema">
-
-                </v-tab-item>
-            </v-tabs-items>
-            <v-row>
-                <v-col cols="12">
-                    <v-card-actions v-if="editing">
-                        <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? 'Close' : 'Back'}}</v-btn>
-                        <v-btn @click="save" class="mt-1" color="primary">Save</v-btn>
-                    </v-card-actions>
-                    <v-card-actions v-else>
-                        <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? 'Close' : 'Back'}}</v-btn>
-                        <v-btn @click="editing=!editing" class="mt-1" color="primary">Edit</v-btn>
-                    </v-card-actions>
-                </v-col>
-
-            </v-row>
+                    <v-tab-item key="schema">
+                        <MetadataForm :branchId="branchId" :dialog="dialog" @close="closeOrBack()"></MetadataForm>
+                    </v-tab-item>
+                </v-tabs-items>
+            </v-col>
         </v-row>
     </v-container>
 </template>
@@ -105,12 +104,14 @@ import {mapActions, mapMutations, mapState} from "vuex";
 import TextInput from './TextInput';
 import TextArea from './TextArea';
 import Select from './Select';
+import MetadataForm from './MetadataForm';
 
 export default {
     components:{
         TextInput,
         Select,
         TextArea,
+        MetadataForm,
     },
     props: {
         dialog: {
@@ -132,7 +133,9 @@ export default {
             alert: false,
             alertType: "success",
             alertText: "",
-            tab: 'version'
+            tab: 'version',
+            reIndex: 0,
+            loading: true,
         }
     },
     methods: {
@@ -150,6 +153,7 @@ export default {
 
         async loadSections() {
             await this.getBranch({id: this.id});
+            this.reIndex++;
         },
 
         closeOrBack() {
@@ -165,6 +169,7 @@ export default {
         },
 
         async load(){
+            this.loading = true;
             // console.log("dataUpload id: " + this.$route.params.id);
             this.id = (this.branchId) ? this.branchId : this.$route.params.id;
             await this.getDataUploads("team");
@@ -174,6 +179,7 @@ export default {
             }else{
                 this.loadSections();
             }
+            this.loading = false;
         },
 
         save(){
@@ -215,8 +221,8 @@ export default {
         }),
     },
     watch: {
-        branchId: function(){
-            this.load();
+        branchId: async function(){
+            await this.load();
         }
     },
     

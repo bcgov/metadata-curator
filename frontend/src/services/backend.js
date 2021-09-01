@@ -28,6 +28,16 @@ export class Backend {
         return axios.post(uploadUrl, {}, uploadOptions);
     }
 
+    getTableSchema(id, byUploadId){
+        byUploadId = typeof(byUploadId) !== 'undefined' ? byUploadId : false;
+        
+        let url = `/api/v1/datapackages/branch/${id}`
+        if (byUploadId){
+            url = `/api/v1/datapackages/branch?upload_id=${id}`
+        }
+        return axios.get(url, {withCredentials: true}).then(response => response.data);
+    }
+
     postTableSchema(schema) {
         const url = '/api/v1/tableschemas'
         // console.log("postSchema: ", schema);
@@ -40,12 +50,24 @@ export class Backend {
     }
 
     postDataPackageSchema(schema) {
-        const url = '/api/v1/datapackageschemas'
+        const url = '/api/v1/datapackages'
         // console.log("postTabDataPackage: ", tabDataPackage);
         const headers = {
             'Content-Type': 'application/json'
         }
         return axios.post(url, schema,
+            {withCredentials: true, headers: headers}
+        ).then(response => response.data)
+    }
+
+    putDataPackageSchema(id, schema) {
+        const url = `/api/v1/datapackages/${id}`
+        // console.log("postTabDataPackage: ", tabDataPackage);
+        const headers = {
+            'Content-Type': 'application/json'
+        }
+        // console.log("PUT", schema);
+        return axios.put(url, schema,
             {withCredentials: true, headers: headers}
         ).then(response => response.data)
     }

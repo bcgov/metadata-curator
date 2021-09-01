@@ -7,7 +7,7 @@ var fieldSchema = new Schema({
 }, { _id : false });
 
 var tableSchema = new Schema({
-   fields: {type: [fieldSchema], required: true}
+   fields: {type: [fieldSchema], required: true},
 }, { _id : false });
 
 module.exports = {

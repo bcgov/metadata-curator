@@ -8,11 +8,31 @@ var buildDynamic = function(db, router, auth, cache){
     const util = require('./util');
     const requiredPhase = 2
 
+    const transformResources = function (resources) {
+
+        resources = resources.map(item => {
+            if (item.schema && item.schema['$schema']){
+                item.schema.schema = item.schema['$schema'];
+                delete item.schema['$schema'];
+            }
+            let newItem = {...item, tableSchema: {...item.schema}};
+            delete newItem.schema;
+            return newItem;
+        });
+        return resources;
+    }
+    
+    const transformResourcesToFrictionless = function (resources) {
+    
+        resources = resources.map(item => {
+            let newItem = {...item, schema: {...item.tableSchema}};
+            delete newItem.tableSchema;
+            return newItem;
+        });
+        return resources;
+    }
+
     const addDataPackageFromTableSchema = async function(schema) {
-        
-        if (!schema.valid) {
-            throw new ValidationError("Invalid Schema");
-        }
 
         let resources = [
             {
@@ -24,14 +44,12 @@ var buildDynamic = function(db, router, auth, cache){
 
         let dataPackageSchema = new db.DataPackageSchema;
         dataPackageSchema.profile = 'tabular-data-package';
-        dataPackageSchema.resources = transformResources([...resources]);
+        let r = transformResources([...resources]);
+        dataPackageSchema.resources = r;
+        dataPackageSchema.version = schema.version;
 
         return await dataPackageSchema.save().catch (e => {
-            if (e instanceof mongoose.Error.ValidationError) {
-                throw new ValidationError("DB Validation Error", e.errors);
-            } else {
-                throw e;
-            }
+            throw e;
         });
     }
 
@@ -39,7 +57,7 @@ var buildDynamic = function(db, router, auth, cache){
         let schema = {...req.body};
         const pkg = await addDataPackageFromTableSchema(schema);
         res.status(201).json({id: pkg._id.toString()});
-    });   
+    });
 
     return router;
 }

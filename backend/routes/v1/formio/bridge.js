@@ -48,7 +48,6 @@ var addRoutes = function(router){
 
     router.post('/form', function(req, res, next){
         formio.postForm(req.body, function(err, form){
-            console.log("POST FORM", err, form);
             if (err){
                 res.status(500);
                 return res.json({error: err});
@@ -65,7 +64,6 @@ var addRoutes = function(router){
                 return res.json({error: err});
             }
             try{
-                console.log("SUB", submisison);
                 return res.json(JSON.parse(submission));
             }catch(e){
                 return res.json(submission);
@@ -74,7 +72,6 @@ var addRoutes = function(router){
     });
 
     router.get('/submission/:formName', function(req, res, next){
-        console.log('get submissions!', req.params.formName)
 
         formio.getSubmissions(req.params.formName, function(err, submissions){
             if (err){
@@ -82,7 +79,6 @@ var addRoutes = function(router){
                 return res.json({error: err});
             }
             try{
-                console.log("SUB", submissions);
                 return res.json(JSON.parse(submissions));
             }catch(e){
                 return res.json(submissions);
@@ -92,11 +88,9 @@ var addRoutes = function(router){
 
     router.post('/form/:name/submission', function(req, res, next){
         const formName = req.params.name;
-        console.log("formName: " + formName);
 
         formio.postSubmission(formName, req.body, function(formErr, formRes){
             // log.verbose("formio post resp", formErr, formRes);
-            console.log("formio post resp", formErr, formRes);
             if (formErr){
                 res.status(500);
                 res.json({error: formErr});
@@ -115,7 +109,6 @@ var addRoutes = function(router){
                 res.json({error: "Critical form validation error"});
                 return;
             }
-            console.log("formRes: ", formRes);
 
             res.status(201);
             res.json(formRes);
@@ -128,7 +121,6 @@ var addRoutes = function(router){
 
         formio.putSubmission(req.params.name, req.params.submissionId, req.body, function(formErr, formRes){
             // log.verbose("formio post resp", formErr, formRes);
-            console.log("formio put resp", formErr, formRes);
             if (formErr){
                 res.status(500);
                 res.json({error: formErr});
@@ -147,7 +139,6 @@ var addRoutes = function(router){
                 res.json({error: "Critical form validation error"});
                 return;
             }
-            console.log("formRes: ", formRes);
 
             res.status(200);
             res.json(formRes);

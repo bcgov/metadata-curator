@@ -3,12 +3,19 @@
         <span :key="'container'+spanKey">
             <v-row>
                 <v-col cols=10>
+                    <v-progress-circular
+                        indeterminate
+                        color="primary"
+                        v-if="wait"
+                    ></v-progress-circular>
                     <FileReader
                                 :show-encrypt-button="false"
                                 :show-upload-button="false"
                                 :show-import-button="false"
-                                :read-file="false"
+                                :read-file="true"
+                                :disabled="wait"
                                 :clear-file="clearFile"
+                                @reading-file="wait=true"
                                 :index="files.length"
                                 @file-opened="fileOpened"
                                 id="fileForm-reader"
@@ -74,6 +81,7 @@
 
             fileOpened(index, file, sig){
                 this.clearFile = false;
+                this.wait = false;
                 this.spanKey++;
                 this.clearFile = true;
                 this.fileReaders[this.fileReaders.length] = {}
@@ -133,7 +141,8 @@
                 dataFile: [false],
                 spanKey: 0,
                 clearFile: false,
-                files: []
+                files: [],
+                wait: false,
             }
         },
         computed: {

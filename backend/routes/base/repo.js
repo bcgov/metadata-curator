@@ -48,6 +48,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             const topicResponse = await forumClient.getTopics(user, query);
             topics = topicResponse.data.filter(item => item.parent_id);
             const repoIds = topics.map(item => item.name);
+
             if(query && query.upload_id) {
                 //return await db.RepoSchema.find({data_upload_id: mongoose.Types.ObjectId(query.filterBy)}).sort({ "create_date": 1});
                 return await db.RepoBranchSchema.find({data_upload_id: query.upload_id}).populate('repo_id');

@@ -30,7 +30,7 @@ db.init = async function (_connString = null) {
     db.db.once('open', function () {
         // logger.debug('DB connection established');
     });
-    db.TableSchema = require('./model/tableSchema').model;
+    //db.TableSchema = require('./model/tableSchema').model;
     db.DataPackageSchema = require('./model/dataPackageSchema').model;
     db.DataUploadSchema = require('./model/dataUpload');
     db.RepoSchema = require('./model/repo');

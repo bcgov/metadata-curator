@@ -20,10 +20,6 @@
                         <v-row v-if="file.description">Description: {{file.description}}</v-row>
                     </v-col>
                 </v-row>
-                <v-row v-if="enabledPhase >= 2">
-                    <v-btn v-if="!inDataset" color="primary">Create Dataset</v-btn>
-                    <v-btn color="primary">Add Version to Dataset</v-btn>
-                </v-row>
             </span>
             <span>
                 <formio

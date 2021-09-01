@@ -5,9 +5,11 @@ var buildStatic = function(db, router){
 
 var buildDynamic = function(db, router, auth, ValidationError, cache){
 
+    const log = require('npmlog');
     
     const {Package, Resource} = require('datapackage');
     const {Schema} = require('tableschema');
+    const mongoose = require('mongoose');
 
     const util = require('./util');
     const requiredPhase = 2
@@ -40,13 +42,17 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
 
         const dataPackageSchema = await buildDataPackageSchema(descriptor);
 
-        return await dataPackageSchema.save().catch (e => {
+        try{
+            let d = await dataPackageSchema.save();
+            return d;
+        }catch(e){
+            console.log("caught", e);
             if (e instanceof mongoose.Error.ValidationError) {
                 throw new ValidationError("DB Validation Error", e.errors);
             } else {
                 throw e;
             }
-        });
+        }
     }
 
     const deleteDataPackage = async function(id) {
@@ -60,12 +66,23 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
     const updateDataPackage = async function (id, descriptor) {
         await validateDataPackage(descriptor);
 
-        const dataPackageSchema = await db.DataPackageSchema.findOne({_id: id});
+        //let dataPackageSchema = await db.DataPackageSchema.findOne({_id: id});
+        let filter = {_id: id};
+        let data = {}
 
-        dataPackageSchema.profile = descriptor.profile;
-        dataPackageSchema.resources = transformResources([...descriptor.resources]);
+        data.profile = descriptor.profile;
+        let k = Object.keys(descriptor);
+        let dontSet = ['resources', '_id', '__v', 'version'];
+        for (let i=0; i<k.length; i++){
+            let key = k[i];
+            if (dontSet.indexOf(key) === -1){
+                data[key] = descriptor[key]
+            }
+        }
 
-        let newRecord = await dataPackageSchema.save().catch (e => {
+        data.resources = /*transformResources(*/descriptor.resources/*);*/
+
+        let newRecord = await db.DataPackageSchema.findOneAndUpdate(filter, data, {new: true}).catch (e => {
             log.error(e);
             throw new Error(e.message)
         });
@@ -92,10 +109,39 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         return current;
     }
 
-    const listDataPackages = async function () {
+    const getDataPackageByBranchId = async function (id) {
         // Return a lean() object - simple javascript object, rather than the Model
         // so we can transform the document into a valid data package
-        const list = await db.DataPackageSchema.find().lean().catch (e => {
+        const current = await db.DataPackageSchema.findOne({version: id}).lean().catch (e => {
+            log.error(e);
+            throw new Error(e.message)
+        });
+
+        return current;
+    }
+
+    const listDataPackages = async function (query) {
+        // Return a lean() object - simple javascript object, rather than the Model
+        // so we can transform the document into a valid data package
+
+        let q = {};
+        if (query.upload_id){
+            let uploadId = mongoose.Types.ObjectId(query.upload_id);
+            //console.log("UPLO", uploadId);
+            const version = await db.RepoBranchSchema.find({data_upload_id: uploadId});
+            //console.log("VER", version);
+            if (version && version.length && version[version.length-1] && version[version.length-1]._id){
+                let verIds = [];
+                for (let i=0; i<version.length; i++){
+                    verIds.push(version[i]._id);
+                }
+                q = {version: {$in: verIds} };
+            }else{
+                return [];
+            }
+        }
+
+        const list = await db.DataPackageSchema.find(q).lean().catch (e => {
             log.error(e);
             throw new Error(e.message)
         });
@@ -133,25 +179,55 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
 
         let dataPackageSchema = new db.DataPackageSchema;
         dataPackageSchema.profile = descriptor.profile;
-        dataPackageSchema.resources = transformResources([...descriptor.resources]);
+
+        if (descriptor.resources && typeof(descriptor.resources) === "object"){
+            dataPackageSchema.resources = transformResources([...descriptor.resources]);
+        }
+
+        let protected = ['resources'];
+        let keys = Object.keys(descriptor);
+        for (let i=0; i<keys.length; i++){
+            let k = keys[i];
+            if (protected.indexOf(k) === -1){
+                // console.log("adding ", k, " to datapackageSchema", descriptor[k]);
+                dataPackageSchema[k] = descriptor[k];
+            }
+        }
         return dataPackageSchema;
     }
     
     router.get('/', async function(req, res, next) {
-        res.status(200).json(await listDataPackages());
+        res.status(200).json(await listDataPackages(req.query));
     });
 
     router.post('/', async function(req, res, next){
         let descriptor = {...req.body};
         descriptor.profile = "tabular-data-package";
 
+
         const pkg = await addDataPackage(descriptor);
         res.status(201).json({id: pkg._id.toString()});
+    });
+
+    router.put('/:id', async function(req, res, next){
+        let descriptor = {...req.body};
+        descriptor.profile = "tabular-data-package";
+        const pkg = await updateDataPackage(req.params.id, descriptor)
+        res.status(200).json({id: pkg._id.toString()});
+    });
+
+    router.get('/branch', async function(req, res, next){
+        res.status(200).json(await listDataPackages(req.query));
     });
 
     router.get('/:dataPackageId', async function(req, res, next){
         const id = req.params.dataPackageId;
         res.status(200).json(await getDataPackageById(id));
+    });
+
+    router.get('/branch/:branchId', async function(req, res, next){
+        const id = req.params.branchId;
+        res.status(200).json(await getDataPackageByBranchId(id));
     });
 
     router.delete('/:dataPackageId', auth.requireAdmin, async function(req, res, next){

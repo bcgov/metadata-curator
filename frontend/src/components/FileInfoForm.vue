@@ -263,7 +263,7 @@
                     // console.log("update  submission");
                     this.formSubmission = {...newVal};
                 }
-                this.getUploadFormSubmission(this.formSubmission.form_name, this.formSubmission.upload_submission_id);
+                //this.getUploadFormSubmission(this.formSubmission.form_name, this.formSubmission.upload_submission_id);
                 if (JSON.stringify(newVal) !== JSON.stringify(oldVal)){
                     this.buildFiles();
                 }

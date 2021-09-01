@@ -2,6 +2,7 @@ module.exports = {
     productionSourceMap: false,
 
     devServer: {
+        host: 'localhost',
         proxy: {
             '/api': {
                 target: 'http://localhost:9090/',

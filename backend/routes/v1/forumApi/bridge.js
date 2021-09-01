@@ -4,7 +4,6 @@ var addRoutes = function(router){
     router.get('/permissions', async function(req, res, next){
         const forumApiConfig = config.get('forumApi');
         const url = forumApiConfig.baseUrl + "/permission";
-        console.log(req.user);
         if (!req.user || !req.user.jwt){
             res.status(403);
             return res.json({error: "Forbidden"})
@@ -14,7 +13,6 @@ var addRoutes = function(router){
                 "Authorization": "Bearer " + req.user.jwt
             }
         };
-        console.log("Get with headers", options.headers);
         const response = await axios.get(url, options);
         res.json(response.data);
     });
@@ -22,8 +20,6 @@ var addRoutes = function(router){
     router.put('/permission/:id', async function(req, res, next){
         const forumApiConfig = config.get('forumApi');
         const url = forumApiConfig.baseUrl + "/permission/" + req.params.id;
-        
-        console.log("permission put", req.params.id, req.body)
 
         delete req.body._id;
 
@@ -43,8 +39,6 @@ var addRoutes = function(router){
     router.post('/permission', async function(req, res, next){
         const forumApiConfig = config.get('forumApi');
         const url = forumApiConfig.baseUrl + "/permission"
-        
-        console.log("permission post", req.params.id, req.body)
 
         if (!req.user || !req.user.jwt){
             res.status(403);
@@ -100,8 +94,6 @@ var addRoutes = function(router){
     router.put('/topics/:id', async function(req, res, next){
         const forumApiConfig = config.get('forumApi');
         const url = forumApiConfig.baseUrl + "/" + req.params.id;
-        
-        console.log("topic put", req.params.id, req.body)
 
         delete req.body._id;
 
@@ -121,8 +113,6 @@ var addRoutes = function(router){
     router.post('/topics', async function(req, res, next){
         const forumApiConfig = config.get('forumApi');
         const url = forumApiConfig.baseUrl + "/"
-        
-        console.log("topic post", req.params.id, req.body)
 
         if (!req.user || !req.user.jwt){
             res.status(403);
@@ -170,8 +160,6 @@ var addRoutes = function(router){
             }
         };
 
-        console.log("Get comments for ", url);
-
         
         const response = await axios.get(url, options);
         
@@ -181,8 +169,6 @@ var addRoutes = function(router){
     router.put('/comments/:id', async function(req, res, next){
         const forumApiConfig = config.get('forumApi');
         const url = forumApiConfig.baseUrl + "/comment/" + req.params.id;
-        
-        console.log("topic put", req.params.id, req.body)
 
         delete req.body._id;
 
@@ -202,8 +188,6 @@ var addRoutes = function(router){
     router.post('/comments', async function(req, res, next){
         const forumApiConfig = config.get('forumApi');
         const url = forumApiConfig.baseUrl + "/comment"
-        
-        console.log("topic post", req.params.id, req.body)
 
         if (!req.user || !req.user.jwt){
             res.status(403);

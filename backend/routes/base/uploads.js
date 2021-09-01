@@ -102,16 +102,9 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
         try {
             let topics = [];
             
-            
             let currentData = await forumClient.getTopics(user, query);
-            let topicResponse = {data: []};
-            let page = 0;
             
-            while (currentData.data.length >=100){
-                page++;
-                topicResponse.data = topicResponse.data.concat(currentData.data);
-                currentData = await forumClient.getTopics(user, {page: page});
-            }
+            let topicResponse = {data: []};
             topicResponse.data = topicResponse.data.concat(currentData.data);
             
             
@@ -137,13 +130,13 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
     
             const uploadIds = topics.map(item => item.name);
             if(query && query.filterBy === 'provider') {
-                let results = await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": 1});
+                let results = await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": -1});
                 results = results.filter( (item) => {
                     return item.status === "submitted";
                 });
                 return results;
             }else{
-                let results = await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": 1});
+                let results = await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": -1});
                 return results;
             }
     

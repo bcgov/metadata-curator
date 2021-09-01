@@ -13,13 +13,20 @@
                     <v-stepper-header>
                         <v-stepper-step :step="steps.step1UploadForm" :complete="step > steps.step1UploadForm" >Upload Info</v-stepper-step>
                         <v-divider></v-divider>
+
                         <v-stepper-step :step="steps.step2FileSelection" :complete="step > steps.step2FileSelection" >File Selection</v-stepper-step>
                         <v-divider></v-divider>
-                        <v-stepper-step :step="steps.step3FileLevelForm" :complete="step > steps.step3FileLevelForm" >File Level Info</v-stepper-step>
+
+                        <v-stepper-step v-if="enabledPhase >= 2" :step="steps.step3SchemaInformation" :complete="step > steps.step3SchemaInformation" >Schema Information</v-stepper-step>
                         <v-divider></v-divider>
-                        <v-stepper-step :step="steps.step4UploadProgress" :complete="step > steps.step4UploadProgress" >Upload Progress</v-stepper-step>
+
+                        <v-stepper-step :step="steps.step4FileLevelForm" :complete="step > steps.step4FileLevelForm" >File Level Info</v-stepper-step>
                         <v-divider></v-divider>
-                        <v-stepper-step :step="steps.step5UploadSummary">Upload Summary</v-stepper-step>
+
+                        <v-stepper-step :step="steps.step5UploadProgress" :complete="step > steps.step5UploadProgress" >Upload Progress</v-stepper-step>
+                        <v-divider></v-divider>
+
+                        <v-stepper-step :step="steps.step6UploadSummary">Upload Summary</v-stepper-step>
                     </v-stepper-header>
 
                     <v-stepper-items>
@@ -40,26 +47,46 @@
                             
                         </v-stepper-content>
 
-                        <v-stepper-content :step="steps.step3FileLevelForm">
+                        <v-stepper-content :step="steps.step3SchemaInformation" v-if="enabledPhase >= 2">
                             <v-card class="mb-12">
-                                <FileInfoForm v-if="step === steps.step3FileLevelForm" ref="fileInfoForm"></FileInfoForm>
+                                <v-select 
+                                    v-model="selectedDataset" 
+                                    
+                                    :items="datasetList"  
+                                    item-text="name"
+                                    item-value="_id"
+                                    label="Dataset">
+                                </v-select>
+                                <v-btn v-if="allowCreate" @click="createDataset">New Dataset</v-btn>
+                                <v-btn v-if="allowInfer" @click="infer">Infer</v-btn>
+                                <JsonEditor :key="'jsonEditor-'+jsonRedraw" :val="schema" @edited="updateSchema" :raw="false"></JsonEditor>
                             </v-card>
+                            
                             <v-btn text @click="step=steps.step2FileSelection" id="back-3">Back</v-btn>
-                            <v-btn color="primary" @click="stepSaveFileInfoForm(true)" id="next-3">Next</v-btn>
+                            <v-btn color="primary" @click="stepSaveSchemaForm(true)" id="next-3">Next</v-btn>
                             
                         </v-stepper-content>
 
-                        <v-stepper-content :step="steps.step4UploadProgress">
+                        <v-stepper-content :step="steps.step4FileLevelForm">
                             <v-card class="mb-12">
-                                <FileUploadForm v-if="step === steps.step4UploadProgress" @uploads-finished="stepSaveFileUploads" :active="step === steps.step4UploadProgress"></FileUploadForm>
+                                <FileInfoForm v-if="step === steps.step4FileLevelForm" ref="fileInfoForm"></FileInfoForm>
                             </v-card>
-                            <!--<v-btn color="primary" @click="step=steps.step5UploadSummary">Next</v-btn>
-                            <v-btn text @click="step=steps.step3FileLevelForm">Back</v-btn>-->
+                            <v-btn text @click="step=(enabledPhase >= 2) ? steps.step3SchemaInformation : steps.step2FileSelection" id="back-4">Back</v-btn>
+                            <v-btn color="primary" @click="stepSaveFileInfoForm(true)" id="next-4">Next</v-btn>
+                            
                         </v-stepper-content>
 
-                        <v-stepper-content :step="steps.step5UploadSummary">
+                        <v-stepper-content :step="steps.step5UploadProgress">
                             <v-card class="mb-12">
-                                <UploadSummaryForm v-if="step === steps.step5UploadSummary" ref="uploadSummaryForm"></UploadSummaryForm>
+                                <FileUploadForm v-if="step === steps.step5UploadProgress" @uploads-finished="stepSaveFileUploads" :active="step === steps.step5UploadProgress"></FileUploadForm>
+                            </v-card>
+                            <!--<v-btn color="primary" @click="step=steps.step6UploadSummary">Next</v-btn>
+                            <v-btn text @click="step=steps.step4FileLevelForm">Back</v-btn>-->
+                        </v-stepper-content>
+
+                        <v-stepper-content :step="steps.step6UploadSummary">
+                            <v-card class="mb-12">
+                                <UploadSummaryForm v-if="step === steps.step6UploadSummary" ref="uploadSummaryForm"></UploadSummaryForm>
                             </v-card>
                         </v-stepper-content>
                     </v-stepper-items>
@@ -77,7 +104,9 @@
     import FileUploadForm from "../FileUploadForm";
     import UploadSummaryForm from '../UploadSummaryForm';
     import { Backend } from '../../services/backend';
+    import JsonEditor from '../JsonEditor/JsonEditor';
     const backend = new Backend();
+    const { Schema } = require('tableschema')
 
     export default {
         components:{
@@ -86,16 +115,40 @@
             FileInfoForm,
             FileUploadForm,
             UploadSummaryForm,
+            JsonEditor,
         },
-        created() {
+        async created() {
             if(this.$route.params.id && this.$route.params.id != 'new') { 
                 this.uploadId = this.$route.params.id; 
             }else{
                 this.resetFormState();
                 this.resetState();
             }
+            if (this.enabledPhase < 2){
+                this.steps.step4FileLevelForm = 3;
+                this.steps.step5UploadProgress = 4;
+                this.steps.step6UploadSummary = 5;
+
+            }
             if(this.uploadId) { 
-                this.getUpload(this.uploadId); 
+                await this.getUpload(this.uploadId); 
+                if (this.enabledPhase >= 2){
+                    await this.getSchema({id: this.uploadId});
+                    await this.getAllRepos();
+
+                    this.selectedDataset = '-1';
+                    this.selectedVersion = '-1';
+
+                    if (this.schemaState && this.schemaState.version){
+                        this.selectedVersion = this.schemaState.version
+                        this.getBranchesByUpload({uploadId: this.uploadId})
+                    }
+                
+                    if (this.versions && this.versions[0] && this.versions[0].repo_id){
+                        this.selectedDataset = this.versions[0].repo_id;
+                        this.allowSelect = false;
+                    }
+                }
             }
         },
         methods: {
@@ -103,15 +156,60 @@
                 getUpload: 'upload/getUpload',
                 createInitialUpload: 'upload/createInitialUpload',
                 updateUpload: 'upload/updateUpload',
-
+                getSchema: 'schemaImport/getDataPackageByUploadId',
+                getSchemaFromVersion: 'schemaImport/getDataPackage',
+                createDataPackageSchema: 'schemaImport/createDataPackageSchema',
+                updateDataPackageSchema: 'schemaImport/updateDataPackageSchema',
+                getAllRepos: 'repos/getAllRepos',
+                saveDataset: 'repos/saveRepo',
+                getBranches: "repos/getBranches",
+                getBranchesByUpload: "repos/getBranchesByUpload",
+                saveBranch: 'repos/saveBranch',
             }),
             ...mapMutations({
                 resetState: 'upload/resetState',
-                resetFormState: 'uploadForm/resetState'
+                resetFormState: 'uploadForm/resetState',
+                setDataPackageSchema: 'schemaImport/setDataPackageSchema',
+                setTableSchema: 'schemaImport/setTableSchema',
+                setTableSchemaId: "schemaImport/setTableSchemaId",
+                editDataset: 'repos/editRepo',
+                clearDataset: 'repos/clearRepo',
+                editBranch: 'repos/editBranch',
+                clearBranch: 'repos/clearBranch',
+                setRepo: 'repos/setRepo',
             }),
 
             step2Changed(numFiles){
                 this.validStep3 = numFiles > 0;
+            },
+
+            async infer(){
+                this.schema = {resources: []}
+                for (let i=0; ( (i<this.inferContent.length) && (i<this.upload.files.length) ); i++){
+                    let string = new TextDecoder().decode(this.inferContent[i]);
+                    let rows = string.split("\n");
+                    for (let i=0; i<rows.length; i++){
+                        let delim = ",";
+                        if (rows[i].indexOf("\", \"") !== -1){
+                            delim = "\", \"";
+                        }else if (rows[i].indexOf("\",\"") !== -1){
+                            delim = "\",\"";
+                        }else if (rows[i].indexOf(", ") !== -1){
+                            delim = ", ";
+                        }
+
+                        rows[i] = rows[i].split(delim);
+                    }
+                    //let headers = rows.shift();
+                    let s = await Schema.load({});
+                    s.infer(rows, []);
+                    this.schema.resources.push({
+                        name: this.upload.files[i].name.substring(0,this.upload.files[i].name.lastIndexOf('.')),
+                        path: "./"+this.upload.files[i].name,
+                        schema: s,
+                    });
+                }
+                this.jsonRedraw++;
             },
 
             async triggerUploadFormSubmit() {
@@ -196,7 +294,55 @@
 
             async stepSaveFileForm(transitionNextStepAfterSave) {
                 await this.updateUpload(this.upload);
-                if(transitionNextStepAfterSave) { this.step = this.steps.step3FileLevelForm; }
+                if(transitionNextStepAfterSave) { 
+                    this.step = (this.enabledPhase >=2) ? this.steps.step3SchemaInformation : this.steps.step4FileLevelForm; 
+                }
+            },
+
+            async stepSaveSchemaForm(transitionNextStepAfterSave){
+
+                if (this.selectedDataset == -1){
+                    this.errorText = "You must select or create a dataset first";
+                    this.errorAlert = true;
+                    this.transitionNextStepAfterSave = false;
+                    return;
+                }
+
+                if (this.selectedVersion == -1){
+                    this.clearBranch();
+                    this.editBranch({name: 'name', value: this.upload.name});
+                    let desc = ((this.submission) && (this.submission.data) && (this.submission.data.description)) ? this.submission.data.description : this.upload.name;
+                    if ((desc === this.upload.name) && (this.submission.data.uploadDescription)){
+                        desc = this.submission.data.uploadDescription;
+                    }
+                    this.editBranch({name: 'description', value: desc});
+                    this.editBranch({name: 'upload_id', value: this.uploadId});
+                    this.editBranch({name: 'type', value: 'standard'});
+                    this.editBranch({name: 'data_upload_id', value: this.uploadId});
+                    this.editBranch({name: "repo_id", value: this.selectedDataset});
+                    let b = await this.saveBranch();
+                    this.selectedVersion = b.id;
+                }
+
+                if (this.schemaState && this.schemaState._id){
+                    this.schema._id = this.schemaState._id;
+                }
+                if (this.schemaState && this.schemaState.profile){
+                    this.schema.profile = this.schemaState.profile;
+                }
+
+                this.schema.version = this.selectedVersion;
+                
+                if (this.schemaState !== null && Object.keys(this.schemaState).length !== 0){
+                    this.setTableSchema({schema: this.schema});
+                    this.setTableSchemaId({id: this.schema._id});
+                    await this.updateDataPackageSchema();
+                }else{
+                    this.setDataPackageSchema({schema: this.schema});
+                    await this.createDataPackageSchema();
+                    
+                }
+                if(transitionNextStepAfterSave) { this.step = this.steps.step4FileLevelForm; }
             },
 
             async stepSaveFileInfoForm(transitionNextStepAfterSave) {
@@ -216,7 +362,7 @@
                     this.errorText = "";
                     try{
                         await this.updateUpload(this.upload);
-                        if(transitionNextStepAfterSave) { this.step = this.steps.step4UploadProgress; }
+                        if(transitionNextStepAfterSave) { this.step = this.steps.step5UploadProgress; }
                     }catch(e){
                         this.errorAlert = true;
                         this.errorText = "Error updating upload " + e
@@ -227,25 +373,66 @@
 
             async stepSaveFileUploads(){
                 await this.updateUpload(this.upload);
-                 this.step = this.steps.step5UploadSummary;
+                 this.step = this.steps.step6UploadSummary;
+
+            },
+
+            updateSchema(newVal){
+                this.schema = newVal;
+                this.allowInfer = true;//(Object.keys(this.schema).length === 0);
+            },
+
+            async createDataset(){
+                this.clearDataset();
+                this.editDataset({name: 'name', value: this.upload.name});
+                let d = await this.saveDataset();
+                await this.getAllRepos();
+                this.setRepo({repo: {_id: d.id}});
+                this.selectedDataset = d.id;
+                
+                this.clearBranch();
+                this.editBranch({name: 'name', value: this.upload.name});
+                let desc = ((this.submission) && (this.submission.data) && (this.submission.data.description)) ? this.submission.data.description : this.upload.name;
+                if ((desc === this.upload.name) && (this.submission.data.uploadDescription)){
+                    desc = this.submission.data.uploadDescription;
+                }
+                this.editBranch({name: 'description', value: desc});
+                this.editBranch({name: 'upload_id', value: this.uploadId});
+                this.editBranch({name: 'type', value: 'standard'});
+                this.editBranch({name: 'data_upload_id', value: this.uploadId});
+                this.editBranch({name: "repo_id", value: this.selectedDataset});
+                let b = await this.saveBranch();
+                this.allowCreate = false;
+                this.allowSelect = false;
+                this.allowInfer = true;
+                this.selectedVersion = b.id;
 
             },
         },
         data () {
+            let steps = {
+                step1UploadForm: 1,
+                step2FileSelection: 2,
+                step3SchemaInformation: 3,
+                step4FileLevelForm: 4,
+                step5UploadProgress: 5,
+                step6UploadSummary: 6
+            };
             return {
                 uploadId: null,
                 errorAlert: false,
                 errorText: "",
                 step: 1,
                 validStep3: false,
-                steps: {
-                    step1UploadForm: 1,
-                    step2FileSelection: 2,
-                    step3FileLevelForm: 3,
-                    step4UploadProgress: 4,
-                    step5UploadSummary: 5
-                },
-
+                schema: {},
+                allowInfer: true,
+                steps: steps,
+                selectedDataset: "-1",
+                jsonRedraw: 0,
+                datasetList: [],
+                allowCreate: true,
+                allowSelect: true,
+                selectedVersion: -1,
             }
         },
         computed: {
@@ -255,9 +442,56 @@
                 createUploadInProgress: state => state.upload.createUploadInProgress,
                 newUploadCreated: state => state.upload.newUploadCreated,
                 formName: state => state.uploadForm.formName,
+                schemaState: state => state.schemaImport.dataPackageSchema,
+                datasets: state => state.repos.allRepos,
+                versions: state => state.repos.branches,
+                submission: state => state.uploadForm.submission,
+                inferContent: state => state.file.content,
+                
             }),
+
+            enabledPhase(){
+                let en = this.$store.state.config.items.find(item => item['key'] === 'enabledPhase');
+                return (en) ? parseInt(en.value) : 1;
+            },
         },
         watch: {
+
+            datasets: function(){
+                this.datasetList = JSON.parse(JSON.stringify(this.datasets));
+                this.datasetList.unshift({name: "", _id: "-1"})
+            },
+
+            schemaState: function(){
+                if (typeof(this.schemaState) !== "undefined" && this.schemaState !== null && Object.keys(this.schemaState).length !== 0){
+                    this.schema = JSON.parse(JSON.stringify(this.schemaState));
+                    delete this.schema._id;
+                    delete this.schema.profile;
+                    delete this.schema.version;
+                    delete this.schema.__v;
+
+                    this.jsonRedraw++;
+                    this.allowInfer = true;//false;
+                    this.allowCreate = false;
+                }
+            },
+
+            selectedDataset: async function(){
+                if ( (this.selectedDataset != '-1') && (this.selectedDataset != '') ){
+                    await this.getBranches({repoId: this.selectedDataset});
+                    if (this.versions.length > 0){
+                        await this.getSchemaFromVersion({id: this.versions[0]._id});
+                        this.selectedVersion = this.versions[0]._id;
+                    }
+
+                }else{
+                    this.allowInfer = true;
+                    this.selectedVersion = -1;
+                    this.schema = {resources: []};
+                    this.jsonRedraw++;
+                }
+            },
+
             // eslint-disable-next-line no-unused-vars
             upload: function (newVal, oldVal) {
                 if(newVal && !oldVal) {
@@ -271,7 +505,7 @@
                                 }
                             }
                             if (allGood){
-                                this.step = this.steps.step5UploadSummary;
+                                this.step = this.steps.step6UploadSummary;
                             }
                         }
                     }

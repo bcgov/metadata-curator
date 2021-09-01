@@ -6,12 +6,9 @@
             v-model="alert">
                 {{alertText}}
         </v-alert>
-        <span v-if="!branch && !creating">
+        <span v-if="(!branch || loading) && !creating">
             <v-row dense>
                 Loading...
-            </v-row>
-            <v-row>
-                <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? 'Close' : 'Back'}}</v-btn>
             </v-row>
         </span>
         <v-row v-else dense>
@@ -21,7 +18,10 @@
                         <v-row>
                             <h1 class="display-1 font-weight-thin ml-3 my-3">Metadata</h1>
                         </v-row>
-                        <v-row>
+                        <v-row v-if="!loading && schema && schema !== {}">
+                            <SchemaView :editing="editing" @edited="updatedObj"></SchemaView>
+                        </v-row>
+                        <v-row v-else>
                             <FileReader
                                 :show-encrypt-button="false"
                                 :show-upload-button="false"
@@ -30,19 +30,20 @@
                                 :index="0"
                                 @import-button-clicked="importButtonClicked"
                                 :ignoreDuplicates="true"
+                                accept=".json,application/json,application/JSON"
                             >
                             </FileReader>
                         </v-row>
                     </v-card-text>
+                        <v-card-actions v-if="editing">
+                            <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? 'Close' : 'Back'}}</v-btn>
+                            <v-btn @click="save" class="mt-1" color="primary">Save</v-btn>
+                        </v-card-actions>
+                        <v-card-actions v-else>
+                            <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? 'Close' : 'Back'}}</v-btn>
+                            <v-btn @click="editing=!editing" class="mt-1" color="primary">Edit</v-btn>
+                        </v-card-actions>
                 </v-card>
-                <v-card-actions v-if="editing">
-                    <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? 'Close' : 'Back'}}</v-btn>
-                    <v-btn @click="save" class="mt-1" color="primary">Save</v-btn>
-                </v-card-actions>
-                <v-card-actions v-else>
-                    <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? 'Close' : 'Back'}}</v-btn>
-                    <v-btn @click="editing=!editing" class="mt-1" color="primary">Edit</v-btn>
-                </v-card-actions>
             </v-col>
 
         </v-row>
@@ -53,10 +54,12 @@
 
 import {mapActions, mapMutations, mapState} from "vuex";
 import FileReader from './FileReader';
+import SchemaView from './SchemaView';
 
 export default {
     components:{
-        FileReader
+        FileReader,
+        SchemaView,
     },
     props: {
         dialog: {
@@ -72,13 +75,15 @@ export default {
     data () {
         return {
             id: null,
-            editing: false,
             creating: false,
             types: [ {text: 'Standard', value: 'standard'}, {text: 'Reserve', value: 'reserve'} ],
             alert: false,
             alertType: "success",
             alertText: "",
             metadataType: 'table-schema',
+            loading: true,
+            editing: false,
+            schemaObj: null,
         }
     },
     methods: {
@@ -89,6 +94,8 @@ export default {
             getBranch: 'repos/getBranch',
             getDataUploads: 'dataUploads/getDataUploads',
             createTableSchema: 'schemaImport/createTableSchema',
+            updateDataPackageSchema: 'schemaImport/updateDataPackageSchema',
+            getSchema: 'schemaImport/getTableSchema',
         }),
         ...mapMutations({    
             editBranch: 'repos/editBranch',
@@ -98,7 +105,10 @@ export default {
         }),
 
         async loadSections() {
+            this.loading = true;
             await this.getBranch({id: this.id});
+            await this.getSchema({id: this.id});
+            this.loading = false;
         },
 
         closeOrBack() {
@@ -109,6 +119,10 @@ export default {
             }
         },
 
+        updatedObj: function(newVal){
+            this.schemaObj = newVal;
+        },
+
         updateValues(name, value){
             this.editBranch({name: name, value: value});
         },
@@ -117,7 +131,6 @@ export default {
             this.id = (this.branchId) ? this.branchId : this.$route.params.id;
             await this.getDataUploads("team");
             if (this.id === 'create'){
-                this.editing = true;
                 this.creating = true;
             }else{
                 this.loadSections();
@@ -125,19 +138,9 @@ export default {
         },
 
         save(){
+            this.setTableSchema({schema: this.schemaObj});
             if (this.creating){
-                this.saveBranch().then( () => {
-                    this.alertType = "success"
-                    this.alertText = "Sucessfully created version";
-                    this.alert = true;
-                    this.closeOrBack();
-
-                }).catch( err => {
-                    this.alertType = "error"
-                    this.alertText = err.message;
-                    this.alert = true;
-                });
-            }else{
+                this.saveTableSchema();
                 this.updateBranch().then( () => {
                     this.alertType = "success"
                     this.alertText = "Sucessfully updated version";
@@ -149,21 +152,22 @@ export default {
                     this.alertText = err.message;
                     this.alert = true;
                 });
+                this.creating = false;
+            }else{
+                this.updateDataPackageSchema();
             }
-            
-            
-            
         },
 
         async importButtonClicked(content) {
             if(this.metadataType == 'table-schema') {
-                const Schema = require('tableschema').Schema;
-                let json = JSON.parse(content);
-                let s = await Schema.load(json, false);
-                // eslint-disable-next-line
-
-                this.setTableSchema({schema: s});
+                content = JSON.parse(content);
+                content.version = this.id;
+                content = JSON.stringify(content);
+                this.setTableSchema({schema: content});
                 this.saveTableSchema();
+                this.loading = true;
+                await this.load();
+                this.loading = false;
             }
         },
         saveTableSchema() {
@@ -175,6 +179,7 @@ export default {
             user: state => state.user.user,
             branch: state => state.repos.branch,
             dataUploads: state => state.dataUploads.dataUploads,
+            schema: state => state.schemaImport.tableSchema,
         }),
     },
     watch: {

@@ -83,8 +83,8 @@ module.exports = (router, cache) => {
 
     var tableSchemasRoutes = require('../base/tableSchema');
     var tableRouter = new Router();
-    tableRouter = repoBranchesRoutes.buildStatic(db, tableRouter);
-    tableRouter = repoBranchesRoutes.buildDynamic(db, tableRouter, auth, cache);
+    tableRouter = tableSchemasRoutes.buildStatic(db, tableRouter);
+    tableRouter = tableSchemasRoutes.buildDynamic(db, tableRouter, auth, cache);
     router.use('/tableschemas', auth.requireLoggedIn, tableRouter);
 
     return router;

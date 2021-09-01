@@ -174,8 +174,8 @@ let r = new Router({
 
 r.beforeEach(async(to, from, next) => {
 
-  if (to.path === "/login"){
-    window.location.href = "/api/login";
+  if (to.path.indexOf("/login") === 0){
+    window.location.href = "/api"+to.fullPath;
   }else if (to.path === "/logout"){
       await store.dispatch('user/removeUser');
       window.location.href = "/api/logout";
@@ -197,7 +197,7 @@ r.beforeEach(async(to, from, next) => {
     let phase = (to.meta.phase) ? to.meta.phase : 1;
 
     if ( (requiresAuth) && (!loggedIn) ){
-      return next('/login');
+      return next('/login?r='+to.path.substring(1));
     }else if ( (requiresNoUser) && (loggedIn) ){
       return next('/');
     }
