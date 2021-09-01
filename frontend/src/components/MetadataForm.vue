@@ -27,6 +27,7 @@
                                 :show-upload-button="false"
                                 :show-import-button="true"
                                 :read-file="true"
+                                :do-not-chop="true"
                                 :index="0"
                                 @import-button-clicked="importButtonClicked"
                                 :ignoreDuplicates="true"

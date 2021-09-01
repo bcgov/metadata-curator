@@ -127,6 +127,10 @@ export default {
         accept: {
             type: String,
             default: '*'
+        },
+        doNotChop: {
+            type: Boolean,
+            default: false,
         }
     },
 
@@ -426,10 +430,14 @@ export default {
                             self.$store.commit('file/setFileName', { fileName: self.file.name});
                             self.$store.commit('file/addFileHandleIfNotPresent', { handle: self.file, fileSig: finger});
 
-                            const chop = Math.ceil(content.length / 64); //cap at 1mb   
-                            let choppedContent = content.slice(0, chop)
+                            if (!self.doNotChop){
+                                const chop = Math.ceil(this.chunkSize / 64); //cap at 1mb   
+                                let choppedContent = content.slice(0, chop)
 
-                            await self.$store.commit('file/setContent', { content: choppedContent, index: index});
+                                await self.$store.commit('file/setContent', { content: choppedContent, index: index});
+                            }else{
+                                await self.$store.commit('file/setContent', { content: content, index: index});
+                            }
 
                             self.$store.commit('file/setFileSig', {fileSig: finger});
                         }
@@ -650,7 +658,8 @@ export default {
             }
             u.start();
         },
-        onImportButtonClicked: function(){
+        onImportButtonClicked: async function(){
+            await this.openFileSync(true);
             const content = this.getStringContent();
             this.$emit('import-button-clicked', content);
         },
