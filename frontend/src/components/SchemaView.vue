@@ -7,173 +7,9 @@
     </v-container>
     <v-container v-else fluid :key="'schemaview-'+redrawIndex">
         <v-row>
-            <v-switch
-                v-model="json_view"
-                :label="`View Raw`"
-                v-if="!editing"
-            ></v-switch>`
+            <JsonEditor :val="rawSchema" @edited="jsonEdited" :editing="editing"></JsonEditor>
         </v-row>
         
-        <v-row v-if="editing && editable">
-            <JsonEditor :val="rawSchema" @edited="jsonEdited" :show-states="editing"></JsonEditor>
-        </v-row>
-        
-        <v-row v-else-if="json_view">
-            <v-col cols=12 class="preserveWhite">
-                {{JSON.stringify(schemaObj, replacerFunc(), 4)}}
-            </v-col>
-        </v-row>
-        
-        <v-row v-else>
-            <v-col cols=12 v-if="title">
-                <h1>{{title}}</h1>
-            </v-col>
-            <v-col cols=12 v-if="description">
-                <h3>{{description}}</h3>
-            </v-col>
-            
-            <v-col cols=12 v-if="fields && fields.length > 0">
-                <div v-for="(field, key) in fields" :key="'field-'+key+'-'+field.name" class="field">
-                    <v-row v-if="field && field.name">
-                        <!-- <v-col cols=3>
-                            Name:
-                        </v-col> -->
-                        <v-col cols=9>
-                            <h2>{{field.name}}</h2>
-                        </v-col>
-                    </v-row>
-
-                    <v-row v-if="field && (field.type || (field._descriptor && field._descriptor.type))">
-                        <v-col cols=3>
-                            Type:
-                        </v-col>
-                        <v-col cols=9>
-                            {{field.type ? field.type : field._descriptor.type}}
-                        </v-col>
-                    </v-row>
-
-                    <v-row v-if="field && (field.description || (field._descriptor && field._descriptor.description))">
-                        <v-col cols=3>
-                            Description:
-                        </v-col>
-                        <v-col cols=9>
-                            {{field.description ? field.description : field._descriptor.description}}
-                        </v-col>
-                    </v-row>
-
-                    <v-row v-if="field && (field.example || (field._descriptor && field._descriptor.example))">
-                        <v-col cols=3>
-                            Example:
-                        </v-col>
-                        <v-col cols=9>
-                            {{field.example ? field.example : field._descriptor.example}}
-                        </v-col>
-                    </v-row>
-
-                    <v-row v-if="field && (field.constraints || (field._descriptor && field._descriptor.constraints))">
-                        <v-col cols=3>
-                            Constraints:
-                        </v-col>
-                        <v-col cols=9>
-                            {{field.constraints ? field.constraints : field._descriptor.constraints}}
-                        </v-col>
-                    </v-row>
-
-                    <v-row v-if="field && (field.format || (field._descriptor && field._descriptor.format))">
-                        <v-col cols=3>
-                            Format:
-                        </v-col>
-                        <v-col cols=9>
-                            {{field.format ? field.format : field._descriptor.format}}
-                        </v-col>
-                    </v-row>
-
-                    <v-row v-if="field && (field.missingValues || (field._descriptor && field._descriptor._missingValues))">
-                        <v-col cols=3>
-                            Missing Values:
-                        </v-col>
-                        <v-col cols=9>
-                            {{field.missingValues ? field.missingValues : field._descriptor._missingValues}}
-                        </v-col>
-                    </v-row>
-                </div>
-            </v-col>
-
-            <v-col cols=12 v-else-if="resources && resources[0] && resources[0].schema && resources[0].schema.fields">
-                <v-row v-for="(resource, key) in resources" :key="'resources'+key">
-                    <v-col cols=12>
-                        <h4>Resource {{resource.name}}</h4>
-                    </v-col>
-                    <v-col cols=12 v-if="resource.schema.fields">
-                        <div v-for="(field, key) in resource.schema.fields" :key="'field-'+key+'-'+field.name" class="field">
-                            <v-row v-if="field && field.name">
-                                <!-- <v-col cols=3>
-                                    Name:
-                                </v-col> -->
-                                <v-col cols=9>
-                                    <h2>{{field.name}}</h2>
-                                </v-col>
-                            </v-row>
-
-                            <v-row v-if="field && (field.type || (field._descriptor && field._descriptor.type))">
-                                <v-col cols=3>
-                                    Type:
-                                </v-col>
-                                <v-col cols=9>
-                                    {{field.type ? field.type : field._descriptor.type}}
-                                </v-col>
-                            </v-row>
-
-                            <v-row v-if="field && (field.description || (field._descriptor && field._descriptor.description))">
-                                <v-col cols=3>
-                                    Description:
-                                </v-col>
-                                <v-col cols=9>
-                                    {{field.description ? field.description : field._descriptor.description}}
-                                </v-col>
-                            </v-row>
-
-                            <v-row v-if="field && (field.example || (field._descriptor && field._descriptor.example))">
-                                <v-col cols=3>
-                                    Example:
-                                </v-col>
-                                <v-col cols=9>
-                                    {{field.example ? field.example : field._descriptor.example}}
-                                </v-col>
-                            </v-row>
-
-                            <v-row v-if="field && (field.constraints || (field._descriptor && field._descriptor.constraints))">
-                                <v-col cols=3>
-                                    Constraints:
-                                </v-col>
-                                <v-col cols=9>
-                                    {{field.constraints ? field.constraints : field._descriptor.constraints}}
-                                </v-col>
-                            </v-row>
-
-                            <v-row v-if="field && (field.format || (field._descriptor && field._descriptor.format))">
-                                <v-col cols=3>
-                                    Format:
-                                </v-col>
-                                <v-col cols=9>
-                                    {{field.format ? field.format : field._descriptor.format}}
-                                </v-col>
-                            </v-row>
-
-                            <v-row v-if="field && (field.missingValues || (field._descriptor && field._descriptor._missingValues))">
-                                <v-col cols=3>
-                                    Missing Values:
-                                </v-col>
-                                <v-col cols=9>
-                                    {{field.missingValues ? field.missingValues : field._descriptor._missingValues}}
-                                </v-col>
-                            </v-row>
-                        </div>
-                    </v-col>
-                </v-row>
-            </v-col>
-                
-        </v-row>
     </v-container>
 </template>
 
@@ -198,7 +34,6 @@ import JsonEditor from './JsonEditor/JsonEditor';
         },
         data() {
             return {
-                json_view: false,
                 schemaObj: {},
                 redrawIndex: 0,
                 rawSchema: null,
@@ -267,57 +102,7 @@ import JsonEditor from './JsonEditor/JsonEditor';
                 branch: state => state.repos.branch,
                 dataUploads: state => state.dataUploads.dataUploads,
                 schema: state => state.schemaImport.tableSchema,
-            }),
-
-            title: function(){
-                if (this.schemaObj && this.schemaObj._currentDescriptor && this.schemaObj._currentDescriptor.title){
-                    return this.schemaObj._currentDescriptor.title;
-                }
-                if (this.schemaObj && this.schemaObj._currentDescriptor && this.schemaObj._currentDescriptor.resources){
-                    if (this.schemaObj._currentDescriptor.resources[0] && this.schemaObj._currentDescriptor.resources[0].tableSchema && this.schemaObj._currentDescriptor.resources[0].tableSchema.title){
-                        return this.schemaObj._currentDescriptor.resources[0].tableSchema.title;
-                    }
-                }
-                return "";
-            },
-
-            description: function(){
-                if (this.schemaObj && this.schemaObj._currentDescriptor && this.schemaObj._currentDescriptor.description){
-                    return this.schemaObj._currentDescriptor.description;
-                }
-
-                if (this.schemaObj && this.schemaObj._currentDescriptor && this.schemaObj._currentDescriptor.resources){
-                    if (this.schemaObj._currentDescriptor.resources[0] && this.schemaObj._currentDescriptor.resources[0].tableSchema && this.schemaObj._currentDescriptor.resources[0].tableSchema.description){
-                        return this.schemaObj._currentDescriptor.resources[0].tableSchema.description;
-                    }
-                }
-                
-                return "";
-            },
-
-            fields: function(){
-                if (this.schemaObj && this.schemaObj._currentDescriptor && this.schemaObj.fields){
-                    return this.schemaObj.fields;
-                }
-
-                if (this.schemaObj && this.schemaObj._currentDescriptor && this.schemaObj._currentDescriptor.resources){
-                    if (this.schemaObj._currentDescriptor.resources[0] && this.schemaObj._currentDescriptor.resources[0].tableSchema && this.schemaObj._currentDescriptor.resources[0].tableSchema.fields){
-                        return this.schemaObj._currentDescriptor.resources[0].tableSchema.fields
-                    }
-                }
-
-                return [];
-            },
-
-            resources: function(){
-                if (this.schemaObj && this.schemaObj._currentDescriptor && this.schemaObj._currentDescriptor.resources){
-                    if (this.schemaObj._currentDescriptor.resources[0] && this.schemaObj._currentDescriptor.resources[0].tableSchema && this.schemaObj._currentDescriptor.resources[0].tableSchema.resources){
-                        return this.schemaObj._currentDescriptor.resources[0].tableSchema.resources;
-                    }
-                    return this.schemaObj._currentDescriptor.resources
-                }
-                return [];
-            },
+            })
         },
         
         async mounted(){
@@ -328,12 +113,5 @@ import JsonEditor from './JsonEditor/JsonEditor';
 </script>
 
 <style scoped>
-    .preserveWhite{
-        white-space: pre;
-    }
 
-    .field{
-        border: 1px solid;
-        margin-bottom: 5px;
-    }
 </style>
