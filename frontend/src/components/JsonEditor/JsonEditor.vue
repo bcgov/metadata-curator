@@ -24,62 +24,64 @@
         </v-row>
         <v-container v-if="editing">
             <v-row v-if="stateType == 0">
-                <v-col v-for="(resource, key) in workingVal.resources[0].tableSchema.resources" :key="'basic-resource-'+key" cols=12 class="field">
-                    <v-row>
-                        <v-text-field
-                            :value="resource.path"
-                            label="Path"
-                            @input="updateResourcePath(key, $event)"
-                        ></v-text-field>
-                    </v-row>
-                    <v-row v-for="(field, fKey) in resource.schema.fields" :key="'field-'+key+'-'+fKey" class="field">
-                        <v-col cols=12>
+                <span v-if="workingVal && workingVal.resources && workingVal.resources[0] && workingVal.resources[0].tableSchema && workingVal.resources[0].tableSchema.resources">
+                    <v-col v-for="(resource, key) in workingVal.resources[0].tableSchema.resources" :key="'basic-resource-'+key" cols=12 class="field">
+                        <v-row>
                             <v-text-field
-                                :value="field.name"
-                                label="Name"
-                                @input="updateResource(key, fKey, 'name', $event)"
-                            >
-                            </v-text-field>
-                        </v-col>
+                                :value="resource.path"
+                                label="Path"
+                                @input="updateResourcePath(key, $event)"
+                            ></v-text-field>
+                        </v-row>
+                        <v-row v-for="(field, fKey) in resource.schema.fields" :key="'field-'+key+'-'+fKey" class="field">
+                            <v-col cols=12>
+                                <v-text-field
+                                    :value="field.name"
+                                    label="Name"
+                                    @input="updateResource(key, fKey, 'name', $event)"
+                                >
+                                </v-text-field>
+                            </v-col>
 
-                        <v-col cols=12>
-                            <v-text-field
-                                :value="field.type"
-                                label="Type"
-                                @input="updateResource(key, fKey, 'type', $event)"
-                            >
-                            </v-text-field>
-                        </v-col>
+                            <v-col cols=12>
+                                <v-text-field
+                                    :value="field.type"
+                                    label="Type"
+                                    @input="updateResource(key, fKey, 'type', $event)"
+                                >
+                                </v-text-field>
+                            </v-col>
 
-                        <v-col cols=12>
-                            <v-text-field
-                                :value="field.format"
-                                label="Format"
-                                @input="updateResource(key, fKey, 'format', $event)"
-                            >
-                            </v-text-field>
-                        </v-col>
+                            <v-col cols=12>
+                                <v-text-field
+                                    :value="field.format"
+                                    label="Format"
+                                    @input="updateResource(key, fKey, 'format', $event)"
+                                >
+                                </v-text-field>
+                            </v-col>
 
-                        <v-col cols=12>
-                            <v-text-field
-                                :value="field.var_class"
-                                label="Var Class"
-                                @input="updateResource(key, fKey, 'var_class', $event)"
-                            >
-                            </v-text-field>
-                        </v-col>
+                            <v-col cols=12>
+                                <v-text-field
+                                    :value="field.var_class"
+                                    label="Var Class"
+                                    @input="updateResource(key, fKey, 'var_class', $event)"
+                                >
+                                </v-text-field>
+                            </v-col>
 
-                        <v-col cols=12>
-                            <v-text-field
-                                :value="field.rdfType"
-                                label="RDF Type"
-                                @input="updateResource(key, fKey, 'rdfType', $event)"
-                            >
-                            </v-text-field>
-                        </v-col>
+                            <v-col cols=12>
+                                <v-text-field
+                                    :value="field.rdfType"
+                                    label="RDF Type"
+                                    @input="updateResource(key, fKey, 'rdfType', $event)"
+                                >
+                                </v-text-field>
+                            </v-col>
 
-                    </v-row>
-                </v-col>
+                        </v-row>
+                    </v-col>
+                </span>
                 <v-btn @click="addResource">Add File/Resource</v-btn>
             </v-row>
 
