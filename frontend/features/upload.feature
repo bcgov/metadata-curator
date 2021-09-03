@@ -5,4 +5,4 @@ Scenario: upload data
   Given Data provider successfully uploads a data file
 		When Data provider chooses to see the details of the upload
 		Then Data provider should see information on the characteristics of the data upload
-    And the title is "Metadata Curator - Data Upload Detail"
+    And the title is "Data Upload Detail"
