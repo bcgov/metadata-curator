@@ -2,9 +2,9 @@
     <v-container fluid>
         <v-row dense>
             <v-tabs v-model="tab">
-                <v-tab key="dataset">Dataset</v-tab>
-                <v-tab key="schema">Schema</v-tab>
-                <v-tab key="uploads">Uploads</v-tab>
+                <v-tab key="dataset">{{$tc('Datasets', 1)}}</v-tab>
+                <v-tab key="schema">{{$tc('Schema', 1)}}</v-tab>
+                <v-tab key="uploads">{{$tc('Uploads', 2)}}</v-tab>
             </v-tabs>
             <v-tabs-items v-model="tab" class="fullWidth">
                 <v-tab-item key="dataset">
@@ -17,8 +17,8 @@
                 <v-tab-item key="uploads">
                     <span v-if="versionDrop && dataUploads">
                         <v-row class="mt-3" v-for="dataUpload in dataUploads" :key="'uploadRow-'+dataUpload._id">
-                            <v-col cols=4 v-if="versionDrop && dataUpload && dataUpload.versionIndex">Version: {{versionDrop[dataUpload.versionIndex].text}}</v-col>
-                            <v-col cols=4 v-if="versionDrop && dataUpload && dataUpload.versionIndex">Upload: <a :href="(dataUpload.status === 'submitted' ? '/dataUploads/' : '/uploads/') + dataUpload._id">{{dataUpload.name}}</a></v-col>
+                            <v-col cols=4 v-if="versionDrop && dataUpload && dataUpload.versionIndex">{{$tc('Version')}}: {{versionDrop[dataUpload.versionIndex].text}}</v-col>
+                            <v-col cols=4 v-if="versionDrop && dataUpload && dataUpload.versionIndex">{{$tc('Uploads')}}: <a :href="(dataUpload.status === 'submitted' ? '/dataUploads/' : '/uploads/') + dataUpload._id">{{dataUpload.name}}</a></v-col>
                         </v-row>
                     </span>
                 </v-tab-item>

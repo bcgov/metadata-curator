@@ -11,7 +11,7 @@
                     @change="changeType(keys[key], $event)"
                     v-if="showType && showType[keys[key]] && showType[keys[key]].self"
                     :items="objectTypes" 
-                    label="Type" 
+                    :label="$tc('Type')" 
                     v-model="type[key]"></v-select>
                 <v-btn v-else x-small icon>
                     <v-icon @click="toggleType(keys[key])">mdi-settings</v-icon>
@@ -45,7 +45,7 @@
             </v-col>
 
             <v-col cols=4 class="pa-2" v-else-if="(!isExpanded[keys[key]] || !isExpanded[keys[key]].self) && typeof(workingVal[keys[key]])==='object'">
-                <span>Expand to see more</span>
+                <span>{{$tc('Expand to see more')}}</span>
             </v-col>
 
             <v-col cols=4 v-else>
@@ -72,7 +72,7 @@
         </v-row>
         <v-row>
             <v-btn primary @click="addField">
-                Add Field<v-icon>mdi-plus</v-icon>
+                {{$tc('Add') + ' ' + $tc('Field')}}
             </v-btn>
         </v-row>
     </v-container>
@@ -373,7 +373,13 @@ export default{
             workingVal: {},
             keys: [],
             isExpanded: {},
-            objectTypes: ['Text', 'Object', 'List', 'Number', 'True/False'],
+            objectTypes: [
+                {val: 'Text', text: this.$tc('Text')}, 
+                {val: 'Object', text: this.$tc('Object')}, 
+                {val: 'List', text: this.$tc('List')}, 
+                {val: 'Number', text: this.$tc('Number')}, 
+                {val: 'True/False', text: this.$tc('True/False')}
+            ],
             type: [],
             reindexKey: 0,
             focus: "",

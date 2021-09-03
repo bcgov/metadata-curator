@@ -10,7 +10,6 @@ const version = () => import(/* webpackChunkName: "version" */ "../components/pa
 const datasets = () => import(/* webpackChunkName: "datasets" */ "../components/pages/datasets");
 const datasetForm = () => import(/* webpackChunkName: "datasetForm" */ "../components/pages/datasetForm");
 const upload = () => import(/* webpackChunkName: "upload" */ "../components/pages/upload");
-const importSchema = () => import(/* webpackChunkName: "import" */ "../components/pages/importSchema");
 const Admin = () => import(/* webpackChunkName: "Admin" */ "../components/pages/Admin");
 const NotFound = () => import(/* webpackChunkName: "NotFound" */ "../components/pages/404");
 const LoggedOut = () => import(/* webpackChunkName: "LoggedOut" */ "../components/pages/logout");
@@ -55,16 +54,6 @@ let r = new Router({
       meta: {
         title: "Logged out",
         requiresNoUser: true
-      }
-    },
-    {
-      path: '/import',
-      name: 'import',
-      component: importSchema,
-      meta: {
-          title: "Import",
-          requiresAuth: true,
-          phase: 2
       }
     },
     {

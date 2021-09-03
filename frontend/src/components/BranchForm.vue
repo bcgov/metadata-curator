@@ -9,31 +9,31 @@
 
         <span v-if="(loading || !branch) && !creating">
             <v-row dense>
-                Loading...
+                {{$tc('Loading')}}...
             </v-row>
             <v-row>
-                <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? 'Close' : 'Back'}}</v-btn>
+                <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
             </v-row>
         </span>
 
         <v-row v-else dense>
             <v-col cols="12">
                 <v-tabs v-model="tab">
-                    <v-tab key="version">Version</v-tab>
-                    <v-tab key="schema">Schema</v-tab>
+                    <v-tab key="version">{{$tc('Version')}}</v-tab>
+                    <v-tab key="schema">{{$tc('Schema')}}</v-tab>
                 </v-tabs>
                 <v-tabs-items v-model="tab" class="fullWidth">
                     <v-tab-item key="version">
                         <v-card outlined>
                             <v-card-text>
                                 <v-row>
-                                    <h1 class="display-1 font-weight-thin ml-3 my-3">{{creating ? "New Version" : "Version " + id}}</h1>
+                                    <h1 class="display-1 font-weight-thin ml-3 my-3">{{creating ? $tc("New") + " " + $tc("Version") : $tc("Version") + " " + id}}</h1>
                                 </v-row>
 
                                 <v-row>
                                     <TextInput
-                                        label="Name"
-                                        placeholder="Default"
+                                        :label="$tc('Name')"
+                                        :placeholder="$tc('Default')"
                                         name="name"
                                         :editing="editing"
                                         :value="(branch) ? branch.name : ''"
@@ -43,7 +43,7 @@
 
                                 <v-row>
                                     <Select
-                                        label="Type"
+                                        :label="$tc('Type')"
                                         name="type"
                                         :editing="editing"
                                         :value="(branch) ? branch.type : ''"
@@ -54,8 +54,8 @@
 
                                 <v-row>
                                     <TextArea
-                                        label="Description"
-                                        placeholder="description"
+                                        :label="$tc('Description')"
+                                        :placeholder="$tc('Description')"
                                         name="description"
                                         :editing="editing"
                                         :value="(branch) ? branch.description : ''"
@@ -65,7 +65,7 @@
 
                                 <v-row>
                                     <Select
-                                        label="Data Upload"
+                                        :label="$tc('Data Upload')"
                                         name="upload_id"
                                         :editing="editing"
                                         :value="(branch) ? branch.data_upload_id : ''"
@@ -79,12 +79,12 @@
 
                             </v-card-text>
                              <v-card-actions v-if="editing">
-                                <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? 'Close' : 'Back'}}</v-btn>
-                                <v-btn @click="save" class="mt-1" color="primary">Save</v-btn>
+                                <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
+                                <v-btn @click="save" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
                             </v-card-actions>
                             <v-card-actions v-else>
-                                <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? 'Close' : 'Back'}}</v-btn>
-                                <v-btn @click="editing=!editing" class="mt-1" color="primary">Edit</v-btn>
+                                <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
+                                <v-btn @click="editing=!editing" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-tab-item>

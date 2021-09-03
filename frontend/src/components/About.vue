@@ -2,19 +2,19 @@
     <v-container fluid>
         <v-row wrap>
             <v-col cols=12>
-                {{mc_name}} is a tool for data uploads and looking at metadata about those uploads
+                {{mc_name}} {{$tc('is a tool for data uploads and looking at metadata about those uploads')}}
             </v-col>
 
             <v-col cols=12>
-                {{mc_name}} Version {{mc_version}}
+                {{mc_name}} {{mc_version}}
             </v-col>
 
             <v-col cols=12>
-                {{forum_name}} Version {{forum_version}}
+                {{forum_name}} {{forum_version}}
             </v-col>
 
             <v-col cols=12>
-                {{tus_name}} Version {{tus_version}}
+                {{tus_name}} {{tus_version}}
             </v-col>
 
         </v-row>

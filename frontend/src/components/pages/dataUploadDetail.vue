@@ -1,7 +1,7 @@
 <template>
             <v-container fluid>
                 <v-row v-if="!dataUpload" dense>
-                    Loading...
+                    {{$tc('Loading')}}...
                 </v-row>
                 <v-row v-else dense>
                     <v-dialog 
@@ -10,10 +10,10 @@
                         hide-overlay
                         transition="dialog-bottom-transition">
                             <v-card>
-                                <v-card-title>Select Existing Dataset</v-card-title>
+                                <v-card-title>{{$tc('Select Existing Dataset')}}</v-card-title>
                                 <v-card-text>
                                     <Select
-                                        label="Dataset"
+                                        :label="$tc('Datasets')"
                                         name="dataset_id"
                                         :editing="true"
                                         :value="''"
@@ -24,8 +24,8 @@
                                     ></Select>
                                 </v-card-text>
                                 <v-card-actions>
-                                    <v-btn @click="datasetPopup = false; selectedDataset = null;">Cancel</v-btn>
-                                    <v-btn @click="createVersion()" color="primary">Create</v-btn>
+                                    <v-btn @click="datasetPopup = false; selectedDataset = null;">{{$tc('Cancel')}}</v-btn>
+                                    <v-btn @click="createVersion()" color="primary">{{$tc('Create')}}</v-btn>
                                 </v-card-actions>
                             </v-card>
                     </v-dialog>
@@ -33,25 +33,25 @@
                         <v-card outlined>
                             <v-card-text>
                                 <v-row>
-                                    <h1 class="display-1 font-weight-thin ml-3 my-3">Data Upload Summary</h1>
+                                    <h1 class="display-1 font-weight-thin ml-3 my-3">{{$tc('Data Upload Summary')}}</h1>
                                 </v-row>
 
                                 <v-row class="ml-3 fixedHeight">
-                                    Name: <span id="uploadDetail-name">{{dataUpload.name}}</span>
+                                    {{$tc('Name')}}: <span id="uploadDetail-name">{{dataUpload.name}}</span>
                                 </v-row>
                                 <v-row class="ml-3 fixedHeight">
-                                    Upload Date: {{uploadDate}}
+                                    {{$tc('Uploads', 1)}} {{$tc('Date')}}: {{uploadDate}}
                                 </v-row>
                                 <v-row class="mb-3 fixedHeight">
-                                    <v-btn color="orange" id="uploadDetail-showInfo" text @click="showViewDialog()">Upload &amp; File Info</v-btn>
+                                    <v-btn color="orange" id="uploadDetail-showInfo" text @click="showViewDialog()">{{$tc('Uploads')}} &amp; {{$tc('File Info')}}</v-btn>
                                 </v-row>
                                 <v-row class="ml-3 fixedHeight">
-                                    <v-checkbox class="mt-0 pt-0" :disabled="true" label="Approver has viewed (since last update)" v-model="dataUpload.opened_by_approver"></v-checkbox>
+                                    <v-checkbox class="mt-0 pt-0" :disabled="true" :label="$tc('Approver has viewed (since last update)')" v-model="dataUpload.opened_by_approver"></v-checkbox>
                                 </v-row>
-                                <v-row v-if="enabledPhase >= 2">
-                                    <v-btn v-if="!inDataset" @click="createDataset" color="primary" class="mr-2">Create Dataset</v-btn>
+                                <!-- <v-row v-if="enabledPhase >= 2">
+                                    <v-btn v-if="!inDataset" @click="createDataset" color="primary" class="mr-2">{{$tc('Create')}} {{$tc('Datasets')}}</v-btn>
                                     <v-btn @click="createVersion" color="primary">Add Version to Dataset</v-btn>
-                                </v-row>
+                                </v-row> -->
                             </v-card-text>
                         </v-card>
                     </v-col>
@@ -59,18 +59,18 @@
                     <v-col cols="12">
                         <v-card class="scroll card-outter" max-height="600"  height="600">
                             <v-card-title>
-                                <h1 class="display-1 font-weight-thin ml-2 mt-2 mb-2">Discussion</h1>
+                                <h1 class="display-1 font-weight-thin ml-2 mt-2 mb-2">{{$tc('Discussion')}}</h1>
                             </v-card-title>
                             <v-card-text>
                                 <Comments></Comments>
                                 <v-row>
-                                    <v-btn color="orange" text @click="showAddCommentDialog()">Add Comment</v-btn>
+                                    <v-btn color="orange" text @click="showAddCommentDialog()">{{$tc('Add')}} {{$tc('Comments')}}</v-btn>
                                 </v-row>
                             </v-card-text>
                         </v-card>
                     </v-col>
                 </v-row>
-                <v-btn @click="routeToHome()" class="mt-1">Back</v-btn>
+                <v-btn @click="routeToHome()" class="mt-1">{{$tc('Back')}}</v-btn>
                 <CommentAddDialog :dialog="commentAddDialog"
                                   @close-button-clicked="onCloseButtonClicked"
                                   @save-button-clicked="onSaveButtonClicked"/>

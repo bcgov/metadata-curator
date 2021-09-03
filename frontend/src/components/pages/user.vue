@@ -5,14 +5,14 @@
                 <h1>{{user.displayName}}</h1>
             </v-col>
             <v-col cols=12>
-                <div>Groups: <span v-for="group in user.groups" :key="group">{{group}}, </span></div>
+                <div>{{$tc('Group', 2)}}: <span v-for="group in user.groups" :key="group">{{group}}, </span></div>
             </v-col>
-            <v-col cols=12>Logged In: {{loggedIn}}</v-col>
-            <v-col cols=12>Permissions: {{userPermissions}}</v-col>
-            <v-col cols=12>Loading: {{loading}}</v-col>
-            <v-col cols=12>Dark Mode: {{useDark}}</v-col>
-            <v-col cols=12>Can Upload: {{canUpload}}</v-col>
-            <v-col cols=12>JWT: {{jwt}}</v-col>
+            <v-col cols=12>{{$tc('Logged In')}}: {{loggedIn}}</v-col>
+            <v-col cols=12>{{$tc('Permission', 2)}}: {{userPermissions}}</v-col>
+            <v-col cols=12>{{$tc('Loading')}}: {{loading}}</v-col>
+            <v-col cols=12>{{$tc('Dark Mode')}}: {{useDark}}</v-col>
+            <v-col cols=12>{{$tc('Can Upload')}}: {{canUpload}}</v-col>
+            <v-col cols=12>{{$tc('JWT')}}: {{jwt}}</v-col>
         </v-row>
         
     </v-container>

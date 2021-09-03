@@ -2,13 +2,13 @@
     <v-dialog v-model="dialog" persistent max-width="600px">
         <v-card>
             <v-card-title>
-                <span class="headline">Add Comment</span>
+                <span class="headline">{{$tc('Add')}} {{$tc('Comments')}}</span>
             </v-card-title>
             <v-card-text>
                 <v-container>
                     <v-row>
                         <v-col cols="12">
-                            <TextArea name="comment" label="Comment" validationRules="required" :value="commentVal"
+                            <TextArea name="comment" :label="$tc('Comments')" validationRules="required" :value="commentVal"
                             :editing="true" @edited="onCommentUpdated" ref="comment"></TextArea>
                         </v-col>
                     </v-row>
@@ -16,8 +16,8 @@
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="onCloseClicked">Close</v-btn>
-                <v-btn color="blue darken-1" text @click="onSaveClicked">Save</v-btn>
+                <v-btn color="blue darken-1" text @click="onCloseClicked">{{$tc('Close')}}</v-btn>
+                <v-btn color="blue darken-1" text @click="onSaveClicked">{{$tc('Save')}}</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>

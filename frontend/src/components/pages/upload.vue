@@ -11,22 +11,22 @@
             <v-col cols=12>
                 <v-stepper v-model="step">
                     <v-stepper-header>
-                        <v-stepper-step :step="steps.step1UploadForm" :complete="step > steps.step1UploadForm" >Upload Info</v-stepper-step>
+                        <v-stepper-step :step="steps.step1UploadForm" :complete="step > steps.step1UploadForm" >{{$tc('Upload Info')}}</v-stepper-step>
                         <v-divider></v-divider>
 
-                        <v-stepper-step :step="steps.step2FileSelection" :complete="step > steps.step2FileSelection" >File Selection</v-stepper-step>
+                        <v-stepper-step :step="steps.step2FileSelection" :complete="step > steps.step2FileSelection" >{{$tc('File Selection')}}</v-stepper-step>
                         <v-divider></v-divider>
 
-                        <v-stepper-step v-if="enabledPhase >= 2" :step="steps.step3SchemaInformation" :complete="step > steps.step3SchemaInformation" >Schema Information</v-stepper-step>
+                        <v-stepper-step v-if="enabledPhase >= 2" :step="steps.step3SchemaInformation" :complete="step > steps.step3SchemaInformation" >{{$tc('Schema Information')}}</v-stepper-step>
                         <v-divider></v-divider>
 
-                        <v-stepper-step :step="steps.step4FileLevelForm" :complete="step > steps.step4FileLevelForm" >File Level Info</v-stepper-step>
+                        <v-stepper-step :step="steps.step4FileLevelForm" :complete="step > steps.step4FileLevelForm" >{{$tc('File Level Info')}}</v-stepper-step>
                         <v-divider></v-divider>
 
-                        <v-stepper-step :step="steps.step5UploadProgress" :complete="step > steps.step5UploadProgress" >Upload Progress</v-stepper-step>
+                        <v-stepper-step :step="steps.step5UploadProgress" :complete="step > steps.step5UploadProgress" >{{$tc('Upload Progress')}}</v-stepper-step>
                         <v-divider></v-divider>
 
-                        <v-stepper-step :step="steps.step6UploadSummary">Upload Summary</v-stepper-step>
+                        <v-stepper-step :step="steps.step6UploadSummary">{{$tc('Upload Summary')}}</v-stepper-step>
                     </v-stepper-header>
 
                     <v-stepper-items>
@@ -34,7 +34,7 @@
                             <v-card class="mb-12">
                                 <UploadForm ref="uploadForm"></UploadForm>
                             </v-card>
-                            <v-btn text @click="stepSaveUploadForm(true)" id="next-1">Next</v-btn>
+                            <v-btn text @click="stepSaveUploadForm(true)" id="next-1">{{$tc('Next')}}</v-btn>
                         </v-stepper-content>
 
                         <v-stepper-content :step="steps.step2FileSelection">
@@ -42,8 +42,8 @@
                                 <FileForm v-if="step === steps.step2FileSelection" ref="fileForm" @changed="step2Changed"></FileForm>
                             </v-card>
                             
-                            <v-btn text @click="step=steps.step1UploadForm" id="back-2">Back</v-btn>
-                            <v-btn color="primary" :disabled="!validStep3" @click="stepSaveFileForm(true)" id="next-2">Next</v-btn>
+                            <v-btn text @click="step=steps.step1UploadForm" id="back-2">{{$tc('Back')}}</v-btn>
+                            <v-btn color="primary" :disabled="!validStep3" @click="stepSaveFileForm(true)" id="next-2">{{$tc('Next')}}</v-btn>
                             
                         </v-stepper-content>
 
@@ -55,15 +55,15 @@
                                     :items="datasetList"  
                                     item-text="name"
                                     item-value="_id"
-                                    label="Dataset">
+                                    :label="$tc('Datasets')">
                                 </v-select>
-                                <v-btn v-if="allowCreate" id="newDatasetButton" @click="createDataset">New Dataset</v-btn>
-                                <v-btn v-if="allowInfer" id="inferButton" @click="infer">Infer</v-btn>
+                                <v-btn v-if="allowCreate" id="newDatasetButton" @click="createDataset">{{$tc('New')}} {{$tc('Datasets')}}</v-btn>
+                                <v-btn v-if="allowInfer" id="inferButton" @click="infer">{{$tc('Infer')}}</v-btn>
                                 <JsonEditor :key="'jsonEditor-'+jsonRedraw" :val="schema" @edited="updateSchema" :raw="false"></JsonEditor>
                             </v-card>
                             
-                            <v-btn text @click="step=steps.step2FileSelection" id="back-3">Back</v-btn>
-                            <v-btn color="primary" @click="stepSaveSchemaForm(true)" id="next-3">Next</v-btn>
+                            <v-btn text @click="step=steps.step2FileSelection" id="back-3">{{$tc('Back')}}</v-btn>
+                            <v-btn color="primary" @click="stepSaveSchemaForm(true)" id="next-3">{{$tc('Next')}}</v-btn>
                             
                         </v-stepper-content>
 
@@ -71,8 +71,8 @@
                             <v-card class="mb-12">
                                 <FileInfoForm v-if="step === steps.step4FileLevelForm" ref="fileInfoForm"></FileInfoForm>
                             </v-card>
-                            <v-btn text @click="step=(enabledPhase >= 2) ? steps.step3SchemaInformation : steps.step2FileSelection" id="back-4">Back</v-btn>
-                            <v-btn color="primary" @click="stepSaveFileInfoForm(true)" id="next-4">Next</v-btn>
+                            <v-btn text @click="step=(enabledPhase >= 2) ? steps.step3SchemaInformation : steps.step2FileSelection" id="back-4">{{$tc('Back')}}</v-btn>
+                            <v-btn color="primary" @click="stepSaveFileInfoForm(true)" id="next-4">{{$tc('Next')}}</v-btn>
                             
                         </v-stepper-content>
 

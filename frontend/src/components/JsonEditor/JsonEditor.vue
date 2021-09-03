@@ -29,7 +29,7 @@
                         <v-row>
                             <v-text-field
                                 :value="resource.path"
-                                label="Path"
+                                :label="$tc('Path')"
                                 @input="updateResourcePath(key, $event)"
                             ></v-text-field>
                         </v-row>
@@ -37,7 +37,7 @@
                             <v-col cols=12>
                                 <v-text-field
                                     :value="field.name"
-                                    label="Name"
+                                    :label="$tc('Name')"
                                     @input="updateResource(key, fKey, 'name', $event)"
                                 >
                                 </v-text-field>
@@ -46,7 +46,7 @@
                             <v-col cols=12>
                                 <v-text-field
                                     :value="field.type"
-                                    label="Type"
+                                    :label="$tc('Type')"
                                     @input="updateResource(key, fKey, 'type', $event)"
                                 >
                                 </v-text-field>
@@ -55,7 +55,7 @@
                             <v-col cols=12>
                                 <v-text-field
                                     :value="field.format"
-                                    label="Format"
+                                    :label="$tc('Format')"
                                     @input="updateResource(key, fKey, 'format', $event)"
                                 >
                                 </v-text-field>
@@ -64,7 +64,7 @@
                             <v-col cols=12>
                                 <v-text-field
                                     :value="field.var_class"
-                                    label="Var Class"
+                                    :label="$tc('Var Class')"
                                     @input="updateResource(key, fKey, 'var_class', $event)"
                                 >
                                 </v-text-field>
@@ -73,7 +73,7 @@
                             <v-col cols=12>
                                 <v-text-field
                                     :value="field.rdfType"
-                                    label="RDF Type"
+                                    :label="$tc('RDF Type')"
                                     @input="updateResource(key, fKey, 'rdfType', $event)"
                                 >
                                 </v-text-field>
@@ -82,7 +82,7 @@
                         </v-row>
                     </v-col>
                 </span>
-                <v-btn @click="addResource">Add File/Resource</v-btn>
+                <v-btn @click="addResource">{{$tc('Add File/Resource')}}</v-btn>
             </v-row>
 
             <v-row v-else-if="stateType == 2">
@@ -132,7 +132,7 @@
 
                         <v-row v-if="field && (field.type || (field._descriptor && field._descriptor.type))">
                             <v-col cols=3>
-                                Type:
+                                {{$tc('Type')}}:
                             </v-col>
                             <v-col cols=9>
                                 {{field.type ? field.type : field._descriptor.type}}
@@ -141,7 +141,7 @@
 
                         <v-row v-if="field && (field.description || (field._descriptor && field._descriptor.description))">
                             <v-col cols=3>
-                                Description:
+                                {{$tc('Description')}}:
                             </v-col>
                             <v-col cols=9>
                                 {{field.description ? field.description : field._descriptor.description}}
@@ -150,7 +150,7 @@
 
                         <v-row v-if="field && (field.example || (field._descriptor && field._descriptor.example))">
                             <v-col cols=3>
-                                Example:
+                                {{$tc('Example')}}:
                             </v-col>
                             <v-col cols=9>
                                 {{field.example ? field.example : field._descriptor.example}}
@@ -159,7 +159,7 @@
 
                         <v-row v-if="field && (field.constraints || (field._descriptor && field._descriptor.constraints))">
                             <v-col cols=3>
-                                Constraints:
+                                {{$tc('Constraint', 2)}}:
                             </v-col>
                             <v-col cols=9>
                                 {{field.constraints ? field.constraints : field._descriptor.constraints}}
@@ -168,7 +168,7 @@
 
                         <v-row v-if="field && (field.format || (field._descriptor && field._descriptor.format))">
                             <v-col cols=3>
-                                Format:
+                                {{$tc('Format')}}:
                             </v-col>
                             <v-col cols=9>
                                 {{field.format ? field.format : field._descriptor.format}}
@@ -177,7 +177,7 @@
 
                         <v-row v-if="field && (field.missingValues || (field._descriptor && field._descriptor._missingValues))">
                             <v-col cols=3>
-                                Missing Values:
+                                {{$tc('Missing Value', 2)}}:
                             </v-col>
                             <v-col cols=9>
                                 {{field.missingValues ? field.missingValues : field._descriptor._missingValues}}
@@ -189,7 +189,7 @@
                 <v-col cols=12 v-else-if="resources && resources[0] && resources[0].schema && resources[0].schema.fields">
                     <v-row v-for="(resource, key) in resources" :key="'resources'+key">
                         <v-col cols=12>
-                            <h4>Resource {{resource.name}}</h4>
+                            <h4>{{$tc('Resource')}} {{resource.name}}</h4>
                         </v-col>
                         <v-col cols=12 v-if="resource.schema.fields">
                             <div v-for="(field, key) in resource.schema.fields" :key="'field-'+key+'-'+field.name" class="field">
@@ -204,7 +204,7 @@
 
                                 <v-row v-if="field && (field.type || (field._descriptor && field._descriptor.type))">
                                     <v-col cols=3>
-                                        Type:
+                                        {{$tc('Type')}}:
                                     </v-col>
                                     <v-col cols=9>
                                         {{field.type ? field.type : field._descriptor.type}}
@@ -213,7 +213,7 @@
 
                                 <v-row v-if="field && (field.description || (field._descriptor && field._descriptor.description))">
                                     <v-col cols=3>
-                                        Description:
+                                        {{$tc('Description')}}:
                                     </v-col>
                                     <v-col cols=9>
                                         {{field.description ? field.description : field._descriptor.description}}
@@ -222,7 +222,7 @@
 
                                 <v-row v-if="field && (field.example || (field._descriptor && field._descriptor.example))">
                                     <v-col cols=3>
-                                        Example:
+                                        {{$tc('Example')}}:
                                     </v-col>
                                     <v-col cols=9>
                                         {{field.example ? field.example : field._descriptor.example}}
@@ -231,7 +231,7 @@
 
                                 <v-row v-if="field && (field.constraints || (field._descriptor && field._descriptor.constraints))">
                                     <v-col cols=3>
-                                        Constraints:
+                                        {{$tc('Constraint', 2)}}:
                                     </v-col>
                                     <v-col cols=9>
                                         {{field.constraints ? field.constraints : field._descriptor.constraints}}
@@ -240,7 +240,7 @@
 
                                 <v-row v-if="field && (field.format || (field._descriptor && field._descriptor.format))">
                                     <v-col cols=3>
-                                        Format:
+                                        {{$tc('Format')}}:
                                     </v-col>
                                     <v-col cols=9>
                                         {{field.format ? field.format : field._descriptor.format}}
@@ -249,7 +249,7 @@
 
                                 <v-row v-if="field && (field.missingValues || (field._descriptor && field._descriptor._missingValues))">
                                     <v-col cols=3>
-                                        Missing Values:
+                                        {{$tc('Missing Value', 2)}}:
                                     </v-col>
                                     <v-col cols=9>
                                         {{field.missingValues ? field.missingValues : field._descriptor._missingValues}}
@@ -311,15 +311,15 @@ export default{
         stateLabels: function(){
             if (this.editing){
                 return [
-                    'Basic',
-                    'Advanced',
-                    'Raw',
+                    this.$tc('Basic'),
+                    this.$tc('Advanced'),
+                    this.$tc('Raw'),
                 ];
             }else{
                 return [
-                    'Basic',
-                    //'Advanced',
-                    'Raw',
+                    this.$tc('Basic'),
+                    // this.$tc('Advanced'),
+                    this.$tc('Raw'),
                 ];
             }
         },
@@ -461,7 +461,7 @@ export default{
                 this.$emit('edited', obj);
             }catch(ex){
                 this.error = true;
-                this.errorText = "Invalid JSON"
+                this.errorText = this.$tc("Invalid") + " " +  this.$tc("JSON")
             }
         },
 
