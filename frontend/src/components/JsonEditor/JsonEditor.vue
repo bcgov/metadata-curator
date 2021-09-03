@@ -387,6 +387,10 @@ export default{
 
     methods: {
         addResource: function(){
+            if (!this.workingVal){
+                this.workingVal = {};
+            }
+            
             if (!this.workingVal.resources){
                 this.workingVal.resources = [];
             }
