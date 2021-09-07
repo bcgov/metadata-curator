@@ -6,9 +6,9 @@
         </span>
 
         <span v-else>
-            <ValidationProvider :rules="validationRules" v-slot="{ errors }" :name="label ? label : name">
+            <ValidationProvider :rules="validationRules" v-slot="{ errors }" :name="label ? $tc(label) : $tc(name)">
                 <v-select
-                    :label="displayLabel"
+                    :label="$tc(displayLabel)"
                     :name="name"
                     v-model="val"
                     :items="items"

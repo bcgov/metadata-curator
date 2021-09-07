@@ -14,7 +14,7 @@
             // Override the default message.
             extend('required', {
               ...required,
-              message: 'This field is required'
+              message: this.$tc('This field is required')
             });
         },
         methods: {

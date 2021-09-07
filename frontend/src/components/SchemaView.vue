@@ -1,9 +1,9 @@
 <template>
     <v-container v-if="loading">
-        Loading...
+        {{$tc('Loading')}}...
     </v-container>
     <v-container v-else-if="!rawSchema">
-        No Schema found
+        {{$tc('No Schema found')}}
     </v-container>
     <v-container v-else fluid :key="'schemaview-'+redrawIndex">
         <v-row>

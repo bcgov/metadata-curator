@@ -6,12 +6,12 @@
             {{error}}
         </v-alert>
         <v-row v-if="confirmChange" class="mb-2">
-            <span>Warning, you have an upload in progress, if you change to uploading this file some progress will be lost</span>
-            <v-btn color="warning" @click="changeConfirmed()">Confirm</v-btn>
+            <span>{{$tc('FileUploadProgressWarn')}}</span>
+            <v-btn color="warning" @click="changeConfirmed()">{{$tc('Confirm')}}</v-btn>
         </v-row>
         <v-row v-if="confirmResume" class="mb-2">
-            <span>We believe that this upload has already been started, resume? (if you believe this to be an error clear your cache)</span>
-            <v-btn color="success" @click="resumeConfirmed()">Confirm</v-btn>
+            <span>{{$tc('FileUploadResume')}}</span>
+            <v-btn color="success" @click="resumeConfirmed()">{{$tc('Confirm')}}</v-btn>
         </v-row>
         <v-row>
             <v-col cols=12>
@@ -20,19 +20,19 @@
                     :disabled="disabled" 
                     show-size 
                     :accept="accept"
-                    label="File input" 
+                    :label="$tc('File input')" 
                     class="mt-0 pt-0"></v-file-input>
             </v-col>
         </v-row>
         <v-row class="my-0 py-0" v-if="admin">
             <v-col cols=12>
-                <span class="fineText">Using Chunksize for your computer: {{Math.ceil(chunkSize / 1024 / 1024)}}mb</span>
+                <span class="fineText">{{$tc('Using Chunksize for your computer')}}: {{Math.ceil(chunkSize / 1024 / 1024)}}mb</span>
             </v-col>
         </v-row>
         <v-row>
             <v-col cols=12>
-                <v-btn v-if="showUploadButton" :disabled="disabled" @click="upload">Upload</v-btn>
-                <v-btn v-if="showImportButton" :disabled="disabled" @click="onImportButtonClicked">Import</v-btn>
+                <v-btn v-if="showUploadButton" :disabled="disabled" @click="upload">{{$tc('Uploads')}}</v-btn>
+                <v-btn v-if="showImportButton" :disabled="disabled" @click="onImportButtonClicked">{{$tc('Import')}}</v-btn>
                 <!-- <div v-if="pleaseWait">
                     <v-progress-circular
                         indeterminate
@@ -41,9 +41,7 @@
                 </div> -->
                 <div v-if="showProgress">
                     <div>
-                        Please note: encryption and uploading occur in chunks.  It is not unusual for there to be a 
-                        significant delay between one upload progress bar finishing and the next starting as encryption is 
-                        occurring and can take quite some time to complete.
+                        {{$tc('FileUploadNote')}}
                     </div>
                     <span>
                         {{progressMessage1}}
@@ -82,7 +80,7 @@ export default {
     props: {
         label: {
             type: String,
-            default: "File input"
+            default: this.$tc("File input")
         },
         readFile: {
             type: Boolean,
@@ -194,17 +192,23 @@ export default {
 
         progressMessage1: function(){
             let num = (this.numChunks && this.numChunks > 0) ? this.numChunks : 1;
-            return `Encrypted: ${(this.numEncrypted>=num) ? num : this.numEncrypted}/${num}`
+            let enc = this.$tc('Encrypted');
+            return `${enc}: ${(this.numEncrypted>=num) ? num : this.numEncrypted}/${num}`
         },
         progressMessage2: function(){
             let num = (this.numChunks && this.numChunks > 1) ? (this.numChunks+1) : 1;
-            return `Uploaded: ${(this.numUploaded>=num) ? num : this.numUploaded}/${num}`
+            let upd = this.$tc('Uploaded');
+            return `${upd}: ${(this.numUploaded>=num) ? num : this.numUploaded}/${num}`
         },
         progressMessage3: function(){
-            return `Upload 1 (Chunk): ${this.up1Progress}/${this.up1Size}`
+            let upd = this.$tc('Uploads');
+            let chunk = this.$tc('Chunk');
+            return `${upd} 1 (${chunk}): ${this.up1Progress}/${this.up1Size}`
         },
         progressMessage4: function(){
-            return `Upload 2 (Chunk): ${this.up2Progress}/${this.up2Size}`
+            let upd = this.$tc('Uploads');
+            let chunk = this.$tc('Chunk');
+            return `${upd} 2 (${chunk}): ${this.up2Progress}/${this.up2Size}`
         },
 
         getFinger: function(){

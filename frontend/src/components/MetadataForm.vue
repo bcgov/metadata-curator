@@ -8,7 +8,7 @@
         </v-alert>
         <span v-if="(!branch || loading) && !creating">
             <v-row dense>
-                Loading...
+                {{$tc('Loading')}}...
             </v-row>
         </span>
         <v-row v-else dense>
@@ -16,7 +16,7 @@
                 <v-card outlined>
                     <v-card-text>
                         <v-row>
-                            <h1 class="display-1 font-weight-thin ml-3 my-3">Metadata</h1>
+                            <h1 class="display-1 font-weight-thin ml-3 my-3">{{$tc('Metadata')}}</h1>
                         </v-row>
                         <v-row v-if="!loading && schema && schema !== {}">
                             <SchemaView :editing="editing" @edited="updatedObj"></SchemaView>
@@ -37,12 +37,12 @@
                         </v-row>
                     </v-card-text>
                         <v-card-actions v-if="editing">
-                            <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? 'Close' : 'Back'}}</v-btn>
-                            <v-btn @click="save" class="mt-1" color="primary">Save</v-btn>
+                            <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
+                            <v-btn @click="save" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
                         </v-card-actions>
                         <v-card-actions v-else>
-                            <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? 'Close' : 'Back'}}</v-btn>
-                            <v-btn @click="editing=!editing" class="mt-1" color="primary">Edit</v-btn>
+                            <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
+                            <v-btn @click="editing=!editing" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                         </v-card-actions>
                 </v-card>
             </v-col>
@@ -74,10 +74,12 @@ export default {
 
     },
     data () {
+        let st = this.$tc('Standard');
+        let re = this.$tc('Reserve');
         return {
             id: null,
             creating: false,
-            types: [ {text: 'Standard', value: 'standard'}, {text: 'Reserve', value: 'reserve'} ],
+            types: [ {text: st, value: 'standard'}, {text: re, value: 'reserve'} ],
             alert: false,
             alertType: "success",
             alertText: "",
@@ -144,7 +146,7 @@ export default {
                 this.saveTableSchema();
                 this.updateBranch().then( () => {
                     this.alertType = "success"
-                    this.alertText = "Sucessfully updated version";
+                    this.alertText = this.$tc('Sucessfully updated') + " " + this.$tc('version');
                     this.alert = true;
                     this.$emit("close");
 

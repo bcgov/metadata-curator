@@ -25,7 +25,7 @@
                 <v-card outlined>
                     <v-card-text>
                         <v-row>
-                            <h1 class="display-1 font-weight-thin ml-3 my-3">{{creating ? "New Dataset" : "Dataset " + dataset.name}}</h1>
+                            <h1 class="display-1 font-weight-thin ml-3 my-3">{{creating ? $tc("New") + " " + $tc("Datasets") : $tc("Datasets") + " " + dataset.name}}</h1>
                         </v-row>
 
                         <v-row v-if="!creating">
@@ -35,8 +35,8 @@
 
                         <v-row>
                             <TextInput
-                                label="Name"
-                                placeholder="My Dataset"
+                                :label="$tc('Name')"
+                                :placeholder="$tc('My') + ' ' + $tc('Dataset')"
                                 name="name"
                                 :large="true"
                                 :editing="editing"
@@ -47,28 +47,28 @@
 
                         <v-row wrap v-if="!creating">
                             <v-col cols=3>
-                                <h2>Versions</h2>
+                                <h2>{{$tc('Versions', 2)}}</h2>
                             </v-col>
                             <v-col cols=9>
-                                <v-btn color="primary" @click="addVersion">Add Version</v-btn>
+                                <v-btn color="primary" @click="addVersion">{{$tc('Add')}} {{$tc('Version')}}</v-btn>
                             </v-col>
 
                             <v-col cols=12 class="pointer" @click="editVersion(branch._id)" v-for="(branch, i) in branches" :key="'branch-'+i">
                                 {{branch.name}} 
                                 - {{branch.type.charAt(0).toUpperCase() + branch.type.slice(1)}} 
-                                - Created {{branch.create_date | formatDate}} 
+                                - {{$tc('Created')}} {{branch.create_date | formatDate}} 
                             </v-col>
                         </v-row>
 
                     </v-card-text>
                 </v-card>
                 <v-card-actions v-if="editing">
-                    <v-btn @click="routeToHome()" class="mt-1">Cancel</v-btn>
-                    <v-btn @click="save" class="mt-1" color="primary">Save</v-btn>
+                    <v-btn @click="routeToHome()" class="mt-1">{{$tc('Cancel')}}</v-btn>
+                    <v-btn @click="save" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
                 </v-card-actions>
                 <v-card-actions v-else>
-                    <v-btn @click="routeToHome()" class="mt-1">Back</v-btn>
-                    <v-btn @click="editing=!editing" class="mt-1" color="primary">Edit</v-btn>
+                    <v-btn @click="routeToHome()" class="mt-1">{{$tc('Back')}}</v-btn>
+                    <v-btn @click="editing=!editing" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                 </v-card-actions>
             </v-col>
         </v-row>
@@ -137,7 +137,7 @@ export default {
             if (this.creating){
                 this.saveDataset().then( () => {
                         this.alertType = "success"
-                        this.alertText = "Sucessfully created dataset";
+                        this.alertText = this.$tc("Sucessfully created dataset");
                         this.alert = true;
                         this.routeToHome();
 
@@ -149,7 +149,7 @@ export default {
             }else{
                 this.updateDataset().then( () => {
                         this.alertType = "success"
-                        this.alertText = "Sucessfully created dataset";
+                        this.alertText = this.$tc("Sucessfully created dataset");
                         this.alert = true;
                         this.routeToHome();
 

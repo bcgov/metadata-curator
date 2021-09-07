@@ -2,7 +2,7 @@
     <v-container>
         <v-row>
             <v-col cols=12>
-                <h1 class="display-1 font-weight-thin ml-3 my-3">Datasets</h1>
+                <h1 class="display-1 font-weight-thin ml-3 my-3">{{$tc('Datasets', 2)}}</h1>
             </v-col>
         </v-row>
 
@@ -10,7 +10,7 @@
             <v-col cols=10>
             </v-col>
             <v-col cols=2>
-                <v-btn color="primary" to="/datasets/create">New Dataset</v-btn>
+                <v-btn color="primary" to="/datasets/create">{{$tc('New')}} {{$tc('Datasets')}}</v-btn>
             </v-col>
         </v-row>
 
@@ -30,7 +30,7 @@
                     <v-list-item-content>
                         <v-list-item-title v-html="item.title"></v-list-item-title>
                         <v-list-item-subtitle>
-                            Created on {{item.subtitle | formatDate}}
+                            {{$tc('Created on')}} {{item.subtitle | formatDate}}
                         </v-list-item-subtitle>
 
                     </v-list-item-content>
@@ -70,7 +70,7 @@ export default {
             setSelectedFilterBy: 'repos/setSelectedFilterBy',
         }),
         async loadRepos() {
-            this.message = 'Retrieving Datasets...';
+            this.message = this.$tc('Loading') + ' ' + this.$tc('Datasets', 2) + '...';
             
             await this.getRepos({filterBy: false});
             this.message = '';

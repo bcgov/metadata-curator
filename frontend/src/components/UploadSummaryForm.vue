@@ -3,21 +3,21 @@
         <span :key="'uploadSummary'+spanKey">
             <v-row>
                 <v-col cols=12 id="upload-success-indicator">
-                    <v-icon color="primary">mdi-check</v-icon> Data Uploaded Successfully
+                    <v-icon color="primary">mdi-check</v-icon> {{$tc('Data Uploaded Successfully')}}
                 </v-col>
             </v-row>
             <span v-if="uploadStore">
                 <v-row>
-                    <v-col cols=12>Upload Date: {{uploadDate}}</v-col>
+                    <v-col cols=12>{{$tc('Uploads')}} {{$tc('Date')}}: {{uploadDate}}</v-col>
                 </v-row>
                 <v-row v-for="(file, index) in uploadStore.files" :key="'fileReader'+index">
                     <v-col cols=12>
                         <v-row v-if="file.name">{{file.name}}</v-row>
-                        <v-row v-if="file.title">Title: {{file.title}}</v-row>
-                        <v-row v-if="file.type">Type: {{file.type}}</v-row>
-                        <v-row v-if="file.size">Size: {{file.size}}</v-row>
-                        <v-row v-if="file.start_date">Date Range: {{formatDate(file.start_date)}} - {{formatDate(file.end_date)}} </v-row>
-                        <v-row v-if="file.description">Description: {{file.description}}</v-row>
+                        <v-row v-if="file.title">{{$tc('Title')}}: {{file.title}}</v-row>
+                        <v-row v-if="file.type">{{$tc('Type')}}: {{file.type}}</v-row>
+                        <v-row v-if="file.size">{{$tc('Size')}}: {{file.size}}</v-row>
+                        <v-row v-if="file.start_date">{{$tc('Date Range')}}: {{formatDate(file.start_date)}} - {{formatDate(file.end_date)}} </v-row>
+                        <v-row v-if="file.description">{{$tc('Description')}}: {{file.description}}</v-row>
                     </v-col>
                 </v-row>
             </span>
@@ -73,18 +73,18 @@
                 }
                 var date = new Date(d);
                 let month = new Array();
-                month[0] = "January";
-                month[1] = "February";
-                month[2] = "March";
-                month[3] = "April";
-                month[4] = "May";
-                month[5] = "June";
-                month[6] = "July";
-                month[7] = "August";
-                month[8] = "September";
-                month[9] = "October";
-                month[10] = "November";
-                month[11] = "December";
+                month[0] = this.$tc("January");
+                month[1] = this.$tc("February");
+                month[2] = this.$tc("March");
+                month[3] = this.$tc("April");
+                month[4] = this.$tc("May");
+                month[5] = this.$tc("June");
+                month[6] = this.$tc("July");
+                month[7] = this.$tc("August");
+                month[8] = this.$tc("September");
+                month[9] = this.$tc("October");
+                month[10] = this.$tc("November");
+                month[11] = this.$tc("December");
                 return month[date.getMonth()] + " " + date.getDate() + ", " +date.getFullYear()
             }
         },

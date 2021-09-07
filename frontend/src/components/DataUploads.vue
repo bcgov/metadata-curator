@@ -1,14 +1,14 @@
 <template>
     <v-container>
-        <h1 class="display-1 font-weight-thin ml-3 my-3">Data Uploads</h1>
+        <h1 class="display-1 font-weight-thin ml-3 my-3">{{$tc('Data Upload', 2)}}</h1>
 
         <v-container v-if="user.isDataProvider" fluid class="ml-1 pb-0 mb-1">
             <v-row>
                 <v-col cols=10>
-                    <p>Filter by:</p>
+                    <p>{{$tc('Filter by')}}:</p>
                     <v-radio-group v-model="filterBy" row class="ml-2">
-                        <v-radio label="My Uploads" id="filter-me" value="me"></v-radio>
-                        <v-radio label="Team Uploads" id="filter-team" value="team"></v-radio>
+                        <v-radio :label="$tc('My') + ' ' + $tc('Uploads', 2)" id="filter-me" value="me"></v-radio>
+                        <v-radio :label="$tc('Team')  + ' ' + $tc('Uploads', 2)" id="filter-team" value="team"></v-radio>
                     </v-radio-group>
                 </v-col>
             </v-row>
@@ -23,7 +23,7 @@
                 filled
                 chips
                 color="blue-grey lighten-2"
-                label="Select"
+                :label="$tc('Select')"
                 item-text="name"
                 item-value="value"
                 @change="loadDataUploads()"
@@ -62,13 +62,13 @@
         <v-container>
             <v-row>
                 <v-col cols="2">
-                    <v-btn color="primary" to="/upload" id="newUpload" v-if="canUpload">New Upload</v-btn>
+                    <v-btn color="primary" to="/upload" id="newUpload" v-if="canUpload">{{$tc('New')}} {{$tc('Uploads')}}</v-btn>
                 </v-col>
             </v-row>
         </v-container>
 
         <div v-if="dataUploadDisplayItems.length == 0">
-            Looks like there is nothing here why not click New Upload to get started
+            {{$tc('Looks like there is nothing here why not click New Upload to get started')}}
         </div>
         <v-list three-line v-else>
             <template v-for="(item, index) in dataUploadDisplayItems">
@@ -87,8 +87,8 @@
                     <v-list-item-content>
                         <v-list-item-title v-html="item.title"></v-list-item-title>
                         <v-list-item-subtitle>
-                            Created on {{item.subtitle | formatDate}}
-                            by {{item.uploader}}
+                            {{$tc('Created on')}} {{item.subtitle | formatDate}}
+                            {{$tc('by')}} {{item.uploader}}
                         </v-list-item-subtitle>
 
                     </v-list-item-content>
@@ -158,9 +158,9 @@ export default {
             }
         },
         getDisplayStatus(status) {
-            if(status === 'not_submitted') { return 'Draft'; }
-            if(status === 'upload_in_progress') { return 'Upload in progress'; }
-            if(status === 'upload_error') { return 'Upload failed'; }
+            if(status === 'not_submitted') { return this.$tc('Draft'); }
+            if(status === 'upload_in_progress') { return this.$tc('Upload in progress'); }
+            if(status === 'upload_error') { return this.$tc('Upload failed'); }
             return '';
         },
         getDisplayIcon(status) {

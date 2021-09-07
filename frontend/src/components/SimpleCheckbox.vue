@@ -1,6 +1,6 @@
 <template>
         <v-checkbox
-            :label="label"
+            :label="$tc(label)"
             v-model="checkbox"
             :color="clr"
         ></v-checkbox>

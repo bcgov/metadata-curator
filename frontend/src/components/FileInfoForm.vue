@@ -11,9 +11,9 @@
                         <v-text-field
                             v-model="title[index]"
                             :id="'fileinfo-'+ index + '-title'"
-                            label="Title"
+                            :label="$tc('Title')"
                             @change="updateFormSubmission"
-                            placeholder="Title">
+                            :placeholder="$tc('Title')">
                         </v-text-field>
                     </v-row>
 
@@ -22,9 +22,9 @@
                             v-model="type[index]"
                             :id="'fileinfo-'+ index + '-type'"
                             :items="typeOptions"
-                            label="File Type"
+                            :label="$tc('File Type')"
                             @change="updateFormSubmission"
-                            placeholder="File Type">
+                            :placeholder="$tc('File Type')">
                         </v-select>
                     </v-row>
 
@@ -43,7 +43,7 @@
                                     :rules="[
                                         () => !!start[index] || 'This field is required',
                                     ]"
-                                    label="Date Range Start*"
+                                    :label="$tc('Date Range Start') + '*'"
                                     prepend-icon="mdi-calendar"
                                     autocomplete="off"
                                     v-bind="attrs"
@@ -71,7 +71,7 @@
                                     :rules="[
                                         () => !!end[index] || 'This field is required',
                                     ]"
-                                    label="Date Range End*"
+                                    :label="$tc('Date Range End') + '*'"
                                     autocomplete="off"
                                     prepend-icon="mdi-calendar"
                                     v-bind="attrs"
@@ -87,7 +87,7 @@
                     <v-row>
                         <v-textarea
                             v-model="description[index]"
-                            label="File Description"
+                            :label="$tc('File Description')"
                             @change="updateFormSubmission"
                             :id="'fileinfo-'+ index + '-desc'"
                             placeholder="Description">
