@@ -17,7 +17,7 @@
                     <v-icon @click="toggleType(keys[key])">mdi-settings</v-icon>
                 </v-btn>
             </v-col>
-            <v-col cols=4>
+            <v-col cols=3>
                 <v-text-field 
                     :ref="'keyField-' + level + '-' + key"
                     :id="'keyField-' + level + '-' + key" 
@@ -68,6 +68,12 @@
                     :id="'valueField-' + level + '-' + selfKey + '-' + key + '-' + keys[key]" 
                     
                     @blur="clearFocus"></v-text-field>
+            </v-col>
+
+            <v-col cols=1>
+                <v-btn class="error" @click="removeField(keys[key])">
+                    <v-icon>mdi-minus</v-icon>
+                </v-btn>
             </v-col>
         </v-row>
         <v-row>
@@ -359,6 +365,16 @@ export default{
             this.$forceUpdate();
             this.$emit("update", {key: newKey, val: this.workingVal[newKey], createdKey: newKey});
             
+        },
+
+        removeField: function(key){
+            delete this.workingVal[key];
+            delete this.showType[key];
+            this.$emit('show-type', this.showType);
+            this.reindexKey++;
+            this.$forceUpdate();
+            this.$emit("update", {key: key, val: this.workingVal[key]});
+
         }
     },
 

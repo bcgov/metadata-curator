@@ -23,9 +23,9 @@
             </v-col>
         </v-row>
         <v-container v-if="editing">
-            <v-row v-if="stateType == 0">
+            <v-row v-if="stateType == 0" :key="'basicState-editing-'+reindexKey">
                 <span v-if="workingVal && workingVal.resources && workingVal.resources[0] && workingVal.resources[0].tableSchema && workingVal.resources[0].tableSchema.resources">
-                    <v-col v-for="(resource, key) in workingVal.resources[0].tableSchema.resources" :key="'basic-resource-'+key" cols=12 class="field">
+                    <v-col v-for="(resource, key) in workingVal.resources[0].tableSchema.resources" :key="'basic-resource-'+key+'-'+reindexKey" cols=12 class="field">
                         <v-row>
                             <v-text-field
                                 :value="resource.path"
@@ -33,7 +33,7 @@
                                 @input="updateResourcePath(key, $event)"
                             ></v-text-field>
                         </v-row>
-                        <v-row v-for="(field, fKey) in resource.schema.fields" :key="'field-'+key+'-'+fKey" class="field">
+                        <v-row v-for="(field, fKey) in resource.schema.fields" :key="'field-'+key+'-'+fKey+'-'+reindexKey" class="field">
                             <v-col cols=12>
                                 <v-text-field
                                     :value="field.name"
@@ -79,6 +79,21 @@
                                 </v-text-field>
                             </v-col>
 
+                            <v-col cols=11>
+                            </v-col>
+
+                            <v-col cols=1>
+                                <v-btn class="error" @click="removeField(key, fKey)"><v-icon>mdi-minus</v-icon></v-btn>
+                            </v-col>
+
+                        </v-row>
+                        <v-row>
+                            <v-col cols=10>
+                            </v-col>
+
+                            <v-col cols=2>
+                                <v-btn class="primary" @click="addField(key)">Add Field<v-icon>mdi-plus</v-icon></v-btn>
+                            </v-col>
                         </v-row>
                     </v-col>
                 </span>
@@ -266,7 +281,7 @@
 </template>
 
 <script>
-
+import Vue from 'vue';
 import RepeatingObject from './RepeatingObject';
 
 export default{
@@ -288,6 +303,11 @@ export default{
             type: Boolean,
             required: false,
             default: true,
+        },
+        stateTypeParent: {
+            type: Number,
+            required: false,
+            default: 1,
         }
     },
 
@@ -414,6 +434,31 @@ export default{
             this.$emit('edited', this.workingVal);   
         },
 
+        removeField: function(key, fKey){
+            Vue.delete(this.workingVal.resources[0].tableSchema.resources[key].schema.fields, fKey);
+            let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
+            this.workingStr = str;
+            this.reindexKey++;
+            this.$forceUpdate();
+            this.$emit('edited', this.workingVal);
+            
+        },
+
+
+
+        addField: function(key){
+            this.workingVal.resources[0].tableSchema.resources[key].schema.fields.push({
+                name: "",
+                type: "",
+                rdfType: "",
+                var_class: "",
+                format: "",
+            });
+            let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
+            this.workingStr = str;
+            this.$emit('edited', this.workingVal);
+        },
+
         updateResourcePath: function(key, newValue){
             this.workingVal.resources[0].tableSchema.resources[key] = newValue;
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
@@ -507,6 +552,7 @@ export default{
     },
 
     data() {
+        
         return {
             workingVal: {},
             workingStr: "",
@@ -516,12 +562,13 @@ export default{
             expanded: {},
             focus: "",
             showType: {},
-            stateType: 1
+            stateType: this.stateTypeParent
         };
     },
 
     mounted(){
         this.workingVal = this.val;
+        this.stateType = this.stateTypeParent;
         this.workingStr = JSON.stringify(this.val, this.replacerFunc(), 4);
     }
 }

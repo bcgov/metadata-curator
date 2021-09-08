@@ -80,7 +80,7 @@ export default {
     props: {
         label: {
             type: String,
-            default: this.$tc("File input")
+            default: "File input"
         },
         readFile: {
             type: Boolean,

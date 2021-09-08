@@ -84,7 +84,7 @@
                             </v-card-actions>
                             <v-card-actions v-else>
                                 <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
-                                <v-btn @click="editing=!editing" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
+                                <v-btn @click="toggleEditing" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-tab-item>
@@ -105,6 +105,8 @@ import TextInput from './TextInput';
 import TextArea from './TextArea';
 import Select from './Select';
 import MetadataForm from './MetadataForm';
+
+import Vue from 'vue';
 
 export default {
     components:{
@@ -162,6 +164,10 @@ export default {
             }else{
                 this.$router.push({ name: 'versions' });
             }
+        },
+
+        toggleEditing: function(){
+            Vue.set(this, 'editing', !this.editing);
         },
 
         updateValues(name, value){
