@@ -78,8 +78,8 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
 
     var res;
     try{
-        res = await client.waitForElementVisible('#upload-success-indicator', 15000);
-        return res;
+        //res = await client.waitForElementVisible('#upload-success-indicator', 15000);
+        return await client.pause(15000);
     }catch(ex){
         let p = "./"+path+"/"+new Date().toString()+".png"
         p = p.replace(/:/g, "");
