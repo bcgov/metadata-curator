@@ -110,7 +110,7 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             
             if(query && query.filterBy) {
                 if(query.filterBy === 'me') {
-                    console.log("FILTER BY ME", user.id);
+                    console.log("FILTER BY ME", user.id, topicResponse.data);
                     topics = topicResponse.data.filter( (item) => {
                         return (item.contributors.indexOf(user.id) !== -1 && item.parent_id);
                     });
