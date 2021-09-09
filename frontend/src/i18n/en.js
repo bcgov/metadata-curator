@@ -153,6 +153,6 @@ export default {
         "Signed in as": "Signed in as",
         "Logout": "Logout",
         "This field is required": "This field is required",
-
+        "Add Field": "Add Field",
     }
 }

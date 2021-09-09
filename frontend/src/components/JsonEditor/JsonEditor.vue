@@ -92,12 +92,12 @@
                             </v-col>
 
                             <v-col cols=2>
-                                <v-btn class="primary" @click="addField(key)">Add Field<v-icon>mdi-plus</v-icon></v-btn>
+                                <v-btn class="primary" @click="addField(key)">{{$tc('Add Field')}}<v-icon>mdi-plus</v-icon></v-btn>
                             </v-col>
                         </v-row>
                     </v-col>
                 </span>
-                <v-btn @click="addResource">{{$tc('Add File/Resource')}}</v-btn>
+                <v-btn class="primary" @click="addResource">{{$tc('Add File/Resource')}}</v-btn>
             </v-row>
 
             <v-row v-else-if="stateType == 2">
