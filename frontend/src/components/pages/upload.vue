@@ -86,7 +86,7 @@
 
                         <v-stepper-content :step="steps.step6UploadSummary">
                             <v-card class="mb-12">
-                                <UploadSummaryForm v-if="step === steps.step6UploadSummary" ref="uploadSummaryForm"></UploadSummaryForm>
+                                
                             </v-card>
                         </v-stepper-content>
                     </v-stepper-items>
@@ -102,7 +102,7 @@
     import FileForm from "../FileForm";
     import FileInfoForm from "../FileInfoForm";
     import FileUploadForm from "../FileUploadForm";
-    import UploadSummaryForm from '../UploadSummaryForm';
+
     import { Backend } from '../../services/backend';
     import JsonEditor from '../JsonEditor/JsonEditor';
     const backend = new Backend();
@@ -114,7 +114,6 @@
             FileForm,
             FileInfoForm,
             FileUploadForm,
-            UploadSummaryForm,
             JsonEditor,
         },
         async created() {
@@ -373,7 +372,8 @@
 
             async stepSaveFileUploads(){
                 await this.updateUpload(this.upload);
-                 this.step = this.steps.step6UploadSummary;
+                //this.step = this.steps.step6UploadSummary;
+                this.$router.push({ name: 'data-upload-detail', id: this.uploadId });
 
             },
 
@@ -505,7 +505,8 @@
                                 }
                             }
                             if (allGood){
-                                this.step = this.steps.step6UploadSummary;
+                                //this.step = this.steps.step6UploadSummary;
+                                this.$router.push({ name: 'data-upload-detail', id: this.uploadId });
                             }
                         }
                     }
