@@ -154,5 +154,9 @@ export default {
         "Logout": "Logout",
         "This field is required": "This field is required",
         "Add Field": "Add Field",
+        "Information": "Information",
+        "Standard": "Standard",
+        "Reserve": "Reserve",
+        "Highlight": "Highlight",
     }
 }

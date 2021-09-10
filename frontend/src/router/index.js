@@ -61,7 +61,7 @@ let r = new Router({
       name: 'upload_view',
       component: upload,
       meta: {
-          title: "Upload",
+          title: "Uploads",
           requiresAuth: true
       },
     },

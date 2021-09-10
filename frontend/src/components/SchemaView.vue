@@ -7,7 +7,15 @@
     </v-container>
     <v-container v-else fluid :key="'schemaview-'+redrawIndex">
         <v-row>
-            <JsonEditor :key="'jsonEditor-'+redrawIndex" :val="rawSchema" @edited="jsonEdited" :editing="editing" @state="updateJsonState" :state-type-parent="jsonState"></JsonEditor>
+            <JsonEditor 
+                :key="'jsonEditor-'+redrawIndex" 
+                :val="rawSchema" 
+                @edited="jsonEdited" 
+                :editing="editing" 
+                @state="updateJsonState" 
+                :state-type-parent="jsonState"
+                :focus-prop="jsonFocus"
+                @focus="setJsonFocus"></JsonEditor>
         </v-row>
         
     </v-container>
@@ -39,11 +47,16 @@ import JsonEditor from './JsonEditor/JsonEditor';
                 rawSchema: null,
                 loading: false,
                 jsonState: 1,
+                jsonFocus: "",
             }
         },
         methods: {
             updateJsonState: function(state){
                 this.jsonState = state;
+            },
+
+            setJsonFocus: function(f){
+                this.jsonFocus = f;
             },
 
             computeSchema: async function(){

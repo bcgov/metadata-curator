@@ -14,19 +14,22 @@
                         <v-stepper-step :step="steps.step1UploadForm" :complete="step > steps.step1UploadForm" >{{$tc('Upload Info')}}</v-stepper-step>
                         <v-divider></v-divider>
 
-                        <v-stepper-step :step="steps.step2FileSelection" :complete="step > steps.step2FileSelection" >{{$tc('File Selection')}}</v-stepper-step>
+                        <v-stepper-step v-if="enabledPhase >= 2" :step="steps.step2EditionForm" :complete="step > steps.step2EditionForm" >{{$tc('Version') + ' ' +$tc('Information')}}</v-stepper-step>
                         <v-divider></v-divider>
 
-                        <v-stepper-step v-if="enabledPhase >= 2" :step="steps.step3SchemaInformation" :complete="step > steps.step3SchemaInformation" >{{$tc('Schema Information')}}</v-stepper-step>
+                        <v-stepper-step :step="steps.step3FileSelection" :complete="step > steps.step3FileSelection" >{{$tc('File Selection')}}</v-stepper-step>
                         <v-divider></v-divider>
 
                         <v-stepper-step :step="steps.step4FileLevelForm" :complete="step > steps.step4FileLevelForm" >{{$tc('File Level Info')}}</v-stepper-step>
                         <v-divider></v-divider>
 
-                        <v-stepper-step :step="steps.step5UploadProgress" :complete="step > steps.step5UploadProgress" >{{$tc('Upload Progress')}}</v-stepper-step>
+                        <v-stepper-step v-if="enabledPhase >= 2" :step="steps.step5SchemaInformation" :complete="step > steps.step5SchemaInformation" >{{$tc('Schema Information')}}</v-stepper-step>
                         <v-divider></v-divider>
 
-                        <v-stepper-step :step="steps.step6UploadSummary">{{$tc('Upload Summary')}}</v-stepper-step>
+                        <v-stepper-step :step="steps.step6UploadProgress" :complete="step > steps.step6UploadProgress" >{{$tc('Upload Progress')}}</v-stepper-step>
+                        <v-divider></v-divider>
+
+                        <v-stepper-step :step="steps.step7UploadSummary">{{$tc('Upload Summary')}}</v-stepper-step>
                     </v-stepper-header>
 
                     <v-stepper-items>
@@ -37,17 +40,7 @@
                             <v-btn text @click="stepSaveUploadForm(true)" id="next-1">{{$tc('Next')}}</v-btn>
                         </v-stepper-content>
 
-                        <v-stepper-content :step="steps.step2FileSelection">
-                            <v-card class="mb-12">
-                                <FileForm v-if="step === steps.step2FileSelection" ref="fileForm" @changed="step2Changed"></FileForm>
-                            </v-card>
-                            
-                            <v-btn text @click="step=steps.step1UploadForm" id="back-2">{{$tc('Back')}}</v-btn>
-                            <v-btn color="primary" :disabled="!validStep3" @click="stepSaveFileForm(true)" id="next-2">{{$tc('Next')}}</v-btn>
-                            
-                        </v-stepper-content>
-
-                        <v-stepper-content :step="steps.step3SchemaInformation" v-if="enabledPhase >= 2">
+                        <v-stepper-content :step="steps.step2EditionForm" v-if="enabledPhase >= 2">
                             <v-card class="mb-12">
                                 <v-select 
                                     v-model="selectedDataset" 
@@ -57,13 +50,20 @@
                                     item-value="_id"
                                     :label="$tc('Datasets')">
                                 </v-select>
+                                <div v-if="admin">Version: {{this.selectedVersion}} - {{this.versions[0].name}}</div>
                                 <v-btn v-if="allowCreate" id="newDatasetButton" @click="createDataset">{{$tc('New')}} {{$tc('Datasets')}}</v-btn>
-                                <v-btn v-if="allowInfer" id="inferButton" @click="infer">{{$tc('Infer')}}</v-btn>
-                                <JsonEditor :key="'jsonEditor-'+jsonRedraw" :val="schema" @edited="updateSchema" :raw="false"></JsonEditor>
+                            </v-card>
+                            <v-btn text @click="step=steps.step1UploadForm" id="back-2">{{$tc('Back')}}</v-btn>
+                            <v-btn text @click="stepSaveEditionForm(true)" id="next-2">{{$tc('Next')}}</v-btn>
+                        </v-stepper-content>
+
+                        <v-stepper-content :step="steps.step3FileSelection">
+                            <v-card class="mb-12">
+                                <FileForm v-if="step === steps.step3FileSelection" ref="fileForm" @changed="step2Changed"></FileForm>
                             </v-card>
                             
-                            <v-btn text @click="step=steps.step2FileSelection" id="back-3">{{$tc('Back')}}</v-btn>
-                            <v-btn color="primary" @click="stepSaveSchemaForm(true)" id="next-3">{{$tc('Next')}}</v-btn>
+                            <v-btn text @click="step=(enabledPhase >= 2) ? steps.step2EditionForm : steps.steps.step1UploadForm" id="back-3">{{$tc('Back')}}</v-btn>
+                            <v-btn color="primary" :disabled="!validStep3" @click="stepSaveFileForm(true)" id="next-3">{{$tc('Next')}}</v-btn>
                             
                         </v-stepper-content>
 
@@ -71,20 +71,31 @@
                             <v-card class="mb-12">
                                 <FileInfoForm v-if="step === steps.step4FileLevelForm" ref="fileInfoForm"></FileInfoForm>
                             </v-card>
-                            <v-btn text @click="step=(enabledPhase >= 2) ? steps.step3SchemaInformation : steps.step2FileSelection" id="back-4">{{$tc('Back')}}</v-btn>
+                            <v-btn text @click="step=steps.step3FileSelection" id="back-4">{{$tc('Back')}}</v-btn>
                             <v-btn color="primary" @click="stepSaveFileInfoForm(true)" id="next-4">{{$tc('Next')}}</v-btn>
                             
                         </v-stepper-content>
 
-                        <v-stepper-content :step="steps.step5UploadProgress">
+                        <v-stepper-content :step="steps.step5SchemaInformation" v-if="enabledPhase >= 2">
                             <v-card class="mb-12">
-                                <FileUploadForm v-if="step === steps.step5UploadProgress" @uploads-finished="stepSaveFileUploads" :active="step === steps.step5UploadProgress"></FileUploadForm>
+                                <v-btn v-if="allowInfer" id="inferButton" @click="infer">{{$tc('Infer')}}</v-btn>
+                                <JsonEditor :key="'jsonEditor-'+jsonRedraw" :val="schema" @edited="updateSchema" :raw="false"></JsonEditor>
                             </v-card>
-                            <!--<v-btn color="primary" @click="step=steps.step6UploadSummary">Next</v-btn>
+                            
+                            <v-btn text @click="step=steps.step4FileLevelForm" id="back-5">{{$tc('Back')}}</v-btn>
+                            <v-btn color="primary" @click="stepSaveSchemaForm(true)" id="next-5">{{$tc('Next')}}</v-btn>
+                            
+                        </v-stepper-content>
+
+                        <v-stepper-content :step="steps.step6UploadProgress">
+                            <v-card class="mb-12">
+                                <FileUploadForm v-if="step === steps.step6UploadProgress" @uploads-finished="stepSaveFileUploads" :active="step === steps.step6UploadProgress"></FileUploadForm>
+                            </v-card>
+                            <!--<v-btn color="primary" @click="step=steps.step7UploadSummary">Next</v-btn>
                             <v-btn text @click="step=steps.step4FileLevelForm">Back</v-btn>-->
                         </v-stepper-content>
 
-                        <v-stepper-content :step="steps.step6UploadSummary">
+                        <v-stepper-content :step="steps.step7UploadSummary">
                             <v-card class="mb-12">
                                 
                             </v-card>
@@ -117,6 +128,7 @@
             JsonEditor,
         },
         async created() {
+            await this.getAllRepos();
             if(this.$route.params.id && this.$route.params.id != 'new') { 
                 this.uploadId = this.$route.params.id; 
             }else{
@@ -124,9 +136,10 @@
                 this.resetState();
             }
             if (this.enabledPhase < 2){
+                this.steps.step3FileSelection = 2;
                 this.steps.step4FileLevelForm = 3;
-                this.steps.step5UploadProgress = 4;
-                this.steps.step6UploadSummary = 5;
+                this.steps.step6UploadProgress = 4;
+                this.steps.step7UploadSummary = 5;
 
             }
             if(this.uploadId) { 
@@ -134,17 +147,19 @@
                 if (this.enabledPhase >= 2){
                     await this.getSchema({id: this.uploadId});
                     await this.getAllRepos();
+                    await this.getBranchesByUpload({uploadId: this.uploadId})
 
                     this.selectedDataset = '-1';
                     this.selectedVersion = '-1';
 
                     if (this.schemaState && this.schemaState.version){
                         this.selectedVersion = this.schemaState.version
-                        this.getBranchesByUpload({uploadId: this.uploadId})
+                        // this.getBranchesByUpload({uploadId: this.uploadId})
                     }
                 
                     if (this.versions && this.versions[0] && this.versions[0].repo_id){
                         this.selectedDataset = this.versions[0].repo_id;
+                        this.selectedVersion = this.versions[0]._id;
                         this.allowSelect = false;
                     }
                 }
@@ -284,7 +299,8 @@
                           transitionNextStepAfterSave = false;
                       }
                   }
-                  if(transitionNextStepAfterSave) { this.step = this.steps.step2FileSelection; }
+                  if(transitionNextStepAfterSave) { 
+                      this.step = (this.enabledPhase >= 2) ? this.steps.step2EditionForm : this.steps.step3FileSelection; }
               }else{
                 //still trigger submit so form displays all validation errors on UI
                 this.triggerUploadFormSubmit();
@@ -294,12 +310,11 @@
             async stepSaveFileForm(transitionNextStepAfterSave) {
                 await this.updateUpload(this.upload);
                 if(transitionNextStepAfterSave) { 
-                    this.step = (this.enabledPhase >=2) ? this.steps.step3SchemaInformation : this.steps.step4FileLevelForm; 
+                    this.step = this.steps.step4FileLevelForm; 
                 }
             },
 
-            async stepSaveSchemaForm(transitionNextStepAfterSave){
-
+            async stepSaveEditionForm(transitionNextStepAfterSave){
                 if (this.selectedDataset == -1){
                     this.errorText = "You must select or create a dataset first";
                     this.errorAlert = true;
@@ -323,6 +338,18 @@
                     this.selectedVersion = b.id;
                 }
 
+                if(transitionNextStepAfterSave) { this.step = this.steps.step3FileSelection; }
+            },
+
+            async stepSaveSchemaForm(transitionNextStepAfterSave){
+
+                if (this.selectedDataset == -1){
+                    this.errorText = "You must select or create a dataset first";
+                    this.errorAlert = true;
+                    this.transitionNextStepAfterSave = false;
+                    return;
+                }
+
                 if (this.schemaState && this.schemaState._id){
                     this.schema._id = this.schemaState._id;
                 }
@@ -341,7 +368,7 @@
                     await this.createDataPackageSchema();
                     
                 }
-                if(transitionNextStepAfterSave) { this.step = this.steps.step4FileLevelForm; }
+                if(transitionNextStepAfterSave) { this.step = this.steps.step6UploadProgress; }
             },
 
             async stepSaveFileInfoForm(transitionNextStepAfterSave) {
@@ -361,7 +388,9 @@
                     this.errorText = "";
                     try{
                         await this.updateUpload(this.upload);
-                        if(transitionNextStepAfterSave) { this.step = this.steps.step5UploadProgress; }
+                        if(transitionNextStepAfterSave) { 
+                            this.step = (this.enabledPhase >= 2) ? this.steps.step5SchemaInformation : this.steps.step6UploadProgress; 
+                        }
                     }catch(e){
                         this.errorAlert = true;
                         this.errorText = "Error updating upload " + e
@@ -372,7 +401,7 @@
 
             async stepSaveFileUploads(){
                 await this.updateUpload(this.upload);
-                //this.step = this.steps.step6UploadSummary;
+                //this.step = this.steps.step7UploadSummary;
                 this.$router.push({ name: 'data-upload-detail', id: this.uploadId });
 
             },
@@ -412,11 +441,12 @@
         data () {
             let steps = {
                 step1UploadForm: 1,
-                step2FileSelection: 2,
-                step3SchemaInformation: 3,
+                step2EditionForm: 2,
+                step3FileSelection: 3,
                 step4FileLevelForm: 4,
-                step5UploadProgress: 5,
-                step6UploadSummary: 6
+                step5SchemaInformation: 5,
+                step6UploadProgress: 6,
+                step7UploadSummary: 7
             };
             return {
                 uploadId: null,
@@ -449,6 +479,10 @@
                 inferContent: state => state.file.content,
                 
             }),
+
+            admin: function(){
+                return this.user.isAdmin;
+            },
 
             enabledPhase(){
                 let en = this.$store.state.config.items.find(item => item['key'] === 'enabledPhase');
@@ -493,11 +527,34 @@
             },
 
             // eslint-disable-next-line no-unused-vars
-            upload: function (newVal, oldVal) {
+            upload: async function (newVal, oldVal) {
                 if(newVal && !oldVal) {
                     if(this.upload.upload_submission_id) {
-                        this.step = this.steps.step2FileSelection;
-                        if (this.upload.files.length >= 1){
+                        
+                        if (this.enabledPhase >= 2){
+                            await this.getSchema({id: this.uploadId});
+                            await this.getAllRepos();
+                            await this.getBranchesByUpload({uploadId: this.uploadId})
+                            if (this.schemaState && this.schemaState.version){
+                                this.selectedVersion = this.schemaState.version
+                                // this.getBranchesByUpload({uploadId: this.uploadId})
+                            }
+                        
+                            if (this.versions && this.versions[0] && this.versions[0].repo_id){
+                                this.selectedDataset = this.versions[0].repo_id;
+                                this.allowSelect = false;
+                                this.selectedVersion = this.versions[0]._id;
+                            }
+                            if ( (this.selectedDataset === '-1') || (this.selectedVersion === '-1') ){
+                                this.step = this.steps.step2EditionForm;
+                            }else{
+                                this.step = this.steps.step3FileSelection;
+                            }
+                        }else{
+                            this.step = this.steps.step3FileSelection;
+                        }
+                        
+                        if (this.upload && this.upload.files && this.upload.files.length >= 1){
                             let allGood = true;
                             for (let i=0; i<this.upload.files.length; i++){
                                 if ( (!this.upload.files[i].id) || (this.upload.files[i].id === "") || (this.upload.files[i].id.toLowerCase() === "not yet uploaded") ){
@@ -505,7 +562,7 @@
                                 }
                             }
                             if (allGood){
-                                //this.step = this.steps.step6UploadSummary;
+                                //this.step = this.steps.step7UploadSummary;
                                 this.$router.push({ name: 'data-upload-detail', id: this.uploadId });
                             }
                         }

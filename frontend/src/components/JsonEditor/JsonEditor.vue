@@ -24,19 +24,25 @@
         </v-row>
         <v-container v-if="editing">
             <v-row v-if="stateType == 0" :key="'basicState-editing-'+reindexKey">
-                <span v-if="workingVal && workingVal.resources && workingVal.resources[0] && workingVal.resources[0].tableSchema && workingVal.resources[0].tableSchema.resources">
-                    <v-col v-for="(resource, key) in workingVal.resources[0].tableSchema.resources" :key="'basic-resource-'+key+'-'+reindexKey" cols=12 class="field">
+                <span v-if="workingVal && workingVal.resources">
+                    <v-col v-for="(resource, key) in workingVal.resources" :key="'basic-resource-'+key+'-'+reindexKey" cols=12 class="field">
                         <v-row>
                             <v-text-field
                                 :value="resource.path"
+                                :ref="'basicField-' + key + '-path'"
+                                :id="'basicField-' + key + '-path'"
+                                @focus="onFocusBasic"
                                 :label="$tc('Path')"
                                 @input="updateResourcePath(key, $event)"
                             ></v-text-field>
                         </v-row>
-                        <v-row v-for="(field, fKey) in resource.schema.fields" :key="'field-'+key+'-'+fKey+'-'+reindexKey" class="field">
+                        <v-row v-for="(field, fKey) in ((resource.tableSchema && resource.tableSchema.fields) ? resource.tableSchema.fields : resource.schema.fields)" :key="'field-'+key+'-'+fKey+'-'+reindexKey" class="field">
                             <v-col cols=12>
                                 <v-text-field
+                                    :ref="'basicField-' + key + '-' + fKey + '-name'"
+                                    :id="'basicField-' + key + '-' + fKey + '-name'"
                                     :value="field.name"
+                                    @focus="onFocusBasic"
                                     :label="$tc('Name')"
                                     @input="updateResource(key, fKey, 'name', $event)"
                                 >
@@ -45,7 +51,10 @@
 
                             <v-col cols=12>
                                 <v-text-field
+                                    :ref="'basicField-' + key + '-' + fKey + '-type'"
+                                    :id="'basicField-' + key + '-' + fKey + '-type'"
                                     :value="field.type"
+                                    @focus="onFocusBasic"
                                     :label="$tc('Type')"
                                     @input="updateResource(key, fKey, 'type', $event)"
                                 >
@@ -54,7 +63,10 @@
 
                             <v-col cols=12>
                                 <v-text-field
+                                    :ref="'basicField-' + key + '-' + fKey + '-format'"
+                                    :id="'basicField-' + key + '-' + fKey + '-format'"
                                     :value="field.format"
+                                    @focus="onFocusBasic"
                                     :label="$tc('Format')"
                                     @input="updateResource(key, fKey, 'format', $event)"
                                 >
@@ -63,7 +75,10 @@
 
                             <v-col cols=12>
                                 <v-text-field
+                                    :ref="'basicField-' + key + '-' + fKey + '-var_class'"
+                                    :id="'basicField-' + key + '-' + fKey + '-var_class'"
                                     :value="field.var_class"
+                                    @focus="onFocusBasic"
                                     :label="$tc('Var Class')"
                                     @input="updateResource(key, fKey, 'var_class', $event)"
                                 >
@@ -72,11 +87,36 @@
 
                             <v-col cols=12>
                                 <v-text-field
+                                    :ref="'basicField-' + key + '-' + fKey + '-rdfType'"
+                                    :id="'basicField-' + key + '-' + fKey + '-rdfType'"
                                     :value="field.rdfType"
+                                    @focus="onFocusBasic"
                                     :label="$tc('RDF Type')"
                                     @input="updateResource(key, fKey, 'rdfType', $event)"
                                 >
                                 </v-text-field>
+                            </v-col>
+
+                            <v-col cols=12>
+                                <v-text-field
+                                    :ref="'basicField-' + key + '-' + fKey + '-comments'"
+                                    :id="'basicField-' + key + '-' + fKey + '-comments'"
+                                    :value="field.comments"
+                                    @focus="onFocusBasic"
+                                    :label="$tc('Comments', 2)"
+                                    @input="updateResource(key, fKey, 'comments', $event)"
+                                >
+                                </v-text-field>
+                            </v-col>
+
+                            <v-col cols=12>
+                                <v-select
+                                    :value="field.highlight"
+                                    :label="$tc('Highlight')"
+                                    :items="[ {text: 'Yes', value: true}, {text: 'No', value: false}]"
+                                    @input="updateResource(key, fKey, 'highlight', $event)"
+                                >
+                                </v-select>
                             </v-col>
 
                             <v-col cols=11>
@@ -201,13 +241,13 @@
                     </div>
                 </v-col>
 
-                <v-col cols=12 v-else-if="resources && resources[0] && resources[0].schema && resources[0].schema.fields">
+                <v-col cols=12 v-else-if="resources && resources[0]">
                     <v-row v-for="(resource, key) in resources" :key="'resources'+key">
                         <v-col cols=12>
                             <h4>{{$tc('Resource')}} {{resource.name}}</h4>
                         </v-col>
-                        <v-col cols=12 v-if="resource.schema.fields">
-                            <div v-for="(field, key) in resource.schema.fields" :key="'field-'+key+'-'+field.name" class="field">
+                        <v-col cols=12 v-if="(resource.schema && resource.schema.fields) || (resource.tableSchema && resource.tableSchema.fields)">
+                            <div v-for="(field, key) in ((resource.tableSchema && resource.tableSchema.fields) ? resource.tableSchema.fields : resource.schema.fields)" :key="'field-'+key+'-'+field.name" :class="`field${field.highlight ? ' fieldHighlight' : ''}`">
                                 <v-row v-if="field && field.name">
                                     <!-- <v-col cols=3>
                                         Name:
@@ -270,6 +310,15 @@
                                         {{field.missingValues ? field.missingValues : field._descriptor._missingValues}}
                                     </v-col>
                                 </v-row>
+
+                                <v-row v-if="field && (field.comments || (field._descriptor && field._descriptor.comments))">
+                                    <v-col cols=3>
+                                        {{$tc('Comments', 2)}}:
+                                    </v-col>
+                                    <v-col cols=9>
+                                        {{field.comments ? field.comments : field._descriptor.comments}}
+                                    </v-col>
+                                </v-row>
                             </div>
                         </v-col>
                     </v-row>
@@ -308,6 +357,10 @@ export default{
             type: Number,
             required: false,
             default: 1,
+        },
+        focusProp: {
+            type: String,
+            required: false,
         }
     },
 
@@ -416,18 +469,10 @@ export default{
             }
 
             if (this.workingVal.resources.length == 0){
-                this.workingVal.resources.push({}); 
+                this.workingVal.resources.push({
+                    tableSchema: {}
+                }); 
             }
-
-            if (!this.workingVal.resources[0].tableSchema){
-                this.workingVal.resources[0].tableSchema = {}
-            }
-
-            if (!this.workingVal.resources[0].tableSchema.resources){
-                this.workingVal.resources[0].tableSchema.resources = []
-            }
-
-            this.workingVal.resources[0].tableSchema.resources.push({});
 
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
@@ -435,7 +480,11 @@ export default{
         },
 
         removeField: function(key, fKey){
-            Vue.delete(this.workingVal.resources[0].tableSchema.resources[key].schema.fields, fKey);
+            if (this.workingVal.resources[key].tableSchema.fields){
+                Vue.delete(this.workingVal.resources[key].tableSchema.fields, fKey);
+            }else{
+                Vue.delete(this.workingVal.resources[key].schema.fields, fKey);
+            }
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.reindexKey++;
@@ -447,27 +496,41 @@ export default{
 
 
         addField: function(key){
-            this.workingVal.resources[0].tableSchema.resources[key].schema.fields.push({
-                name: "",
-                type: "",
-                rdfType: "",
-                var_class: "",
-                format: "",
-            });
+            if (this.workingVal.resources[key].tableSchema && this.workingVal.resources[key].tableSchema.fields){
+                this.workingVal.resources[key].tableSchema.fields.push({
+                    name: "",
+                    type: "",
+                    rdfType: "",
+                    var_class: "",
+                    format: "",
+                });
+            }else{
+                this.workingVal.resources[key].schema.fields.push({
+                    name: "",
+                    type: "",
+                    rdfType: "",
+                    var_class: "",
+                    format: "",
+                });
+            }
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.$emit('edited', this.workingVal);
         },
 
         updateResourcePath: function(key, newValue){
-            this.workingVal.resources[0].tableSchema.resources[key] = newValue;
+            this.workingVal.resources[key] = newValue;
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.$emit('edited', this.workingVal);
         },
 
         updateResource: function(key, fieldKey, path, value){
-            this.workingVal.resources[0].tableSchema.resources[key].schema.fields[fieldKey][path] = value;
+            if (this.workingVal.resources[key].schema && this.workingVal.resources[key].schema.fields){
+                this.workingVal.resources[key].schema.fields[fieldKey][path] = value;
+            }else{
+                this.workingVal.resources[key].tableSchema.fields[fieldKey][path] = value;
+            }
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.$emit('edited', this.workingVal);
@@ -548,6 +611,11 @@ export default{
 
         onFocus: function(f){
             this.focus = f;
+        },
+
+        onFocusBasic: function(event){
+            this.focus = event.target.id
+            this.$emit("focus", this.focus);
         }
     },
 
@@ -570,6 +638,18 @@ export default{
         this.workingVal = this.val;
         this.stateType = this.stateTypeParent;
         this.workingStr = JSON.stringify(this.val, this.replacerFunc(), 4);
+        if (this.focusProp){
+            this.focus = this.focusProp
+            if (this.$refs[this.focus] && this.$refs[this.focus][0]){
+                this.$refs[this.focus][0].focus();
+            }
+        }
+
+        this.$nextTick(function () {
+            if (this.$refs[this.focus] && this.$refs[this.focus][0]){
+                this.$refs[this.focus][0].focus();
+            }
+        });
     }
 }
 </script>
@@ -583,6 +663,10 @@ export default{
     .field{
         border: 1px solid;
         margin-bottom: 5px;
+    }
+
+    .fieldHighlight{
+        background: var(--v-textHighlight-base);
     }
 
 </style>>

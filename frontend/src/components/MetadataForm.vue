@@ -22,18 +22,34 @@
                             <SchemaView :editing="editing" @edited="updatedObj"></SchemaView>
                         </v-row>
                         <v-row v-else>
-                            <FileReader
-                                :show-encrypt-button="false"
-                                :show-upload-button="false"
-                                :show-import-button="true"
-                                :read-file="true"
-                                :do-not-chop="true"
-                                :index="0"
-                                @import-button-clicked="importButtonClicked"
-                                :ignoreDuplicates="true"
-                                accept=".json,application/json,application/JSON"
-                            >
-                            </FileReader>
+                            <v-col cols=12>
+                                <FileReader
+                                    :show-encrypt-button="false"
+                                    :show-upload-button="false"
+                                    :show-import-button="true"
+                                    :read-file="true"
+                                    :do-not-chop="true"
+                                    :index="0"
+                                    @import-button-clicked="importButtonClicked"
+                                    :ignoreDuplicates="true"
+                                    accept=".json,application/json,application/JSON"
+                                >
+                                </FileReader>
+                            </v-col>
+                            <v-col cols=12>
+                                <v-radio-group v-model="metadataType">
+                                    <v-radio
+                                        label="Data Package"
+                                        value="package"
+                                    ></v-radio>
+
+                                    <v-radio
+                                        label="Table Schema"
+                                        value="table"
+                                    ></v-radio>
+
+                                </v-radio-group>
+                            </v-col>
                         </v-row>
                     </v-card-text>
                         <v-card-actions v-if="editing">
@@ -83,7 +99,7 @@ export default {
             alert: false,
             alertType: "success",
             alertText: "",
-            metadataType: 'table-schema',
+            metadataType: 'package',
             loading: true,
             editing: false,
             schemaObj: null,
@@ -98,6 +114,7 @@ export default {
             getDataUploads: 'dataUploads/getDataUploads',
             createTableSchema: 'schemaImport/createTableSchema',
             updateDataPackageSchema: 'schemaImport/updateDataPackageSchema',
+            createDataPackageSchema: 'schemaImport/createDataPackageSchema',
             getSchema: 'schemaImport/getTableSchema',
         }),
         ...mapMutations({    
@@ -105,6 +122,7 @@ export default {
             clearBranch: 'repos/clearBranch',
             setTableSchema: 'schemaImport/setTableSchema',
             resetSchemaImportState: 'schemaImport/resetState',
+            setDataPackageSchema: "schemaImport/setDataPackageSchema",
         }),
 
         async loadSections() {
@@ -162,12 +180,19 @@ export default {
         },
 
         async importButtonClicked(content) {
-            if(this.metadataType == 'table-schema') {
-                content = JSON.parse(content);
-                content.version = this.id;
-                content = JSON.stringify(content);
+            content = JSON.parse(content);
+            content.version = this.id;
+            content = JSON.stringify(content);
+
+            if(this.metadataType == 'table') {    
                 this.setTableSchema({schema: content});
                 this.saveTableSchema();
+                this.loading = true;
+                await this.load();
+                this.loading = false;
+            }else{
+                this.setDataPackageSchema({schema: content});
+                await this.createDataPackageSchema();
                 this.loading = true;
                 await this.load();
                 this.loading = false;
