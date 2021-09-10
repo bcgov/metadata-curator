@@ -50,7 +50,7 @@
                                     item-value="_id"
                                     :label="$tc('Datasets')">
                                 </v-select>
-                                <div v-if="admin">Version: {{this.selectedVersion}} - {{this.versions[0].name}}</div>
+                                <div v-if="admin && this.selectedVersion && this.versions && this.versions[0]">Version: {{this.selectedVersion}} - {{this.versions[0].name}}</div>
                                 <v-btn v-if="allowCreate" id="newDatasetButton" @click="createDataset">{{$tc('New')}} {{$tc('Datasets')}}</v-btn>
                             </v-card>
                             <v-btn text @click="step=steps.step1UploadForm" id="back-2">{{$tc('Back')}}</v-btn>

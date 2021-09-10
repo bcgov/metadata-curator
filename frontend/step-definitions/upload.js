@@ -48,16 +48,13 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
     }
 
     await client.click('#next-1');
-    let f = require('path').resolve(__dirname + '/sample.csv');
-
-    await client.setValue('#fileForm-reader input[type="file"]', f);
-
-    await client.click('#next-2');
-
     
     await client.click('#newDatasetButton');
     await client.pause(3000);
-
+    await client.click('#next-2');
+    
+    let f = require('path').resolve(__dirname + '/sample.csv');
+    await client.setValue('#fileForm-reader input[type="file"]', f);
     await client.click('#next-3');
 
     let d = new Date();
@@ -73,6 +70,9 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
     await client.click('#next-4');
     await client.saveScreenshot("./"+path+"/postNext3.png").pause(1);
 
+    await client.click('#next-5');
+
+    await client.pause(100);
 
     await client.click('#upload');
 
