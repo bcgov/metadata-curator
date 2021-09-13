@@ -9,12 +9,16 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
     const util = require('./util');
     const requiredPhase = 2
 
-    const createRepo = async function(user, name) {
+    const createRepo = async function(user, fields) {
         const id = mongoose.Types.ObjectId();
         const topic = await forumClient.addTopic(id, user);
         const repoSchema = new db.RepoSchema;
         repoSchema._id = id;
-        repoSchema.name = name;
+        repoSchema.name = fields.name;
+        if (fields.description){
+            console.log("Create set desc");
+            repoSchema.description = fields.description
+        }
         repoSchema.create_date = new Date();
         repoSchema.created_by = user.id;
         repoSchema.topic_id = topic._id;
@@ -38,6 +42,12 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         //record exists
         if (fields.name){
             record.name = fields.name;
+        }
+
+        console.log("update set desc", fields);
+        if (fields.description){
+            
+            record.description = fields.description;
         }
     
         return await record.save();
@@ -83,7 +93,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
     
         try{
-            const repo = await createRepo(req.user, fields.name);
+            const repo = await createRepo(req.user, fields);
             res.status(201).json({id: repo._id.toString()});
         }catch(ex){
             res.status(500).json({error: "Unknown error"});

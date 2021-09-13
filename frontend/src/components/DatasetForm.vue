@@ -45,6 +45,18 @@
                             ></TextInput>
                         </v-row>
 
+                        <v-row>
+                            <TextInput
+                                :label="$tc('Description')"
+                                :placeholder="$tc('Description')"
+                                name="name"
+                                :large="true"
+                                :editing="editing"
+                                :value="(dataset) ? dataset.description : ''"
+                                @edited="(newValue) => { updateValues('description', newValue) }"
+                            ></TextInput>
+                        </v-row>
+
                         <v-row wrap v-if="!creating">
                             <v-col cols=3>
                                 <h2>{{$tc('Versions', 2)}}</h2>

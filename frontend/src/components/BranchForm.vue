@@ -31,49 +31,134 @@
                                 </v-row>
 
                                 <v-row>
-                                    <TextInput
-                                        :label="$tc('Name')"
-                                        :placeholder="$tc('Default')"
-                                        name="name"
-                                        :editing="editing"
-                                        :value="(branch) ? branch.name : ''"
-                                        @edited="(newValue) => { updateValues('name', newValue) }"
-                                    ></TextInput>
+                                    <v-col cols=12>
+                                        Dataset Name: {{dataset.name}}
+                                    </v-col>
                                 </v-row>
 
                                 <v-row>
-                                    <Select
-                                        :label="$tc('Type')"
-                                        name="type"
-                                        :editing="editing"
-                                        :value="(branch) ? branch.type : ''"
-                                        :items="types"
-                                        @edited="(newValue) => { updateValues('type', newValue) }"
-                                    ></Select>
+                                    <v-col cols=12>
+                                        Dataset Description: {{dataset.description}}
+                                    </v-col>
                                 </v-row>
 
                                 <v-row>
-                                    <TextArea
-                                        :label="$tc('Description')"
-                                        :placeholder="$tc('Description')"
-                                        name="description"
-                                        :editing="editing"
-                                        :value="(branch) ? branch.description : ''"
-                                        @edited="(newValue) => { updateValues('description', newValue) }"
-                                    ></TextArea>
+                                    <v-col cols=12>
+                                        <TextInput
+                                            :label="$tc('Name')"
+                                            :placeholder="$tc('Default')"
+                                            name="name"
+                                            :editing="editing"
+                                            :value="(branch) ? branch.name : ''"
+                                            @edited="(newValue) => { updateValues('name', newValue) }"
+                                        ></TextInput>
+                                    </v-col>
                                 </v-row>
 
                                 <v-row>
-                                    <Select
-                                        :label="$tc('Data Upload')"
-                                        name="upload_id"
-                                        :editing="editing"
-                                        :value="(branch) ? branch.data_upload_id : ''"
-                                        :items="dataUploads"
-                                        item-text="name"
-                                        item-value="_id"
-                                        @edited="(newValue) => { updateValues('upload_id', newValue) }"
-                                    ></Select>
+                                    <v-col cols=12>
+                                        <TextInput
+                                            :label="$tc('Short Title')"
+                                            :placeholder="$tc('Short Title')"
+                                            name="short_title"
+                                            :editing="editing"
+                                            :value="(branch) ? branch.short_title : ''"
+                                            @edited="(newValue) => { updateValues('short_title', newValue) }"
+                                        ></TextInput>
+                                    </v-col>
+                                </v-row>
+
+                                <v-row>
+                                    <v-col cols=12>
+                                        <Select
+                                            :label="$tc('Type')"
+                                            name="type"
+                                            :editing="editing"
+                                            :value="(branch) ? branch.type : ''"
+                                            :items="types"
+                                            @edited="(newValue) => { updateValues('type', newValue) }"
+                                        ></Select>
+                                    </v-col>
+                                </v-row>
+
+                                <v-row>
+                                    <v-col cols=12>
+                                        <TextArea
+                                            :label="$tc('Description')"
+                                            :placeholder="$tc('Description')"
+                                            name="description"
+                                            :editing="editing"
+                                            :value="(branch) ? branch.description : ''"
+                                            @edited="(newValue) => { updateValues('description', newValue) }"
+                                        ></TextArea>
+                                    </v-col>
+                                </v-row>
+
+                                <v-row>
+                                    <v-col cols=12>
+                                        <Select
+                                            :label="$tc('Data Upload')"
+                                            name="upload_id"
+                                            :editing="editing"
+                                            :value="(branch) ? branch.data_upload_id : ''"
+                                            :items="dataUploads"
+                                            item-text="name"
+                                            item-value="_id"
+                                            @edited="(newValue) => { updateValues('upload_id', newValue) }"
+                                        ></Select>
+                                    </v-col>
+                                </v-row>
+
+                                <v-row>
+                                    <v-col cols=12>
+                                        <TextInput
+                                            :label="$tc('Availability')"
+                                            :placeholder="$tc('Availability')"
+                                            name="availability"
+                                            :editing="editing"
+                                            :value="(branch) ? branch.availability : ''"
+                                            @edited="(newValue) => { updateValues('availability', newValue) }"
+                                        ></TextInput>
+                                    </v-col>
+                                </v-row>
+
+                                <v-row>
+                                    <v-col cols=12>
+                                        <TextInput
+                                            :label="$tc('Variable Classification')"
+                                            :placeholder="$tc('Variable Classification')"
+                                            name="variable_classification"
+                                            :editing="editing"
+                                            :value="(branch) ? branch.variable_classification : ''"
+                                            @edited="(newValue) => { updateValues('variable_classification', newValue) }"
+                                        ></TextInput>
+                                    </v-col>
+                                </v-row>
+
+                                <v-row>
+                                    <v-col cols=12>
+                                        <TextArea
+                                            :label="$tc('Notes')"
+                                            :placeholder="$tc('Notes')"
+                                            name="notes"
+                                            :editing="editing"
+                                            :value="(branch) ? branch.notes : ''"
+                                            @edited="(newValue) => { updateValues('notes', newValue) }"
+                                        ></TextArea>
+                                    </v-col>
+                                </v-row>
+
+                                <v-row>
+                                    <v-col cols=12>
+                                        <TextInput
+                                            :label="$tc('Citation')"
+                                            :placeholder="$tc('Citation')"
+                                            name="citation"
+                                            :editing="editing"
+                                            :value="(branch) ? branch.citation : ''"
+                                            @edited="(newValue) => { updateValues('citation', newValue) }"
+                                        ></TextInput>
+                                    </v-col>
                                 </v-row>
 
 
@@ -155,6 +240,7 @@ export default {
 
         async loadSections() {
             await this.getBranch({id: this.id});
+            await this.getDataset({id: this.branch.repo_id});
             this.reIndex++;
         },
 
@@ -224,6 +310,7 @@ export default {
             user: state => state.user.user,
             branch: state => state.repos.branch,
             dataUploads: state => state.dataUploads.dataUploads,
+            dataset: state => state.repos.repo,
         }),
     },
     watch: {

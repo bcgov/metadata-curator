@@ -260,7 +260,7 @@ export class Backend {
     postRepo(repo){
         // console.log("BE postdataUpload: " + dataUpload);
         const url = `/api/v1/repos`;
-        const body = { name: repo.name };
+        const body = { name: repo.name, description: repo.description };
         return axios.post(url, body, {withCredentials: true}).then(response => response.data)
     }
 
@@ -269,6 +269,7 @@ export class Backend {
         const url = `/api/v1/repos/${repo._id}`;
         const body = { 
             name: repo.name,
+            description: repo.description,
         };
         return axios.put(url, body, {withCredentials: true}).then(response => response.data)
     }

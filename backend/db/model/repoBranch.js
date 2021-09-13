@@ -29,6 +29,28 @@ var repoBranchSchema = new Schema({
         required: true,
         ref: 'data_upload'
     },
+
+    availability: {
+        type: String,
+        required: false,
+    },
+    variable_classification: {
+        type: String,
+        required: false,
+    },
+    notes: {
+        type: String,
+        required: false,
+    },
+    citation:{
+        type: String,
+        required: false,
+    },
+    short_title: {
+        type: String,
+        required: false,
+    },
+
 });
 
 

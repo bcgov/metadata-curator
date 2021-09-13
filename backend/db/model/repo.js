@@ -12,6 +12,7 @@ var repoSchema = new Schema({
     },
     created_by: {type: String, required: true},
     topic_id: {type: Schema.Types.ObjectId},
+    description: {type: String, required: false},
 });
 
 
