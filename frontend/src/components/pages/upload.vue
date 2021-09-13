@@ -214,13 +214,14 @@
 
                         rows[i] = rows[i].split(delim);
                     }
-                    //let headers = rows.shift();
+                    let headers = rows.shift();
+                    rows.unshift(headers);
                     let s = await Schema.load({});
-                    s.infer(rows, []);
+                    s.infer(rows, headers);
                     this.schema.resources.push({
                         name: this.upload.files[i].name.substring(0,this.upload.files[i].name.lastIndexOf('.')),
                         path: "./"+this.upload.files[i].name,
-                        schema: s,
+                        schema: s.descriptor,
                     });
                 }
                 this.jsonRedraw++;

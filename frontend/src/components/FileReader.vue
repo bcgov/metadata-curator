@@ -435,6 +435,11 @@ export default {
                             self.$store.commit('file/addFileHandleIfNotPresent', { handle: self.file, fileSig: finger});
 
                             if (!self.doNotChop){
+                                let defChunkSize = (5 * 1000 * 1000) + 1; // 5mb
+                                //ram converted to bytes divided by 128 (arbitrary)
+                                let customChunkSize = navigator.deviceMemory ? Math.ceil(navigator.deviceMemory * 1024 * 1024 * 1024 / 128) : Math.ceil(8 * 1024 * 1024 * 1024 / 128);
+                                this.chunkSize = (customChunkSize > defChunkSize) ? customChunkSize : defChunkSize;
+                                
                                 const chop = Math.ceil(this.chunkSize / 64); //cap at 1mb   
                                 let choppedContent = content.slice(0, chop)
 
