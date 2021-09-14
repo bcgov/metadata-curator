@@ -10,7 +10,7 @@ var repoBranchSchema = new Schema({
     type: {
         type: String,
         required: true,
-        enum: ["standard", "reserve"]
+        enum: ["standard", "reserve", "restricted"]
     },
     name: {
         type: String,

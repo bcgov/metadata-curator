@@ -44,7 +44,6 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             record.name = fields.name;
         }
 
-        console.log("update set desc", fields);
         if (fields.description){
             
             record.description = fields.description;

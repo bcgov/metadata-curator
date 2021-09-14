@@ -290,24 +290,12 @@ export class Backend {
 
     postRepoBranch(repoId, branch){
         const url = `/api/v1/repobranches/${repoId}/branches`;
-        const body = { 
-            name: branch.name,
-            type: branch.type,
-            description: branch.description,
-            upload_id: branch.upload_id,
-        };
-        return axios.post(url, body, {withCredentials: true}).then(response => response.data)
+        return axios.post(url, branch, {withCredentials: true}).then(response => response.data)
     }
 
     putRepoBranch(repoId, branch){
         const url = `/api/v1/repobranches/${branch._id}`;
-        const body = { 
-            name: branch.name,
-            type: branch.type,
-            description: branch.description,
-            upload_id: branch.upload_id,
-        };
-        return axios.put(url, body, {withCredentials: true}).then(response => response.data)
+        return axios.put(url, branch, {withCredentials: true}).then(response => response.data)
     }
 
     getMcVersion(){

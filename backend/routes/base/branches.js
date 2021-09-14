@@ -11,7 +11,7 @@ var buildDynamic = function(db, router, auth, revisionService, cache){
     const util = require('./util');
     const requiredPhase = 2;
 
-    const addBranch = async function(repoId, type, name, description, upload_id) {
+    const addBranch = async function(repoId, type, name, description, upload_id, fields) {
         if (typeof(repoId) === "undefined"){
             throw new Error ("repo id is required")
         }
@@ -23,6 +23,12 @@ var buildDynamic = function(db, router, auth, revisionService, cache){
         repoBranchSchema.description = description;
         repoBranchSchema.data_upload_id = upload_id;
         repoBranchSchema.create_date = new Date();
+
+        repoBranchSchema.availability = fields.availability;
+        repoBranchSchema.variable_classification = fields.variable_classification;
+        repoBranchSchema.notes = fields.notes;
+        repoBranchSchema.citation = fields.citation;
+        repoBranchSchema.short_title = fields.short_title;
     
         return await repoBranchSchema.save();
     }
@@ -37,7 +43,7 @@ var buildDynamic = function(db, router, auth, revisionService, cache){
         return res;
     }
     
-    const updateBranch = async function(branchId, type, name, description, upload_id) {
+    const updateBranch = async function(branchId, type, name, description, upload_id, fields) {
         const repoBranchSchema = await getBranchById(branchId);
         if (type){
             repoBranchSchema.type = type;
@@ -54,6 +60,28 @@ var buildDynamic = function(db, router, auth, revisionService, cache){
         if (upload_id){
             repoBranchSchema.data_upload_id = upload_id;
         }
+
+        if (fields.availability){
+            repoBranchSchema.availability = fields.availability;
+        }
+
+        if (fields.variable_classification){
+            repoBranchSchema.variable_classification = fields.variable_classification;
+        }
+
+        if (fields.notes){
+            repoBranchSchema.notes = fields.notes;
+        }
+
+        if (fields.citation){
+            repoBranchSchema.citation = fields.citation;
+        }
+
+        if (fields.short_title){
+            repoBranchSchema.short_title = fields.short_title;
+        }
+
+        console.log("UPDATING ", repoBranchSchema)
         
         return await repoBranchSchema.save();
     }
@@ -106,7 +134,7 @@ var buildDynamic = function(db, router, auth, revisionService, cache){
             return res.status(404).send(util.phaseText('PUT', ('repobranches/'+req.params.branchId)));
         }
         let f = {...req.body};
-        const result = await updateBranch(req.params.branchId, f.type, f.name, f.description);
+        const result = await updateBranch(req.params.branchId, f.type, f.name, f.description, f.upload_id, f);
         res.status(200).json(result);
     });
 
@@ -147,7 +175,7 @@ var buildDynamic = function(db, router, auth, revisionService, cache){
         }
 
         try{
-            const branch = await addBranch(repoId, f.type, f.name, f.description, f.upload_id);
+            const branch = await addBranch(repoId, f.type, f.name, f.description, f.upload_id, f);
             res.status(201).json({
                 id: branch._id.toString()
             });

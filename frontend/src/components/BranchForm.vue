@@ -216,7 +216,7 @@ export default {
             id: null,
             editing: false,
             creating: false,
-            types: [ {text: 'Standard', value: 'standard'}, {text: 'Reserve', value: 'reserve'} ],
+            types: [ {text: 'Standard', value: 'standard'}, {text: 'Reserve', value: 'reserve'}, {text: 'Restricted', value: 'restricted'} ],
             alert: false,
             alertType: "success",
             alertText: "",
