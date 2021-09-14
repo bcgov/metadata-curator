@@ -231,6 +231,7 @@ export default {
             saveBranch: 'repos/saveBranch',
             updateBranch: 'repos/updateBranch',
             getBranch: 'repos/getBranch',
+            getRepos: 'repos/getAllRepos',
             getDataUploads: 'dataUploads/getDataUploads',
         }),
         ...mapMutations({    
@@ -240,6 +241,7 @@ export default {
 
         async loadSections() {
             await this.getBranch({id: this.id});
+            //await this.getRepos({filterBy: ''});
             await this.getDataset({id: this.branch.repo_id});
             this.reIndex++;
         },

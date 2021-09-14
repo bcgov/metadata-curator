@@ -158,5 +158,15 @@ export default {
         "Standard": "Standard",
         "Reserve": "Reserve",
         "Highlight": "Highlight",
+        "You said you were providing": "You said you were providing",
+        "files but have currently provided": "files but have currently provided | file but have currently provided | files but have currently provided",
+        "Variable Classification": "Variable Classifications | Variable Classification | Variable Classifications",
+        "Notes": "Notes",
+        "Availability": "Availability",
+        "Citation": "Citation",
+        "Short Title": "Short Title",
+        "Close": "Close",
+        "Data Upload Detail": "Data Upload Detail",
+        "Info": "Info",
     }
 }

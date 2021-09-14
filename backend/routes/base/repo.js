@@ -60,7 +60,12 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
 
             if(query && query.upload_id) {
                 //return await db.RepoSchema.find({data_upload_id: mongoose.Types.ObjectId(query.filterBy)}).sort({ "create_date": 1});
-                return await db.RepoBranchSchema.find({data_upload_id: query.upload_id}).populate('repo_id');
+                let data = await db.RepoBranchSchema.find({data_upload_id: query.upload_id}).populate('repo_id');
+                let res = [];
+                for (let i=0; i<data.length; i++){
+                    res.push(data[i].repo_id);
+                }
+                return res;
                 //return await db.RepoSchema.find({_id: {$in: repoIds}}).sort({ "create_date": 1});
             }else{
                 return await db.RepoSchema.find({_id: {$in: repoIds}}).sort({ "create_date": 1});
@@ -76,6 +81,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         if (!util.phaseCheck(cache, requiredPhase)){
             return res.status(404).send(util.phaseText('GET', 'repos'));
         }
+        console.log("QQ", req.query);
         let repos = await listRepositories(req.user, req.query);
         res.status(200).json(repos);
     });

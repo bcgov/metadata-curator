@@ -6,7 +6,7 @@
                     <v-alert
                         v-if="(submission && submission.data && submission.data.numOfUploadFiles && (submission.data.numOfUploadFiles !== files.length))"
                         type="warning">
-                            {{$tc('You said you were providing ')}} {{submission.data.numOfUploadFiles}} {{$tc('files but have currently provided', submission.data.numOfUploadFiles)}} {{files.length}}    
+                            {{$tc('You said you were providing')}} {{submission.data.numOfUploadFiles}} {{$tc('files but have currently provided', submission.data.numOfUploadFiles)}} {{files.length}}    
                     </v-alert>
                 </v-col>
             </v-row>

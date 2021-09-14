@@ -12,7 +12,7 @@
                             <v-card>
                                 <v-card-title>{{$tc('Version')}} {{$tc("Information")}}</v-card-title>
                                 <v-card-text>
-                                    <BranchForm :dialog="true" @close="schemaDialog = false" :branchId="branch._id"></BranchForm>
+                                    <BranchForm :dialog="true" @close="schemaDialog = false" :branchId="selectedVersion"></BranchForm>
                                 </v-card-text>
                                 <v-card-actions>
                                     
@@ -35,7 +35,7 @@
                                 <v-row class="mb-3 fixedHeight">
                                     <v-btn color="orange" id="uploadDetail-showInfo" text @click="showViewDialog()">{{$tc('Uploads')}} &amp; {{$tc('File Info')}}</v-btn>
                                 </v-row>
-                                <v-row class="mb-3 fixedHeight">
+                                <v-row class="mb-3 fixedHeight" v-if="this.selectedVersion !== '-1'">
                                     <v-btn color="orange" id="uploadDetail-showSchema" text @click="showSchemaDialog()">{{$tc('Schema')}} {{$tc('Info')}}</v-btn>
                                 </v-row>
                                 <v-row class="ml-3 fixedHeight">
@@ -106,13 +106,16 @@ export default {
             getDataUpload: 'dataUploadDetail/getDataUpload',
             updateDataUpload: 'dataUploadDetail/updateDataUpload',
             // getRevisions: 'dataUploadRevisions/getRevisions',
+            getSchema: 'schemaImport/getDataPackageByUploadId',
             getComments: 'dataUploadComments/getComments',
             addComment: 'dataUploadComments/addComment',
             getRepos: 'repos/getRepos',
-            getAllRepos: 'repos/getAllRepos',
+            getRepo: 'repos/getRepo',
             saveDataset: 'repos/saveRepo',
             getUploadFormSubmission: 'uploadForm/getUploadFormSubmission',
             getUploadForm: 'uploadForm/getUploadForm',
+            getBranchesByUpload: "repos/getBranchesByUpload",
+            getBranch: 'repos/getBranch',
         }),
         ...mapMutations({
             clearDataUpload: 'dataUploadDetail/clearDataUpload',
@@ -135,21 +138,24 @@ export default {
                 this.updateDataUpload(data);
             }
             if (this.enabledPhase >= 2){
-                await this.getSchema({id: this.uploadId});
+                await this.getSchema({id: this.dataUpload._id});
                 await this.getRepos({filterBy: {upload_id: this.dataUpload._id}});
-                await this.getBranchesByUpload({uploadId: this.uploadId})
+                await this.getBranchesByUpload({uploadId: this.dataUpload._id})
 
                 this.selectedDataset = '-1';
                 this.selectedVersion = '-1';
 
                 if (this.schemaState && this.schemaState.version){
                     this.selectedVersion = this.schemaState.version
+                    //await this.getBranch({id: this.selectedVersion});
                     // this.getBranchesByUpload({uploadId: this.uploadId})
                 }
             
                 if (this.versions && this.versions[0] && this.versions[0].repo_id){
                     this.selectedDataset = this.versions[0].repo_id;
                     this.selectedVersion = this.versions[0]._id;
+                    //await this.getRepo({id: this.selectedDataset});
+                    //await this.getBranch({id: this.selectedVersion});
                     this.allowSelect = false;
                 }
             }
@@ -211,6 +217,7 @@ export default {
             schemaState: state => state.schemaImport.dataPackageSchema,
             allDatasets: state => state.repos.allRepos,
             branch: state => state.repos.branch,
+            versions: state => state.repos.branches,
         }),
         inDataset: function(){
             return this.repos.length > 0
