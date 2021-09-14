@@ -5,27 +5,17 @@
                 </v-row>
                 <v-row v-else dense>
                     <v-dialog 
-                       v-model="datasetPopup"
+                       v-model="schemaDialog"
                         fullscreen
                         hide-overlay
                         transition="dialog-bottom-transition">
                             <v-card>
-                                <v-card-title>{{$tc('Select Existing Dataset')}}</v-card-title>
+                                <v-card-title>{{$tc('Version')}} {{$tc("Information")}}</v-card-title>
                                 <v-card-text>
-                                    <Select
-                                        :label="$tc('Datasets')"
-                                        name="dataset_id"
-                                        :editing="true"
-                                        :value="''"
-                                        :items="allDatasets"
-                                        item-text="name"
-                                        item-value="_id"
-                                        @edited="(newValue) => { selectDataset(newValue) }"
-                                    ></Select>
+                                    <BranchForm :dialog="true" @close="schemaDialog = false" :branchId="branch._id"></BranchForm>
                                 </v-card-text>
                                 <v-card-actions>
-                                    <v-btn @click="datasetPopup = false; selectedDataset = null;">{{$tc('Cancel')}}</v-btn>
-                                    <v-btn @click="createVersion()" color="primary">{{$tc('Create')}}</v-btn>
+                                    
                                 </v-card-actions>
                             </v-card>
                     </v-dialog>
@@ -44,6 +34,9 @@
                                 </v-row>
                                 <v-row class="mb-3 fixedHeight">
                                     <v-btn color="orange" id="uploadDetail-showInfo" text @click="showViewDialog()">{{$tc('Uploads')}} &amp; {{$tc('File Info')}}</v-btn>
+                                </v-row>
+                                <v-row class="mb-3 fixedHeight">
+                                    <v-btn color="orange" id="uploadDetail-showSchema" text @click="showSchemaDialog()">{{$tc('Schema')}} {{$tc('Info')}}</v-btn>
                                 </v-row>
                                 <v-row class="ml-3 fixedHeight">
                                     <v-checkbox class="mt-0 pt-0" :disabled="true" :label="$tc('Approver has viewed (since last update)')" v-model="dataUpload.opened_by_approver"></v-checkbox>
@@ -87,7 +80,7 @@ import {mapActions, mapMutations, mapState} from "vuex";
 import Comments from "../Comments";
 import CommentAddDialog from "../CommentAddDialog";
 import ViewDialog from "../ViewUploadDialog";
-import Select from '../Select.vue';
+import BranchForm from '../BranchForm';
 
 export default {
     components:{
@@ -95,7 +88,7 @@ export default {
         Comments,
         CommentAddDialog,
         ViewDialog,
-        Select
+        BranchForm
     },
    
     data () {
@@ -103,8 +96,9 @@ export default {
             commentAddDialog: false,
             dataUploadId: null,
             viewDialog: false,
-            datasetPopup: false,
-            selectedDataset: null,
+            schemaDialog: false,
+            selectedDataset: "-1",
+            selectedVersion: "-1",
         }
     },
     methods: {
@@ -135,11 +129,29 @@ export default {
             await this.getDataUpload(this.dataUploadId);
             await this.getUploadForm(this.dataUpload.form_name);
             this.getUploadFormSubmission({formName: this.dataUpload.form_name, submissionId: this.dataUpload.upload_submission_id});
-            this.getRepos({filterBy: {upload_id: this.dataUpload._id}});
-            this.getAllRepos();
+            
             if(this.user.isApprover && !this.dataUpload.opened_by_approver) {
                 const data = {...this.dataUpload, opened_by_approver: true};
                 this.updateDataUpload(data);
+            }
+            if (this.enabledPhase >= 2){
+                await this.getSchema({id: this.uploadId});
+                await this.getRepos({filterBy: {upload_id: this.dataUpload._id}});
+                await this.getBranchesByUpload({uploadId: this.uploadId})
+
+                this.selectedDataset = '-1';
+                this.selectedVersion = '-1';
+
+                if (this.schemaState && this.schemaState.version){
+                    this.selectedVersion = this.schemaState.version
+                    // this.getBranchesByUpload({uploadId: this.uploadId})
+                }
+            
+                if (this.versions && this.versions[0] && this.versions[0].repo_id){
+                    this.selectedDataset = this.versions[0].repo_id;
+                    this.selectedVersion = this.versions[0]._id;
+                    this.allowSelect = false;
+                }
             }
         },
 
@@ -164,6 +176,10 @@ export default {
             this.viewDialog = true;
         },
 
+        showSchemaDialog(){
+            this.schemaDialog = true;
+        },
+
         onCloseButtonClicked() {
             this.commentAddDialog = false;
         },
@@ -179,25 +195,6 @@ export default {
             this.createVersion(d.id);
         },
 
-        async createVersion(id){
-            if (typeof(id) === "string"){
-                this.editDataset({name: '_id', value: id});
-            }else if (this.selectedDataset){
-                this.editDataset({name: '_id', value: this.selectedDataset});
-            }else{
-                this.datasetPopup = true;
-                return;
-            }
-
-            this.clearBranch();
-            this.editBranch({name: 'name', value: this.dataUpload.name});
-            let desc = ((this.submission) && (this.submission.data) && (this.submission.data.description)) ? this.submission.data.description : this.dataUpload.name;
-            this.editBranch({name: 'description', value: desc});
-            this.editBranch({name: 'upload_id', value: this.dataUpload._id});
-            this.editBranch({name: 'data_upload_id', value: this.dataUpload._id});
-            this.$router.push({name: 'version_form', params: { id: 'create' }})
-        },
-
         async onSaveButtonClicked(comment) {
             this.commentAddDialog = false;
             await this.addComment({dataUploadId: this.dataUploadId, comment: comment});
@@ -211,7 +208,9 @@ export default {
             repos: state => state.repos.repos,
             uploadForm: state => state.uploadForm.formDef,
             submission: state => state.uploadForm.submission,
+            schemaState: state => state.schemaImport.dataPackageSchema,
             allDatasets: state => state.repos.allRepos,
+            branch: state => state.repos.branch,
         }),
         inDataset: function(){
             return this.repos.length > 0

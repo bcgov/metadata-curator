@@ -2,6 +2,16 @@
     <v-container>
         <span :key="'container'+spanKey">
             <v-row>
+                <v-col cols=12>
+                    <v-alert
+                        v-if="(submission && submission.data && submission.data.numOfUploadFiles && (submission.data.numOfUploadFiles !== files.length))"
+                        type="warning">
+                            {{$tc('You said you were providing ')}} {{submission.data.numOfUploadFiles}} {{$tc('files but have currently provided', submission.data.numOfUploadFiles)}} {{files.length}}    
+                    </v-alert>
+                </v-col>
+            </v-row>
+
+            <v-row>
                 <v-col cols=10>
                     <v-progress-circular
                         indeterminate
@@ -148,7 +158,8 @@
         computed: {
             ...mapState({
                 uploadStore: state => state.upload.upload,
-                handles: state => state.file.fileHandles
+                handles: state => state.file.fileHandles,
+                submission: state => state.uploadForm.submission,
             }),
         },
         watch: {

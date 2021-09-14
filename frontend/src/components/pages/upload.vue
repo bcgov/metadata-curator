@@ -144,6 +144,7 @@
             }
             if(this.uploadId) { 
                 await this.getUpload(this.uploadId); 
+                await this.getUploadFormSubmission({formName: this.upload.form_name, submissionId: this.upload.upload_submission_id});
                 if (this.enabledPhase >= 2){
                     await this.getSchema({id: this.uploadId});
                     await this.getAllRepos();
@@ -179,6 +180,7 @@
                 getBranches: "repos/getBranches",
                 getBranchesByUpload: "repos/getBranchesByUpload",
                 saveBranch: 'repos/saveBranch',
+                getUploadFormSubmission: 'uploadForm/getUploadFormSubmission',
             }),
             ...mapMutations({
                 resetState: 'upload/resetState',
