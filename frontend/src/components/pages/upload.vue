@@ -132,8 +132,8 @@
             if(this.$route.params.id && this.$route.params.id != 'new') { 
                 this.uploadId = this.$route.params.id; 
             }else{
-                this.resetFormState();
-                this.resetState();
+                //this.resetFormState();
+                //this.resetState();
             }
             if (this.enabledPhase < 2){
                 this.steps.step3FileSelection = 2;
@@ -269,6 +269,7 @@
                             this.errorText = "Error saving your work has not been saved, please try logging in again";
                             transitionNextStepAfterSave = false;
                         }else{
+                            await this.getUploadFormSubmission({formName: this.upload.form_name, submissionId: this.upload.upload_submission_id});
                             this.$router.push('/upload/'+d._id);
                         }
                     }catch(e){
