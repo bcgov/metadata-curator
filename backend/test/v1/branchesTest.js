@@ -25,11 +25,6 @@ describe("Branch Routes", function() {
     const util = require('../util');
     
     before(async () => {
-        console.log("BEFORE BRANCH", db);
-        
-        await dbHandler.connect();
-
-        console.log("BEFORE BRANCH pc", db, dbHandler);
 
         sandbox = sinon.createSandbox();
         this.get = sandbox.stub(axios, 'get');
@@ -97,6 +92,7 @@ describe("Branch Routes", function() {
     });
 
     describe('GET /', async function () {
+        console.log("GET branches BEFORE BRANCH", db, dbHandler);
         it('should get unauthorized', function(done){
             chai.request(server)
             .get(basePath)
