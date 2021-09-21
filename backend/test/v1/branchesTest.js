@@ -135,7 +135,6 @@ describe("Branch Routes", function() {
     })
 
     describe('POST /', async function (){
-        console.log("POST / branches", server, basePath);
         it('should get unauthorized', function(done){
             let url = basePath+repoId+"/branches"
             chai.request(server)
