@@ -1,8 +1,7 @@
 module.exports = {
     phaseCheck: async function(cache, requiredPhase, db){
+        const enabledPhaseCacheKey = 'config/enabledPhase';
         try{
-            const enabledPhaseCacheKey = 'config/enabledPhase';
-
             if (!cache.has(enabledPhaseCacheKey)){
                 var q = {};
                 const configs = await db.ConfigSchema.find(q);
