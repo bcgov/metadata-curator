@@ -23,9 +23,12 @@ describe("Branch Routes", function() {
     let commentResponse = [];
 
     const util = require('../util');
-    
-    before(async () => {
 
+    before(async () => {
+        await dbHandler.connect()
+    });
+    
+    beforeEach(async () => {
         sandbox = sinon.createSandbox();
         this.get = sandbox.stub(axios, 'get');
         this.get.callsFake(
@@ -67,29 +70,19 @@ describe("Branch Routes", function() {
                 }
             }
         );
-
-        //pre create a repo
-        var jwt = config.get('testJwt');
-
-        var body = {
-            name: "test branch repo"
-        }
-        let u = "/api/v1/repos/"
-
-        await chai.request(server)
-        .post(u)
-        .send(body)
-        .set('Authorization' , 'Bearer ' + jwt)
-        .then(function(resp){
-            repoId = resp.body.id;
-        })
-    });
+    })
     
     after(async () => {
         sandbox.restore()
         await dbHandler.clearDatabase()
         await dbHandler.closeDatabase()
     });
+
+    afterEach(async () => {
+        axios.get.restore();
+        axios.post.restore();
+        sandbox.restore()
+    })
 
     describe('GET /', async function () {
         it('should get unauthorized', function(done){
