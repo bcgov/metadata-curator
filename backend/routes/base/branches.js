@@ -46,16 +46,21 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
     }
     
     const getBranches = async function(user, data_upload_id){
+        console.log("GB1");
         var q = {};
-
+        console.log("GB2");
         if (typeof(data_upload_id) !== "undefined"){
             q.data_upload_id = mongoose.Types.ObjectId(data_upload_id);
         }
+        console.log("GB3");
         
         let topics = [];
+        console.log("GB4");
         if (user){
             const topicResponse = await forumClient.getTopics(user, {});
+            console.log("GB5");
             topics = topicResponse.data.filter(item => item.parent_id);
+            console.log("GB6");
         }
         
         const branchIds = topics.map( (item) => {
@@ -67,13 +72,16 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
             let oid = mongoose.Types.ObjectId(id)
             return oid;
         }).filter( item => (item.length > 0) );
+        console.log("GB7");
 
         q.$or = [
             { _id: {$in: branchIds} },
             { published: true }
         ]
+        console.log("GB8");
 
         let res = await db.RepoBranchSchema.find(q).sort({ create_date: "desc"});
+        console.log("GB9");
         return res;
     }
     
