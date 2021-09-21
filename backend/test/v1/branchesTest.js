@@ -25,8 +25,11 @@ describe("Branch Routes", function() {
     const util = require('../util');
     
     before(async () => {
+        console.log("BEFORE BRANCH", db);
         
         await dbHandler.connect();
+
+        console.log("BEFORE BRANCH pc", db, dbHandler);
 
         sandbox = sinon.createSandbox();
         this.get = sandbox.stub(axios, 'get');
