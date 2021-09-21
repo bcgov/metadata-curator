@@ -93,6 +93,7 @@ describe("Branch Routes", function() {
 
     describe('GET /', async function () {
         let db = require('../../db/db');
+        await dbHandler.connect()
         console.log("GET branches BEFORE BRANCH", db, dbHandler);
         it('should get unauthorized', function(done){
             chai.request(server)
