@@ -11,7 +11,6 @@ module.exports = {
                 }
             }
         }catch (ex){
-            console.error("Phase Check error", ex);
         }
 
         //version check

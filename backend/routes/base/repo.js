@@ -94,6 +94,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
     
     router.get('/', async function(req, res, next) {
         //version check
+        console.log('phaseCheck11', db);
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('GET', 'repos'));
         }
@@ -104,6 +105,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
 
     router.post('/', async function(req, res, next){
         //version check
+        console.log('phaseCheck12', db);
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('POST', 'repos'));
         }
@@ -123,6 +125,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
 
     router.put('/:repoId', async function(req, res, next){
         //version check
+        console.log('phaseCheck13', db);
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('PUT', ('repos/'+req.params.repoId)));
         }
