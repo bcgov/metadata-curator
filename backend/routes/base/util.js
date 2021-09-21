@@ -10,12 +10,14 @@ module.exports = {
                     cache.set(enabledPhaseCacheKey, enabledPhase);
                 }
             }
-        }catch (ex){
-        }
+        
 
-        //version check
-        let ep = cache.has(enabledPhaseCacheKey) ? parseInt(cache.get(enabledPhaseCacheKey).value) : 1;
-        if (ep < requiredPhase){
+            //version check
+            let ep = cache.has(enabledPhaseCacheKey) ? parseInt(cache.get(enabledPhaseCacheKey).value) : 1;
+            if (ep < requiredPhase){
+                return false;
+            }
+        }catch (ex){
             return false;
         }
         return true;
