@@ -125,7 +125,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
 
     router.put('/:repoId', async function(req, res, next){
         //version check
-        console.log('phaseCheck13', db);
+        console.log('phaseCheck13', db.ConfigSchema);
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('PUT', ('repos/'+req.params.repoId)));
         }
