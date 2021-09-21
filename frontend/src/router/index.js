@@ -14,6 +14,7 @@ const Admin = () => import(/* webpackChunkName: "Admin" */ "../components/pages/
 const NotFound = () => import(/* webpackChunkName: "NotFound" */ "../components/pages/404");
 const LoggedOut = () => import(/* webpackChunkName: "LoggedOut" */ "../components/pages/logout");
 const user = () => import(/* webpackChunkName: "user" */ "../components/pages/user");
+const publishedVersion = () => import(/* webpackChunkName: "publishedVersion" */ "../components/pages/publishedVersion");
 
 Vue.use(Router)
 let r = new Router({
@@ -124,6 +125,16 @@ let r = new Router({
       }
     },
     {
+      path: '/pub/v/:id',
+      name: 'published_version',
+      component: publishedVersion,
+      meta: {
+          title: "Version",
+          requiresAuth: false,
+          phase: 2
+      }
+    },
+    {
       path: '/upload',
       name: 'upload',
       component: upload,
@@ -177,7 +188,7 @@ r.beforeEach(async(to, from, next) => {
     let loggedIn = store.state.user.loggedIn;
     
     //document.title = i18n.tc(to.meta.title);
-    document.title = "Metadata Curator - " + to.meta.title;
+    // document.title = "Metadata Curator - " + to.meta.title;
     
     let requiresAuth = to.meta.requiresAuth;
 

@@ -288,6 +288,11 @@ export class Backend {
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 
+    getBranchById(id){
+        let url = `/api/v1/repobranches/${id}`;
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
     postRepoBranch(repoId, branch){
         const url = `/api/v1/repobranches/${repoId}/branches`;
         return axios.post(url, branch, {withCredentials: true}).then(response => response.data)

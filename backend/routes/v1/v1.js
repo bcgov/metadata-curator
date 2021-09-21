@@ -47,7 +47,7 @@ module.exports = (router, cache) => {
     var cfRouter = new Router();
     cfRouter = configRoutes.buildStatic(db, cfRouter);
     cfRouter = configRoutes.buildDynamic(db, cfRouter, auth, cache);
-    router.use('/config', auth.requireLoggedIn, cfRouter);
+    router.use('/config', cfRouter);
 
     var packageRoutes = require('../base/packages');
     var pRouter = new Router();
@@ -55,7 +55,7 @@ module.exports = (router, cache) => {
     let ValidationError = require('../../modules/validationError');
     pRouter = packageRoutes.buildStatic(db, pRouter);
     pRouter = packageRoutes.buildDynamic(db, pRouter, auth, ValidationError, cache);
-    router.use('/datapackages', auth.requireLoggedIn, pRouter);
+    router.use('/datapackages', pRouter);
 
     var dataUploadRoutes = require('../base/uploads');
     var uRouter = new Router();
@@ -78,8 +78,8 @@ module.exports = (router, cache) => {
     var repoBranchesRoutes = require('../base/branches');
     var branchRouter = new Router();
     branchRouter = repoBranchesRoutes.buildStatic(db, branchRouter);
-    branchRouter = repoBranchesRoutes.buildDynamic(db, branchRouter, auth, revisionService, cache);
-    router.use('/repobranches', auth.requireLoggedIn, branchRouter);
+    branchRouter = repoBranchesRoutes.buildDynamic(db, branchRouter, auth, forumClient, revisionService, cache);
+    router.use('/repobranches', branchRouter);
 
     var tableSchemasRoutes = require('../base/tableSchema');
     var tableRouter = new Router();

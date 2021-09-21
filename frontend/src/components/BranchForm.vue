@@ -31,14 +31,14 @@
                                 </v-row>
 
                                 <v-row>
-                                    <v-col cols=12>
-                                        Dataset Name: {{dataset.name}}
+                                    <v-col cols=12 v-if="branch && branch.repo_id && branch.repo_id.name">
+                                        Dataset Name: {{branch.repo_id.name}}
                                     </v-col>
                                 </v-row>
 
                                 <v-row>
-                                    <v-col cols=12>
-                                        Dataset Description: {{dataset.description}}
+                                    <v-col cols=12 v-if="branch && branch.repo_id && branch.repo_id.description">
+                                        Dataset Description: {{branch.repo_id.description}}
                                     </v-col>
                                 </v-row>
 
@@ -161,6 +161,48 @@
                                     </v-col>
                                 </v-row>
 
+                                <v-row>
+                                    <v-col cols=12>
+                                        <Markdown
+                                            name="faq"
+                                            :value="(branch) ? branch.faq : ''"
+                                            :label="$tc('FAQ')"
+                                            :editing="editing"
+                                            :placeholder="$tc('FAQ')"
+                                            @edited="(newValue) => { updateValues('faq', newValue) }"
+                                        ></Markdown>
+                                    </v-col>
+                                </v-row>
+
+                                <v-row>
+                                    <v-col cols=12>
+                                        <SimpleCheckbox
+                                            :label="$tc('Published')"
+                                            :placeholder="$tc('Published')"
+                                            name="published"
+                                            :editing="editing"
+                                            :disabled="!user.isApprover || (branch && branch.approved)"
+                                            :value="(branch) ? branch.published : ''"
+                                            @edited="(newValue) => { updateValues('published', newValue) }"
+                                        ></SimpleCheckbox>
+                                        <router-link v-if="branch.published && location" :to="{ name: 'published_version', params: { id: id }}">{{location.protocol + "//" + location.host + $router.resolve({name: 'published_version', params: { id: id } }).href }}</router-link>
+                                    </v-col>
+                                </v-row>
+
+                                <v-row>
+                                    <v-col cols=12>
+                                        <SimpleCheckbox
+                                            :label="$tc('Approved')"
+                                            :placeholder="$tc('Approved')"
+                                            name="approved"
+                                            :editing="editing"
+                                            :disabled="!user.isApprover"
+                                            :value="(branch) ? branch.approved : ''"
+                                            @edited="(newValue) => { updateValues('approved', newValue) }"
+                                        ></SimpleCheckbox>
+                                    </v-col>
+                                </v-row>
+
 
                             </v-card-text>
                              <v-card-actions v-if="editing">
@@ -189,9 +231,11 @@ import {mapActions, mapMutations, mapState} from "vuex";
 import TextInput from './TextInput';
 import TextArea from './TextArea';
 import Select from './Select';
+import Markdown from './Markdown';
 import MetadataForm from './MetadataForm';
 
 import Vue from 'vue';
+import SimpleCheckbox from './SimpleCheckbox.vue';
 
 export default {
     components:{
@@ -199,6 +243,8 @@ export default {
         Select,
         TextArea,
         MetadataForm,
+        SimpleCheckbox,
+        Markdown,
     },
     props: {
         dialog: {
@@ -223,6 +269,7 @@ export default {
             tab: 'version',
             reIndex: 0,
             loading: true,
+            location: window.location
         }
     },
     methods: {
@@ -230,7 +277,7 @@ export default {
             getDataset: 'repos/getRepo',
             saveBranch: 'repos/saveBranch',
             updateBranch: 'repos/updateBranch',
-            getBranch: 'repos/getBranch',
+            getBranchById: 'repos/getBranchById',
             getRepos: 'repos/getAllRepos',
             getDataUploads: 'dataUploads/getDataUploads',
         }),
@@ -240,9 +287,10 @@ export default {
         }),
 
         async loadSections() {
-            await this.getBranch({id: this.id});
+            //await this.getBranch({id: this.id});
+            await this.getBranchById({id: this.id});
             //await this.getRepos({filterBy: ''});
-            await this.getDataset({id: this.branch.repo_id});
+            //await this.getDataset({id: this.branch.repo_id});
             this.reIndex++;
         },
 

@@ -28,7 +28,7 @@ var buildDynamic = function(db, router, auth, cache){
         res.status(200).json(configs);
     });
 
-    router.post('/', auth.requireAdmin, async function(req, res, next){
+    router.post('/', auth.requireLoggedIn, auth.requireAdmin, async function(req, res, next){
         let f = {...req.body};
 
         let error = false;
@@ -62,7 +62,7 @@ var buildDynamic = function(db, router, auth, cache){
         res.status(200).json(conf);
     });
 
-    router.put('/:configKey', auth.requireAdmin, async function(req, res, next){
+    router.put('/:configKey', auth.requireLoggedIn, auth.requireAdmin, async function(req, res, next){
         let f = {...req.body};
         let configSchema = await db.ConfigSchema.findOne({key: req.params.configKey});
         if (!configSchema){
@@ -80,7 +80,7 @@ var buildDynamic = function(db, router, auth, cache){
         res.status(200).json(configSchema);
     });
 
-    router.delete('/:configKey', auth.requireAdmin, async function(req, res, next){
+    router.delete('/:configKey', auth.requireLoggedIn, auth.requireAdmin, async function(req, res, next){
         await db.ConfigSchema.deleteOne({key: req.params.configKey});
         cache.del(configListCache);
         if (req.params.configKey === "enabledPhase"){

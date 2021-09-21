@@ -109,9 +109,16 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         return current;
     }
 
-    const getDataPackageByBranchId = async function (id) {
+    const getDataPackageByBranchId = async function (id, user) {
         // Return a lean() object - simple javascript object, rather than the Model
         // so we can transform the document into a valid data package
+
+        const branch = await db.RepoBranchSchema.findOne({_id: id});
+
+        if ( (!branch || !branch.published) && (!user) ){
+            throw new Error('404')
+        }
+
         const current = await db.DataPackageSchema.findOne({version: id}).lean().catch (e => {
             log.error(e);
             throw new Error(e.message)
@@ -196,11 +203,11 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         return dataPackageSchema;
     }
     
-    router.get('/', async function(req, res, next) {
+    router.get('/', auth.requireLoggedIn, async function(req, res, next) {
         res.status(200).json(await listDataPackages(req.query));
     });
 
-    router.post('/', async function(req, res, next){
+    router.post('/', auth.requireLoggedIn, async function(req, res, next){
         let descriptor = {...req.body};
         descriptor.profile = "tabular-data-package";
 
@@ -209,28 +216,35 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         res.status(201).json({id: pkg._id.toString()});
     });
 
-    router.put('/:id', async function(req, res, next){
+    router.put('/:id', auth.requireLoggedIn, async function(req, res, next){
         let descriptor = {...req.body};
         descriptor.profile = "tabular-data-package";
         const pkg = await updateDataPackage(req.params.id, descriptor)
         res.status(200).json({id: pkg._id.toString()});
     });
 
-    router.get('/branch', async function(req, res, next){
+    router.get('/branch', auth.requireLoggedIn, async function(req, res, next){
         res.status(200).json(await listDataPackages(req.query));
     });
 
-    router.get('/:dataPackageId', async function(req, res, next){
+    router.get('/:dataPackageId', auth.requireLoggedIn, async function(req, res, next){
         const id = req.params.dataPackageId;
         res.status(200).json(await getDataPackageById(id));
     });
 
     router.get('/branch/:branchId', async function(req, res, next){
         const id = req.params.branchId;
-        res.status(200).json(await getDataPackageByBranchId(id));
+        try{
+            return res.status(200).json(await getDataPackageByBranchId(id, req.user));
+        }catch(ex){
+            if (ex.message === "404"){
+                return res.status(404).json({error: "Not found"});
+            }
+            return res.status(500).json({error: ex});
+        }
     });
 
-    router.delete('/:dataPackageId', auth.requireAdmin, async function(req, res, next){
+    router.delete('/:dataPackageId', auth.requireLoggedIn, auth.requireAdmin, async function(req, res, next){
         const id = req.params.dataPackageId;
         res.status(204).json(await deleteDataPackage(id));
     });    

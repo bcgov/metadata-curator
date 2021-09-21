@@ -50,6 +50,23 @@ var repoBranchSchema = new Schema({
         type: String,
         required: false,
     },
+    published: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
+    approved: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
+    topic_id: {
+        type: Schema.Types.ObjectId
+    },
+    faq: {
+        type: String,
+        required: false,
+    }
 
 });
 

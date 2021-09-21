@@ -168,5 +168,8 @@ export default {
         "Close": "Close",
         "Data Upload Detail": "Data Upload Detail",
         "Info": "Info",
+        "FAQ": "FAQ",
+        "Published": "Published",
+        "Approved": "Approved",
     }
 }

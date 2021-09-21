@@ -53,6 +53,14 @@ const actions = {
         return state.branch;
     },
 
+    async getBranchById({state, commit}, {id}) {
+        const data = await backend.getBranchById(id);
+        
+        
+        commit('setBranch', {branch: data});
+        return state.branch;
+    },
+
     async getRepos({ commit }, {filterBy}) {
         const query = {filterBy: filterBy};
 
