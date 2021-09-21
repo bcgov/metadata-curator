@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const config = require('config');
 
-mongoose.set('useCreateIndex', true);
+//mongoose.set('useCreateIndex', true);
 
 const dbProps = config.get('database');
 
