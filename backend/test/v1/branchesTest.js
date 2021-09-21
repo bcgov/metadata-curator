@@ -29,11 +29,12 @@ describe("Branch Routes", function() {
     });
     
     beforeEach(async () => {
+        console.log("BEFORE EACH!");
         sandbox = sinon.createSandbox();
         this.get = sandbox.stub(axios, 'get');
         this.get.callsFake(
             function(url, opts){
-                
+                console.log("Get fake branches", url, opts);
                 if (url.indexOf('/v1/comment') !== -1){
                     return {
                         data: commentResponse
@@ -58,7 +59,7 @@ describe("Branch Routes", function() {
         this.post = sandbox.stub(axios, 'post');
         this.post.callsFake(
             function(url, body, opts){
-                
+                console.log("POST fake branches", url, body, opts);
                 if (url.indexOf('/v1/comment') !== -1){
                     body._id = mongoose.Types.ObjectId();
                     commentResponse.push(body);
