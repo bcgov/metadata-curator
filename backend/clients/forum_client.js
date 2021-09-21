@@ -108,9 +108,7 @@ const getTopics = async (user, query) => {
 
     try{
         let results = {data: []};
-        console.log("PRE GET TOPICS", url);
         let x = await axios.get(url, options);
-        console.log("POST GET TOPICS", x, url);
         results.data = results.data.concat(x.data);
         let page = 1;
         while (x.data.length >= 100){

@@ -24,17 +24,12 @@ describe("Branch Routes", function() {
 
     const util = require('../util');
 
-    before(async () => {
-        await dbHandler.connect()
-    });
-    
     beforeEach(async () => {
-        console.log("BEFORE EACH!");
         sandbox = sinon.createSandbox();
         this.get = sandbox.stub(axios, 'get');
         this.get.callsFake(
             function(url, opts){
-                console.log("Get fake branches", url, opts);
+                
                 if (url.indexOf('/v1/comment') !== -1){
                     return {
                         data: commentResponse
@@ -59,7 +54,7 @@ describe("Branch Routes", function() {
         this.post = sandbox.stub(axios, 'post');
         this.post.callsFake(
             function(url, body, opts){
-                console.log("POST fake branches", url, body, opts);
+                
                 if (url.indexOf('/v1/comment') !== -1){
                     body._id = mongoose.Types.ObjectId();
                     commentResponse.push(body);
@@ -72,18 +67,19 @@ describe("Branch Routes", function() {
             }
         );
     })
-    
-    after(async () => {
-        sandbox.restore()
-        await dbHandler.clearDatabase()
-        await dbHandler.closeDatabase()
-    });
-
     afterEach(async () => {
         axios.get.restore();
         axios.post.restore();
         sandbox.restore()
     })
+    before(async () => {
+        await dbHandler.connect()
+    });
+    
+    after(async () => {
+        await dbHandler.clearDatabase()
+        await dbHandler.closeDatabase()
+    });
 
     describe('GET /', async function () {
         it('should get unauthorized', function(done){

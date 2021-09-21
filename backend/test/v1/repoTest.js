@@ -79,7 +79,6 @@ describe("Repo Routes", function() {
         await dbHandler.clearDatabase()
         await dbHandler.closeDatabase()
     });
-    
 
     describe('GET /', async function () {
         it('should get unauthorized', function(done){
