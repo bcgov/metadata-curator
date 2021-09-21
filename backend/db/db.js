@@ -17,9 +17,7 @@ db.init = async function (_connString = null) {
     const connString = (_connString == null) ? 'mongodb://' + dbUser + ':' + dbPass + '@' + dbHost + '/' + dbName + '?authSource=' + dbName : _connString;
     await mongoose.connect(connString, {
         useUnifiedTopology: true,
-        useFindAndModify: false,
         useNewUrlParser: true,
-        bufferMaxEntries: 0
     });
     db.db = mongoose.connection;
 
