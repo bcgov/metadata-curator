@@ -135,9 +135,11 @@ describe("Branch Routes", function() {
     })
 
     describe('POST /', async function (){
+        console.log("POST / branches", server, basePath);
         it('should get unauthorized', function(done){
+            let url = basePath+repoId+"/branches"
             chai.request(server)
-            .post(basePath)
+            .post(url)
             .end(function(err, res){
                 res.should.have.status(401);
                 done();
@@ -278,14 +280,6 @@ describe("Branch Routes", function() {
     });
 
     describe('GET /:id', async function () {
-        it('should get unauthorized', function(done){
-            chai.request(server)
-            .get(basePath+focalId)
-            .end(function(err, res){
-                res.should.have.status(401);
-                done();
-            })
-        });
 
         await util.setEnabledPhase(1);
 

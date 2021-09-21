@@ -175,7 +175,7 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         }
     }
     
-    router.get('/', async function(req, res, next) {
+    router.get('/', auth.requireLoggedIn, async function(req, res, next) {
         //version check
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('GET', 'repobranches'));
@@ -221,7 +221,7 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         res.status(200).json({status: "ok"});
     });
 
-    router.post('/:repoId/branches',auth.requireLoggedIn,  async function(req, res, next){
+    router.post('/:repoId/branches', auth.requireLoggedIn,  async function(req, res, next){
         //version check
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('POST', ('repobranches/'+req.params.repoId+"/branches")));
