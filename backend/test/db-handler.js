@@ -24,7 +24,8 @@ module.exports.connect = async () => {
         reconnectInterval: 1000
     };
 
-    require('../db/db').init(uri);
+    let db = require('../db/db')
+    await db.init(uri);
 }
 
 /**

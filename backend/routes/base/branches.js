@@ -177,7 +177,6 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
     
     router.get('/', auth.requireLoggedIn, async function(req, res, next) {
         //version check
-        console.log('phaseCheck1', db);
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('GET', 'repobranches'));
         }
@@ -187,7 +186,6 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
     });
 
     router.get('/:branchId', async function(req, res, next) {
-        console.log('phaseCheck2', db);
         //version check
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.branchId)));
@@ -198,7 +196,6 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
 
     router.put('/:branchId', auth.requireLoggedIn, async function(req, res, next) {
         //version check
-        console.log('phaseCheck3', db);
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('PUT', ('repobranches/'+req.params.branchId)));
         }
@@ -217,7 +214,6 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
 
     router.delete('/:branchId', auth.requireLoggedIn, auth.requireAdmin, async function(req, res, next) {
         //version check
-        console.log('phaseCheck4', db);
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('DELETE', ('repobranches/'+req.params.branchId)));
         }
@@ -227,7 +223,6 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
 
     router.post('/:repoId/branches', auth.requireLoggedIn,  async function(req, res, next){
         //version check
-        console.log('phaseCheck5', db);
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('POST', ('repobranches/'+req.params.repoId+"/branches")));
         }
@@ -265,7 +260,6 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
 
     router.get('/:repoId/branches', async function(req, res, next){
         //version check
-        console.log('phaseCheck6', db);
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.repoId+"/branches")));
         }
@@ -277,7 +271,6 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
 
     router.post('/:branchId/revisions', auth.requireLoggedIn,  async function(req, res, next) {
         //version check
-        console.log('phaseCheck7', db);
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('POST', ('repobranches/'+req.params.branchId+"/revisions")));
         }
@@ -293,7 +286,6 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
 
     router.get('/:branchId/revisions', async function(req, res, next) {
         //version check
-        console.log('phaseCheck8', db);
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.branchId+"/revisions")));
         }
@@ -305,7 +297,6 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
 
     router.put('/:branchId/revisions/:revId', auth.requireLoggedIn,  async function(req, res, next) {
         //version check
-        console.log('phaseCheck9', db);
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('PUT', ('repobranches/'+req.params.branchId+"/revisions/"+req.params.revId)));
         }
@@ -320,7 +311,6 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
 
     router.delete('/:branchId/revisions/:revId', auth.requireLoggedIn,  async function(req, res, next) {
         //version check
-        console.log('phaseCheck10', db);
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('DELETE', ('repobranches/'+req.params.branchId+"/revisions/"+req.params.revId)));
         }
