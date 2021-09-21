@@ -1,14 +1,18 @@
 module.exports = {
     phaseCheck: async function(cache, requiredPhase, db){
-        const enabledPhaseCacheKey = 'config/enabledPhase';
+        try{
+            const enabledPhaseCacheKey = 'config/enabledPhase';
 
-        if (!cache.has(enabledPhaseCacheKey)){
-            var q = {};
-            const configs = await db.ConfigSchema.find(q);
-            let enabledPhase = configs.find(item => item.key === 'enabledPhase');
-            if (enabledPhase){
-                cache.set(enabledPhaseCacheKey, enabledPhase);
+            if (!cache.has(enabledPhaseCacheKey)){
+                var q = {};
+                const configs = await db.ConfigSchema.find(q);
+                let enabledPhase = configs.find(item => item.key === 'enabledPhase');
+                if (enabledPhase){
+                    cache.set(enabledPhaseCacheKey, enabledPhase);
+                }
             }
+        }catch (ex){
+            console.error("Phase Check error", ex);
         }
 
         //version check
