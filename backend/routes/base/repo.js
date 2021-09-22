@@ -96,9 +96,9 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         //version check
         let allowed = false;
         try{
-            let allowed = util.phaseCheck(cache, requiredPhase, db)
+            allowed = util.phaseCheck(cache, requiredPhase, db)
         }catch(ex){}
-        
+
         if (!allowed){
             return res.status(404).send(util.phaseText('GET', 'repos'));
         }
