@@ -25,18 +25,32 @@
             </v-tabs-items>
 
         </v-row>
+        
+        <v-row>
+            <v-col cols=12>
+                <h3>Discussion</h3>
+            </v-col>
+        </v-row>
+
+        <v-row>
+            <v-col cols=12>
+                <RepoComments :repo-id="id"></RepoComments>
+            </v-col>
+        </v-row>
     </v-container>
 </template>
 <script>
 
 import DatasetForm from '../DatasetForm';
-import SchemaView from '../SchemaView.vue';
+import SchemaView from '../SchemaView';
+import RepoComments from '../RepoComments';
 import { mapActions, mapState } from 'vuex';
 
 export default {
     components:{
         DatasetForm,
-        SchemaView
+        SchemaView,
+        RepoComments
     },
     
     data () {

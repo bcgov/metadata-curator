@@ -7,7 +7,49 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
     const mongoose = require('mongoose');
 
     const util = require('./util');
-    const requiredPhase = 2
+    const requiredPhase = 2;
+
+    const getRepoById = async function(user, id){
+        let record = await db.RepoSchema.findOne({_id: mongoose.Types.ObjectId(id)});
+        if (!record){
+            return null;
+        }
+        const response = await forumClient.getTopic(user, record.topic_id);
+        if (!response || response.length < 1){
+            return null;
+        }
+        return record;
+    }
+
+    const addComment = async (repoId, user, comment) => {
+        try {
+            let repo = await getRepoById(user, repoId);
+
+            if (repo == null) {
+                throw new Error("Invalid data upload ID")
+            }
+
+            await forumClient.addComment(repo.topic_id, comment, user);
+    
+            
+        } catch(e) {
+            console.error(e);
+            throw new Error(e.message)
+        }
+    }
+    
+    const getComments = async (repoId, user) => {
+        try {
+            let repo = await getRepoById(user, repoId);
+            if (repo == null) {
+                throw new Error("Invalid data upload ID")
+            }
+            return await forumClient.getComments (repo.topic_id, user);
+        } catch(e) {
+            console.error(e);
+            throw new Error(e.message)
+        }
+    }
 
     const createRepo = async function(user, fields) {
         const id = mongoose.Types.ObjectId();
@@ -133,6 +175,18 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
         const repo = await updateRepo(req.user, req.params.repoId, req.body);
         res.status(200).json(repo);
+    });
+
+    router.get('/:repoId/comments', async function(req, res, next){
+        const comments = await getComments (req.params.repoId, req.user);
+        return res.json(comments);
+    });
+
+    router.post('/:repoId/comments', async function(req, res, next){
+        await addComment (req.params.repoId, req.user, req.body.content);
+        return res.status(201).json({
+            message: 'Comment saved successfully.'
+        });
     });
 
     return router;

@@ -108,6 +108,17 @@ export class Backend {
         return axios.post(url, body,{withCredentials: true}).then(response => response.data)
     }
 
+    getCommentsByRepo(repoId){
+        const url = '/api/v1/repos/' + repoId + '/comments';
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+    postCommentByRepo(repoId, comment){
+        const url = '/api/v1/repos/' + repoId + '/comments';
+        const body = { content: comment};
+        return axios.post(url, body,{withCredentials: true}).then(response => response.data)
+    }
+
     postDataUpload(dataUpload){
         // console.log("BE postdataUpload: " + dataUpload);
         const url = `/api/v1/datauploads`;

@@ -12,6 +12,7 @@ const state = {
     selectedRepo: null,
     selectedFilterBy: null,
     error: null,
+    comments: [],
 };
 
 const getters = {
@@ -105,6 +106,28 @@ const actions = {
     async updateBranch({state}){
         return backend.putRepoBranch(state.repo._id, state.branch);
     },
+
+    async getComments({ commit }, repoId) {
+        
+        try {
+            const data = await backend.getCommentsByRepo(repoId);
+            commit('clearComments');
+            commit('setComments', {comments: data});
+        } catch(e) {
+            console.error("Retrieve comments error: ", e);
+            commit('setError', {error: e.response.data.error});
+        }
+    },
+    async addComment({ commit, dispatch }, {repoId, comment}) {
+        
+        try {
+            await backend.postCommentByRepo(repoId, comment);
+            dispatch('getComments', repoId);
+        } catch(e) {
+            console.error("Unable to add comment error: ", e);
+            commit('setError', {error: e.response.data.error});
+        }
+    },
 }
 
 
@@ -156,7 +179,14 @@ const mutations = {
     },
     clearBranch(state){
         state.branch = {};
-    }
+    },
+    setComments(state, {comments}){
+        // console.log("setComments: ", comments);
+        state.comments = comments;
+    },
+    clearComments(state){
+        state.comments = [];
+    },
 }
 
 export default {
