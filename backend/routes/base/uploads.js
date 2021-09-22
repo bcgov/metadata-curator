@@ -19,6 +19,10 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             dataUploadSchema.description = upload.description;
             dataUploadSchema.uploader = user.id;
             dataUploadSchema.files = upload.files;
+            for (let i=0; i<dataUploadSchema.files.length; i++){
+                dataUploadSchema.files = (dataUploadSchema.files) ? dataUploadSchema.files : false;
+            }
+
             if (upload.form_name){
                 dataUploadSchema.form_name = upload.form_name;
             }
@@ -62,6 +66,9 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
 
         if (updatedData.files){
             dataUpload.files = updatedData.files;
+            for (let i=0; i<dataUpload.files.length; i++){
+                dataUpload.files = (dataUpload.files) ? dataUpload.files : false;
+            }
         }
 
         if (updatedData.status){
