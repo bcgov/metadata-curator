@@ -138,10 +138,10 @@ resource "docker_container" "mc_backend" {
   name    = "mc_backend"
   restart = "on-failure"
   
-  volumes = {
+  volumes = [{
     host_path = "${var.hostRootPath}/config/emailTemplate.html"
     container_path = "/app/notifications/email/emailTemplate.html"
-  }
+  }]
 
   networks_advanced {
     name = docker_network.private_network.name

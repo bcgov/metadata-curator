@@ -22,7 +22,6 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             if (upload.files){
                 dataUploadSchema.files = upload.files;
                 for (let i=0; i<dataUploadSchema.files.length; i++){
-                    console.log("DUF", dataUploadSchema.files[i]);
                     dataUploadSchema.files[i] = (dataUploadSchema.files[i]) ? dataUploadSchema.files[i] : false;
                 }
             }
