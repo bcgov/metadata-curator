@@ -118,7 +118,7 @@
                     f.files[i].id = "Not yet uploaded";
                     f.files[i].size = this.files[i].size;
                     f.files[i].sig = this.files[i].sig;
-                    f.files[i].data = this.dataFile[i];
+                    f.files[i].data = (this.dataFile[i]) ? this.dataFile[i] : false;
                 }
                 this.modifyStoreUpload(f);
             },
