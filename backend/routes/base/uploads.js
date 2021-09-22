@@ -88,6 +88,22 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
         }catch(ex){
             log.error("Exception emailing", ex);
         }
+
+        if (dataUpload.status === "submitted"){
+            const confQ = {key: "uploadHook"};
+            const configs = await db.ConfigSchema.findOne(confQ);
+            try{
+                if (configs && configs.value){
+                    const url = `${configs.value}`;
+                    const axios = require('axios');
+                    axios.post(url).catch( (err) => log.error("Error calling hook", err)).then( () => {
+                        log.debug("Called uploadHook", url);
+                    });
+                }
+            }catch(ex){
+                log.error("Error calling upload hook", ex);
+            }
+        }
     
         try{
             return await dataUpload.save();

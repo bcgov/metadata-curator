@@ -137,6 +137,12 @@ resource "docker_container" "mc_backend" {
   image   = docker_image.mc_backend.latest
   name    = "mc_backend"
   restart = "on-failure"
+  
+  volumes = {
+    host_path = "${var.hostRootPath}/config/emailTemplate.html"
+    container_path = "/app/notifications/email/emailTemplate.html"
+  }
+
   networks_advanced {
     name = docker_network.private_network.name
   }
@@ -157,4 +163,9 @@ resource "docker_container" "mc_backend" {
   ]
 
   env = var.makeKeycloak ? ["NODE_CONFIG=${replace(data.null_data_source.configValues.outputs["nodeConfig"], "\n", "")}", "NODE_TLS_REJECT_UNAUTHORIZED=0"] : ["NODE_CONFIG=${replace(data.null_data_source.configValues.outputs["nodeConfig"], "\n", "")}"]
+}
+
+resource "local_file" "email_template" {
+    content = "${file("${path.module}/scripts/emailTemplate.html")}"
+    filename = "${var.hostRootPath}/config/emailTemplate.html"
 }
