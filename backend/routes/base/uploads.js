@@ -128,7 +128,14 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
                 topics = topicResponse.data.filter(item => item.parent_id);
             }
     
-            const uploadIds = topics.map(item => item.name);
+            const uploadIds = topics.map( (item) => {
+                if ( (item.name.indexOf("repo") === -1) && (item.name.indexOf("branch") ===-1) ){
+                    return item.name
+                }
+                return ""
+            }).filter( (item) => {
+                return (item && item.length > 0)
+            });
             if(query && query.filterBy === 'provider') {
                 let results = await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": -1});
                 results = results.filter( (item) => {

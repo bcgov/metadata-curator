@@ -129,7 +129,7 @@ var strategy = new OidcStrategy(config.get('oidc'), async function(issuer, sub, 
     }
   
     if (profile.email){
-      db.User.update({email: profile.email}, user, {upsert: true, setDefaultsOnInsert: true}, function(e,r){
+      db.User.updateOne({email: profile.email}, user, {upsert: true, setDefaultsOnInsert: true}, function(e,r){
         if (e){
           console.log("Error updating user info", e);
         }else{

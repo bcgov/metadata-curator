@@ -60,15 +60,20 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         try {
             const topicResponse = await forumClient.getTopics(user, query);
             topics = topicResponse.data.filter(item => item.parent_id);
+
             const repoIds = topics.map( (item) => {
                 let id = item.name;
                 if (!id || id.indexOf("repo") === -1){
                     return;
                 }
-                id = id.substring(0,id.length-6);
-                let oid = mongoose.Types.ObjectId(id)
+                
+                id = id.substring(0,id.length-4);
+                let oid = mongoose.Types.ObjectId(id);
                 return oid;
-            }).filter( item => (item && item.length > 0) );
+
+            }).filter( (item) => { 
+                return (item && String(item).length > 0)
+            });
 
             if(query && query.upload_id) {
                 //return await db.RepoSchema.find({data_upload_id: mongoose.Types.ObjectId(query.filterBy)}).sort({ "create_date": 1});
