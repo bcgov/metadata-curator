@@ -145,12 +145,14 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             }
     
             const uploadIds = topics.map( (item) => {
-                if ( (item.name.indexOf("repo") === -1) && (item.name.indexOf("branch") ===-1) ){
+                
+                if ( (item) && (item.name) && (String(item.name).indexOf("repo") === -1) && (String(item.name).indexOf("branch") ===-1) ){
                     return item.name
                 }
+
                 return ""
             }).filter( (item) => {
-                return (item && item.length > 0)
+                return (item && String(item).length > 0)
             });
             if(query && query.filterBy === 'provider') {
                 let results = await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": -1});
