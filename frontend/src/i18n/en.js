@@ -105,7 +105,7 @@ export default {
         "is a tool for data uploads and looking at metadata about those uploads": "is a tool for data uploads and looking at metadata about those uploads",
         "Default": "Defaults | Default | Defaults",
         "Edit": "Edit",
-        "Nothing here yet, why not start a discussion with the add comment to discussion button": "Nothing here yet, why not start a discussion with the add comment to discussion button",
+        "Nothing here yet, why not start a discussion": "Nothing here yet, why not start a discussion",
         "My": "My",
         "Sucessfully created dataset": "Sucessfully created dataset",
         "Filter by": "Filter by",
@@ -171,5 +171,7 @@ export default {
         "FAQ": "FAQ",
         "Published": "Published",
         "Approved": "Approved",
+        "New Comment": "New Comment",
+        "Tags": "Tags | Tag | Tags"
     }
 }

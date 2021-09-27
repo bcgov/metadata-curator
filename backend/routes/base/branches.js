@@ -60,13 +60,15 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         
         const branchIds = topics.map( (item) => {
             let id = item.name;
+            
             if (id.indexOf("branch") === -1){
                 return "";
             }
+            
             id = id.substring(0,id.length-6);
             let oid = mongoose.Types.ObjectId(id)
             return oid;
-        }).filter( item => (item.length > 0) );
+        }).filter( item => (String(item).length > 0) );
 
         q.$or = [
             { _id: {$in: branchIds} },
@@ -174,6 +176,36 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
             throw new Error(e.message)
         }
     }
+
+    const addComment = async (branchId, user, comment) => {
+        try {
+            let branch = await getBranchById(branchId, user);
+
+            if (branch == null) {
+                throw new Error("Invalid branch ID")
+            }
+
+            await forumClient.addComment(branch.topic_id, comment, user);
+    
+            
+        } catch(e) {
+            console.error(e);
+            throw new Error(e.message)
+        }
+    }
+    
+    const getComments = async (branchId, user) => {
+        try {
+            let branch = await getBranchById(branchId, user);
+            if (branch == null) {
+                throw new Error("Invalid branch ID")
+            }
+            return await forumClient.getComments (branch.topic_id, user);
+        } catch(e) {
+            console.error(e);
+            throw new Error(e.message)
+        }
+    }
     
     router.get('/', auth.requireLoggedIn, async function(req, res, next) {
         //version check
@@ -267,6 +299,18 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         const repoId = req.params.repoId;
         const branches = await listBranches(repoId);
         res.status(200).json(branches);
+    });
+
+    router.get('/:branchId/comments', async function(req, res, next){
+        const comments = await getComments (req.params.branchId, req.user);
+        return res.json(comments);
+    });
+
+    router.post('/:branchId/comments', async function(req, res, next){
+        await addComment (req.params.branchId, req.user, req.body.content);
+        return res.status(201).json({
+            message: 'Comment saved successfully.'
+        });
     });
 
     router.post('/:branchId/revisions', auth.requireLoggedIn,  async function(req, res, next) {

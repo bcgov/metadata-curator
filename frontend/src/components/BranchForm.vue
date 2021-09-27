@@ -222,6 +222,12 @@
                 </v-tabs-items>
             </v-col>
         </v-row>
+
+        <v-row>
+            <v-col cols=12>
+                <Comments :id="id" :type="'branch'"></Comments>
+            </v-col>
+        </v-row>
     </v-container>
 </template>
 
@@ -233,6 +239,7 @@ import TextArea from './TextArea';
 import Select from './Select';
 import Markdown from './Markdown';
 import MetadataForm from './MetadataForm';
+import Comments from './Comments';
 
 import Vue from 'vue';
 import SimpleCheckbox from './SimpleCheckbox.vue';
@@ -245,6 +252,7 @@ export default {
         MetadataForm,
         SimpleCheckbox,
         Markdown,
+        Comments,
     },
     props: {
         dialog: {

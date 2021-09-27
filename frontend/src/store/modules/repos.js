@@ -13,6 +13,7 @@ const state = {
     selectedFilterBy: null,
     error: null,
     comments: [],
+    branchComments: [],
 };
 
 const getters = {
@@ -129,6 +130,28 @@ const actions = {
             commit('setError', {error: e.response.data.error});
         }
     },
+
+    async getBranchComments({ commit }, branchId) {
+        
+        try {
+            const data = await backend.getCommentsByBranch(branchId);
+            commit('clearBranchComments');
+            commit('setBranchComments', {comments: data});
+        } catch(e) {
+            console.error("Retrieve comments error: ", e);
+            commit('setError', {error: e.response.data.error});
+        }
+    },
+    async addBranchComment({ commit, dispatch }, {branchId, comment}) {
+        
+        try {
+            await backend.postCommentByBranch(branchId, comment);
+            dispatch('getBranchComments', branchId);
+        } catch(e) {
+            console.error("Unable to add comment error: ", e);
+            commit('setError', {error: e.response.data.error});
+        }
+    },
 }
 
 
@@ -187,6 +210,14 @@ const mutations = {
     },
     clearComments(state){
         state.comments = [];
+    },
+
+    setBranchComments(state, {comments}){
+        // console.log("setComments: ", comments);
+        state.branchComments = comments;
+    },
+    clearBranchComments(state){
+        state.branchComments = [];
     },
 }
 

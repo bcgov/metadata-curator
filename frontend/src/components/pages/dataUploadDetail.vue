@@ -55,18 +55,12 @@
                                 <h1 class="display-1 font-weight-thin ml-2 mt-2 mb-2">{{$tc('Discussion')}}</h1>
                             </v-card-title>
                             <v-card-text>
-                                <Comments></Comments>
-                                <v-row>
-                                    <v-btn color="orange" text @click="showAddCommentDialog()">{{$tc('Add')}} {{$tc('Comments')}}</v-btn>
-                                </v-row>
+                                <Comments :id='dataUploadId' :type="'upload'"></Comments>
                             </v-card-text>
                         </v-card>
                     </v-col>
                 </v-row>
                 <v-btn @click="routeToHome()" class="mt-1">{{$tc('Back')}}</v-btn>
-                <CommentAddDialog :dialog="commentAddDialog"
-                                  @close-button-clicked="onCloseButtonClicked"
-                                  @save-button-clicked="onSaveButtonClicked"/>
                 <ViewDialog :dialog="viewDialog"
                                   :uploadId="dataUploadId"
                                   @close-button-clicked="onViewClosedClick"/>
@@ -78,7 +72,6 @@
 import {mapActions, mapMutations, mapState} from "vuex";
 // import MetadataRevisions from "../MetadataRevisions";
 import Comments from "../Comments";
-import CommentAddDialog from "../CommentAddDialog";
 import ViewDialog from "../ViewUploadDialog";
 import BranchForm from '../BranchForm';
 
@@ -86,14 +79,12 @@ export default {
     components:{
         // MetadataRevisions,
         Comments,
-        CommentAddDialog,
         ViewDialog,
         BranchForm
     },
    
     data () {
         return {
-            commentAddDialog: false,
             dataUploadId: null,
             viewDialog: false,
             schemaDialog: false,
@@ -107,8 +98,7 @@ export default {
             updateDataUpload: 'dataUploadDetail/updateDataUpload',
             // getRevisions: 'dataUploadRevisions/getRevisions',
             getSchema: 'schemaImport/getDataPackageByUploadId',
-            getComments: 'dataUploadComments/getComments',
-            addComment: 'dataUploadComments/addComment',
+            
             getRepos: 'repos/getRepos',
             getRepo: 'repos/getRepo',
             saveDataset: 'repos/saveRepo',
@@ -120,7 +110,7 @@ export default {
         ...mapMutations({
             clearDataUpload: 'dataUploadDetail/clearDataUpload',
             // clearRevisions: 'dataUploadRevisions/clearRevisions',
-            clearComments: 'dataUploadComments/clearComments',
+            
             editDataset: 'repos/editRepo',
             clearDataset: 'repos/clearRepo',
             editBranch: 'repos/editBranch',
@@ -128,7 +118,7 @@ export default {
         }),
         async loadSections() {
             // this.getRevisions(this.dataUploadId);
-            this.getComments(this.dataUploadId);
+            
             await this.getDataUpload(this.dataUploadId);
             await this.getUploadForm(this.dataUpload.form_name);
             this.getUploadFormSubmission({formName: this.dataUpload.form_name, submissionId: this.dataUpload.upload_submission_id});
@@ -171,11 +161,8 @@ export default {
         },
         clearState() {
             // this.clearRevisions();
-            this.clearComments();
+            
             this.clearDataUpload();
-        },
-        showAddCommentDialog() {
-            this.commentAddDialog = true;
         },
 
         showViewDialog() {
@@ -184,10 +171,6 @@ export default {
 
         showSchemaDialog(){
             this.schemaDialog = true;
-        },
-
-        onCloseButtonClicked() {
-            this.commentAddDialog = false;
         },
         
         onViewClosedClick(){
@@ -199,12 +182,6 @@ export default {
             this.editDataset({name: 'name', value: this.dataUpload.name});
             let d = await this.saveDataset();
             this.createVersion(d.id);
-        },
-
-        async onSaveButtonClicked(comment) {
-            this.commentAddDialog = false;
-            await this.addComment({dataUploadId: this.dataUploadId, comment: comment});
-            this.getDataUpload(this.dataUploadId);
         },
     },
     computed: {

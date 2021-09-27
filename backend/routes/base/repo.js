@@ -26,7 +26,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             let repo = await getRepoById(user, repoId);
 
             if (repo == null) {
-                throw new Error("Invalid data upload ID")
+                throw new Error("Invalid repo ID")
             }
 
             await forumClient.addComment(repo.topic_id, comment, user);
@@ -42,7 +42,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         try {
             let repo = await getRepoById(user, repoId);
             if (repo == null) {
-                throw new Error("Invalid data upload ID")
+                throw new Error("Invalid repo ID")
             }
             return await forumClient.getComments (repo.topic_id, user);
         } catch(e) {

@@ -34,7 +34,7 @@
 
         <v-row>
             <v-col cols=12>
-                <RepoComments :repo-id="id"></RepoComments>
+                <Comments :id="id" :type="'repo'"></Comments>
             </v-col>
         </v-row>
     </v-container>
@@ -43,14 +43,14 @@
 
 import DatasetForm from '../DatasetForm';
 import SchemaView from '../SchemaView';
-import RepoComments from '../RepoComments';
+import Comments from '../Comments';
 import { mapActions, mapState } from 'vuex';
 
 export default {
     components:{
         DatasetForm,
         SchemaView,
-        RepoComments
+        Comments
     },
     
     data () {
