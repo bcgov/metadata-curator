@@ -60,11 +60,11 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
     let d = new Date();
     let da = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate()
     
-    // await client.click('#fileinfo-0-start');
-    // await client.setValue('#fileinfo-0-start', da);
+    await client.click('#fileinfo-0-start');
+    await client.setValue('#fileinfo-0-start', da);
     
-    // await client.click('#fileinfo-0-end');
-    // await client.setValue('#fileinfo-0-end', da);
+    await client.click('#fileinfo-0-end');
+    await client.setValue('#fileinfo-0-end', da);
 
     await client.saveScreenshot("./"+path+"/preNext3.png");
     await client.click('#next-4');

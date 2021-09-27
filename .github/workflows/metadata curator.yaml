@@ -152,7 +152,7 @@ jobs:
       - name: test
         run: |
           docker ps
-          sleep 10
+          sleep 45
           docker ps
           docker logs mc_backend
           cd frontend
