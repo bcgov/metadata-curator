@@ -166,7 +166,7 @@
             <v-row v-if="stateType == 2">
                 <div class="preserveWhite">{{JSON.stringify(workingVal, replacerFunc(), 4)}}</div>
             </v-row>
-            <v-row>
+            <v-row v-else>
                 <v-col cols=12 v-if="title">
                     <h1>{{title}}</h1>
                 </v-col>
@@ -294,11 +294,20 @@
                                 </v-row>
 
                                 <v-row v-if="field && (field.format || (field._descriptor && field._descriptor.format))">
-                                    <v-col cols=3>
+                                    <v-col cols=3 v-if="( (field.format && field.format !== 'default') || ((field._descriptor.format && field._descriptor.format !== 'default')) )">
                                         {{$tc('Format')}}:
                                     </v-col>
-                                    <v-col cols=9>
+                                    <v-col cols=9 v-if="( (field.format && field.format !== 'default') || ((field._descriptor.format && field._descriptor.format !== 'default')) )">
                                         {{field.format ? field.format : field._descriptor.format}}
+                                    </v-col>
+                                </v-row>
+
+                                <v-row v-if="field && (field.tags || (field._descriptor && field._descriptor.tags))">
+                                    <v-col cols=3>
+                                        {{$tc('Tags', 2)}}:
+                                    </v-col>
+                                    <v-col cols=9>
+                                        {{field.tags ? field.tags : field._descriptor.tags}}
                                     </v-col>
                                 </v-row>
 

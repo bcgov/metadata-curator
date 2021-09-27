@@ -42,7 +42,7 @@ export default {
         "Contributor": "Contributors | Contributor | Contributors",
         "Type": "Types | Type | Types",
         "Format": "Formats | Format | Formats",
-        "Var Class": "Var Class",
+        "Var Class": "Variable Classification",
         "RDF Type": "RDF Types | RDF Type | RDF Types",
         "Add File/Resource": "Add File/Resource",
         "Description": "Descriptions | Description | Descriptions",

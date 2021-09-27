@@ -140,49 +140,49 @@
 
                         //if its 1 it's only sig
                         if ( (typeof(this.handles[this.formSubmission.files[i].sig]) !== "undefined") && (typeof(this.handles[this.formSubmission.files[i].sig].name) !== "undefined") ){
-                            let formStart = (this.formioSubmission && this.formioSubmission.daterangestart) ? this.formioSubmission.daterangestart : false;
-                            if (!formStart){
-                                formStart = (this.formioSubmission && this.formioSubmission.dateRangeStart) ? this.formioSubmission.dateRangeStart : ""
-                            }
+                            // let formStart = (this.formioSubmission && this.formioSubmission.daterangestart) ? this.formioSubmission.daterangestart : false;
+                            // if (!formStart){
+                            //     formStart = (this.formioSubmission && this.formioSubmission.dateRangeStart) ? this.formioSubmission.dateRangeStart : ""
+                            // }
 
-                            let formEnd = (this.formioSubmission && this.formioSubmission.daterangeend) ? this.formioSubmission.daterangeend : false;
-                            if (!formEnd){
-                                formEnd = (this.formioSubmission && this.formioSubmission.dateRangeEnd) ? this.formioSubmission.dateRangeEnd : ""
-                            }
+                            // let formEnd = (this.formioSubmission && this.formioSubmission.daterangeend) ? this.formioSubmission.daterangeend : false;
+                            // if (!formEnd){
+                            //     formEnd = (this.formioSubmission && this.formioSubmission.dateRangeEnd) ? this.formioSubmission.dateRangeEnd : ""
+                            // }
                             
                             let fileName = (this.formSubmission.files[i].title) ? this.formSubmission.files[i].title : ((this.files[i] && this.files[i].name) ? this.files[i].name : '');
                             let type = (this.formSubmission.files[i].type) ? this.formSubmission.files[i].type : "Other"
-                            let start = (this.formSubmission.files[i].start_date) ? this.formSubmission.files[i].start_date : formStart;
-                            let end = (this.formSubmission.files[i].end_date) ? this.formSubmission.files[i].end_date :  formEnd;
+                            let start = (this.formSubmission.files[i].start_date) ? this.formSubmission.files[i].start_date : "";
+                            let end = (this.formSubmission.files[i].end_date) ? this.formSubmission.files[i].end_date :  "";
 
-                            if (start){
-                                let formST = start.indexOf("T");
-                                if (formST != -1){
-                                    start = start.substring(0, formST);
-                                }
-                            }else{
-                                let d = new Date();
-                                let m = (d.getMonth()+1)
-                                m = m<10 ? "0"+m : m;
-                                let day = d.getDate();
-                                day = day<10 ? "0"+day : day
-                                start = d.getFullYear() + "-" + m + "-" + day;
-                            }
+                            // if (start){
+                            //     let formST = start.indexOf("T");
+                            //     if (formST != -1){
+                            //         start = start.substring(0, formST);
+                            //     }
+                            // }else{
+                            //     let d = new Date();
+                            //     let m = (d.getMonth()+1)
+                            //     m = m<10 ? "0"+m : m;
+                            //     let day = d.getDate();
+                            //     day = day<10 ? "0"+day : day
+                            //     start = d.getFullYear() + "-" + m + "-" + day;
+                            // }
                             
-                            if (end){
-                                let formET = end.indexOf("T");
+                            // if (end){
+                            //     let formET = end.indexOf("T");
 
-                                if (formET != -1){
-                                    end = end.substring(0, formET);
-                                }
-                            }else{
-                                let d = new Date();
-                                let m = (d.getMonth()+1)
-                                m = m<10 ? "0"+m : m;
-                                let day = d.getDate();
-                                day = day<10 ? "0"+day : day
-                                end = d.getFullYear() + "-" + m + "-" + day;
-                            }
+                            //     if (formET != -1){
+                            //         end = end.substring(0, formET);
+                            //     }
+                            // }else{
+                            //     let d = new Date();
+                            //     let m = (d.getMonth()+1)
+                            //     m = m<10 ? "0"+m : m;
+                            //     let day = d.getDate();
+                            //     day = day<10 ? "0"+day : day
+                            //     end = d.getFullYear() + "-" + m + "-" + day;
+                            // }
                             
                             if ( (!this.formSubmission.files[i].title) || (!this.formSubmission.files[i].type) || (!this.formSubmission.files[i].start_date) || (!this.formSubmission.files[i].end_date)){
                                 usingADefault = true;

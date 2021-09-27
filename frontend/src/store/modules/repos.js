@@ -100,7 +100,8 @@ const actions = {
     },
 
     async saveBranch({state}){
-        return backend.postRepoBranch(state.repo._id, state.branch);
+        let rId = (state.repo._id) ? state.repo._id : state.branch.repo_id;
+        return backend.postRepoBranch(rId, state.branch);
     },
 
     async updateBranch({state}){
