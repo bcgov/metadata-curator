@@ -127,7 +127,7 @@ export default {
 
         async loadSections() {
             this.loading = true;
-            await this.getBranch({id: this.id});
+            //await this.getBranch({id: this.id});
             await this.getSchema({id: this.id});
             this.loading = false;
         },

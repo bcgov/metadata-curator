@@ -99,6 +99,18 @@
 
                             <v-col cols=12>
                                 <v-text-field
+                                    :ref="'basicField-' + key + '-' + fKey + '-tags'"
+                                    :id="'basicField-' + key + '-' + fKey + '-tags'"
+                                    :value="field.tags"
+                                    @focus="onFocusBasic"
+                                    :label="$tc('Tags', 2)"
+                                    @input="updateResource(key, fKey, 'tags', $event)"
+                                >
+                                </v-text-field>
+                            </v-col>
+
+                            <v-col cols=12>
+                                <v-text-field
                                     :ref="'basicField-' + key + '-' + fKey + '-comments'"
                                     :id="'basicField-' + key + '-' + fKey + '-comments'"
                                     :value="field.comments"
@@ -244,20 +256,20 @@
                 <v-col cols=12 v-else-if="resources && resources[0]">
                     <v-row v-for="(resource, key) in resources" :key="'resources'+key">
                         <v-col cols=12>
-                            <h4>{{$tc('Resource')}} {{resource.name}}</h4>
+                            <h1>{{$tc('Resource')}} {{resource.name}}</h1>
                         </v-col>
                         <v-col cols=12 v-if="(resource.schema && resource.schema.fields) || (resource.tableSchema && resource.tableSchema.fields)">
                             <div v-for="(field, key) in ((resource.tableSchema && resource.tableSchema.fields) ? resource.tableSchema.fields : resource.schema.fields)" :key="'field-'+key+'-'+field.name" :class="`field${field.highlight ? ' fieldHighlight' : ''}`">
-                                <v-row v-if="field && field.name">
+                                <v-row v-if="field && field.name" class="my-0">
                                     <!-- <v-col cols=3>
                                         Name:
                                     </v-col> -->
                                     <v-col cols=9>
-                                        <h2>{{field.name}}</h2>
+                                        <h3>{{field.name}}</h3>
                                     </v-col>
                                 </v-row>
 
-                                <v-row v-if="field && (field.type || (field._descriptor && field._descriptor.type))">
+                                <v-row v-if="field && (field.type || (field._descriptor && field._descriptor.type))" class="my-0">
                                     <v-col cols=3>
                                         {{$tc('Type')}}:
                                     </v-col>
@@ -266,7 +278,7 @@
                                     </v-col>
                                 </v-row>
 
-                                <v-row v-if="field && (field.description || (field._descriptor && field._descriptor.description))">
+                                <v-row v-if="field && (field.description || (field._descriptor && field._descriptor.description))" class="my-0">
                                     <v-col cols=3>
                                         {{$tc('Description')}}:
                                     </v-col>
@@ -275,7 +287,7 @@
                                     </v-col>
                                 </v-row>
 
-                                <v-row v-if="field && (field.example || (field._descriptor && field._descriptor.example))">
+                                <v-row v-if="field && (field.example || (field._descriptor && field._descriptor.example))" class="my-0">
                                     <v-col cols=3>
                                         {{$tc('Example')}}:
                                     </v-col>
@@ -284,7 +296,7 @@
                                     </v-col>
                                 </v-row>
 
-                                <v-row v-if="field && (field.constraints || (field._descriptor && field._descriptor.constraints))">
+                                <v-row v-if="field && (field.constraints || (field._descriptor && field._descriptor.constraints))" class="my-0">
                                     <v-col cols=3>
                                         {{$tc('Constraint', 2)}}:
                                     </v-col>
@@ -293,16 +305,19 @@
                                     </v-col>
                                 </v-row>
 
-                                <v-row v-if="field && (field.format || (field._descriptor && field._descriptor.format))">
-                                    <v-col cols=3 v-if="( (field.format && field.format !== 'default') || ((field._descriptor.format && field._descriptor.format !== 'default')) )">
+                                <v-row 
+                                    v-if="field 
+                                        && (field.format || (field._descriptor && field._descriptor.format))
+                                        && ( (field.format && field.format !== 'default') || ((field._descriptor && field._descriptor.format && field._descriptor.format !== 'default')) )" class="my-0">
+                                    <v-col cols=3>
                                         {{$tc('Format')}}:
                                     </v-col>
-                                    <v-col cols=9 v-if="( (field.format && field.format !== 'default') || ((field._descriptor.format && field._descriptor.format !== 'default')) )">
+                                    <v-col cols=9>
                                         {{field.format ? field.format : field._descriptor.format}}
                                     </v-col>
                                 </v-row>
 
-                                <v-row v-if="field && (field.tags || (field._descriptor && field._descriptor.tags))">
+                                <v-row v-if="field && (field.tags || (field._descriptor && field._descriptor.tags))" class="my-0">
                                     <v-col cols=3>
                                         {{$tc('Tags', 2)}}:
                                     </v-col>
@@ -311,7 +326,7 @@
                                     </v-col>
                                 </v-row>
 
-                                <v-row v-if="field && (field.missingValues || (field._descriptor && field._descriptor._missingValues))">
+                                <v-row v-if="field && (field.missingValues || (field._descriptor && field._descriptor._missingValues))" class="my-0">
                                     <v-col cols=3>
                                         {{$tc('Missing Value', 2)}}:
                                     </v-col>
@@ -320,7 +335,7 @@
                                     </v-col>
                                 </v-row>
 
-                                <v-row v-if="field && (field.comments || (field._descriptor && field._descriptor.comments))">
+                                <v-row v-if="field && (field.comments || (field._descriptor && field._descriptor.comments))" class="my-0">
                                     <v-col cols=3>
                                         {{$tc('Comments', 2)}}:
                                     </v-col>
@@ -672,10 +687,15 @@ export default{
     .field{
         border: 1px solid;
         margin-bottom: 5px;
+        padding-bottom: 10px;
     }
 
     .fieldHighlight{
         background: var(--v-textHighlight-base);
+    }
+    
+    .row.my-0{
+        height: 26px;
     }
 
 </style>>

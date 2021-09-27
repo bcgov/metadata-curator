@@ -2,10 +2,17 @@
     <v-container>
         <span :key="'container'+spanKey">
             <v-row>
-               <v-col cols=4 class="mx-2" v-for="(file, index) in files" :key="'fileinfo-'+index">
+               <v-col cols=5 class="mx-2" v-for="(file, index) in files" :key="'fileinfo-'+index">
                    
                     <v-row>
-                        <v-icon>mdi-file</v-icon>{{file.name}}
+                        <v-col cols=12>
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <div class="ellipsis" v-on="on" v-bind="attrs"><v-icon>mdi-file</v-icon>{{file.name}}</div>
+                                </template>
+                                <span>{{file.name}}</span>
+                            </v-tooltip>
+                        </v-col>
                     </v-row>
                     <v-row>
                         <v-text-field
@@ -288,8 +295,12 @@
 </script>
 
 
-
-
-
-
-
+<style scoped>
+    .ellipsis{
+        text-overflow: ellipsis;
+        overflow: hidden;
+        width: 100%;
+        white-space: nowrap;
+        height: 24px;
+    }
+</style>
