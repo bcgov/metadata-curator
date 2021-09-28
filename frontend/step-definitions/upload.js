@@ -49,6 +49,7 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
 
     await client.click('#next-1');
     
+    await client.pause(500);
     await client.click('#newDatasetButton');
     await client.pause(3000);
     await client.click('#next-2');
@@ -58,13 +59,26 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
     await client.click('#next-3');
 
     let d = new Date();
-    let da = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate()
+    let mo = (d.getMonth()+1)
+    if (mo<10){
+        mo = "0" + mo;
+    }
+    let da = d.getFullYear() + "-" + mo + "-" + d.getDate()
     
     await client.click('#fileinfo-0-start');
     await client.setValue('#fileinfo-0-start', da);
-    
+    await client.click('#fileinfo-0-title');
+    await client.pause(500);
+
     await client.click('#fileinfo-0-end');
     await client.setValue('#fileinfo-0-end', da);
+
+    await client.pause(500);
+    await client.click('#fileinfo-0-title');
+    await client.pause(500);
+    await client.click('#fileinfo-0-title');
+    await client.pause(500);
+    await client.click('#fileinfo-0-title');
 
     await client.saveScreenshot("./"+path+"/preNext3.png");
     await client.click('#next-4');
