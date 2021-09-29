@@ -80,6 +80,19 @@
                                         Citation: {{branch.citation}}
                                     </v-col>
                                 </v-row>
+
+                                <v-row>
+                                    hi
+                                    <v-col cols=12 v-if="branch">
+                                        <SimpleCheckbox
+                                            :label="$tc('Published')"
+                                            :placeholder="$tc('Published')"
+                                            name="published"
+                                            :editing="false"
+                                            :value="(branch) ? branch.published : false"
+                                        ></SimpleCheckbox>
+                                    </v-col>
+                                </v-row>
                             </v-card-text>
                         </v-card>
                     </v-tab-item>

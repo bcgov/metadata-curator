@@ -51,12 +51,36 @@
 
                             <v-col cols=12>
                                 <v-text-field
+                                    :ref="'basicField-' + key + '-' + fKey + '-shortName'"
+                                    :id="'basicField-' + key + '-' + fKey + '-shortName'"
+                                    :value="field.shortName"
+                                    @focus="onFocusBasic"
+                                    :label="$tc('Short Name')"
+                                    @input="updateResource(key, fKey, 'shortName', $event)"
+                                >
+                                </v-text-field>
+                            </v-col>
+
+                            <v-col cols=12>
+                                <v-text-field
                                     :ref="'basicField-' + key + '-' + fKey + '-type'"
                                     :id="'basicField-' + key + '-' + fKey + '-type'"
                                     :value="field.type"
                                     @focus="onFocusBasic"
                                     :label="$tc('Type')"
                                     @input="updateResource(key, fKey, 'type', $event)"
+                                >
+                                </v-text-field>
+                            </v-col>
+
+                            <v-col cols=12>
+                                <v-text-field
+                                    :ref="'basicField-' + key + '-' + fKey + '-description'"
+                                    :id="'basicField-' + key + '-' + fKey + '-description'"
+                                    :value="field.description"
+                                    @focus="onFocusBasic"
+                                    :label="$tc('Description')"
+                                    @input="updateResource(key, fKey, 'description', $event)"
                                 >
                                 </v-text-field>
                             </v-col>
@@ -269,6 +293,15 @@
                                     </v-col>
                                 </v-row>
 
+                                <v-row v-if="field && (field.shortName || (field._descriptor && field._descriptor.shortName))" class="my-0">
+                                    <v-col cols=3>
+                                        {{$tc('Short Name')}}:
+                                    </v-col>
+                                    <v-col cols=9>
+                                        {{field.shortName ? field.shortName : field._descriptor.shortName}}
+                                    </v-col>
+                                </v-row>
+
                                 <v-row v-if="field && (field.type || (field._descriptor && field._descriptor.type))" class="my-0">
                                     <v-col cols=3>
                                         {{$tc('Type')}}:
@@ -314,6 +347,15 @@
                                     </v-col>
                                     <v-col cols=9>
                                         {{field.format ? field.format : field._descriptor.format}}
+                                    </v-col>
+                                </v-row>
+
+                                <v-row v-if="field && (field.rdfType || (field._descriptor && field._descriptor.rdfType))" class="my-0">
+                                    <v-col cols=3>
+                                        {{$tc('RDF Type')}}:
+                                    </v-col>
+                                    <v-col cols=9>
+                                        {{field.rdfType ? field.rdfType : field._descriptor.rdfType}}
                                     </v-col>
                                 </v-row>
 

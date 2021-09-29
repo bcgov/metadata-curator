@@ -20,7 +20,7 @@
             <v-col cols="12">
                 <v-tabs v-model="tab">
                     <v-tab key="version">{{$tc('Version')}}</v-tab>
-                    <v-tab key="schema">{{$tc('Schema')}}</v-tab>
+                    <v-tab key="schema" v-if="!creating">{{$tc('Schema')}}</v-tab>
                 </v-tabs>
                 <v-tabs-items v-model="tab" class="fullWidth">
                     <v-tab-item key="version">
@@ -182,7 +182,7 @@
                                             name="published"
                                             :editing="editing"
                                             :disabled="!user.isApprover || (branch && branch.approved)"
-                                            :value="(branch) ? branch.published : ''"
+                                            :value="(branch) ? branch.published : false"
                                             @edited="(newValue) => { updateValues('published', newValue) }"
                                         ></SimpleCheckbox>
                                         <router-link v-if="branch.published && location" :to="{ name: 'published_version', params: { id: id }}">{{location.protocol + "//" + location.host + $router.resolve({name: 'published_version', params: { id: id } }).href }}</router-link>
@@ -216,7 +216,7 @@
                         </v-card>
                     </v-tab-item>
 
-                    <v-tab-item key="schema">
+                    <v-tab-item key="schema" v-if="!creating">
                         <MetadataForm :branchId="branchId" :dialog="dialog" @close="closeOrBack()"></MetadataForm>
                     </v-tab-item>
                 </v-tabs-items>
@@ -305,8 +305,10 @@ export default {
         closeOrBack() {
             if (this.dialog){
                 this.$emit('close');
-            }else{
+            }else if (this.creating){
                 this.$router.push({ name: 'versions' });
+            }else{
+                this.editing = false;
             }
         },
 
@@ -350,7 +352,7 @@ export default {
                     this.alertType = "success"
                     this.alertText = "Sucessfully updated version";
                     this.alert = true;
-                    this.$emit("close");
+                    this.closeOrBack();
 
                 }).catch( err => {
                     this.alertType = "error"

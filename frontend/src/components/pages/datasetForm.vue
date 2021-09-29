@@ -4,7 +4,7 @@
             <v-tabs v-model="tab">
                 <v-tab key="dataset">{{$tc('Datasets', 1)}}</v-tab>
                 <v-tab key="schema">{{$tc('Schema', 1)}}</v-tab>
-                <v-tab key="uploads">{{$tc('Uploads', 2)}}</v-tab>
+                <v-tab key="uploads" v-if="uploads.length>0">{{$tc('Uploads', 2)}}</v-tab>
             </v-tabs>
             <v-tabs-items v-model="tab" class="fullWidth">
                 <v-tab-item key="dataset">
@@ -14,11 +14,11 @@
                     <v-select :items="versionDrop" v-model="viewVersion"></v-select>
                     <SchemaView :key="'schema-view-'+viewVersion+'-'+redrawIndex" :editing="false" :editable="false"></SchemaView>
                 </v-tab-item>
-                <v-tab-item key="uploads">
-                    <span v-if="versionDrop && dataUploads">
-                        <v-row class="mt-3" v-for="dataUpload in dataUploads" :key="'uploadRow-'+dataUpload._id">
-                            <v-col cols=4 v-if="versionDrop && dataUpload && dataUpload.versionIndex">{{$tc('Version')}}: {{versionDrop[dataUpload.versionIndex].text}}</v-col>
-                            <v-col cols=4 v-if="versionDrop && dataUpload && dataUpload.versionIndex">{{$tc('Uploads')}}: <a :href="(dataUpload.status === 'submitted' ? '/dataUploads/' : '/uploads/') + dataUpload._id">{{dataUpload.name}}</a></v-col>
+                <v-tab-item key="uploads" v-if="uploads.length>0">
+                    <span>
+                        <v-row class="mt-3" v-for="dataUpload in uploads" :key="'uploadRow-'+dataUpload._id">
+                            <v-col cols=4>{{$tc('Version')}}: {{versionDrop[dataUpload.versionIndex].text}}</v-col>
+                            <v-col cols=4>{{$tc('Uploads')}}: <a :href="(dataUpload.status === 'submitted' ? '/dataUploads/' : '/uploads/') + dataUpload._id">{{dataUpload.name}}</a></v-col>
                         </v-row>
                     </span>
                 </v-tab-item>
@@ -84,6 +84,7 @@ export default {
         loadSchemas: async function(){
             await this.getDataset({id: this.id});
             await this.getBranches({repoId: this.id});
+            await this.getDataUploads({filterBy: false});
             let uploadIds = [];
             this.versionDrop = this.branches.map( (val) => {
                 let d = new Date(val.create_date);
@@ -91,7 +92,7 @@ export default {
                 let month = new Intl.DateTimeFormat('en', { month: 'short' }).format(d);
                 let day = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d);
                 uploadIds.push(val.data_upload_id);
-                return {value: val._id, text: (val.name + "(created: " + month + " " + day + ", " + year +")"), date: val.create_date}
+                return {value: val._id, text: (val.name + "(created: " + month + " " + day + ", " + year +")"), date: val.create_date, upload: val.data_upload_id}
             });
 
             this.versionDrop.sort((a,b) => (a.date > b.date) ? -1 : ((b.date > a.date) ? 1 : 0))
@@ -101,7 +102,6 @@ export default {
                 this.viewVersion = "";
             }
 
-            await this.getDataUploads({filterBy: false});
             this.uploads = [];
             for (let i=0; i<this.dataUploads.length; i++){
                 let uploadIndex = uploadIds.indexOf(this.dataUploads[i]._id);

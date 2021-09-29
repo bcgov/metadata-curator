@@ -106,7 +106,8 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
                 if (configs && configs.value){
                     const url = `${configs.value}`;
                     const axios = require('axios');
-                    axios.post(url).catch( (err) => log.error("Error calling hook", err)).then( () => {
+                    console.log("Calling hook", url, dataUpload);
+                    axios.post(url, dataUpload).catch( (err) => log.error("Error calling hook", err)).then( () => {
                         log.debug("Called uploadHook", url);
                     });
                 }
