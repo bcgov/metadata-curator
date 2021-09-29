@@ -181,8 +181,8 @@
                                             :placeholder="$tc('Published')"
                                             name="published"
                                             :editing="editing"
-                                            :disabled="!user.isApprover || (branch && branch.approved)"
-                                            :value="(branch) ? branch.published : false"
+                                            :disabled="!editing || !user.isApprover || (branch && branch.approved)"
+                                            :checked="(branch) ? branch.published : false"
                                             @edited="(newValue) => { updateValues('published', newValue) }"
                                         ></SimpleCheckbox>
                                         <router-link v-if="branch.published && location" :to="{ name: 'published_version', params: { id: id }}">{{location.protocol + "//" + location.host + $router.resolve({name: 'published_version', params: { id: id } }).href }}</router-link>
@@ -197,7 +197,7 @@
                                             name="approved"
                                             :editing="editing"
                                             :disabled="!user.isApprover"
-                                            :value="(branch) ? branch.approved : ''"
+                                            :checked="(branch) ? branch.approved : ''"
                                             @edited="(newValue) => { updateValues('approved', newValue) }"
                                         ></SimpleCheckbox>
                                     </v-col>

@@ -89,7 +89,7 @@
                                             :placeholder="$tc('Published')"
                                             name="published"
                                             :editing="false"
-                                            :value="(branch) ? branch.published : false"
+                                            :checked="(branch) ? branch.published : false"
                                         ></SimpleCheckbox>
                                     </v-col>
                                 </v-row>
