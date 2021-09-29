@@ -234,6 +234,7 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         let f = {...req.body};
         try{
             const result = await updateBranch(req.params.branchId, f.type, f.name, f.description, f.upload_id, f, req.user);
+            res.status(200).json(result);
         }catch(ex){
             if (ex.message === 'approved'){
                 res.status(403).json({error: "Can't edit already published"})
@@ -241,7 +242,7 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
                 res.status(500).json({error: ex});
             }
         }
-        res.status(200).json(result);
+        
     });
 
     router.delete('/:branchId', auth.requireLoggedIn, auth.requireAdmin, async function(req, res, next) {

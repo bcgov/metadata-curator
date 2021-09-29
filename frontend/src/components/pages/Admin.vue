@@ -69,6 +69,32 @@
                     </v-tab-item>
 
                     <v-tab>
+                        {{$tc('Datasets', 2)}}
+                    </v-tab>
+                    <v-tab-item>
+                        <DataTable
+                            :title="$tc('Datasets', 2)"
+                            :headers="datasetHeaders"
+                            storeName="adminDatasets"
+                            :showDelete="false"
+                            :formComponent="permissionSubComponent"
+                        ></DataTable>
+                    </v-tab-item>
+
+                    <v-tab>
+                        {{$tc('Versions', 2)}}
+                    </v-tab>
+                    <v-tab-item>
+                        <DataTable
+                            :title="$tc('Versions', 2)"
+                            :headers="versionHeaders"
+                            storeName="adminVersions"
+                            :showDelete="false"
+                            :formComponent="permissionSubComponent"
+                        ></DataTable>
+                    </v-tab-item>
+
+                    <v-tab>
                         {{$tc('Formio')}}
                     </v-tab>
                     <v-tab-item>
@@ -279,6 +305,107 @@ export default {
                     //     text: 'Files', 
                     //     value: 'files' 
                     // },
+                ],
+
+            datasetHeaders: [
+                    {
+                        text: this.$tc('id', 1),
+                        sortable: true,
+                        value: '_id',
+                    },
+                    {
+                        text: this.$tc('Name'),
+                        sortable: true,
+                        value: 'name'
+                    },
+                    { 
+                        text: this.$tc('Created'), 
+                        value: 'create_date' 
+                    },
+                    { 
+                        text: this.$tc('Created By'), 
+                        value: 'created_by' 
+                    },
+                    { 
+                        text: this.$tc('Topics', 1) + ' ' + this.$tc('id', 1),
+                        value: 'topic_id' 
+                    },
+                    {
+                        text: this.$tc('Description'),
+                        sortable: false,
+                        value: 'description',
+                    },
+                ],
+
+            versionHeaders: [
+                    {
+                        text: this.$tc('id', 1),
+                        sortable: true,
+                        value: '_id',
+                    },
+                    {
+                        text: this.$tc('Repo Id'),
+                        sortable: true,
+                        value: 'repo_id'
+                    },
+                    { 
+                        text: this.$tc('Topics', 1) + ' ' + this.$tc('id', 1),
+                        value: 'topic_id' 
+                    },
+                    { 
+                        text: this.$tc('Type'), 
+                        value: 'type' 
+                    },
+                    { 
+                        text: this.$tc('Name'), 
+                        value: 'name' 
+                    },
+                    { 
+                        text: this.$tc('Created'), 
+                        value: 'create_date' 
+                    },
+                    {
+                        text: this.$tc('Description'),
+                        sortable: false,
+                        value: 'description',
+                    },
+                    {
+                        text: this.$tc('Upload Id'),
+                        sortable: false,
+                        value: 'data_upload_id',
+                    },
+                    { 
+                        text: this.$tc('Availability'), 
+                        value: 'availability' 
+                    },
+                    { 
+                        text: this.$tc('Variable Classification'), 
+                        value: 'variable_classification' 
+                    },
+                    { 
+                        text: this.$tc('Notes'), 
+                        value: 'notes' 
+                    },
+                    { 
+                        text: this.$tc('Citation'), 
+                        value: 'citation' 
+                    },
+                    { 
+                        text: this.$tc('Short Title'), 
+                        value: 'short_title' 
+                    },
+                    { 
+                        text: this.$tc('Published'), 
+                        value: 'published' 
+                    },
+                    { 
+                        text: this.$tc('Approved'), 
+                        value: 'approved' 
+                    },
+                    { 
+                        text: this.$tc('FAQ'), 
+                        value: 'faq' 
+                    },
                 ],
 
             submissionHeaders: [
