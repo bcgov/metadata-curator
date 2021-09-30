@@ -80,7 +80,7 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
     }
     
     const updateBranch = async function(branchId, type, name, description, upload_id, fields, user) {
-        const repoBranchSchema = await getBranchById(branchId, req.user);
+        const repoBranchSchema = await getBranchById(branchId, user);
         const topicResponse = await forumClient.getTopics(user, (repoBranchSchema.topic_id+"branch"));
         if (!topicResponse || topicResponse.length < 1){
             throw new Error('404');
@@ -233,12 +233,13 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         }
         let f = {...req.body};
         try{
-            const result = await updateBranch(req.params.branchId, f.type, f.name, f.description, f.upload_id, f, req.user);
+            const result = await updateBranch(req.params.branchId, f.type, f.name, f.description, f.data_upload_id, f, req.user);
             res.status(200).json(result);
         }catch(ex){
             if (ex.message === 'approved'){
                 res.status(403).json({error: "Can't edit already published"})
             }else{
+                console.log("ERROR", ex);
                 res.status(500).json({error: ex});
             }
         }

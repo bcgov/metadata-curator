@@ -135,9 +135,10 @@ export default {
         closeOrBack() {
             if (this.dialog){
                 this.$emit('close');
-            }else{
+            }else if (this.creating){
                 this.$router.push({ name: 'versions' });
             }
+            this.editing = false;
         },
 
         updatedObj: function(newVal){
@@ -158,7 +159,7 @@ export default {
             }
         },
 
-        save(){
+        async save(){
             this.setTableSchema({schema: this.schemaObj});
             if (this.creating){
                 this.saveTableSchema();
@@ -166,16 +167,29 @@ export default {
                     this.alertType = "success"
                     this.alertText = this.$tc('Sucessfully updated') + " " + this.$tc('version');
                     this.alert = true;
-                    this.$emit("close");
+                    this.closeOrBack();
 
                 }).catch( err => {
                     this.alertType = "error"
                     this.alertText = err.message;
                     this.alert = true;
+                    window.scrollTo(0,0);
                 });
-                this.creating = false;
+                
             }else{
                 this.updateDataPackageSchema();
+                this.updateBranch().then( () => {
+                    this.alertType = "success"
+                    this.alertText = this.$tc('Sucessfully updated') + " " + this.$tc('version');
+                    this.alert = true;
+                    this.closeOrBack();
+
+                }).catch( err => {
+                    this.alertType = "error"
+                    this.alertText = err.message;
+                    this.alert = true;
+                    window.scrollTo(0,0);
+                });
             }
         },
 

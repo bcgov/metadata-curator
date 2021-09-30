@@ -172,6 +172,11 @@ export default {
         "Published": "Published",
         "Approved": "Approved",
         "New Comment": "New Comment",
-        "Tags": "Tags | Tag | Tags"
+        "Tags": "Tags | Tag | Tags",
+        "Short Name": "Short Name",
+        "Created By": "Created By",
+        "Repo Id": "Repo Id",
+        "Upload Id": "Upload Id",
+        "Dataset": "Datasets | Dataset | Datasets",
     }
 }
