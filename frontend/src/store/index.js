@@ -24,6 +24,8 @@ const comments = build('getComments', 'newComment', 'putComment', 'deleteComment
 const adminDUploads = build('getDataUploads');
 const submissions = build('getFormSubmissions','postFormSubmission', 'putFormSubmission', 'deleteFormSubmission' );
 const config = build('getConfigs','newConfig', 'putConfig', 'deleteConfig' );
+const adminDatasets = build('getRepos');
+const adminVersions = build('getBranches');
 
 Vue.use(Vuex)
 
@@ -47,6 +49,8 @@ export default new Vuex.Store({
     repos,
     version,
     config,
+    adminDatasets,
+    adminVersions,
   },
   plugins: [createPersistedState({
     paths: [

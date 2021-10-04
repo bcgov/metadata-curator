@@ -10,7 +10,7 @@ var repoBranchSchema = new Schema({
     type: {
         type: String,
         required: true,
-        enum: ["standard", "reserve"]
+        enum: ["standard", "reserve", "restricted"]
     },
     name: {
         type: String,
@@ -29,6 +29,45 @@ var repoBranchSchema = new Schema({
         required: true,
         ref: 'data_upload'
     },
+
+    availability: {
+        type: String,
+        required: false,
+    },
+    variable_classification: {
+        type: String,
+        required: false,
+    },
+    notes: {
+        type: String,
+        required: false,
+    },
+    citation:{
+        type: String,
+        required: false,
+    },
+    short_title: {
+        type: String,
+        required: false,
+    },
+    published: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
+    approved: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
+    topic_id: {
+        type: Schema.Types.ObjectId
+    },
+    faq: {
+        type: String,
+        required: false,
+    }
+
 });
 
 

@@ -4,7 +4,7 @@
         <v-dialog v-model="aboutDia">
             <v-card>
                 <v-card-title>
-                    About
+                    {{$tc('About')}}
                     <v-spacer></v-spacer>
                     <v-btn @click="aboutDia = false">X</v-btn>
                 </v-card-title>
@@ -18,15 +18,15 @@
             v-if="loading"
             indeterminate
         ></v-progress-circular>
-        <v-btn primary class="" v-else-if="!loggedIn" @click="login">Login</v-btn>
+        <v-btn primary class="" v-else-if="!loggedIn" @click="login">{{$tc('Login')}}</v-btn>
         <v-menu v-else offset-y>
             <template v-slot:activator="{ on }">
                 <v-img id="userMenu" v-if="showImage" ma-0 pa-0 :src="buttonImage" :alt="alt" :height="height+'px'" :width="width+'px'" contain v-on="on" v-on:error="onImgError"></v-img>
                 <v-btn id="userMenu" v-else-if="!showImage" text v-on="on"><v-icon>fa-user</v-icon></v-btn>
             </template>
             <v-list>
-                <v-list-item>
-                    <v-list-item-title>Signed in as {{user._json.preferred_username}}</v-list-item-title>
+                <v-list-item id="toUserPage" @click="$router.push('/user')">
+                    <v-list-item-title>{{$tc('Signed in as')}} {{user._json.preferred_username}}</v-list-item-title>
                 </v-list-item>
                 <v-list-item
                     v-for="(item, index) in items"
@@ -34,7 +34,7 @@
                     @click="item.action"
                     :id="'userMenu-'+item.title"
                 >
-                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                    <v-list-item-title>{{ $tc(item.title) }}</v-list-item-title>
                 </v-list-item>
             </v-list>
         </v-menu>

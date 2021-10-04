@@ -3,6 +3,8 @@ const chromeDriver = require('chromedriver');
 const geckoDriver = require('geckodriver');
 const ieDriver = require('iedriver');
 const edgeDriver = require('edgedriver');
+const config = require('./step-definitions/config.json');
+const path = config.screenshotPath;
 
 module.exports = {
   silent: false,
@@ -10,12 +12,12 @@ module.exports = {
     default: {
         screenshots: {
             enabled: true,
-            path: 'screenshots'
+            path: path
         },
         selenium: {
             start_process: true,
             server_path: seleniumServer.path,
-            port: 4447,
+            port: 4444,
             cli_args: {
                 'webdriver.chrome.driver': chromeDriver.path,
                 'webdriver.gecko.driver': geckoDriver.path,

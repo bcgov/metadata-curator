@@ -28,14 +28,6 @@ describe("Config Routes", function() {
     });
 
     describe('GET /', function () {
-        it('should get unauthorized', function(done){
-            chai.request(server)
-            .get(basePath)
-            .end(function(err, res){
-                res.should.have.status(401);
-                done();
-            })
-        })
 
         it('should get 0 config', function (done) {
             var jwt = config.get('testJwt');
@@ -193,14 +185,6 @@ describe("Config Routes", function() {
     });
 
     describe('GET /:key', function () {
-        it('should get unauthorized', function(done){
-            chai.request(server)
-            .get(basePath+focalId)
-            .end(function(err, res){
-                res.should.have.status(401);
-                done();
-            })
-        })
 
         it('should get a config', function (done) {
             var jwt = config.get('testJwt');

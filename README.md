@@ -37,7 +37,8 @@ Metadata Curator is written in both node.js and vuejs. Docker is also strongly r
 - Docker 18.09.1 or newer; `docker --version`
 - Minio (Storage API); `minio --version`
 - Tusd (Storage API); `tusd --version`
-- (optional) Terraform version 12 `terraform --version`
+- (optional) Terraform version 13 `terraform --version`
+- (required for terraform on mac) truncate `brew install truncate`
 
 **Local Development macOS < 10.15** (as of 2020/11/24)
 - xcode [reference](https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md#i-did-all-that-and-the-acid-test-still-does-not-pass--)

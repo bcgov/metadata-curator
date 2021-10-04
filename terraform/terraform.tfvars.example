@@ -17,7 +17,7 @@ sslCertificateKey = "/ssl/example.key"
 # Docker images Metadata Curator will use.  Owner is the location in dockerhub
 images = {
     owner = "bcgovimages"
-    forum_api = ":edge"
+    forum_api = "bcgovimages/ocwa_forum_api:edge"
     formio = "h3brandon/formio:latest"
     frontend = ":edge"
     tusd = ":latest"
@@ -43,7 +43,7 @@ base64EncodedPGPPublicKey = "LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCgp
 orgAttribute = "businessCategory"
 
 # the role needed to make an upload.  Typically this would be an LDAP group.
-requiredRoleToCreateRequest = "exporter"
+requiredRoleToCreateRequest = "/exporter"
 
 # when a new upload is made do you want to notify the metadata approvers (people who review the uploads)? 
 alwaysNotifyListOnTopicCreate = "false"
@@ -52,7 +52,7 @@ alwaysNotifyListOnTopicCreate = "false"
 alwaysNotifyUninvolvedOnCommentAdd = "true"
 
 # Metadata approver groups (typically LDAP groups) define who sees the approver interface vs the uploader interface (need at least 2 if spinning up keycloak)
-approverGroups = ["metadata_approver_1_dip", "metadata_approver_2_dip"]
+approverGroups = ["/metadata_approver_1_dip", "/metadata_approver_2_dip"]
 
 #Need at least 2 if spinning up keycloak otherwise unused adds these attribtues to exporters in keycloak setup should match the notify list if notifying
 businessCategories = ["business_category_1", "business_category_2"]
@@ -95,13 +95,12 @@ email = {
   }
 
 # group that Metadata Curator admins need to be in (typically an LDAP group)
-adminGroup = "mc-admin"
+adminGroup = "/mc-admin"
 
 # Form.io connection information.  Form.io has been integrated into Metadata Curator and is used for managing the dataset fields
 formio = {
-    "url": "http://localhost:3006",
-    "username": "admin@example.com",
-    "password": "CHANGEME"
+    "url": "http://mc_formio:3001",
+    "username": "admin@ocwa.local",
 }
 
 # Postgres user to use.  Postgres is used for keycloak only so requires keycloak true
@@ -125,7 +124,7 @@ surnameField = "family_name"
 groupField = "groups"
 
 # When creating a upload/topic these groups should be ignored for group access (normally shared groups)
-ignoreGroups = "\"researchers\""
+ignoreGroups = "\"/researchers\""
 
 #Whether or not to install keycloak with this
 makeKeycloak = true

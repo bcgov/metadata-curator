@@ -2,13 +2,30 @@
     <v-container>
         <span :key="'container'+spanKey">
             <v-row>
+                <v-col cols=12>
+                    <v-alert
+                        v-if="(submission && submission.data && submission.data.numOfUploadFiles && (submission.data.numOfUploadFiles !== files.length))"
+                        type="warning">
+                            {{$tc('You said you were providing')}} {{submission.data.numOfUploadFiles}} {{$tc('files but have currently provided', submission.data.numOfUploadFiles)}} {{files.length}}    
+                    </v-alert>
+                </v-col>
+            </v-row>
+
+            <v-row>
                 <v-col cols=10>
+                    <v-progress-circular
+                        indeterminate
+                        color="primary"
+                        v-if="wait"
+                    ></v-progress-circular>
                     <FileReader
                                 :show-encrypt-button="false"
                                 :show-upload-button="false"
                                 :show-import-button="false"
-                                :read-file="false"
+                                :read-file="true"
+                                :disabled="wait"
                                 :clear-file="clearFile"
+                                @reading-file="wait=true"
                                 :index="files.length"
                                 @file-opened="fileOpened"
                                 id="fileForm-reader"
@@ -74,6 +91,7 @@
 
             fileOpened(index, file, sig){
                 this.clearFile = false;
+                this.wait = false;
                 this.spanKey++;
                 this.clearFile = true;
                 this.fileReaders[this.fileReaders.length] = {}
@@ -100,7 +118,7 @@
                     f.files[i].id = "Not yet uploaded";
                     f.files[i].size = this.files[i].size;
                     f.files[i].sig = this.files[i].sig;
-                    f.files[i].data = this.dataFile[i];
+                    f.files[i].data = (this.dataFile[i]) ? this.dataFile[i] : false;
                 }
                 this.modifyStoreUpload(f);
             },
@@ -133,13 +151,15 @@
                 dataFile: [false],
                 spanKey: 0,
                 clearFile: false,
-                files: []
+                files: [],
+                wait: false,
             }
         },
         computed: {
             ...mapState({
                 uploadStore: state => state.upload.upload,
-                handles: state => state.file.fileHandles
+                handles: state => state.file.fileHandles,
+                submission: state => state.uploadForm.submission,
             }),
         },
         watch: {

@@ -11,7 +11,7 @@
                         grow>
                     <v-tabs-slider style="opacity: 0;"></v-tabs-slider>
                     <v-tab v-for="tab of tabs" :key="tab.id" :to="tab.route" exact :disabled="tab.disabled" :id="'tab-'+tab.name.toLowerCase()">
-                        {{ tab.name }}
+                        {{ $tc(tab.name, 2) }}
                         <v-icon>{{tab.icon}}</v-icon>
                     </v-tab>
                 </v-tabs>
@@ -21,7 +21,7 @@
 
             <User class="mr-4"></User>
 
-            <v-switch v-model="dark" label="Dark Mode" :class="(this.setTheme ? 'pt-4' : 'pt-4')"></v-switch>
+            <v-switch v-model="dark" :label="$tc('Dark Mode')" :class="(this.setTheme ? 'pt-4' : 'pt-4')"></v-switch>
 
         </v-app-bar>
     </v-container>

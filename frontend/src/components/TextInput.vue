@@ -3,10 +3,10 @@
         <span v-if="!editing">
             <span class="mr-2">
                 <h2 v-if="large" class="inline">
-                    {{displayLabel}}:
+                    {{$tc(displayLabel)}}:
                 </h2>
                 <span v-else>
-                    {{displayLabel}}:
+                    {{$tc(displayLabel)}}:
                 </span>
             </span>
 
@@ -21,10 +21,10 @@
         </span>
 
         <span v-else>
-            <ValidationProvider ref="provider" :rules="validationRules" v-slot="{ errors }" :name="label ? label : name">
+            <ValidationProvider ref="provider" :rules="validationRules" v-slot="{ errors }" :name="label ? $tc(label) : $tc(name)">
                 <v-text-field
-                    :label="displayLabel"
-                    :placeholder="placeholder"
+                    :label="$tc(displayLabel)"
+                    :placeholder="$tc(placeholder)"
                     :name="name"
                     v-model="val"
                     :error-messages="errors.length > 0 ? [errors[0]] : []"

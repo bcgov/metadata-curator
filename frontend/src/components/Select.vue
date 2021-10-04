@@ -2,13 +2,13 @@
     <div>
          <span v-if="!editing">
             <span class="mr-2">{{displayLabel}}</span>
-            <span>{{val}}</span>
+            <span>{{displayVal}}</span>
         </span>
 
         <span v-else>
-            <ValidationProvider :rules="validationRules" v-slot="{ errors }" :name="label ? label : name">
+            <ValidationProvider :rules="validationRules" v-slot="{ errors }" :name="label ? $tc(label) : $tc(name)">
                 <v-select
-                    :label="displayLabel"
+                    :label="$tc(displayLabel)"
                     :name="name"
                     v-model="val"
                     :items="items"
@@ -86,7 +86,18 @@
                     return this.label + ' *';
                 }
                 return this.label;
+            },
+
+            displayVal: function(){
+                let displayVal = this.val;
+                for (let i=0; i<this.items.length; i++){
+                    if (this.items[i].value === this.val){
+                        displayVal = this.items[i].text;
+                    }
+                }
+                return displayVal
             }
+
         },
         watch: {
             value: function (newVal) {

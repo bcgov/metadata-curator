@@ -17,8 +17,15 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             }
             dataUploadSchema.name = upload.name;
             dataUploadSchema.description = upload.description;
-            dataUploadSchema.uploader = user._json.email;
-            dataUploadSchema.files = upload.files;
+            dataUploadSchema.uploader = user.id;
+
+            if (upload.files){
+                dataUploadSchema.files = upload.files;
+                for (let i=0; i<dataUploadSchema.files.length; i++){
+                    dataUploadSchema.files[i] = (dataUploadSchema.files[i]) ? dataUploadSchema.files[i] : false;
+                }
+            }
+
             if (upload.form_name){
                 dataUploadSchema.form_name = upload.form_name;
             }
@@ -62,6 +69,9 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
 
         if (updatedData.files){
             dataUpload.files = updatedData.files;
+            for (let i=0; i<dataUpload.files.length; i++){
+                dataUpload.files = (dataUpload.files) ? dataUpload.files : false;
+            }
         }
 
         if (updatedData.status){
@@ -88,6 +98,23 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
         }catch(ex){
             log.error("Exception emailing", ex);
         }
+
+        if (dataUpload.status === "submitted"){
+            const confQ = {key: "uploadHook"};
+            const configs = await db.ConfigSchema.findOne(confQ);
+            try{
+                if (configs && configs.value){
+                    const url = `${configs.value}`;
+                    const axios = require('axios');
+                    console.log("Calling hook", url, dataUpload);
+                    axios.post(url, dataUpload).catch( (err) => log.error("Error calling hook", err)).then( () => {
+                        log.debug("Called uploadHook", url);
+                    });
+                }
+            }catch(ex){
+                log.error("Error calling upload hook", ex);
+            }
+        }
     
         try{
             return await dataUpload.save();
@@ -102,23 +129,16 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
         try {
             let topics = [];
             
-            
             let currentData = await forumClient.getTopics(user, query);
-            let topicResponse = {data: []};
-            let page = 0;
             
-            while (currentData.data.length >=100){
-                page++;
-                topicResponse.data = topicResponse.data.concat(currentData.data);
-                currentData = await forumClient.getTopics(user, {page: page});
-            }
+            let topicResponse = {data: []};
             topicResponse.data = topicResponse.data.concat(currentData.data);
             
             
             if(query && query.filterBy) {
                 if(query.filterBy === 'me') {
                     topics = topicResponse.data.filter( (item) => {
-                        return (item.contributors.indexOf(user.email) !== -1 && item.parent_id);
+                        return (item.contributors.indexOf(user.id) !== -1 && item.parent_id);
                     });
                 } else if(query.filterBy === 'provider') {
                     if(query.providerGroups && query.providerGroups.includes('all') ) {
@@ -135,15 +155,24 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
                 topics = topicResponse.data.filter(item => item.parent_id);
             }
     
-            const uploadIds = topics.map(item => item.name);
+            const uploadIds = topics.map( (item) => {
+                
+                if ( (item) && (item.name) && (String(item.name).indexOf("repo") === -1) && (String(item.name).indexOf("branch") ===-1) ){
+                    return item.name
+                }
+
+                return ""
+            }).filter( (item) => {
+                return (item && String(item).length > 0)
+            });
             if(query && query.filterBy === 'provider') {
-                let results = await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": 1});
+                let results = await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": -1});
                 results = results.filter( (item) => {
                     return item.status === "submitted";
                 });
                 return results;
             }else{
-                let results = await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": 1});
+                let results = await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": -1});
                 return results;
             }
     

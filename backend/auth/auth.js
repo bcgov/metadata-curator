@@ -6,6 +6,8 @@ var config = require('config');
 var logger = require('npmlog');
 var jwt = require('jsonwebtoken');
 let OidcStrategy = require('passport-openidconnect').Strategy;
+
+
 var secret = config.get("jwtSecret");
 
 passport.use('jwt', new JWTStrategy({
@@ -47,6 +49,7 @@ var buildProfile = function(token, refreshToken){
     profile._json['aud'] = config.get('jwtAud');
     profile.jwt = jwt.sign(token._json, config.get('jwtSecret'));
     profile.isAdmin = false;
+    let idField = config.get('userIdField');
   
     profile.isDataProvider = false;
     profile.isApprover = false;
@@ -58,6 +61,10 @@ var buildProfile = function(token, refreshToken){
 
     if ((typeof(token._json) !== "undefined") && (typeof(token._json.email) !== "undefined")){
         profile.email = token._json.email;
+    }
+
+    if ((typeof(token._json) !== "undefined") && (typeof(token._json[idField]) !== "undefined")){
+      profile.id = token._json[idField];
     }
     
     if (config.has('adminGroup')){
@@ -122,7 +129,7 @@ var strategy = new OidcStrategy(config.get('oidc'), async function(issuer, sub, 
     }
   
     if (profile.email){
-      db.User.update({email: profile.email}, user, {upsert: true, setDefaultsOnInsert: true}, function(e,r){
+      db.User.updateOne({email: profile.email}, user, {upsert: true, setDefaultsOnInsert: true}, function(e,r){
         if (e){
           console.log("Error updating user info", e);
         }else{

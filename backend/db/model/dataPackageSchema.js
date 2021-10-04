@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-let {tableSchema} = require('./tableSchema');
 
 var resourceSchema = new Schema({
    name: {type: String, required: false},
@@ -8,15 +7,22 @@ var resourceSchema = new Schema({
    data: {type: [String], required: true},
    tableSchema:
        {
-           type: tableSchema,
+           type: Object,
            required: true
        }
 }, { _id : false });
 
 var dataPackageSchema = new Schema({
     profile: {type:String, required: true},
+    version: {
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: 'repo_branch'
+    },
     resources: {type: [resourceSchema], required: true}
 });
+
+dataPackageSchema.set('strict', false);
 
 var model = mongoose.model('dataPackageSchema', dataPackageSchema, 'dataPackageSchema');
 

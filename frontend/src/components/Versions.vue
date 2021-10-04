@@ -1,11 +1,11 @@
 <template>
     <v-container>
-        <h1 class="display-1 font-weight-thin ml-3 my-3">Versions</h1>
+        <h1 class="display-1 font-weight-thin ml-3 my-3">{{$tc('Versions', 2)}}</h1>
 
         <v-container fluid class="ml-1 pb-0 mb-1">
             <v-row>
                 <v-col cols=10>
-                    <p>Upload:</p>
+                    <p>{{$tc('Uploads')}}:</p>
                     <v-select v-model="filterBy" :items="dataUploadsWithAll" item-text="name" item-value="_id" class="ml-2"></v-select>
                 </v-col>
             </v-row>

@@ -9,16 +9,16 @@
                 ></v-progress-circular>
             </v-col>
             <v-col v-else-if="!admin">
-                Forbidden you do not have access to this page
+                {{$tc('403')}}
             </v-col>
             <v-col v-else>
                 <v-tabs vertical>
                     <v-tab>
-                        Permissions
+                        {{$tc('Permission', 2)}}
                     </v-tab>
                     <v-tab-item>
                         <DataTable
-                            title="Permissions"
+                            :title="$tc('Permission', 2)"
                             :headers="permissionHeaders"
                             storeName="permissions"
                             :showDelete="true"
@@ -27,11 +27,11 @@
                     </v-tab-item>
 
                     <v-tab>
-                        Topics
+                        {{$tc('Topics', 2)}}
                     </v-tab>
                     <v-tab-item>
                         <DataTable
-                            title="Topics"
+                            :title="$tc('Topics', 2)"
                             :headers="topicsHeaders"
                             storeName="topics"
                             :showDelete="true"
@@ -40,13 +40,13 @@
                     </v-tab-item>
 
                     <v-tab>
-                        Comments
+                        {{$tc('Comments', 2)}}
                     </v-tab>
                     <v-tab-item>
                         <DataTable
-                            title="Comments"
+                            :title="$tc('Comments', 2)"
                             :headers="commentsHeaders"
-                            filterRequired="Topic ID"
+                            :filterRequired="$tc('Topics', 1) + ' ' + $tc('id', 1)"
                             storeName="comments"
                             :showDelete="true"
                             :showEdit="false"
@@ -56,11 +56,11 @@
                     </v-tab-item>
 
                     <v-tab>
-                        Data Uploads
+                        {{$tc('Data Upload', 2)}}
                     </v-tab>
                     <v-tab-item>
                         <DataTable
-                            title="Data Uploads"
+                            :title="$tc('Data Upload', 2)"
                             :headers="dataUploadHeaders"
                             storeName="adminDUploads"
                             :showDelete="false"
@@ -69,11 +69,37 @@
                     </v-tab-item>
 
                     <v-tab>
-                        Formio
+                        {{$tc('Datasets', 2)}}
                     </v-tab>
                     <v-tab-item>
                         <DataTable
-                            title="Forms"
+                            :title="$tc('Datasets', 2)"
+                            :headers="datasetHeaders"
+                            storeName="adminDatasets"
+                            :showDelete="false"
+                            :formComponent="permissionSubComponent"
+                        ></DataTable>
+                    </v-tab-item>
+
+                    <v-tab>
+                        {{$tc('Versions', 2)}}
+                    </v-tab>
+                    <v-tab-item>
+                        <DataTable
+                            :title="$tc('Versions', 2)"
+                            :headers="versionHeaders"
+                            storeName="adminVersions"
+                            :showDelete="false"
+                            :formComponent="permissionSubComponent"
+                        ></DataTable>
+                    </v-tab-item>
+
+                    <v-tab>
+                        {{$tc('Formio')}}
+                    </v-tab>
+                    <v-tab-item>
+                        <DataTable
+                            :title="$tc('Form', 2)"
                             :headers="formioHeaders"
                             storeName="forms"
                             :showDelete="true"
@@ -83,11 +109,11 @@
                     </v-tab-item>
 
                     <v-tab>
-                        Formio Submissions
+                        {{$tc('Formio')}} {{$tc('Submissions', 2)}}
                     </v-tab>
                     <v-tab-item>
                         <DataTable
-                            title="Formio Submissions"
+                            :title="$tc('Formio') + ' ' + $tc('Submissions', 2)"
                             filterRequired="Form Name"
                             :headers="submissionHeaders"
                             storeName="submissions"
@@ -99,11 +125,11 @@
                     </v-tab-item>
 
                     <v-tab>
-                        Config
+                        {{$tc('Config')}}
                     </v-tab>
                     <v-tab-item>
                         <DataTable
-                            title="Config"
+                            :title="$tc('Config')"
                             :headers="configHeaders"
                             storeName="config"
                             :showDelete="true"
@@ -139,29 +165,29 @@ export default {
             topicsSubComponent: TopicsSubForm,
             permissionHeaders: [
                     {
-                        text: 'Priority',
+                        text: this.$tc('Priority'),
                         sortable: true,
                         value: 'priority',
                     },
                     {
-                        text: 'Allow Based Rule',
+                        text: this.$tc('Allow Based Rule'),
                         sortable: false,
                         value: 'allow',
                     },
                     { 
-                        text: 'Group Ids', 
+                        text: this.$tc('Group', 1) + ' ' + this.$tc('id', 2), 
                         value: 'group_ids' 
                     },
                     { 
-                        text: 'Topic Id', 
+                        text: this.$tc('Topics', 1) + ' ' + this.$tc('id'), 
                         value: 'topic_id' 
                     },
                     { 
-                        text: 'User Ids', 
+                        text: this.$tc('User') + ' ' +  this.$tc('id', 2), 
                         value: 'user_ids' 
                     },
                     { 
-                        text: 'Actions', 
+                        text: this.$tc('Action', 2), 
                         value: 'actions', 
                         sortable: false 
                     }
@@ -169,33 +195,33 @@ export default {
 
             topicsHeaders: [
                     {
-                        text: 'ID',
+                        text: this.$tc('id', 1),
                         sortable: true,
                         value: '_id',
                     },
                     {
-                        text: 'Parent',
+                        text: this.$tc('Parent'),
                         sortable: false,
                         value: 'parent_id',
                     },
                     { 
-                        text: 'Name', 
+                        text: this.$tc('Name'), 
                         value: 'name' 
                     },
                     { 
-                        text: 'Contributors', 
+                        text: this.$tc('Contributor', 2), 
                         value: 'contributors' 
                     },
                     { 
-                        text: 'Subscribers', 
+                        text: this.$tc('Subscriber', 2), 
                         value: 'subscribers' 
                     },
                     { 
-                        text: 'Author Groups', 
+                        text: this.$tc('Author') + ' ' + this.$tc('Group', 2), 
                         value: 'author_groups' 
                     },
                     { 
-                        text: 'Actions', 
+                        text: this.$tc('Action', 2), 
                         value: 'actions', 
                         sortable: false 
                     }
@@ -203,29 +229,29 @@ export default {
 
                 commentsHeaders: [
                     {
-                        text: 'ID',
+                        text: this.$tc('id', 1),
                         sortable: true,
                         value: '_id',
                     },
                     {
-                        text: 'Topic_Id',
+                        text: this.$tc('Topics', 1) + ' ' + this.$tc('id', 1),
                         sortable: false,
                         value: 'topic_id',
                     },
                     { 
-                        text: 'Created', 
+                        text: this.$tc('Created'), 
                         value: 'created_ts' 
                     },
                     { 
-                        text: 'Author', 
+                        text: this.$tc('Author'), 
                         value: 'author_user' 
                     },
                     { 
-                        text: 'Comment', 
+                        text: this.$tc('Comments'), 
                         value: 'comment' 
                     },
                     { 
-                        text: 'Actions', 
+                        text: this.$tc('Action', 2), 
                         value: 'actions', 
                         sortable: false 
                     }
@@ -233,46 +259,46 @@ export default {
 
             dataUploadHeaders: [
                     {
-                        text: 'ID',
+                        text: this.$tc('id', 1),
                         sortable: true,
                         value: '_id',
                     },
                     {
-                        text: 'Name',
+                        text: this.$tc('Name'),
                         sortable: true,
                         value: 'name'
                     },
                     { 
-                        text: 'Created', 
+                        text: this.$tc('Created'), 
                         value: 'create_date' 
                     },
                     { 
-                        text: 'Description', 
+                        text: this.$tc('Description'), 
                         value: 'description' 
                     },
                     { 
-                        text: 'Approver Opened', 
+                        text: this.$tc('Approver Opened'), 
                         value: 'opened_by_approver' 
                     },
                     {
-                        text: 'Approver Commented',
+                        text: this.$tc('Approver Commented'),
                         sortable: false,
                         value: 'approver_has_commented',
                     },
                     { 
-                        text: 'Status', 
+                        text: this.$tc('Status'), 
                         value: 'status' 
                     },
                     { 
-                        text: 'Topic ID', 
+                        text: this.$tc('Topics', 1) + ' ' + this.$tc('id', 1), 
                         value: 'topic_id' 
                     },
                     { 
-                        text: 'Submission ID', 
+                        text: this.$tc('Submissions', 1) + ' ' +  this.$tc('id', 1), 
                         value: 'upload_submission_id' 
                     },
                     { 
-                        text: 'Uploader', 
+                        text: this.$tc('Uploader'), 
                         value: 'uploader' 
                     },
                     // { 
@@ -281,13 +307,114 @@ export default {
                     // },
                 ],
 
+            datasetHeaders: [
+                    {
+                        text: this.$tc('id', 1),
+                        sortable: true,
+                        value: '_id',
+                    },
+                    {
+                        text: this.$tc('Name'),
+                        sortable: true,
+                        value: 'name'
+                    },
+                    { 
+                        text: this.$tc('Created'), 
+                        value: 'create_date' 
+                    },
+                    { 
+                        text: this.$tc('Created By'), 
+                        value: 'created_by' 
+                    },
+                    { 
+                        text: this.$tc('Topics', 1) + ' ' + this.$tc('id', 1),
+                        value: 'topic_id' 
+                    },
+                    {
+                        text: this.$tc('Description'),
+                        sortable: false,
+                        value: 'description',
+                    },
+                ],
+
+            versionHeaders: [
+                    {
+                        text: this.$tc('id', 1),
+                        sortable: true,
+                        value: '_id',
+                    },
+                    {
+                        text: this.$tc('Repo Id'),
+                        sortable: true,
+                        value: 'repo_id'
+                    },
+                    { 
+                        text: this.$tc('Topics', 1) + ' ' + this.$tc('id', 1),
+                        value: 'topic_id' 
+                    },
+                    { 
+                        text: this.$tc('Type'), 
+                        value: 'type' 
+                    },
+                    { 
+                        text: this.$tc('Name'), 
+                        value: 'name' 
+                    },
+                    { 
+                        text: this.$tc('Created'), 
+                        value: 'create_date' 
+                    },
+                    {
+                        text: this.$tc('Description'),
+                        sortable: false,
+                        value: 'description',
+                    },
+                    {
+                        text: this.$tc('Upload Id'),
+                        sortable: false,
+                        value: 'data_upload_id',
+                    },
+                    { 
+                        text: this.$tc('Availability'), 
+                        value: 'availability' 
+                    },
+                    { 
+                        text: this.$tc('Variable Classification'), 
+                        value: 'variable_classification' 
+                    },
+                    { 
+                        text: this.$tc('Notes'), 
+                        value: 'notes' 
+                    },
+                    { 
+                        text: this.$tc('Citation'), 
+                        value: 'citation' 
+                    },
+                    { 
+                        text: this.$tc('Short Title'), 
+                        value: 'short_title' 
+                    },
+                    { 
+                        text: this.$tc('Published'), 
+                        value: 'published' 
+                    },
+                    { 
+                        text: this.$tc('Approved'), 
+                        value: 'approved' 
+                    },
+                    { 
+                        text: this.$tc('FAQ'), 
+                        value: 'faq' 
+                    },
+                ],
+
             submissionHeaders: [
                     {
-                        text: 'Data',
+                        text: this.$tc('Data'),
                         value: 'data',
                     },
                     { 
-                        text: 'Actions', 
+                        text: this.$tc('Action', 2), 
                         value: 'actions', 
                         sortable: false 
                     }
@@ -302,37 +429,37 @@ export default {
                 //     value: "_id"
                 // },
                 {
-                    text: 'Name',
+                    text: this.$tc('Name'),
                     sortable: true,
                     value: 'name',
                 },
                 {
-                    text: 'Path',
+                    text: this.$tc('Path', 1),
                     sortable: false,
                     value: 'path',
                 },
                 { 
-                    text: 'Title', 
+                    text: this.$tc('Title'), 
                     value: 'title' 
                 },
                 { 
-                    text: 'Type', 
+                    text: this.$tc('Type'), 
                     value: 'type' 
                 },
                 { 
-                    text: 'Machine Name', 
+                    text: this.$tc('Machine') + ' ' + this.$tc('Name'), 
                     value: 'machine_name' 
                 },
                 { 
-                    text: 'Created', 
+                    text: this.$tc('Created'), 
                     value: 'created' 
                 },
                 { 
-                    text: 'Modified', 
+                    text: this.$tc('Modified'), 
                     value: 'modified' 
                 },
                 { 
-                    text: 'Actions', 
+                    text: this.$tc('Action', 2), 
                     value: 'actions', 
                     sortable: false 
                 }
@@ -341,21 +468,21 @@ export default {
             configSubComponent: ConfigSubForm,
             configHeaders: [
                 {
-                        text: 'ID',
+                        text: this.$tc('id', 1),
                         sortable: true,
                         value: '_id',
                     },
                     {
-                        text: 'Key',
+                        text: this.$tc('Key'),
                         sortable: true,
                         value: 'key'
                     },
                     { 
-                        text: 'Value', 
+                        text: this.$tc('Value'), 
                         value: 'value' 
                     },
                     { 
-                        text: 'Actions', 
+                        text: this.$tc('Action', 2), 
                         value: 'actions', 
                         sortable: false 
                     }

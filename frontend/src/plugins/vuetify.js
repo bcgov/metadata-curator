@@ -25,6 +25,7 @@ export const opts = {
           error: '#b71c1c',
           text: "#ffffff",
           data: '#F4F4F4',
+          textHighlight: '#C49614',
         },
         light: {
           primary: '#779af8',
@@ -36,6 +37,7 @@ export const opts = {
           error: '#b71c1c',
           text: "#000000",
           data: '#F4F4F4',
+          textHighlight: '#FCBA03',
         }
       }
   }

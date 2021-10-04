@@ -22,7 +22,7 @@
             </v-row>   
             <v-row>
                 <v-col cols="2">
-                    <v-btn color="primary" v-if="readyToUpload" @click="startUploads" id="upload">Upload</v-btn>
+                    <v-btn color="primary" v-if="readyToUpload" @click="startUploads" id="upload">{{$tc('Uploads')}}</v-btn>
                 </v-col>
             </v-row>
         </span>    

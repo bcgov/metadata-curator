@@ -2,11 +2,11 @@
     <v-container>
         <v-row>
             <v-col cols=12>
-                <h1> Metadata Curator</h1>
+                <h1>{{$tc('Metadata Curator')}}</h1>
             </v-col>
         </v-row>
         <v-row wrap>
-            You have been logged out
+            {{$tc('You have been logged out')}}
             
         </v-row>
     </v-container>

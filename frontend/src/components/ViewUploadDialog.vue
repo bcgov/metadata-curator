@@ -3,7 +3,7 @@
         <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css'>
         <v-card :key="'uploadCard-'+spanKey">
             <v-card-title>
-                <span class="headline">Data Upload <span v-if="uploadStore && uploadStore.name">{{uploadStore.name}}</span></span>
+                <span class="headline">{{$tc('Data Upload')}} <span v-if="uploadStore && uploadStore.name">{{uploadStore.name}}</span></span>
                 <v-spacer></v-spacer>
                 <v-icon @click="onCloseClicked">mdi-close</v-icon>
             </v-card-title>
@@ -15,11 +15,11 @@
                                 <v-row v-for="(file, index) in uploadStore.files" :key="'fileReader'+index">
                                     <v-col cols=12>
                                         <v-row v-if="file.name">{{file.name}}</v-row>
-                                        <v-row v-if="file.title">Title: {{file.title}}</v-row>
-                                        <v-row v-if="file.type">Type: {{file.type}}</v-row>
-                                        <v-row v-if="file.size">Size: {{file.size}}</v-row>
-                                        <v-row v-if="file.start_date">Date Range: {{formatDate(file.start_date)}} - {{formatDate(file.end_date)}} </v-row>
-                                        <v-row v-if="file.description">Description: {{file.description}}</v-row>
+                                        <v-row v-if="file.title">{{$tc('Title')}}: {{file.title}}</v-row>
+                                        <v-row v-if="file.type">{{$tc('Type')}}: {{file.type}}</v-row>
+                                        <v-row v-if="file.size">{{$tc('Size')}}: {{file.size}}</v-row>
+                                        <v-row v-if="file.start_date">{{$tc('Date Range')}}: {{formatDate(file.start_date)}} - {{formatDate(file.end_date)}} </v-row>
+                                        <v-row v-if="file.description">{{$tc('Description')}}: {{file.description}}</v-row>
                                     </v-col>
                                 </v-row>
                             </span>
@@ -42,7 +42,7 @@
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="onCloseClicked">Close</v-btn>
+                <v-btn color="blue darken-1" text @click="onCloseClicked">{{$tc('Close')}}</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>

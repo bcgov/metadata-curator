@@ -6,27 +6,33 @@
             {{error}}
         </v-alert>
         <v-row v-if="confirmChange" class="mb-2">
-            <span>Warning, you have an upload in progress, if you change to uploading this file some progress will be lost</span>
-            <v-btn color="warning" @click="changeConfirmed()">Confirm</v-btn>
+            <span>{{$tc('FileUploadProgressWarn')}}</span>
+            <v-btn color="warning" @click="changeConfirmed()">{{$tc('Confirm')}}</v-btn>
         </v-row>
         <v-row v-if="confirmResume" class="mb-2">
-            <span>We believe that this upload has already been started, resume? (if you believe this to be an error clear your cache)</span>
-            <v-btn color="success" @click="resumeConfirmed()">Confirm</v-btn>
+            <span>{{$tc('FileUploadResume')}}</span>
+            <v-btn color="success" @click="resumeConfirmed()">{{$tc('Confirm')}}</v-btn>
         </v-row>
         <v-row>
             <v-col cols=12>
-                <v-file-input v-model="file" :disabled="disabled" show-size label="File input" class="mt-0 pt-0"></v-file-input>
+                <v-file-input 
+                    v-model="file" 
+                    :disabled="disabled" 
+                    show-size 
+                    :accept="accept"
+                    :label="$tc('File input')" 
+                    class="mt-0 pt-0"></v-file-input>
             </v-col>
         </v-row>
         <v-row class="my-0 py-0" v-if="admin">
             <v-col cols=12>
-                <span class="fineText">Using Chunksize for your computer: {{Math.ceil(chunkSize / 1024 / 1024)}}mb</span>
+                <span class="fineText">{{$tc('Using Chunksize for your computer')}}: {{Math.ceil(chunkSize / 1024 / 1024)}}mb</span>
             </v-col>
         </v-row>
         <v-row>
             <v-col cols=12>
-                <v-btn v-if="showUploadButton" :disabled="disabled" @click="upload">Upload</v-btn>
-                <v-btn v-if="showImportButton" :disabled="disabled" @click="onImportButtonClicked">Import</v-btn>
+                <v-btn v-if="showUploadButton" :disabled="disabled" @click="upload">{{$tc('Uploads')}}</v-btn>
+                <v-btn v-if="showImportButton" :disabled="disabled" @click="onImportButtonClicked">{{$tc('Import')}}</v-btn>
                 <!-- <div v-if="pleaseWait">
                     <v-progress-circular
                         indeterminate
@@ -35,9 +41,7 @@
                 </div> -->
                 <div v-if="showProgress">
                     <div>
-                        Please note: encryption and uploading occur in chunks.  It is not unusual for there to be a 
-                        significant delay between one upload progress bar finishing and the next starting as encryption is 
-                        occurring and can take quite some time to complete.
+                        {{$tc('FileUploadNote')}}
                     </div>
                     <span>
                         {{progressMessage1}}
@@ -117,6 +121,14 @@ export default {
         appendMetadata: {
             type: Object,
             default: () => { return {} }
+        },
+        accept: {
+            type: String,
+            default: '*'
+        },
+        doNotChop: {
+            type: Boolean,
+            default: false,
         }
     },
 
@@ -130,7 +142,7 @@ export default {
     data() {
         let defChunkSize = (5 * 1000 * 1000) + 1; // 5mb
         //ram converted to bytes divided by 128 (arbitrary)
-        let customChunkSize = Math.ceil(navigator.deviceMemory * 1024 * 1024 * 1024 / 128);
+        let customChunkSize = navigator.deviceMemory ? Math.ceil(navigator.deviceMemory * 1024 * 1024 * 1024 / 128) : Math.ceil(8 * 1024 * 1024 * 1024 / 128);
         let disProp = this.disabledProp ? this.disabledProp : false;
         return {
             file: null,
@@ -180,17 +192,23 @@ export default {
 
         progressMessage1: function(){
             let num = (this.numChunks && this.numChunks > 0) ? this.numChunks : 1;
-            return `Encrypted: ${(this.numEncrypted>=num) ? num : this.numEncrypted}/${num}`
+            let enc = this.$tc('Encrypted');
+            return `${enc}: ${(this.numEncrypted>=num) ? num : this.numEncrypted}/${num}`
         },
         progressMessage2: function(){
             let num = (this.numChunks && this.numChunks > 1) ? (this.numChunks+1) : 1;
-            return `Uploaded: ${(this.numUploaded>=num) ? num : this.numUploaded}/${num}`
+            let upd = this.$tc('Uploaded');
+            return `${upd}: ${(this.numUploaded>=num) ? num : this.numUploaded}/${num}`
         },
         progressMessage3: function(){
-            return `Upload 1 (Chunk): ${this.up1Progress}/${this.up1Size}`
+            let upd = this.$tc('Uploads');
+            let chunk = this.$tc('Chunk');
+            return `${upd} 1 (${chunk}): ${this.up1Progress}/${this.up1Size}`
         },
         progressMessage4: function(){
-            return `Upload 2 (Chunk): ${this.up2Progress}/${this.up2Size}`
+            let upd = this.$tc('Uploads');
+            let chunk = this.$tc('Chunk');
+            return `${upd} 2 (${chunk}): ${this.up2Progress}/${this.up2Size}`
         },
 
         getFinger: function(){
@@ -208,9 +226,11 @@ export default {
             if (newVal){
                 this.currChunk = 0;
                 this.offset = 0;
-                if (this.readFile){
+                //if (this.readFile){
+                    this.pleaseWait = true;
                     await this.openFileSync(true);
-                }
+                    this.pleaseWait = false;
+                //}
                 this.upload();
             }
         },
@@ -229,7 +249,8 @@ export default {
             }
         },
 
-        file(newVal){
+        async file(newVal){
+            this.$emit("reading-file");
             this.uploads = [];
             this.numChunks = 0;
             this.currChunk = 0;
@@ -243,15 +264,15 @@ export default {
                 ///same upload resume
                 this.confirmResume = true;
                 this.confirmChange = false;
-                if (this.loadFromStore){
+                //if (this.loadFromStore){
                     this.confirmResume = false;
-                    this.openFile(true);
-                }
+                    await this.openFile(true);
+                //}
 
             }else{
                 this.confirmChange = false;
                 this.confirmResume = false;
-                this.openFile();
+                await this.openFile();
             }
             this.$emit("file-opened", this.index, newVal, newFing);
         }
@@ -412,7 +433,20 @@ export default {
                             let finger = self.getFinger;
                             self.$store.commit('file/setFileName', { fileName: self.file.name});
                             self.$store.commit('file/addFileHandleIfNotPresent', { handle: self.file, fileSig: finger});
-                            await self.$store.commit('file/setContent', { content: content, index: index});
+
+                            if (!self.doNotChop){
+                                let defChunkSize = (5 * 1000 * 1000) + 1; // 5mb
+                                //ram converted to bytes divided by 128 (arbitrary)
+                                let customChunkSize = navigator.deviceMemory ? Math.ceil(navigator.deviceMemory * 1024 * 1024 * 1024 / 128) : Math.ceil(8 * 1024 * 1024 * 1024 / 128);
+                                this.chunkSize = (customChunkSize > defChunkSize) ? customChunkSize : defChunkSize;
+                                
+                                const chop = Math.ceil(this.chunkSize / 64); //cap at 1mb   
+                                let choppedContent = content.slice(0, chop)
+
+                                await self.$store.commit('file/setContent', { content: choppedContent, index: index});
+                            }else{
+                                await self.$store.commit('file/setContent', { content: content, index: index});
+                            }
 
                             self.$store.commit('file/setFileSig', {fileSig: finger});
                         }
@@ -459,8 +493,8 @@ export default {
             var i = 0;
             var self = this;
             var tus = require("tus-js-client");
-            var fing = function(file, options, callback){
-                return callback(null, [
+            var fing = function(file, options){
+                return Promise.resolve([
                     "tus-br",
                     self.file.name,
                     self.file.type,
@@ -476,6 +510,8 @@ export default {
                 headers: {
                     "Upload-Concat": "partial"
                 },
+                storeFingerprintForResuming: false,
+                removeFingerprintOnSuccess: true,
                 metadata: {
                     ...this.appendMetadata,
                     filename: this.file.name,
@@ -485,6 +521,7 @@ export default {
                 jwt: this.jwt,
                 filename: this.file.name,
                 filetype: this.file.type,
+                overridePatchMethod: true,
                 retryDelays: [0, 1000, 3000, 5000],
                 chunkSize: this.chunkSize*10,
                 onError: error => {
@@ -494,6 +531,17 @@ export default {
                         self.disabled = false;
                     }
                     this.error = error;
+                },
+                onShouldRetry: (err, retryAttempt, options) => {
+                    console.log("SHOULD RETRY ", err, retryAttempt, options);
+                    var status = err.originalResponse ? err.originalResponse.getStatus() : 0
+                    // If the status is a 403, we do not want to retry.
+                    if (status === 403) {
+                        return false
+                    }
+                    
+                    // For any other status code, tus-js-client should retry.
+                    return true
                 },
                 onProgress: (bytesUploaded, bytesTotal) => {
                     self.up1Progress = bytesUploaded;
@@ -540,25 +588,32 @@ export default {
                             
                             joinIds[ind] = url;
                         }
-                        backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0", self.file.name, self.file.type).then( (concatResponse) => {
-                            self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
-                            
-                            let concatLocation = concatResponse.headers.location;
-                            var slashInd = concatLocation.lastIndexOf("/");
-                            var plusInd = concatLocation.lastIndexOf("+");
-                            
-                            self.$emit('upload-finished', concatLocation.substring(slashInd+1, plusInd), this.file.name, this.file.size);
-                            self.numUploaded += 1;
-                            if (!self.disabledProp){
-                                self.disabled = false;
+                        let attempt=0;
+                        let succeeded=false;
+                        while (!succeeded && attempt<5){
+                            try {
+                                let concatResponse = await backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0", self.file.name, self.file.type);
+                                self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
+                                
+                                let concatLocation = concatResponse.headers.location;
+                                let slashInd = concatLocation.lastIndexOf("/");
+                                let plusInd = concatLocation.lastIndexOf("+");
+                                
+                                self.$emit('upload-finished', concatLocation.substring(slashInd+1, plusInd), this.file.name, this.file.size);
+                                self.numUploaded += 1;
+                                if (!self.disabledProp){
+                                    self.disabled = false;
+                                }
+                                succeeded = true;
+                            }catch(e){
+                                // eslint-disable-next-line
+                                console.error("Concatenation error", e);
+                                if (!self.disabledProp){
+                                    self.disabled = false;
+                                }
+                                attempt++;
                             }
-                        }).catch( (e) => {
-                            // eslint-disable-next-line
-                            console.error("Concatenation error", e);
-                            if (!self.disabledProp){
-                                self.disabled = false;
-                            }
-                        });
+                        }
                     }else{
                         var slashInd = self.uploads[0].url.lastIndexOf("/");
                         var plusInd = self.uploads[0].url.lastIndexOf("+");
@@ -612,8 +667,8 @@ export default {
             }
             u.start();
         },
-        onImportButtonClicked: function(){
-            // console.log("onImportButtonClicked");
+        onImportButtonClicked: async function(){
+            await this.openFileSync(true);
             const content = this.getStringContent();
             this.$emit('import-button-clicked', content);
         },

@@ -6,19 +6,19 @@
                 <v-col cols="12">
                      <v-switch
                         v-model="json_view"
-                        :label="`Json View`"
+                        :label="$tc('Json') + ' ' + $tc('View')"
                         ></v-switch>`
                 </v-col>
             </v-row>
             <v-row v-if="!json_view">
                 <v-col cols="12">
-                    <v-text-field v-model="item.title" label="Title"></v-text-field>
+                    <v-text-field v-model="item.title" :label="$tc('Title')"></v-text-field>
                 </v-col>
                 <v-col cols="12">
-                    <v-text-field v-model="item.name" label="Name"></v-text-field>
+                    <v-text-field v-model="item.name" :label="$tc('Name')"></v-text-field>
                 </v-col>
                 <v-col cols="12">
-                    <v-text-field v-model="item.path" label="Api Path"></v-text-field>
+                    <v-text-field v-model="item.path" :label="$tc('Api') + ' ' + $tc('Path')"></v-text-field>
                 </v-col>
             </v-row>
             <FormBuilder v-if="!json_view" v-bind:form="item" v-bind:options="{}"></FormBuilder>
@@ -80,7 +80,7 @@ export default {
                 }
                 
             }catch(ex){
-                this.errorText = "Invalid JSON";
+                this.errorText = this.$tc("Invalid JSON");
             }
         },
 

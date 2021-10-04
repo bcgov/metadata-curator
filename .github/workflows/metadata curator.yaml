@@ -53,7 +53,7 @@ jobs:
   
   quay_io_frontend:
     runs-on: ubuntu-latest
-    needs: ["quay_io_backend"]
+    needs: ["unit_test", "audit"]
     defaults:
       run:
         shell: bash
@@ -70,7 +70,7 @@ jobs:
   
   deploy_backend:
     runs-on: ubuntu-latest
-    needs: ["quay_io_backend"]
+    needs: ["quay_io_backend", "integration_tests"]
     if: success() && ( (github.event_name == 'release' && github.event.action == 'created') || (github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') )
     env:
       DOCKER_USERNAME: ${{ secrets.DOCKER_DEPLOY_USERNAME }}
@@ -89,7 +89,7 @@ jobs:
 
   deploy_frontend:
     runs-on: ubuntu-latest
-    needs: ["deploy_backend"]
+    needs: ["quay_io_frontend", "deploy_backend", "integration_tests"]
     if: success() && ( (github.event_name == 'release' && github.event.action == 'created') || (github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') )
     env:
       DOCKER_USERNAME: ${{ secrets.DOCKER_DEPLOY_USERNAME }}
@@ -107,72 +107,97 @@ jobs:
           chmod ugo+x ./docker_push
           ./docker_push metadata_curator_ui
 
-  # integration_tests:
-  #   runs-on: ubuntu-latest
-  #   needs: ["quay_io_backend", "quay_io_frontend"]
-  #   defaults:
-  #     run:
-  #       shell: bash
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: terraform
-  #       env:
-  #         TERRAFORM_VERSION: "0.13.6"
-  #         KATALON_VERSION: "6.0.5"
-  #       run: |
-  #         export WD=`pwd`
-  #         export BRANCH=${GITHUB_REF##*/}
-  #         cd /tmp
-  #         wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-  #         unzip -o /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-  #         rm -rf /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-  #         chmod +x terraform
-  #         alias terraform='/tmp/terraform'
-  #         cd $WD/terraform
-  #         mkdir _tmp
-  #         chmod 777 _tmp
-  #         python scripts/prepare_images_variable.py
-  #         cp terraform.tfvars.example terraform.tfvars
-  #         export DOCKER_REGISTRY_USER=$DOCKER_USERNAME
-  #         export DOCKER_REGISTRY_PASS=$DOCKER_PASSWORD
-  #         chmod 777 ./scripts/keycloak-setup.sh
-  #         echo provider "docker" { > docker.tf
-  #         echo registry_auth { >> docker.tf
-  #         echo address  = \"quay.io\" >> docker.tf
-  #         echo username = \"${QUAYIO_USERNAME}\" >> docker.tf
-  #         echo password = \"${QUAYIO_PASSWORD}\" >> docker.tf
-  #         echo } >> docker.tf
-  #         echo } >> docker.tf
-  #         echo "127.0.0.1 mc.example.demo" | sudo tee -a /etc/hosts
-  #         echo "127.0.0.1 auth.example.demo" | sudo tee -a /etc/hosts
-  #         terraform init
-  #         terraform apply -var hostRootPath=`pwd`/_tmp -auto-approve
+  integration_tests:
+    runs-on: ubuntu-latest
+    needs: ["quay_io_backend", "quay_io_frontend"]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v2
+      - name: terraform
+        env:
+          TERRAFORM_VERSION: "0.13.6"
+          KATALON_VERSION: "6.0.5"
+        run: |
+          export WD=`pwd`
+          export BRANCH=${GITHUB_REF##*/}
+          cd /tmp
+          wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+          unzip -o /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+          rm -rf /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+          chmod +x terraform
+          alias terraform='/tmp/terraform'
+          cd $WD/terraform
+          mkdir _tmp
+          chmod -R 777 _tmp
+          python scripts/prepare_images_variable.py
+          cp terraform.tfvars.example terraform.tfvars
+          export DOCKER_REGISTRY_USER=$DOCKER_USERNAME
+          export DOCKER_REGISTRY_PASS=$DOCKER_PASSWORD
+          chmod 777 ./scripts/keycloak-setup.sh
+          echo provider "docker" { > docker.tf
+          echo registry_auth { >> docker.tf
+          echo address  = \"quay.io\" >> docker.tf
+          echo username = \"${QUAYIO_USERNAME}\" >> docker.tf
+          echo password = \"${QUAYIO_PASSWORD}\" >> docker.tf
+          echo } >> docker.tf
+          echo } >> docker.tf
+          echo "127.0.0.1 mc.example.demo" | sudo tee -a /etc/hosts
+          echo "127.0.0.1 auth.example.demo" | sudo tee -a /etc/hosts
+          echo "127.0.0.1 auth.example.demo" | sudo tee -a /etc/hosts
+          terraform init
+          terraform apply -var hostRootPath=`pwd`/_tmp -auto-approve
 
-  #     - name: test
-  #       run: |
-  #         sleep 30
-  #         docker ps
-  #         cd frontend
-  #         cp step-definitions/config.json.example step-definitions/config.json
-  #         sudo apt-get install xvfb
-  #         export NODE_ENV='development'
-  #         npm ci
-  #         xvfb-run --auto-servernum npm test
-  #     - name: "store screens"
-  #       uses: actions/upload-artifact@v2
-  #       if: ${{ failure() }}
-  #       with:
-  #         name: screenshots
-  #         path: frontend/screenshots
-  #     - name: "store selenium server info"
-  #       uses: actions/upload-artifact@v2
-  #       if: ${{ failure() }}
-  #       with:
-  #         name: selenium-log.log
-  #         path: frontend/selenium-server.log
-  #     - name: "store chrome driver info"
-  #       uses: actions/upload-artifact@v2
-  #       if: ${{ failure() }}
-  #       with:
-  #         name: chromedriver.log
-  #         path: frontend/chromedriver.log
+      - name: test
+        run: |
+          docker ps
+          sleep 45
+          docker ps
+          docker logs mc_backend
+          cd frontend
+          cp step-definitions/config.json.example step-definitions/config.json
+          sudo apt-get install xvfb openssl
+          export NODE_ENV='development'
+          
+          sudo cp ../terraform/_tmp/ssl/example.crt /usr/local/share/ca-certificates/example.crt
+          sudo update-ca-certificates
+
+          npm ci
+          xvfb-run --auto-servernum npm test
+      - name: "store screens"
+        uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          name: screenshots
+          path: frontend/screenshots
+      - name: "store selenium server info"
+        uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          name: selenium-log.log
+          path: frontend/selenium-server.log
+      - name: "output mc backend logs"
+        if: ${{ failure() }}
+        run: |
+          docker logs --since 40m mc_backend || echo "backend container not found"
+      - name: "output mc formio logs"
+        if: ${{ failure() }}
+        run: |
+          docker logs --since 40m mc_formio || echo "formio container not found"
+      
+      - name: "output mc keycloak logs"
+        if: ${{ failure() }}
+        run: |
+          docker logs --since 40m mc_keycloak || echo "formio container not found"
+
+      - name: "output mc nginx logs"
+        if: ${{ failure() }}
+        run: |
+          docker logs --since 40m mc_nginx || echo "nginx container not found"
+
+      - name: "output mc forum api logs"
+        if: ${{ failure() }}
+        run: |
+          docker exec mc_forum_api env || echo "forum api container not found"
+          docker logs --since 40m mc_forum_api || echo "forum api container not found"

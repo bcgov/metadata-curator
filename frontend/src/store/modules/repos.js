@@ -12,6 +12,8 @@ const state = {
     selectedRepo: null,
     selectedFilterBy: null,
     error: null,
+    comments: [],
+    branchComments: [],
 };
 
 const getters = {
@@ -53,6 +55,14 @@ const actions = {
         return state.branch;
     },
 
+    async getBranchById({state, commit}, {id}) {
+        const data = await backend.getBranchById(id);
+        
+        
+        commit('setBranch', {branch: data});
+        return state.branch;
+    },
+
     async getRepos({ commit }, {filterBy}) {
         const query = {filterBy: filterBy};
 
@@ -91,11 +101,56 @@ const actions = {
     },
 
     async saveBranch({state}){
-        return backend.postRepoBranch(state.repo._id, state.branch);
+        let rId = (state.repo._id) ? state.repo._id : state.branch.repo_id;
+        return backend.postRepoBranch(rId, state.branch);
     },
 
     async updateBranch({state}){
         return backend.putRepoBranch(state.repo._id, state.branch);
+    },
+
+    async getComments({ commit }, repoId) {
+        
+        try {
+            const data = await backend.getCommentsByRepo(repoId);
+            commit('clearComments');
+            commit('setComments', {comments: data});
+        } catch(e) {
+            console.error("Retrieve comments error: ", e);
+            commit('setError', {error: e.response.data.error});
+        }
+    },
+    async addComment({ commit, dispatch }, {repoId, comment}) {
+        
+        try {
+            await backend.postCommentByRepo(repoId, comment);
+            dispatch('getComments', repoId);
+        } catch(e) {
+            console.error("Unable to add comment error: ", e);
+            commit('setError', {error: e.response.data.error});
+        }
+    },
+
+    async getBranchComments({ commit }, branchId) {
+        
+        try {
+            const data = await backend.getCommentsByBranch(branchId);
+            commit('clearBranchComments');
+            commit('setBranchComments', {comments: data});
+        } catch(e) {
+            console.error("Retrieve comments error: ", e);
+            commit('setError', {error: e.response.data.error});
+        }
+    },
+    async addBranchComment({ commit, dispatch }, {branchId, comment}) {
+        
+        try {
+            await backend.postCommentByBranch(branchId, comment);
+            dispatch('getBranchComments', branchId);
+        } catch(e) {
+            console.error("Unable to add comment error: ", e);
+            commit('setError', {error: e.response.data.error});
+        }
     },
 }
 
@@ -148,7 +203,22 @@ const mutations = {
     },
     clearBranch(state){
         state.branch = {};
-    }
+    },
+    setComments(state, {comments}){
+        // console.log("setComments: ", comments);
+        state.comments = comments;
+    },
+    clearComments(state){
+        state.comments = [];
+    },
+
+    setBranchComments(state, {comments}){
+        // console.log("setComments: ", comments);
+        state.branchComments = comments;
+    },
+    clearBranchComments(state){
+        state.branchComments = [];
+    },
 }
 
 export default {

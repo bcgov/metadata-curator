@@ -28,6 +28,16 @@ export class Backend {
         return axios.post(uploadUrl, {}, uploadOptions);
     }
 
+    getTableSchema(id, byUploadId){
+        byUploadId = typeof(byUploadId) !== 'undefined' ? byUploadId : false;
+        
+        let url = `/api/v1/datapackages/branch/${id}`
+        if (byUploadId){
+            url = `/api/v1/datapackages/branch?upload_id=${id}`
+        }
+        return axios.get(url, {withCredentials: true}).then(response => response.data);
+    }
+
     postTableSchema(schema) {
         const url = '/api/v1/tableschemas'
         // console.log("postSchema: ", schema);
@@ -40,12 +50,24 @@ export class Backend {
     }
 
     postDataPackageSchema(schema) {
-        const url = '/api/v1/datapackageschemas'
+        const url = '/api/v1/datapackages'
         // console.log("postTabDataPackage: ", tabDataPackage);
         const headers = {
             'Content-Type': 'application/json'
         }
         return axios.post(url, schema,
+            {withCredentials: true, headers: headers}
+        ).then(response => response.data)
+    }
+
+    putDataPackageSchema(id, schema) {
+        const url = `/api/v1/datapackages/${id}`
+        // console.log("postTabDataPackage: ", tabDataPackage);
+        const headers = {
+            'Content-Type': 'application/json'
+        }
+        // console.log("PUT", schema);
+        return axios.put(url, schema,
             {withCredentials: true, headers: headers}
         ).then(response => response.data)
     }
@@ -82,6 +104,28 @@ export class Backend {
 
     postCommentByDataUpload(dataUploadId, comment){
         const url = '/api/v1/datauploads/' + dataUploadId + '/comments';
+        const body = { content: comment};
+        return axios.post(url, body,{withCredentials: true}).then(response => response.data)
+    }
+
+    getCommentsByRepo(repoId){
+        const url = '/api/v1/repos/' + repoId + '/comments';
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+    postCommentByRepo(repoId, comment){
+        const url = '/api/v1/repos/' + repoId + '/comments';
+        const body = { content: comment};
+        return axios.post(url, body,{withCredentials: true}).then(response => response.data)
+    }
+
+    getCommentsByBranch(branchId){
+        const url = '/api/v1/repobranches/' + branchId + '/comments';
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+    postCommentByBranch(branchId, comment){
+        const url = '/api/v1/repobranches/' + branchId + '/comments';
         const body = { content: comment};
         return axios.post(url, body,{withCredentials: true}).then(response => response.data)
     }
@@ -238,7 +282,7 @@ export class Backend {
     postRepo(repo){
         // console.log("BE postdataUpload: " + dataUpload);
         const url = `/api/v1/repos`;
-        const body = { name: repo.name };
+        const body = { name: repo.name, description: repo.description };
         return axios.post(url, body, {withCredentials: true}).then(response => response.data)
     }
 
@@ -247,6 +291,7 @@ export class Backend {
         const url = `/api/v1/repos/${repo._id}`;
         const body = { 
             name: repo.name,
+            description: repo.description,
         };
         return axios.put(url, body, {withCredentials: true}).then(response => response.data)
     }
@@ -265,26 +310,19 @@ export class Backend {
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 
+    getBranchById(id){
+        let url = `/api/v1/repobranches/${id}`;
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
     postRepoBranch(repoId, branch){
         const url = `/api/v1/repobranches/${repoId}/branches`;
-        const body = { 
-            name: branch.name,
-            type: branch.type,
-            description: branch.description,
-            upload_id: branch.upload_id,
-        };
-        return axios.post(url, body, {withCredentials: true}).then(response => response.data)
+        return axios.post(url, branch, {withCredentials: true}).then(response => response.data)
     }
 
     putRepoBranch(repoId, branch){
         const url = `/api/v1/repobranches/${branch._id}`;
-        const body = { 
-            name: branch.name,
-            type: branch.type,
-            description: branch.description,
-            upload_id: branch.upload_id,
-        };
-        return axios.put(url, body, {withCredentials: true}).then(response => response.data)
+        return axios.put(url, branch, {withCredentials: true}).then(response => response.data)
     }
 
     getMcVersion(){

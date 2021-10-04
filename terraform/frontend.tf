@@ -15,9 +15,7 @@ resource "docker_container" "mc_frontend" {
     name = docker_network.private_network.name
   }
 
-  env = [
-    "HOSTNAME=mc_backend",
-  ]
+  env = var.makeKeycloak ? ["HOSTNAME=mc_backend","NODE_TLS_REJECT_UNAUTHORIZED=0"] : ["HOSTNAME=mc_backend"]
 }
 
 data "docker_registry_image" "mc_backend" {
@@ -40,7 +38,7 @@ data "null_data_source" "oidcConfig" {
     "clientID": "${var.oidc["clientID"]}",
     "clientSecret": "${var.oidc["clientSecret"]}",
     "callbackURL": "${var.host}/api/callback",
-    "logoutURL": "${var.oidc["logoutURL"]}/auth/realms/mc/protocol/openid-connect/logout?redirect_uri=${var.host}",
+    "logoutURL": "${var.oidc["logoutURL"]}?redirect_uri=${var.host}",
     "scope": "openid profile offline_access"
 }
 EOF
@@ -84,7 +82,7 @@ EOF
 
     forumApi = "\"forumApi\": {\"baseUrl\": \"http://mc_forum_api:3000/v1\"}"
 
-    oidc = "${var.makeKeycloak ? data.null_data_source.oidcConfig.outputs.oidc2 : data.null_data_source.oidcConfig.outputs.oidc1}"
+    oidc = var.makeKeycloak ? data.null_data_source.oidcConfig.outputs.oidc2 : data.null_data_source.oidcConfig.outputs.oidc1
 
     logLevel = "\"logLevel\": \"debug\""
     jwtSecret = "\"jwtSecret\": \"${random_string.jwtSecret.result}\""
@@ -97,9 +95,10 @@ EOF
     alwaysNotifyList = "\"alwaysNotifyList\": ${jsonencode(var.alwaysNotifyList)}"
     email = "\"email\": { \"enabled\":${var.email.enabled}, \"service\": \"${var.email.service}\", \"secure\": ${var.email.secure}, \"port\": ${var.email.port}, \"user\": \"${var.email.user}\", \"pass\": \"${var.email.pass}\", \"from\": \"${var.email.from}\", \"subject\": \"${var.email.subject}\"}"
     adminGroup = "\"adminGroup\": \"${var.adminGroup}\""
-    formio = "\"formio\": ${jsonencode(var.formio)}"
+    formio = "\"formio\": { \"url\": \"${var.formio.url}\", \"username\": \"${var.formio.username}\", \"password\": \"${random_string.formioSuperPassword.result}\" }"
+    userIdField = "\"userIdField\": \"${var.userIdField}\""
   }
-  depends_on = [data.null_data_source.oidcConfig]
+  depends_on = [data.null_data_source.oidcConfig, random_string.formioSuperPassword]
 }
 
 data "null_data_source" "configValues" {
@@ -125,7 +124,8 @@ data "null_data_source" "configValues" {
   ${data.null_data_source.feIndConfig.outputs["alwaysNotifyList"]},
   ${data.null_data_source.feIndConfig.outputs["email"]},
   ${data.null_data_source.feIndConfig.outputs["adminGroup"]},
-  ${data.null_data_source.feIndConfig.outputs["formio"]}
+  ${data.null_data_source.feIndConfig.outputs["formio"]},
+  ${data.null_data_source.feIndConfig.outputs["userIdField"]}
 
 }
 EOF
@@ -137,11 +137,35 @@ resource "docker_container" "mc_backend" {
   image   = docker_image.mc_backend.latest
   name    = "mc_backend"
   restart = "on-failure"
+  
+  volumes {
+    host_path = "${var.hostRootPath}/config/emailTemplate.html"
+    container_path = "/app/notifications/email/emailTemplate.html"
+  }
+
   networks_advanced {
     name = docker_network.private_network.name
   }
 
-  env = [
-    "NODE_CONFIG=${replace(data.null_data_source.configValues.outputs["nodeConfig"], "\n", "")}",
+  host {
+    host = var.authHostname
+    ip   = "172.25.0.10" //nginx ip
+  }
+  
+  host {
+    host = var.hostname
+    ip   = "172.25.0.10" //nginx ip
+  }
+
+  depends_on = [
+    docker_container.mc_mongodb,
+    null_resource.mongodb_first_time_install
   ]
+
+  env = var.makeKeycloak ? ["NODE_CONFIG=${replace(data.null_data_source.configValues.outputs["nodeConfig"], "\n", "")}", "NODE_TLS_REJECT_UNAUTHORIZED=0"] : ["NODE_CONFIG=${replace(data.null_data_source.configValues.outputs["nodeConfig"], "\n", "")}"]
+}
+
+resource "local_file" "email_template" {
+    content = "${file("${path.module}/scripts/emailTemplate.html")}"
+    filename = "${var.hostRootPath}/config/emailTemplate.html"
 }

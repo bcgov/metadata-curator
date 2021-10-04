@@ -38,7 +38,7 @@
 
             if(this.upload) {
                 this.uploadId = this.upload;
-                this.getUploadFormSubmission({formName: this.upload.form_name, submissionId: this.upload.upload_submission_id});
+                //this.getUploadFormSubmission({formName: this.upload.form_name, submissionId: this.upload.upload_submission_id});
                 await this.getUploadForm(this.upload.form_name);
             }else{
                 await this.getDefaultUploadForm();
@@ -143,13 +143,13 @@
 
                 if(this.upload) {
                     this.uploadId = this.upload;
-                    this.getUploadFormSubmission({formName: this.upload.form_name, submissionId: this.upload.upload_submission_id});
+                    //this.getUploadFormSubmission({formName: this.upload.form_name, submissionId: this.upload.upload_submission_id});
                     await this.getUploadForm(this.upload.form_name);
                 }else{
                     await this.getDefaultUploadForm();
                 }
 
-                this.getUploadFormSubmission({formName: this.upload.form_name, submissionId: this.upload.upload_submission_id});
+                //this.getUploadFormSubmission({formName: this.upload.form_name, submissionId: this.upload.upload_submission_id});
             },
             // eslint-disable-next-line no-unused-vars
             submission: function (newVal, oldVal) {

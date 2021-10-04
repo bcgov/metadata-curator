@@ -97,8 +97,9 @@ const getTopics = async (user, query) => {
 
     let url = forumApiConfig.baseUrl;
 
+    let queryKeys = [];
     if (typeof(query) === "object"){
-        let queryKeys = Object.keys(query);
+        queryKeys = Object.keys(query);
         for (let i=0; i<queryKeys.length; i++){
             url += (i==0) ? "?" : "&";
             url += queryKeys[i] + "=" + query[queryKeys[i]];
@@ -106,8 +107,18 @@ const getTopics = async (user, query) => {
     }
 
     try{
+        let results = {data: []};
         let x = await axios.get(url, options);
-        return x;
+        results.data = results.data.concat(x.data);
+        let page = 1;
+        while (x.data.length >= 100){
+            let urlAdd = (queryKeys.length > 0) ? "&" : "?";
+            urlAdd += "page=" + page;
+            page += 1;
+            x = await axios.get(url+urlAdd, options);
+            results.data = results.data.concat(x.data);
+        }
+        return results;
     }catch(ex){
         console.log("ERROR", ex);
         return {data: []};

@@ -22,22 +22,23 @@ module.exports = {
     login: async function(client, userType){
         try {
             //might have to go through insecure cert link for terraform
+            await client.waitForElementVisible('#details-button', 1000);
             await client.click('#details-button');
             await client.click('#proceed-link');
             await client.click('#details-button');
             await client.click('#proceed-link');
         }catch(e){}
 
-        await client.waitForElementVisible('input[name="username"]');
-        await client.waitForElementVisible('input[name="password"]');
-        await client.waitForElementVisible('input[id="kc-login"]');
+        await client.waitForElementVisible('input[name="username"]', 1000);
+        await client.waitForElementVisible('input[name="password"]', 1000);
+        await client.waitForElementVisible('input[id="kc-login"]', 1000);
         client
                 .setValue('input[name="username"]', confGet(userType+"Account"))
                 .setValue('input[name="password"]', confGet(userType+"Password"))
                 .click('input[id="kc-login"]')
 
-        return client.waitForElementVisible('div.v-toolbar__title.font-weight-light', 10000);
-                
+
+        return client.waitForElementVisible('div.v-toolbar__title.font-weight-light', 1000);
     },
 
     logout: function(client){

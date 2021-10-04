@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import { Backend } from '../../services/backend';
 const backend = new Backend();
 
@@ -6,7 +7,8 @@ const state = {
     dataPackageSchema: null,
     imported: false,
     error: null,
-    successMsg: null
+    successMsg: null,
+    tableSchemaId: -1
 };
 
 const getters = {
@@ -38,6 +40,32 @@ const getters = {
 
 
 const actions = {
+    getTableSchema: async function({commit}, {id: id}){
+        commit('setTableSchemaId', {id: -1});
+        let s = await backend.getTableSchema(id);
+        if (s && s._id){
+            commit('setTableSchemaId', {id: s._id});
+        }
+        commit('setTableSchema', {schema: s});
+        return s;
+    },
+
+    getDataPackage: async function({commit}, {id: id}){
+        commit('setDataPackageSchema', {schema: null});
+        let s = await backend.getTableSchema(id);
+        commit('setDataPackageSchema', {schema: s});
+        return s;
+    },
+
+    getDataPackageByUploadId: async function({commit}, {id: id}){
+        commit('setDataPackageSchema', {schema: null});
+        let s = await backend.getTableSchema(id, true);
+        if (s && s.length > 0){
+            commit('setDataPackageSchema', {schema: s[0]});
+        }
+        return s;
+    },
+
     createTableSchema({ commit, state }) {
         // console.log("createSchema action: ", state.tableSchema);
         commit('clearSuccessMsg');
@@ -62,6 +90,18 @@ const actions = {
             commit('setError', {error: e.response.data.error});
         });
     },
+    updateDataPackageSchema({commit, state}){
+
+        commit('clearSuccessMsg');
+        commit('clearError');
+
+        backend.putDataPackageSchema(state.tableSchemaId, state.tableSchema).then(() => {
+            commit('clearDataPackageSchema');
+            commit('setSuccessMsg', {message: "Successfully updated data package schema"});
+        }).catch((e) => {
+            commit('setError', {error: e.response.data.error});
+        });
+    }
 
 }
 
@@ -69,7 +109,11 @@ const actions = {
 const mutations = {
     setTableSchema(state, {schema}){
         // console.log("setSchema: ", schema);
-        state.tableSchema = schema;
+        Vue.set(state, 'tableSchema', schema);
+    },
+    setTableSchemaId(state, {id}){
+        // console.log("setSchema: ", schema);
+        Vue.set(state, 'tableSchemaId', id);
     },
     clearTableSchema(state){
         state.tableSchema = null;

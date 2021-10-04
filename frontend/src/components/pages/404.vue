@@ -3,7 +3,7 @@
         <v-row>
             <v-col>
                 <v-row wrap align-center justify-center>
-                    <h3>We're sorry but we can't find the page requested</h3>
+                    <h3>{{$tc('404')}}</h3>
                 </v-row>
             </v-col>
         </v-row>

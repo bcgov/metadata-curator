@@ -1,8 +1,9 @@
 <template>
         <v-checkbox
-            :label="label"
+            :label="$tc(label)"
             v-model="checkbox"
             :color="clr"
+            :disabled="disabled"
         ></v-checkbox>
 </template>
 
@@ -24,6 +25,11 @@
                 type: Boolean,
                 required: false,
                 default: () => false
+            },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: () => false,
             },
         },
         data() {

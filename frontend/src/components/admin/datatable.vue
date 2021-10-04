@@ -6,7 +6,7 @@
             <div v-if="filterRequired !== ''">
                 <span>{{filterRequired}}</span>
                 <v-text-field v-model="filterOn"></v-text-field>
-                <v-btn color="success" @click="searchClick">Search</v-btn>
+                <v-btn color="success" @click="searchClick">{{$tc('Search')}}</v-btn>
             </div>
             <v-data-table
                 dense
@@ -24,7 +24,7 @@
                         <v-spacer></v-spacer>
                         <v-dialog v-model="dialog" :max-width="dialogSize">
                         <template v-slot:activator="{ on }">
-                            <v-btn v-if="showNew" color="primary" dark class="mb-2" v-on="on">New Entry</v-btn>
+                            <v-btn v-if="showNew" color="primary" dark class="mb-2" v-on="on">{{$tc('New')}} {{$tc('Entry', 1)}}</v-btn>
                         </template>
                         <v-card>
                             <v-card-title>
@@ -37,8 +37,8 @@
 
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-                                <v-btn color="blue darken-1" text @click="save">Save</v-btn>
+                                <v-btn color="blue darken-1" text @click="close">{{$tc('Cancel')}}</v-btn>
+                                <v-btn color="blue darken-1" text @click="save">{{$tc('Save')}}</v-btn>
                             </v-card-actions>
                         </v-card>
                         </v-dialog>

@@ -23,11 +23,8 @@ describe("Branch Routes", function() {
     let commentResponse = [];
 
     const util = require('../util');
-    
-    before(async () => {
-        
-        await dbHandler.connect();
 
+    beforeEach(async () => {
         sandbox = sinon.createSandbox();
         this.get = sandbox.stub(axios, 'get');
         this.get.callsFake(
@@ -69,26 +66,17 @@ describe("Branch Routes", function() {
                 }
             }
         );
-
-        //pre create a repo
-        var jwt = config.get('testJwt');
-
-        var body = {
-            name: "test branch repo"
-        }
-        let u = "/api/v1/repos/"
-
-        await chai.request(server)
-        .post(u)
-        .send(body)
-        .set('Authorization' , 'Bearer ' + jwt)
-        .then(function(resp){
-            repoId = resp.body.id;
-        })
+    })
+    afterEach(async () => {
+        axios.get.restore();
+        axios.post.restore();
+        sandbox.restore()
+    })
+    before(async () => {
+        await dbHandler.connect()
     });
     
     after(async () => {
-        sandbox.restore()
         await dbHandler.clearDatabase()
         await dbHandler.closeDatabase()
     });
@@ -105,17 +93,17 @@ describe("Branch Routes", function() {
 
         await util.setEnabledPhase(1);
 
-        it('should 404 if phase not enabled', function (done) {
-            var jwt = config.get('testJwt');
+        // it('should 404 if phase not enabled', function (done) {
+        //     var jwt = config.get('testJwt');
     
-            chai.request(server)
-            .get(basePath)
-            .set('Authorization' , 'Bearer ' + jwt)
-            .end(function (err, res) {
-                res.should.have.status(404);
-                done();
-            })
-        })
+        //     chai.request(server)
+        //     .get(basePath)
+        //     .set('Authorization' , 'Bearer ' + jwt)
+        //     .end(function (err, res) {
+        //         res.should.have.status(404);
+        //         done();
+        //     })
+        // })
 
         await util.setEnabledPhase(2);
 
@@ -136,8 +124,9 @@ describe("Branch Routes", function() {
 
     describe('POST /', async function (){
         it('should get unauthorized', function(done){
+            let url = basePath+repoId+"/branches"
             chai.request(server)
-            .post(basePath)
+            .post(url)
             .end(function(err, res){
                 res.should.have.status(401);
                 done();
@@ -146,23 +135,23 @@ describe("Branch Routes", function() {
 
         await util.setEnabledPhase(1);
 
-        it('should 404 if phase not enabled', function (done) {
-            var jwt = config.get('testJwt');
-            let url = basePath+repoId+"/branches"
+        // it('should 404 if phase not enabled', function (done) {
+        //     var jwt = config.get('testJwt');
+        //     let url = basePath+repoId+"/branches"
 
 
-            var body = {
-            }
+        //     var body = {
+        //     }
 
-            chai.request(server)
-            .post(url)
-            .send(body)
-            .set('Authorization' , 'Bearer ' + jwt)
-            .end(function(err, res){
-                res.should.have.status(404);
-                done();
-            })
-        })
+        //     chai.request(server)
+        //     .post(url)
+        //     .send(body)
+        //     .set('Authorization' , 'Bearer ' + jwt)
+        //     .end(function(err, res){
+        //         res.should.have.status(404);
+        //         done();
+        //     })
+        // })
 
         await util.setEnabledPhase(2);
 
@@ -234,24 +223,24 @@ describe("Branch Routes", function() {
 
         await util.setEnabledPhase(1);
 
-        it('should 404 if phase not enabled', function (done) {
-            let url = basePath + focalId;
-            var jwt = config.get('testJwt');
-            var decoded = jwtLib.decode(jwt);
+        // it('should 404 if phase not enabled', function (done) {
+        //     let url = basePath + focalId;
+        //     var jwt = config.get('testJwt');
+        //     var decoded = jwtLib.decode(jwt);
 
-            var body = {
-                description: "updated"
-            }
+        //     var body = {
+        //         description: "updated"
+        //     }
 
-            chai.request(server)
-            .put(url)
-            .send(body)
-            .set('Authorization' , 'Bearer ' + jwt)
-            .end(function(err, res){
-                res.should.have.status(404);
-                done();
-            })
-        })
+        //     chai.request(server)
+        //     .put(url)
+        //     .send(body)
+        //     .set('Authorization' , 'Bearer ' + jwt)
+        //     .end(function(err, res){
+        //         res.should.have.status(404);
+        //         done();
+        //     })
+        // })
 
         await util.setEnabledPhase(2);
 
@@ -278,28 +267,20 @@ describe("Branch Routes", function() {
     });
 
     describe('GET /:id', async function () {
-        it('should get unauthorized', function(done){
-            chai.request(server)
-            .get(basePath+focalId)
-            .end(function(err, res){
-                res.should.have.status(401);
-                done();
-            })
-        });
 
         await util.setEnabledPhase(1);
 
-        it('should 404 if phase not enabled', function (done) {
-            var jwt = config.get('testJwt');
+        // it('should 404 if phase not enabled', function (done) {
+        //     var jwt = config.get('testJwt');
     
-            chai.request(server)
-            .get(basePath+focalId)
-            .set('Authorization' , 'Bearer ' + jwt)
-            .end(function (err, res) {
-                res.should.have.status(404);
-                done();
-            })
-        })
+        //     chai.request(server)
+        //     .get(basePath+focalId)
+        //     .set('Authorization' , 'Bearer ' + jwt)
+        //     .end(function (err, res) {
+        //         res.should.have.status(404);
+        //         done();
+        //     })
+        // })
 
         await util.setEnabledPhase(2);
 
@@ -343,17 +324,17 @@ describe("Branch Routes", function() {
 
         await util.setEnabledPhase(1);
 
-        it('should 404 if phase not enabled', function (done) {
-            var jwt = config.get('testAdminJwt');
+        // it('should 404 if phase not enabled', function (done) {
+        //     var jwt = config.get('testAdminJwt');
     
-            chai.request(server)
-            .delete(basePath+focalId)
-            .set('Authorization' , 'Bearer ' + jwt)
-            .end(function (err, res) {
-                res.should.have.status(404);
-                done();
-            })
-        })
+        //     chai.request(server)
+        //     .delete(basePath+focalId)
+        //     .set('Authorization' , 'Bearer ' + jwt)
+        //     .end(function (err, res) {
+        //         res.should.have.status(404);
+        //         done();
+        //     })
+        // })
 
         await util.setEnabledPhase(2);
 

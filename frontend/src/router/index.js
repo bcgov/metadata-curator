@@ -10,10 +10,11 @@ const version = () => import(/* webpackChunkName: "version" */ "../components/pa
 const datasets = () => import(/* webpackChunkName: "datasets" */ "../components/pages/datasets");
 const datasetForm = () => import(/* webpackChunkName: "datasetForm" */ "../components/pages/datasetForm");
 const upload = () => import(/* webpackChunkName: "upload" */ "../components/pages/upload");
-const importSchema = () => import(/* webpackChunkName: "import" */ "../components/pages/importSchema");
 const Admin = () => import(/* webpackChunkName: "Admin" */ "../components/pages/Admin");
 const NotFound = () => import(/* webpackChunkName: "NotFound" */ "../components/pages/404");
 const LoggedOut = () => import(/* webpackChunkName: "LoggedOut" */ "../components/pages/logout");
+const user = () => import(/* webpackChunkName: "user" */ "../components/pages/user");
+const publishedVersion = () => import(/* webpackChunkName: "publishedVersion" */ "../components/pages/publishedVersion");
 
 Vue.use(Router)
 let r = new Router({
@@ -57,21 +58,11 @@ let r = new Router({
       }
     },
     {
-      path: '/import',
-      name: 'import',
-      component: importSchema,
-      meta: {
-          title: "Import",
-          requiresAuth: true,
-          phase: 2
-      }
-    },
-    {
       path: '/upload/:id',
       name: 'upload_view',
       component: upload,
       meta: {
-          title: "Upload",
+          title: "Uploads",
           requiresAuth: true
       },
     },
@@ -81,6 +72,15 @@ let r = new Router({
       component: uploads,
       meta: {
           title: "Uploads",
+          requiresAuth: true
+      }
+    },
+    {
+      path: '/user',
+      name: 'user',
+      component: user,
+      meta: {
+          title: "User Info",
           requiresAuth: true
       }
     },
@@ -125,6 +125,16 @@ let r = new Router({
       }
     },
     {
+      path: '/pub/v/:id',
+      name: 'published_version',
+      component: publishedVersion,
+      meta: {
+          title: "Version",
+          requiresAuth: false,
+          phase: 2
+      }
+    },
+    {
       path: '/upload',
       name: 'upload',
       component: upload,
@@ -164,8 +174,8 @@ let r = new Router({
 
 r.beforeEach(async(to, from, next) => {
 
-  if (to.path === "/login"){
-    window.location.href = "/api/login";
+  if (to.path.indexOf("/login") === 0){
+    window.location.href = "/api"+to.fullPath;
   }else if (to.path === "/logout"){
       await store.dispatch('user/removeUser');
       window.location.href = "/api/logout";
@@ -178,7 +188,7 @@ r.beforeEach(async(to, from, next) => {
     let loggedIn = store.state.user.loggedIn;
     
     //document.title = i18n.tc(to.meta.title);
-    document.title = "Metadata Curator - " + to.meta.title;
+    // document.title = "Metadata Curator - " + to.meta.title;
     
     let requiresAuth = to.meta.requiresAuth;
 
@@ -187,7 +197,7 @@ r.beforeEach(async(to, from, next) => {
     let phase = (to.meta.phase) ? to.meta.phase : 1;
 
     if ( (requiresAuth) && (!loggedIn) ){
-      return next('/login');
+      return next('/login?r='+to.path.substring(1));
     }else if ( (requiresNoUser) && (loggedIn) ){
       return next('/');
     }

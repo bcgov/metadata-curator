@@ -1,15 +1,15 @@
 <template>
     <div>
          <span v-if="!editing">
-            <span class="mr-2">{{displayLabel}}</span>
+            <span class="mr-2">{{$tc(displayLabel)}}</span>
             <span>{{val}}</span>
         </span>
 
         <span v-else>
-            <ValidationProvider ref="provider" :rules="validationRules" v-slot="{ errors }" :name="label ? label : name">
+            <ValidationProvider ref="provider" :rules="validationRules" v-slot="{ errors }" :name="label ? $tc(label) : $tc(name)">
                 <v-textarea
-                    :label="displayLabel"
-                    :placeholder="placeholder"
+                    :label="$tc(displayLabel)"
+                    :placeholder="$tc(placeholder)"
                     :name="name"
                     v-model="val"
                     :outlined="outlined"
