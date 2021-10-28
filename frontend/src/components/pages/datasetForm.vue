@@ -4,6 +4,7 @@
             <v-tabs v-model="tab">
                 <v-tab key="dataset">{{$tc('Datasets', 1)}}</v-tab>
                 <v-tab key="schema">{{$tc('Schema', 1)}}</v-tab>
+                <v-tab key="compareS">{{$tc('Compare', 1)}} {{$tc('Schema', 1)}}</v-tab>
                 <v-tab key="uploads" v-if="uploads.length>0">{{$tc('Uploads', 2)}}</v-tab>
             </v-tabs>
             <v-tabs-items v-model="tab" class="fullWidth">
@@ -13,6 +14,11 @@
                 <v-tab-item key="schema">
                     <v-select :items="versionDrop" v-model="viewVersion"></v-select>
                     <SchemaView :key="'schema-view-'+viewVersion+'-'+redrawIndex" :editing="false" :editable="false"></SchemaView>
+                </v-tab-item>
+                <v-tab-item key="compareS">
+                    <v-select :items="versionDrop" v-model="leftSchema"></v-select>
+                    <v-select :items="versionDrop" v-model="rightSchema"></v-select>
+                    <Comparison :left-side-text="leftSchemaString" :right-side-text="rightSchemaString" :diff-json="true" :left-header="leftHeader" :right-header="rightHeader"></Comparison>
                 </v-tab-item>
                 <v-tab-item key="uploads" v-if="uploads.length>0">
                     <span>
@@ -44,13 +50,17 @@
 import DatasetForm from '../DatasetForm';
 import SchemaView from '../SchemaView';
 import Comments from '../Comments';
+import Comparison from '../Comparison';
 import { mapActions, mapState } from 'vuex';
+import { Backend } from '../../services/backend';
+const backend = new Backend();
 
 export default {
     components:{
         DatasetForm,
         SchemaView,
-        Comments
+        Comments,
+        Comparison
     },
     
     data () {
@@ -61,6 +71,13 @@ export default {
             id: null,
             redrawIndex: 0,
             uploads: [],
+            leftSchema: "",
+            rightSchema: "",
+            leftSchemaString: "",
+            rightSchemaString: "",
+            leftHeader: "",
+            rightHeader: "",
+
         }
     },
 
@@ -70,7 +87,24 @@ export default {
                 await this.getSchema({id: this.viewVersion});
                 this.redrawIndex++;
             }
-        }
+        },
+
+        leftSchema: async function(){
+            let s = await backend.getTableSchema(this.leftSchema);
+            this.leftSchemaString = JSON.stringify(s);
+            this.leftHeader = this.versionDrop.filter(obj => {
+                return obj.value === this.leftSchema
+            })[0].text;
+            
+        },
+
+        rightSchema: async function(){
+            let s = await backend.getTableSchema(this.rightSchema);
+            this.rightSchemaString = JSON.stringify(s);
+            this.rightHeader = this.versionDrop.filter(obj => {
+                return obj.value === this.rightSchema
+            })[0].text
+        },
     },
 
     methods: {

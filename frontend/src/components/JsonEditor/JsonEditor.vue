@@ -51,12 +51,36 @@
 
                             <v-col cols=12>
                                 <v-text-field
+                                    :ref="'basicField-' + key + '-' + fKey + '-title'"
+                                    :id="'basicField-' + key + '-' + fKey + '-title'"
+                                    :value="field.shortName"
+                                    @focus="onFocusBasic"
+                                    :label="$tc('Title')"
+                                    @input="updateResource(key, fKey, 'title', $event)"
+                                >
+                                </v-text-field>
+                            </v-col>
+
+                            <v-col cols=12>
+                                <v-text-field
                                     :ref="'basicField-' + key + '-' + fKey + '-shortName'"
                                     :id="'basicField-' + key + '-' + fKey + '-shortName'"
                                     :value="field.shortName"
                                     @focus="onFocusBasic"
                                     :label="$tc('Short Name')"
                                     @input="updateResource(key, fKey, 'shortName', $event)"
+                                >
+                                </v-text-field>
+                            </v-col>
+
+                            <v-col cols=12>
+                                <v-text-field
+                                    :ref="'basicField-' + key + '-' + fKey + '-title'"
+                                    :id="'basicField-' + key + '-' + fKey + '-title'"
+                                    :value="field.title"
+                                    @focus="onFocusBasic"
+                                    :label="$tc('Title')"
+                                    @input="updateResource(key, fKey, 'title', $event)"
                                 >
                                 </v-text-field>
                             </v-col>
@@ -302,6 +326,15 @@
                                     </v-col>
                                 </v-row>
 
+                                <v-row v-if="field && (field.title || (field._descriptor && field._descriptor.title))" class="my-0">
+                                    <v-col cols=3>
+                                        {{$tc('Title')}}:
+                                    </v-col>
+                                    <v-col cols=9>
+                                        {{field.title ? field.title : field._descriptor.title}}
+                                    </v-col>
+                                </v-row>
+
                                 <v-row v-if="field && (field.type || (field._descriptor && field._descriptor.type))" class="my-0">
                                     <v-col cols=3>
                                         {{$tc('Type')}}:
@@ -399,7 +432,10 @@
 import Vue from 'vue';
 import RepeatingObject from './RepeatingObject';
 
+import JsonProcessor from '../../mixins/JsonProcessor';
+
 export default{
+    mixins:[JsonProcessor],
     components: {
         RepeatingObject,
     },
@@ -468,60 +504,20 @@ export default{
         },
 
         title: function(){
-                if (this.workingVal && this.workingVal._currentDescriptor && this.workingVal._currentDescriptor.title){
-                    return this.workingVal._currentDescriptor.title;
-                }
-                if (this.workingVal && this.workingVal._currentDescriptor && this.workingVal._currentDescriptor.resources){
-                    if (this.workingVal._currentDescriptor.resources[0] && this.workingVal._currentDescriptor.resources[0].tableSchema && this.workingVal._currentDescriptor.resources[0].tableSchema.title){
-                        return this.workingVal._currentDescriptor.resources[0].tableSchema.title;
-                    }
-                }
-                return "";
-            },
+            return this.getTitle(this.workingVal);
+        },
 
-            description: function(){
-                if (this.workingVal && this.workingVal._currentDescriptor && this.workingVal._currentDescriptor.description){
-                    return this.workingVal._currentDescriptor.description;
-                }
+        description: function(){
+            return this.getDescription(this.workingVal);
+        },
 
-                if (this.workingVal && this.workingVal._currentDescriptor && this.workingVal._currentDescriptor.resources){
-                    if (this.workingVal._currentDescriptor.resources[0] && this.workingVal._currentDescriptor.resources[0].tableSchema && this.workingVal._currentDescriptor.resources[0].tableSchema.description){
-                        return this.workingVal._currentDescriptor.resources[0].tableSchema.description;
-                    }
-                }
-                
-                return "";
-            },
+        fields: function(){
+            return this.getFields(this.workingVal);
+        },
 
-            fields: function(){
-                if (this.workingVal && this.workingVal._currentDescriptor && this.scworkingValhemaObj.fields){
-                    return this.workingVal.fields;
-                }
-
-                if (this.workingVal && this.workingVal._currentDescriptor && this.workingVal._currentDescriptor.resources){
-                    if (this.workingVal._currentDescriptor.resources[0] && this.workingVal._currentDescriptor.resources[0].tableSchema && this.workingVal._currentDescriptor.resources[0].tableSchema.fields){
-                        return this.workingVal._currentDescriptor.resources[0].tableSchema.fields
-                    }
-                }
-
-                return [];
-            },
-
-            resources: function(){
-                if (this.workingVal && this.workingVal._currentDescriptor && this.workingVal._currentDescriptor.resources){
-                    if (this.workingVal._currentDescriptor.resources[0] && this.workingVal._currentDescriptor.resources[0].tableSchema && this.workingVal._currentDescriptor.resources[0].tableSchema.resources){
-                        return this.workingVal._currentDescriptor.resources[0].tableSchema.resources;
-                    }
-                    return this.workingVal._currentDescriptor.resources
-                }else if (this.workingVal && this.workingVal.resources && this.workingVal.resources[0]){
-                    if (this.workingVal.resources[0].tableSchema && this.workingVal.resources[0].tableSchema.resources){
-                        return this.workingVal.resources[0].tableSchema.resources
-                    }
-                    return this.workingVal.resources;
-                }
-
-                return [];
-            },
+        resources: function(){
+            return this.getResources(this.workingVal);
+        },
     },
 
     methods: {
@@ -600,20 +596,6 @@ export default{
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.$emit('edited', this.workingVal);
-        },
-
-        replacerFunc: function(){
-            const visited = new WeakSet();
-            return (key, value) => {
-                if (typeof value === "object" && value !== null) {
-                    if (visited.has(value)) {
-                        console.log("Replacing key", key);
-                        return;
-                    }
-                    visited.add(value);
-                }
-                return value;
-            };
         },
 
         updateShowType: function(newShowType){

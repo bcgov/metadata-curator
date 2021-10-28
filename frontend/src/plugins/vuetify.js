@@ -26,6 +26,7 @@ export const opts = {
           text: "#ffffff",
           data: '#F4F4F4',
           textHighlight: '#C49614',
+          background: '#121212',
         },
         light: {
           primary: '#779af8',
@@ -38,6 +39,7 @@ export const opts = {
           text: "#000000",
           data: '#F4F4F4',
           textHighlight: '#FCBA03',
+          background: '#FFFFFF',
         }
       }
   }

@@ -82,12 +82,12 @@
                                 </v-row>
 
                                 <v-row>
-                                    hi
-                                    <v-col cols=12 v-if="branch">
+                                    <v-col cols=12>
                                         <SimpleCheckbox
                                             :label="$tc('Published')"
                                             :placeholder="$tc('Published')"
                                             name="published"
+                                            :disabled="true"
                                             :editing="false"
                                             :checked="(branch) ? branch.published : false"
                                         ></SimpleCheckbox>
@@ -116,12 +116,14 @@
 import {mapActions, mapState} from "vuex";
 import SchemaView from '../SchemaView';
 import Markdown from '../Markdown';
+import SimpleCheckbox from '../SimpleCheckbox';
 
 export default {
     
     components:{
         SchemaView,
-        Markdown
+        Markdown,
+        SimpleCheckbox,
     },
 
     data(){

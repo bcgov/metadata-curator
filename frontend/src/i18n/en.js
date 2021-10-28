@@ -178,5 +178,8 @@ export default {
         "Repo Id": "Repo Id",
         "Upload Id": "Upload Id",
         "Dataset": "Datasets | Dataset | Datasets",
+        "The schema you have provided differs from the one we were expecting please review before uploading": "The schema you have provided differs from the one we were expecting please review before uploading",
+        "Inferred Metadata": "Inferred Metadata",
+        "Edition Metadata": "Edition Metadata",
     }
 }
