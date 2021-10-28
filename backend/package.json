@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "atob": "^2.1.2",
-    "axios": "^0.21.1",
+    "axios": "^0.21.4",
     "bent": "^7.1.0",
     "chai-as-promised": "^7.1.1",
     "config": "^3.2.6",
