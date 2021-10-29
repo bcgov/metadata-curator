@@ -52,10 +52,8 @@ jobs:
           ./docker_quayio_push metadata_curator_api
   
   quay_io_frontend:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     needs: ["unit_test"]
-    env:
-      PYTHON: /usr/bin/python
     defaults:
       run:
         shell: bash
@@ -66,10 +64,6 @@ jobs:
       - name: push to quay
         run: |
           export BRANCH=${GITHUB_REF##*/}
-          sudo apt-get update
-          sudo apt-get install python2.7
-          sudo mv /usr/bin/python /usr/bin/python3
-          sudo ln -s /usr/bin/python2.7 /usr/bin/python
           chmod ugo+x ./docker_quayio_push
           ./docker_quayio_push metadata_curator_ui
 
