@@ -54,6 +54,8 @@ jobs:
   quay_io_frontend:
     runs-on: ubuntu-latest
     needs: ["unit_test"]
+    env:
+      PYTHON: /usr/bin/python
     defaults:
       run:
         shell: bash
