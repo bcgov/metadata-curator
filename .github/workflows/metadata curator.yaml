@@ -52,7 +52,7 @@ jobs:
           ./docker_quayio_push metadata_curator_api
   
   quay_io_frontend:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     needs: ["unit_test"]
     env:
       PYTHON: /usr/bin/python
