@@ -64,6 +64,7 @@ jobs:
       - name: push to quay
         run: |
           export BRANCH=${GITHUB_REF##*/}
+          sudo apt-get -qq -y install python2
           chmod ugo+x ./docker_quayio_push
           ./docker_quayio_push metadata_curator_ui
 
