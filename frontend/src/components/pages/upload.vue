@@ -187,8 +187,8 @@
                         this.allowSelect = false;
                     }
                 }
-                this.loading = false;
             }
+            this.loading = false;
         },
         methods: {
             ...mapActions({
