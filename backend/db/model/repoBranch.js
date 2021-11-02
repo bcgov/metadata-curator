@@ -26,7 +26,7 @@ var repoBranchSchema = new Schema({
     },
     data_upload_id: {
         type: Schema.Types.ObjectId,
-        required: true,
+        required: false,
         ref: 'data_upload'
     },
 

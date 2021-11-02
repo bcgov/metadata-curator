@@ -265,16 +265,10 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
 
         let error = false;
         if (!f.name){
-            error = true;
             error = "Name is required"
         }else if (!f.type){
-            error = true;
             error = "Type is required"
-        }else if (!f.upload_id){
-            error = true;
-            error = "Upload id is required";
         }else if (!f.description){
-            error = true;
             error = "Description is required";
         }
 
