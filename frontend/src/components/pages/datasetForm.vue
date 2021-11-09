@@ -18,7 +18,7 @@
                 <v-tab-item key="compareS">
                     <v-select :items="versionDrop" v-model="leftSchema"></v-select>
                     <v-select :items="versionDrop" v-model="rightSchema"></v-select>
-                    <Comparison :left-side-text="leftSchemaString" :right-side-text="rightSchemaString" :diff-json="true" :left-header="leftHeader" :right-header="rightHeader"></Comparison>
+                    <Comparison :key="'compareTool-'+reDrawCompareIndex" :left-side-text="leftSchemaString" :right-side-text="rightSchemaString" :diff-json="true" :left-header="leftHeader" :right-header="rightHeader"></Comparison>
                 </v-tab-item>
                 <v-tab-item key="uploads" v-if="uploads.length>0">
                     <span>
@@ -77,6 +77,7 @@ export default {
             rightSchemaString: "",
             leftHeader: "",
             rightHeader: "",
+            reDrawCompareIndex: 0,
 
         }
     },
@@ -95,6 +96,7 @@ export default {
             this.leftHeader = this.versionDrop.filter(obj => {
                 return obj.value === this.leftSchema
             })[0].text;
+            this.reDrawCompareIndex++;
             
         },
 
@@ -104,6 +106,7 @@ export default {
             this.rightHeader = this.versionDrop.filter(obj => {
                 return obj.value === this.rightSchema
             })[0].text
+            this.reDrawCompareIndex++;
         },
     },
 

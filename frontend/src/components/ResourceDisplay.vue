@@ -5,7 +5,7 @@
                 <h1>{{$tc('Resource')}} {{resource.name}}</h1>
             </v-col>
             <v-col cols=12 v-if="(resource.schema && resource.schema.fields) || (resource.tableSchema && resource.tableSchema.fields)">
-                <div v-for="(field, fkey) in ((resource.tableSchema && resource.tableSchema.fields) ? resource.tableSchema.fields : resource.schema.fields)" :key="'field-'+fkey+'-'+field.name" :class="`field${field.highlight ? ' fieldHighlight' : ''}`">
+                <div v-for="(field, fkey) in ((resource.tableSchema && resource.tableSchema.fields) ? resource.tableSchema.fields : resource.schema.fields)" :key="'field-'+fkey+'-'+(field ? field.name : '')" :class="`field${field && field.highlight ? ' fieldHighlight' : ''}` + displayClass('resources.' + key + '.tableSchema.fields.' + fkey.toString())">
                     <v-row v-if="field && field.name" :class="'ma-0 noOverflow' + displayClass('resources.' + key + '.tableSchema.fields.' + fkey.toString() + '.name')">
                         <v-col cols=9>
                             <h3>{{field.name}}</h3>
@@ -63,6 +63,15 @@
                         </v-col>
                         <v-col cols=9>
                             {{field.constraints ? field.constraints : field._descriptor.constraints}}
+                        </v-col>
+                    </v-row>
+
+                    <v-row v-if="field && field.var_class" :class="'ma-0' + displayClass('resources.' + key + '.tableSchema.fields.' + fkey.toString() + '.var_class')">
+                        <v-col cols=3>
+                            {{$tc('Var Class', 1)}}:
+                        </v-col>
+                        <v-col cols=9>
+                            {{field.var_class ? field.var_class : "" }}
                         </v-col>
                     </v-row>
 
@@ -182,9 +191,10 @@ export default {
             }
             
             if (currDif && currDif[keyString] && currDif[keyString].added){
-                return ' greenDiff';
+                
+                return (this.diffType !== 'right') ? ' greenDiff' : ' redDiff';
             }else if (currDif && currDif[keyString] && currDif[keyString].removed){
-                return ' redDiff'
+                return (this.diffType !== 'right') ? ' redDiff' : ' greenDiff';
             }else if (currDif && currDif[keyString] && currDif[keyString].diff){
                 return ' yellowDiff'
             }

@@ -181,5 +181,8 @@ export default {
         "The schema you have provided differs from the one we were expecting please review before uploading": "The schema you have provided differs from the one we were expecting please review before uploading",
         "Inferred Metadata": "Inferred Metadata",
         "Edition Metadata": "Edition Metadata",
+        "Compare": "Compare",
+        "metadata": "metadata",
+        "Only found in": "Only found in",
     }
 }

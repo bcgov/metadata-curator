@@ -19,10 +19,10 @@
                 <span>Legend:</span>
             </v-col>
             <v-col cols=2>
-                <span class="green">Only found in existing metadata</span>
+                <span class="green">{{$tc('Only found in')}} {{(rightHeader.toLowerCase().indexOf('edition') !== -1) ? 'existing' : 'right'}} {{$tc('metadata')}}</span>
             </v-col>
             <v-col cols=2>
-                <span class="red">Only in inferred data from files</span>
+                <span class="red">{{$tc('Only found in')}} {{(leftHeader.toLowerCase().indexOf('inferred') !== -1) ? 'inferred' : 'left'}} {{$tc('metadata')}}</span>
             </v-col>
             <v-col cols=2>
                 <span class="yellow">Different value</span>
@@ -30,10 +30,10 @@
         </v-row>
         <v-row>
             <v-col cols=6>
-                <h3>{{$tc(leftHeader)}}</h3>
+                <h3>{{(leftHeader.toLowerCase().indexOf('inferred') !== -1) ? $tc(leftHeader) : leftHeader}}</h3>
             </v-col>
             <v-col cols=6>
-                <h3>{{$tc(rightHeader)}}</h3>
+                <h3>{{(rightHeader.toLowerCase().indexOf('edition') !== -1) ? $tc(rightHeader) : rightHeader}}</h3>
             </v-col>
         </v-row>
         <v-row v-if="stateType==rawState">
@@ -141,6 +141,7 @@ export default {
             basicDiff: {},
             workingLeftSideText: this.leftSideText ? this.leftSideText : "",
             workingRightSideText: this.rightSideText ? this.rightSideText : "",
+            previouslyMovedtoEnd: 0,
 
         }
     },
@@ -156,6 +157,12 @@ export default {
         }
     },
     methods: {
+
+        setMovedToEnd: function(movedToEnd){
+            this.previouslyMovedtoEnd  = movedToEnd;
+        },
+        
+
         updateWorkingText: function(side, obj){
             if (side === 'left'){
                 this.workingLeftSideText = JSON.stringify(obj);
@@ -255,7 +262,6 @@ export default {
                         }
 
 
-
                         for (let i=0; i<l.length; i++){
                             
                             if (compareAgainst[i] === -1){
@@ -306,15 +312,15 @@ export default {
                 for (let i=0; i<compareAgainst.length; i++){
                     compareAgainst[i] = compareAgainst[i].toString();
                 }
-                let rK = new Set(Object.keys(r));
+                //let rK = new Set(Object.keys(r));
 
-                let rDisjointed = new Set([...rK].filter(x => (compareAgainst.indexOf(x) === -1)));
+                // let rDisjointed = new Set([...rK].filter(x => (compareAgainst.indexOf(x) === -1)));
 
-                for ( let i=0; i<rDisjointed.size; i++){
+                // for ( let i=0; i<rDisjointed.size; i++){
                     
-                    b[[...rDisjointed][i]] = {added: true}
-                    hasDiff = true;
-                }
+                //     b[[...rDisjointed][i]] = {added: true}
+                //     hasDiff = true;
+                // }
 
                 b.hasDiff = hasDiff;
 
@@ -411,6 +417,10 @@ export default {
         this.calcDiff();
     },
     computed: {
+        rightSideResourceDiff: function(){
+            return this.calcJsonDiff(this.workingRightSideText, this.workingLeftSideText);
+        },
+
         leftWorkingVal: function(){
             try{
                 let obj = JSON.parse(this.workingLeftSideText);
@@ -448,7 +458,33 @@ export default {
             
             if (r.length >= rightResources.length){
                 let newR = [];
+
                 for (let i=0; i<r.length; i++){
+
+                    let newF = [];
+                    let hiF = (r[i] && r[i].tableSchema && r[i].tableSchema.fields && r[i].tableSchema.fields.length) ? r[i].tableSchema.fields.length-1 : 0;
+                    if (r[i] && r[i].tableSchema && r[i].tableSchema.fields){
+                        for (let j=0; j<r[i].tableSchema.fields.length; j++){
+                            let bd = false;
+                            try{
+                                bd = this.basicDiff.resources[i].tableSchema.fields[j];
+                            //eslint-disable-next-line
+                            }catch(ex){
+                            }
+
+                            if (bd && (bd.comparedAgainst || bd.comparedAgainst === 0) ){
+                                newF[parseInt(bd.comparedAgainst)] = JSON.parse(JSON.stringify(r[i].tableSchema.fields[j]));
+                            }else if ( bd && (bd.removed || bd.added) ){
+                                newF[hiF] = JSON.parse(JSON.stringify(r[i].tableSchema.fields[j]));
+                                hiF--;
+                            }else{
+                                newF[j] = JSON.parse(JSON.stringify(r[i].tableSchema.fields[j]));
+                            }
+                        }
+                        r[i].tableSchema.fields = JSON.parse(JSON.stringify(newF));
+                    }
+                    
+
                     if ( this.basicDiff && this.basicDiff.resources && this.basicDiff.resources[i] && (this.basicDiff.resources[i].comparedAgainst || this.basicDiff.resources[i].comparedAgainst === 0) ){
                         
                         newR[parseInt(this.basicDiff.resources[i].comparedAgainst)] = r[i];
@@ -485,12 +521,37 @@ export default {
 
         rightResources: function(){
             let r = this.getResources(this.workingVal);
+            let rDiff = this.rightSideResourceDiff;
             let hi = r.length-1;
+            let movedToEnd = 0;
             
             let leftResources = this.getResources(this.leftWorkingVal);
             if (r.length > leftResources.length){
                 let newR = [];
                 for (let i=0; i<r.length; i++){
+                    let newF = {};
+                    let hiF = (r[i] && r[i].tableSchema && r[i].tableSchema.fields && r[i].tableSchema.fields.length) ? r[i].tableSchema.fields.length-1 : 0;
+                    if (r[i] && r[i].tableSchema && r[i].tableSchema.fields){
+                        for (let j=0; j<r[i].tableSchema.fields.length; j++){
+                            let bd = false;
+                            try{
+                                bd = rDiff.resources[i].tableSchema.fields[j];
+                            //eslint-disable-next-line
+                            }catch(ex){
+                            }
+
+                            if (bd && (bd.comparedAgainst || bd.comparedAgainst === 0) ){
+                                newF[parseInt(bd.comparedAgainst)] = r[i].tableSchema.fields[j];
+                            }else if ( bd && (bd.removed || bd.added) ){
+                                newF[hiF] = r[i].tableSchema.fields[j];
+                                hiF--;
+                            }else{
+                                newF[j] = r[i].tableSchema.fields[j];
+                            }
+                        }
+                        r[i].tableSchema.fields = JSON.parse(JSON.stringify(newF));
+                    }
+                    
                     if ( this.basicDiff && this.basicDiff.resources && this.basicDiff.resources[i] && (this.basicDiff.resources[i].comparedAgainst || this.basicDiff.resources[i].comparedAgainst === 0) ){
                         
                         newR[parseInt(this.basicDiff.resources[i].comparedAgainst)] = r[i];
@@ -513,7 +574,56 @@ export default {
                 this.calcDiff();
                 
                 return newR;
+            }else{
+                let changed = false;
+                let newR = [];
+                for (let i=0; i<r.length; i++){
+                    let newF = [];
+                    let hiF = (r[i] && r[i].tableSchema && r[i].tableSchema.fields && r[i].tableSchema.fields.length) ? r[i].tableSchema.fields.length-1 : 0;
+                    newR[i] = JSON.parse(JSON.stringify(r[i]));
+                    if (r[i] && r[i].tableSchema && r[i].tableSchema.fields){
+                        for (let j=0; j<r[i].tableSchema.fields.length; j++){
+                            let bd = false;
+                            try{
+                                bd = rDiff.resources[i].tableSchema.fields[j];
+                            //eslint-disable-next-line
+                            }catch(ex){
+                            }
+
+                            if (bd && (bd.comparedAgainst || bd.comparedAgainst === 0) ){
+                                newF[j-movedToEnd] = r[i].tableSchema.fields[parseInt(bd.comparedAgainst)];
+                                changed = (changed || (parseInt(bd.comparedAgainst) !== j));
+                            }else if ( bd && (bd.removed || bd.added) ){
+                                newF[hiF] = r[i].tableSchema.fields[j];
+                                movedToEnd++;
+                                hiF--;
+                                changed = (changed || (movedToEnd>=this.previouslyMovedtoEnd));
+                            }else{
+                                newF[j-movedToEnd] = r[i].tableSchema.fields[j];
+                            }
+                            
+                        }
+                        if (Object.keys(newF).length > 0){
+                            newR[i].tableSchema.fields = JSON.parse(JSON.stringify(newF));
+                        }
+                    }
+                    
+                    
+                }
+                if (changed){
+
+                    this.updateWorkingText('right', {resources: newR});
+                    this.calcDiff();
+                    if (movedToEnd == this.previouslyMovedtoEnd){
+                        movedToEnd++;
+                    }
+                    this.setMovedToEnd(movedToEnd)
+                    return newR;
+                }
+                
             }
+            
+
             return r;
         },
     },
