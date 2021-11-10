@@ -58,7 +58,6 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         repoSchema._id = id;
         repoSchema.name = fields.name;
         if (fields.description){
-            console.log("Create set desc");
             repoSchema.description = fields.description
         }
         repoSchema.create_date = new Date();
@@ -119,7 +118,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
 
             if(query && query.upload_id) {
                 //return await db.RepoSchema.find({data_upload_id: mongoose.Types.ObjectId(query.filterBy)}).sort({ "create_date": 1});
-                let data = await db.RepoBranchSchema.find({repo_id: {$in: repoIds}, data_upload_id: query.upload_id}).populate('repo_id');
+                let data = await db.RepoBranchSchema.find({repo_id: {$in: repoIds}, data_upload_id: query.upload_id}).populate('repo_id').sort({ "create_date": -1});
                 if (!data){
                     return [];
                 }
@@ -131,7 +130,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
                 return res;
                 //return await db.RepoSchema.find({_id: {$in: repoIds}}).sort({ "create_date": 1});
             }else{
-                return await db.RepoSchema.find({_id: {$in: repoIds}}).sort({ "create_date": 1});
+                return await db.RepoSchema.find({_id: {$in: repoIds}}).sort({ "create_date": -1});
             }
         } catch (e) {
             log.error(e);
@@ -164,6 +163,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             const repo = await createRepo(req.user, fields);
             res.status(201).json({id: repo._id.toString()});
         }catch(ex){
+            console.error(ex);
             res.status(500).json({error: "Unknown error"});
         }
     });
@@ -178,8 +178,12 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
     });
 
     router.get('/:repoId/comments', async function(req, res, next){
-        const comments = await getComments (req.params.repoId, req.user);
-        return res.json(comments);
+        if (req.params.repoId !== 'create'){
+            const comments = await getComments (req.params.repoId, req.user);
+            return res.json(comments);
+        }else{
+            return res.json([]);
+        }
     });
 
     router.post('/:repoId/comments', async function(req, res, next){

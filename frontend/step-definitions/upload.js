@@ -42,7 +42,9 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
     client.click('#toUserPage').pause(100).saveScreenshot('./'+confGet('screenshotPath')+'/uploadUserInfo.png');
     
     await helpers.newUpload(client);
+    await client.pause(5000);
     await client.saveScreenshot("./"+path+"/postNewUpload.png");
+    
     for (const property in data1){
         await client.setValue(data1[property].selector, data1[property].value)
     }

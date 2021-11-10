@@ -8,7 +8,11 @@
             </v-col>
         </v-row>
         <v-row>
-            <v-col cols=12>
+            <v-col cols=12 v-if="loading">
+                <span>{{$tc('Loading')}}...</span>
+                <v-progress-circular indeterminate></v-progress-circular>
+            </v-col>
+            <v-col cols=12 v-else>
                 <v-stepper v-model="step">
                     <v-stepper-header>
                         <v-stepper-step :step="steps.step1UploadForm" :complete="step > steps.step1UploadForm" >{{$tc('Upload Info')}}</v-stepper-step>
@@ -33,6 +37,7 @@
                     </v-stepper-header>
 
                     <v-stepper-items>
+                        
                         <v-stepper-content :step="steps.step1UploadForm">
                             <v-card class="mb-12">
                                 <UploadForm ref="uploadForm"></UploadForm>
@@ -78,8 +83,23 @@
 
                         <v-stepper-content :step="steps.step5SchemaInformation" v-if="enabledPhase >= 2">
                             <v-card class="mb-12">
-                                <v-btn v-if="allowInfer" id="inferButton" @click="infer">{{$tc('Infer')}}</v-btn>
-                                <JsonEditor :key="'jsonEditor-'+jsonRedraw" :val="schema" @edited="updateSchema" :raw="false"></JsonEditor>
+                                <v-row>
+                                    <v-col cols=12 class="pa-0">
+                                        <v-alert class="mb-0" v-model="showDiff" type="error" dismissible>
+                                            {{$tc('The schema you have provided differs from the one we were expecting please review before uploading')}}
+                                        </v-alert>
+                                    </v-col>
+                                </v-row>
+                                <v-row v-if="!showDiff">
+                                    <v-col cols=12>
+                                        <JsonEditor :key="'jsonEditor-'+jsonRedraw" :val="schema" @edited="updateSchema" :raw="false"></JsonEditor>
+                                    </v-col>
+                                </v-row>
+                                <v-row v-else>
+                                    <v-col cols=12>
+                                        <Comparison :left-side-text="JSON.stringify(inferredSchema)" :right-side-text="JSON.stringify(schema)" :diff-json="true"></Comparison>
+                                    </v-col>
+                                </v-row>
                             </v-card>
                             
                             <v-btn text @click="step=steps.step4FileLevelForm" id="back-5">{{$tc('Back')}}</v-btn>
@@ -113,6 +133,7 @@
     import FileForm from "../FileForm";
     import FileInfoForm from "../FileInfoForm";
     import FileUploadForm from "../FileUploadForm";
+    import Comparison from '../Comparison';
 
     import { Backend } from '../../services/backend';
     import JsonEditor from '../JsonEditor/JsonEditor';
@@ -126,8 +147,10 @@
             FileInfoForm,
             FileUploadForm,
             JsonEditor,
+            Comparison,
         },
         async created() {
+            this.loading = true;
             await this.getAllRepos();
             if(this.$route.params.id && this.$route.params.id != 'new') { 
                 this.uploadId = this.$route.params.id; 
@@ -165,6 +188,7 @@
                     }
                 }
             }
+            this.loading = false;
         },
         methods: {
             ...mapActions({
@@ -200,31 +224,42 @@
             },
 
             async infer(){
-                this.schema = {resources: []}
+                this.inferredSchema = {resources: []}
                 for (let i=0; ( (i<this.inferContent.length) && (i<this.upload.files.length) ); i++){
-                    let string = new TextDecoder().decode(this.inferContent[i]);
-                    let rows = string.split("\n");
-                    for (let i=0; i<rows.length; i++){
-                        let delim = ",";
-                        if (rows[i].indexOf("\", \"") !== -1){
-                            delim = "\", \"";
-                        }else if (rows[i].indexOf("\",\"") !== -1){
-                            delim = "\",\"";
-                        }else if (rows[i].indexOf(", ") !== -1){
-                            delim = ", ";
-                        }
+                    try{
+                        let string = new TextDecoder().decode(this.inferContent[i]);
+                        let rows = string.split("\n");
+                        for (let i=0; i<rows.length; i++){
+                            let delim = ",";
+                            if (rows[i].indexOf("\", \"") !== -1){
+                                delim = "\", \"";
+                            }else if (rows[i].indexOf("\",\"") !== -1){
+                                delim = "\",\"";
+                            }else if (rows[i].indexOf(", ") !== -1){
+                                delim = ", ";
+                            }
 
-                        rows[i] = rows[i].split(delim);
+                            rows[i] = rows[i].split(delim);
+                        }
+                        let headers = rows.shift();
+                        rows.unshift(headers);
+                        let s = await Schema.load({});
+                        s.infer(rows, headers);
+                        this.inferredSchema.resources.push({
+                            name: this.upload.files[i].name.substring(0,this.upload.files[i].name.lastIndexOf('.')),
+                            path: "./"+this.upload.files[i].name,
+                            tableSchema: s.descriptor,
+                        });
+                    }catch(ex){
+                        console.error("Error inferring:", ex);
                     }
-                    let headers = rows.shift();
-                    rows.unshift(headers);
-                    let s = await Schema.load({});
-                    s.infer(rows, headers);
-                    this.schema.resources.push({
-                        name: this.upload.files[i].name.substring(0,this.upload.files[i].name.lastIndexOf('.')),
-                        path: "./"+this.upload.files[i].name,
-                        schema: s.descriptor,
-                    });
+                }
+
+                this.showDiff = false;
+                if (Object.keys(this.schema).length >= 1){
+                    this.showDiff = JSON.stringify(this.inferredSchema) !== JSON.stringify(this.schema);
+                }else{
+                    this.schema = JSON.parse(JSON.stringify(this.inferredSchema));
                 }
                 this.jsonRedraw++;
             },
@@ -393,6 +428,7 @@
                     try{
                         await this.updateUpload(this.upload);
                         if(transitionNextStepAfterSave) { 
+                            await this.infer();
                             this.step = (this.enabledPhase >= 2) ? this.steps.step5SchemaInformation : this.steps.step6UploadProgress; 
                         }
                     }catch(e){
@@ -412,7 +448,6 @@
 
             updateSchema(newVal){
                 this.schema = newVal;
-                this.allowInfer = true;//(Object.keys(this.schema).length === 0);
             },
 
             async createDataset(){
@@ -437,7 +472,6 @@
                 let b = await this.saveBranch();
                 this.allowCreate = false;
                 this.allowSelect = false;
-                this.allowInfer = true;
                 this.selectedVersion = b.id;
 
             },
@@ -459,7 +493,6 @@
                 step: 1,
                 validStep3: false,
                 schema: {},
-                allowInfer: true,
                 steps: steps,
                 selectedDataset: "-1",
                 jsonRedraw: 0,
@@ -467,6 +500,9 @@
                 allowCreate: true,
                 allowSelect: true,
                 selectedVersion: -1,
+                inferredSchema: {},
+                showDiff: false,
+                loading: false,
             }
         },
         computed: {
@@ -509,7 +545,6 @@
                     delete this.schema.__v;
 
                     this.jsonRedraw++;
-                    this.allowInfer = true;//false;
                     this.allowCreate = false;
                 }
             },
@@ -523,7 +558,6 @@
                     }
 
                 }else{
-                    this.allowInfer = true;
                     this.selectedVersion = -1;
                     this.schema = {resources: []};
                     this.jsonRedraw++;
