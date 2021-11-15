@@ -184,5 +184,17 @@ export default {
         "Compare": "Compare",
         "metadata": "metadata",
         "Only found in": "Only found in",
+
+        "Allow Publish": "Allow Publish",
+        "Gov DAR": "Gov DAR",
+        "Academic DAR": "Academic DAR",
+        
+        "Approval Needed": "Approval Needed",
+        "Gov Data Provider": "Gov Data Provider",
+        "Gov data provider": "Gov Data Provider",
+        "Academic Data Provider": "Academic Data Provider",
+        "Academic data provider": "Academic Data Provider",
+        "Metadata listed in B.C. Data Catalogue": "Metadata listed in B.C. Data Catalogue",
+        "Enum": "Enumeration Constraints | Enumeration Constraint | Enumeration Constraints"
     }
 }

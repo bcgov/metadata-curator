@@ -4,6 +4,7 @@
             v-model="checkbox"
             :color="clr"
             :disabled="disabled"
+            @change="$emit('edited', checkbox)"
         ></v-checkbox>
 </template>
 

@@ -57,6 +57,83 @@
                             ></TextInput>
                         </v-row>
 
+                        <v-row class="outline">
+                            <v-col cols=12>
+                                <span>{{$tc('Allow Publish')}}</span>
+                            </v-col>
+                            <v-col cols=6>
+                                <SimpleCheckbox
+                                    :label="$tc('Gov DAR')"
+                                    :placeholder="$tc('Gov DAR')"
+                                    name="gov_allow_publish"
+                                    :large="true"
+                                    :editing="editing"
+                                    :disabled="!editing"
+                                    :checked="(dataset) ? dataset.gov_allow_publish : ''"
+                                    @edited="(newValue) => { updateValues('gov_allow_publish', newValue) }">
+                                </SimpleCheckbox>
+                            </v-col>
+
+                            <v-col cols=6>
+                                <SimpleCheckbox
+                                    :label="$tc('Academic DAR')"
+                                    :placeholder="$tc('Academic DAR')"
+                                    name="aca_allow_publish"
+                                    :large="true"
+                                    :editing="editing"
+                                    :disabled="!editing"
+                                    :checked="(dataset) ? dataset.aca_allow_publish : ''"
+                                    @edited="(newValue) => { updateValues('aca_allow_publish', newValue) }">
+                                </SimpleCheckbox>
+                            </v-col>
+                        </v-row>
+
+                        <v-row class="outline">
+                            <v-col cols=12>
+                                <span>{{$tc('Approval Needed')}}</span>
+                            </v-col>
+                            <v-col cols=6>
+                                <SimpleCheckbox
+                                    :label="$tc('Gov data provider')"
+                                    :placeholder="$tc('Gov data provider')"
+                                    name="gov_approval_needed"
+                                    :large="true"
+                                    :editing="editing"
+                                    :disabled="!editing"
+                                    :checked="(dataset) ? dataset.gov_approval_needed : ''"
+                                    @edited="(newValue) => { updateValues('gov_approval_needed', newValue) }">
+                                </SimpleCheckbox>
+                            </v-col>
+
+                            <v-col cols=6>
+                                <SimpleCheckbox
+                                    :label="$tc('Academic data provider')"
+                                    :placeholder="$tc('Academic data provider')"
+                                    name="aca_approval_needed"
+                                    :large="true"
+                                    :editing="editing"
+                                    :disabled="!editing"
+                                    :checked="(dataset) ? dataset.aca_approval_needed : ''"
+                                    @edited="(newValue) => { updateValues('aca_approval_needed', newValue) }">
+                                </SimpleCheckbox>
+                            </v-col>
+                        </v-row>
+
+                        <v-row>
+                            <v-col cols=12>
+                                <SimpleCheckbox
+                                    :label="$tc('Metadata listed in B.C. Data Catalogue')"
+                                    :placeholder="$tc('Metadata listed in B.C. Data Catalogue')"
+                                    name="in_bc_catalogue"
+                                    :large="true"
+                                    :editing="editing"
+                                    :disabled="!editing"
+                                    :checked="(dataset) ? dataset.in_bc_catalogue : ''"
+                                    @edited="(newValue) => { updateValues('in_bc_catalogue', newValue) }">
+                                </SimpleCheckbox>
+                            </v-col>
+                        </v-row>
+
                         <v-row wrap v-if="!creating">
                             <v-col cols=3>
                                 <h2>{{$tc('Versions', 2)}}</h2>
@@ -91,11 +168,13 @@
 import {mapActions, mapMutations, mapState} from "vuex";
 import TextInput from './TextInput';
 import BranchForm from './BranchForm';
+import SimpleCheckbox from './SimpleCheckbox';
 
 export default {
     components:{
         TextInput,
         BranchForm,
+        SimpleCheckbox
     },    
     data () {
         return {
@@ -201,6 +280,11 @@ export default {
 
 .pointer{
     cursor: pointer;
+}
+
+.outline{
+    border: 1px solid;
+    border-color: var(--v-text-base);
 }
 
 </style>

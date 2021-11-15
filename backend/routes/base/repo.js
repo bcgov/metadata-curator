@@ -63,6 +63,27 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         repoSchema.create_date = new Date();
         repoSchema.created_by = user.id;
         repoSchema.topic_id = topic._id;
+
+        if (fields.gov_allow_publish){
+            repoSchema.gov_allow_publish = fields.gov_allow_publish;
+        }
+
+        if (fields.aca_allow_publish){
+            repoSchema.aca_allow_publish = fields.aca_allow_publish;
+        }
+
+        if (fields.gov_approval_needed){
+            repoSchema.gov_approval_needed = fields.gov_approval_needed;
+        }
+
+        if (fields.aca_approval_needed){
+            repoSchema.aca_approval_needed = fields.aca_approval_needed;
+        }
+
+        if (fields.in_bc_catalogue){
+            repoSchema.in_bc_catalogue = fields.in_bc_catalogue;
+        }
+    
     
         return await repoSchema.save();
     }
@@ -92,6 +113,26 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         if (fields.description){
             
             record.description = fields.description;
+        }
+
+        if (fields.gov_allow_publish){
+            record.gov_allow_publish = fields.gov_allow_publish;
+        }
+
+        if (fields.aca_allow_publish){
+            record.aca_allow_publish = fields.aca_allow_publish;
+        }
+
+        if (fields.gov_approval_needed){
+            record.gov_approval_needed = fields.gov_approval_needed;
+        }
+
+        if (fields.aca_approval_needed){
+            record.aca_approval_needed = fields.aca_approval_needed;
+        }
+
+        if (fields.in_bc_catalogue){
+            record.in_bc_catalogue = fields.in_bc_catalogue;
         }
     
         return await record.save();

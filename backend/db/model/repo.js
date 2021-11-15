@@ -13,8 +13,37 @@ var repoSchema = new Schema({
     created_by: {type: String, required: true},
     topic_id: {type: Schema.Types.ObjectId},
     description: {type: String, required: false},
-});
 
+    gov_allow_publish: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
+
+    aca_allow_publish: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
+
+    gov_approval_needed: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
+
+    aca_approval_needed: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
+
+    in_bc_catalogue: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
+});
 
 var model = mongoose.model('repo', repoSchema, 'repo');
 

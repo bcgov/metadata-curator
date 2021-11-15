@@ -1,12 +1,5 @@
 <template>
     <v-container fluid :key="'branch-'+reIndex">
-        <v-alert
-            :type="alertType"
-            dismissable
-            v-model="alert">
-                {{alertText}}
-        </v-alert>
-
         <span v-if="(loading || !branch) && !creating">
             <v-row dense>
                 {{$tc('Loading')}}...
@@ -26,6 +19,12 @@
                     <v-tab-item key="version">
                         <v-card outlined>
                             <v-card-text>
+                                <v-alert
+                                    :type="alertType"
+                                    dismissable
+                                    v-model="alert">
+                                        {{alertText}}
+                                </v-alert>
                                 <v-row>
                                     <h1 class="display-1 font-weight-thin ml-3 my-3">{{creating ? $tc("New") + " " + $tc("Version") : $tc("Version") + " " + id}}</h1>
                                 </v-row>
@@ -49,6 +48,7 @@
                                             :placeholder="$tc('Default')"
                                             name="name"
                                             :editing="editing"
+                                            validation-rules="required"
                                             :value="(branch) ? branch.name : ''"
                                             @edited="(newValue) => { updateValues('name', newValue) }"
                                         ></TextInput>
@@ -74,6 +74,7 @@
                                             :label="$tc('Type')"
                                             name="type"
                                             :editing="editing"
+                                            validation-rules="required"
                                             :value="(branch) ? branch.type : ''"
                                             :items="types"
                                             @edited="(newValue) => { updateValues('type', newValue) }"
@@ -196,7 +197,7 @@
                                             :placeholder="$tc('Approved')"
                                             name="approved"
                                             :editing="editing"
-                                            :disabled="!user.isApprover"
+                                            :disabled="!editing || !user.isApprover"
                                             :checked="(branch) ? branch.approved : ''"
                                             @edited="(newValue) => { updateValues('approved', newValue) }"
                                         ></SimpleCheckbox>
@@ -338,13 +339,17 @@ export default {
             if (this.creating){
                 this.saveBranch().then( () => {
                     this.alertType = "success"
-                    this.alertText = "Sucessfully created version";
+                    this.alertText = this.$tc("Sucessfully created ") + this.$tc("version", 1);
                     this.alert = true;
                     this.closeOrBack();
 
                 }).catch( err => {
                     this.alertType = "error"
-                    this.alertText = err.message;
+                    if (err.response && err.response.data && err.response.data.error){
+                        this.alertText = "Error: " + err.response.data.error;
+                    }else{
+                        this.alertText = err.message;
+                    }
                     this.alert = true;
                 });
             }else{
@@ -356,7 +361,11 @@ export default {
 
                 }).catch( err => {
                     this.alertType = "error"
-                    this.alertText = err.message;
+                    if (err.response && err.response.data && err.response.data.error){
+                        this.alertText = "Error: " + err.response.data.error;
+                    }else{
+                        this.alertText = err.message;
+                    }
                     this.alert = true;
                 });
             }

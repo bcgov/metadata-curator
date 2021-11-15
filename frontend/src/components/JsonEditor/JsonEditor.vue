@@ -170,6 +170,18 @@
                             </v-col>
 
                             <v-col cols=12>
+                                <v-text-field
+                                    :ref="'basicField-' + key + '-' + fKey + '-enum'"
+                                    :id="'basicField-' + key + '-' + fKey + '-enum'"
+                                    :value="field.constraints.enum"
+                                    @focus="onFocusBasic"
+                                    :label="$tc('Enum', 1)"
+                                    @input="updateResourceNested(key, fKey, 'constraints', 'enum', $event)"
+                                >
+                                </v-text-field>
+                            </v-col>
+
+                            <v-col cols=12>
                                 <v-select
                                     :value="field.highlight"
                                     :label="$tc('Highlight')"
@@ -272,14 +284,14 @@
                             </v-col>
                         </v-row>
 
-                        <v-row v-if="field && (field.constraints || (field._descriptor && field._descriptor.constraints))">
+                        <!-- <v-row v-if="field && (field.constraints || (field._descriptor && field._descriptor.constraints))">
                             <v-col cols=3>
                                 {{$tc('Constraint', 2)}}:
                             </v-col>
                             <v-col cols=9>
                                 {{field.constraints ? field.constraints : field._descriptor.constraints}}
                             </v-col>
-                        </v-row>
+                        </v-row> -->
 
                         <v-row v-if="field && (field.format || (field._descriptor && field._descriptor.format))">
                             <v-col cols=3>
@@ -362,14 +374,14 @@
                                     </v-col>
                                 </v-row>
 
-                                <v-row v-if="field && (field.constraints || (field._descriptor && field._descriptor.constraints))" class="my-0">
+                                <!-- <v-row v-if="field && (field.constraints || (field._descriptor && field._descriptor.constraints))" class="my-0">
                                     <v-col cols=3>
                                         {{$tc('Constraint', 2)}}:
                                     </v-col>
                                     <v-col cols=9>
                                         {{field.constraints ? field.constraints : field._descriptor.constraints}}
                                     </v-col>
-                                </v-row>
+                                </v-row> -->
 
                                 <v-row 
                                     v-if="field 
@@ -418,6 +430,17 @@
                                         {{field.comments ? field.comments : field._descriptor.comments}}
                                     </v-col>
                                 </v-row>
+
+                                <v-row v-if="field && ((field.constraints && field.constraints.enum) || (field._descriptor && field._descriptor.contsraints && field._descriptor.containts.enum))" class="my-0">
+                                    <v-col cols=3>
+                                        {{$tc('Enum', 1)}}:
+                                    </v-col>
+                                    <v-col cols=9>
+                                        {{(field.constraints && field.constraints.enum) ? field.constraints.enum : field._descriptor.constraints.enum}}
+                                    </v-col>
+                                </v-row>
+
+                                
                             </div>
                         </v-col>
                     </v-row>
@@ -598,6 +621,17 @@ export default{
             this.$emit('edited', this.workingVal);
         },
 
+        updateResourceNested: function(key, fieldKey, nested, path, value){
+            if (this.workingVal.resources[key].schema && this.workingVal.resources[key].schema.fields){
+                this.workingVal.resources[key].schema.fields[fieldKey][nested][path] = value;
+            }else{
+                this.workingVal.resources[key].tableSchema.fields[fieldKey][nested][path] = value;
+            }
+            let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
+            this.workingStr = str;
+            this.$emit('edited', this.workingVal);
+        },
+
         updateShowType: function(newShowType){
             if (JSON.stringify(this.showType) !== JSON.stringify(newShowType)){
                 this.showType = newShowType;
@@ -684,6 +718,16 @@ export default{
 
     mounted(){
         this.workingVal = this.val;
+
+        for (let i=0; i<this.workingVal.resources.length; i++){
+            
+            for (let j=0; j<this.workingVal.resources[i].tableSchema.fields.length; j++){
+                if (typeof(this.workingVal.resources[i].tableSchema.fields[j].constraints) === 'undefined'){
+                    this.workingVal.resources[i].tableSchema.fields[j].constraints = {};
+                }
+            }
+        }
+
         this.stateType = this.stateTypeParent;
         this.workingStr = JSON.stringify(this.val, this.replacerFunc(), 4);
         if (this.focusProp){
@@ -719,7 +763,13 @@ export default{
     }
     
     .row.my-0{
-        height: 26px;
+        /* height: 26px; */
+        line-height: 26px;
+    }
+
+    .row.my-0 .col{
+        padding-top: 0px;
+        padding-bottom: 0px;
     }
 
 </style>>
