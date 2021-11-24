@@ -532,15 +532,21 @@ export default {
                     }
                     this.error = error;
                 },
-                onShouldRetry: (err, retryAttempt, options) => {
+                onShouldRetry: async(err, retryAttempt, options) => {
                     console.log("SHOULD RETRY ", err, retryAttempt, options);
                     var status = err.originalResponse ? err.originalResponse.getStatus() : 0
                     // If the status is a 403, we do not want to retry.
                     if (status === 403) {
+                        if (!self.disabledProp){
+                            self.disabled = false;
+                        }
+                        this.error = "Permission Denied";
                         return false
                     }
                     
                     // For any other status code, tus-js-client should retry.
+                    const delay = ms => new Promise(res => setTimeout(res, ms));
+                    await delay(1000);
                     return true
                 },
                 onProgress: (bytesUploaded, bytesTotal) => {
@@ -611,6 +617,8 @@ export default {
                                 if (!self.disabledProp){
                                     self.disabled = false;
                                 }
+                                const delay = ms => new Promise(res => setTimeout(res, ms));
+                                await delay(1000);
                                 attempt++;
                             }
                         }

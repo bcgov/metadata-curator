@@ -70,7 +70,11 @@ server {
 
   location /files {
     resolver 127.0.0.11 ipv6=off valid=30s;
-
+    
+    proxy_hide_header Access-Control-Allow-Origin;
+    add_header Access-Control-Allow-Origin *;
+    add_header Access-Control-Allow-Headers x-http-method-override;
+    
     proxy_pass http://mc_tusd:1080/files;
 
     # Disable request and response buffering
@@ -87,6 +91,7 @@ server {
 
     proxy_set_header         Upgrade $http_upgrade;
     proxy_set_header         Connection $connection_upgrade;
+    
     client_max_body_size     0;
   }
 

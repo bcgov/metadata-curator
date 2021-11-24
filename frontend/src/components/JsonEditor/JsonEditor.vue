@@ -75,18 +75,6 @@
 
                             <v-col cols=12>
                                 <v-text-field
-                                    :ref="'basicField-' + key + '-' + fKey + '-title'"
-                                    :id="'basicField-' + key + '-' + fKey + '-title'"
-                                    :value="field.title"
-                                    @focus="onFocusBasic"
-                                    :label="$tc('Title')"
-                                    @input="updateResource(key, fKey, 'title', $event)"
-                                >
-                                </v-text-field>
-                            </v-col>
-
-                            <v-col cols=12>
-                                <v-text-field
                                     :ref="'basicField-' + key + '-' + fKey + '-type'"
                                     :id="'basicField-' + key + '-' + fKey + '-type'"
                                     :value="field.type"
@@ -176,7 +164,7 @@
                                     :value="field.constraints.enum"
                                     @focus="onFocusBasic"
                                     :label="$tc('Enum', 1)"
-                                    @input="updateResourceNested(key, fKey, 'constraints', 'enum', $event)"
+                                    @input="updateResourceEnum(key, fKey, 'constraints', 'enum', $event)"
                                 >
                                 </v-text-field>
                             </v-col>
@@ -344,6 +332,15 @@
                                     </v-col>
                                     <v-col cols=9>
                                         {{field.title ? field.title : field._descriptor.title}}
+                                    </v-col>
+                                </v-row>
+
+                                <v-row v-if="field && (field.var_class || (field._descriptor && field._descriptor.var_class))" class="my-0">
+                                    <v-col cols=3>
+                                        {{$tc('Var Class')}}:
+                                    </v-col>
+                                    <v-col cols=9>
+                                        {{field.var_class ? field.var_class : field._descriptor.var_class}}
                                     </v-col>
                                 </v-row>
 
@@ -555,7 +552,7 @@ export default{
 
             if (this.workingVal.resources.length == 0){
                 this.workingVal.resources.push({
-                    tableSchema: {}
+                    schema: {}
                 }); 
             }
 
@@ -621,11 +618,13 @@ export default{
             this.$emit('edited', this.workingVal);
         },
 
-        updateResourceNested: function(key, fieldKey, nested, path, value){
+        updateResourceEnum: function(key, fieldKey, nested, path, value){
+            let arrVal = value.split(", ");
+            arrVal = arrVal.length === 1 ? arrVal[0].split(",") : arrVal;
             if (this.workingVal.resources[key].schema && this.workingVal.resources[key].schema.fields){
-                this.workingVal.resources[key].schema.fields[fieldKey][nested][path] = value;
+                this.workingVal.resources[key].schema.fields[fieldKey][nested][path] = arrVal;
             }else{
-                this.workingVal.resources[key].tableSchema.fields[fieldKey][nested][path] = value;
+                this.workingVal.resources[key].tableSchema.fields[fieldKey][nested][path] = arrVal;
             }
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
@@ -719,11 +718,13 @@ export default{
     mounted(){
         this.workingVal = this.val;
 
-        for (let i=0; i<this.workingVal.resources.length; i++){
-            
-            for (let j=0; j<this.workingVal.resources[i].tableSchema.fields.length; j++){
-                if (typeof(this.workingVal.resources[i].tableSchema.fields[j].constraints) === 'undefined'){
-                    this.workingVal.resources[i].tableSchema.fields[j].constraints = {};
+        if (this.workingVal && this.workingVal.resources){
+            for (let i=0; i<this.workingVal.resources.length; i++){
+                
+                for (let j=0; j<this.workingVal.resources[i].schema.fields.length; j++){
+                    if (typeof(this.workingVal.resources[i].schema.fields[j].constraints) === 'undefined'){
+                        this.workingVal.resources[i].schema.fields[j].constraints = {};
+                    }
                 }
             }
         }

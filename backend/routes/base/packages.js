@@ -131,19 +131,25 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         // Return a lean() object - simple javascript object, rather than the Model
         // so we can transform the document into a valid data package
 
-        let q = {};
+        let q = {
+            inferred: false,
+        };
         if (query.upload_id){
-            let uploadId = mongoose.Types.ObjectId(query.upload_id);
-            //console.log("UPLO", uploadId);
-            const version = await db.RepoBranchSchema.find({data_upload_id: uploadId});
-            //console.log("VER", version);
-            if (version && version.length && version[version.length-1] && version[version.length-1]._id){
-                let verIds = [];
-                for (let i=0; i<version.length; i++){
-                    verIds.push(version[i]._id);
+            try{
+                let uploadId = mongoose.Types.ObjectId(query.upload_id);
+                //console.log("UPLO", uploadId);
+                const version = await db.RepoBranchSchema.find({data_upload_id: uploadId});
+                //console.log("VER", version);
+                if (version && version.length && version[version.length-1] && version[version.length-1]._id){
+                    let verIds = [];
+                    for (let i=0; i<version.length; i++){
+                        verIds.push(version[i]._id);
+                    }
+                    q = {version: {$in: verIds} };
+                }else{
+                    return [];
                 }
-                q = {version: {$in: verIds} };
-            }else{
+            }catch(e){
                 return [];
             }
         }

@@ -11,8 +11,8 @@
                     return workingVal._currentDescriptor.title;
                 }
                 if (workingVal && workingVal._currentDescriptor && workingVal._currentDescriptor.resources){
-                    if (workingVal._currentDescriptor.resources[0] && workingVal._currentDescriptor.resources[0].tableSchema && workingVal._currentDescriptor.resources[0].tableSchema.title){
-                        return workingVal._currentDescriptor.resources[0].tableSchema.title;
+                    if (workingVal._currentDescriptor.resources[0] && workingVal._currentDescriptor.resources[0].schema && workingVal._currentDescriptor.resources[0].schema.title){
+                        return workingVal._currentDescriptor.resources[0].schema.title;
                     }
                 }
                 return "";
@@ -24,8 +24,8 @@
                 }
 
                 if (workingVal && workingVal._currentDescriptor && workingVal._currentDescriptor.resources){
-                    if (workingVal._currentDescriptor.resources[0] && workingVal._currentDescriptor.resources[0].tableSchema && workingVal._currentDescriptor.resources[0].tableSchema.description){
-                        return workingVal._currentDescriptor.resources[0].tableSchema.description;
+                    if (workingVal._currentDescriptor.resources[0] && workingVal._currentDescriptor.resources[0].schema && workingVal._currentDescriptor.resources[0].schema.description){
+                        return workingVal._currentDescriptor.resources[0].schema.description;
                     }
                 }
                 
@@ -38,8 +38,8 @@
                 }
 
                 if (workingVal && workingVal._currentDescriptor && workingVal._currentDescriptor.resources){
-                    if (workingVal._currentDescriptor.resources[0] && workingVal._currentDescriptor.resources[0].tableSchema && workingVal._currentDescriptor.resources[0].tableSchema.fields){
-                        return workingVal._currentDescriptor.resources[0].tableSchema.fields
+                    if (workingVal._currentDescriptor.resources[0] && workingVal._currentDescriptor.resources[0].schema && workingVal._currentDescriptor.resources[0].schema.fields){
+                        return workingVal._currentDescriptor.resources[0].schema.fields
                     }
                 }
 
@@ -48,13 +48,13 @@
 
             getResources: function(workingVal){
                 if (workingVal && workingVal._currentDescriptor && workingVal._currentDescriptor.resources){
-                    if (workingVal._currentDescriptor.resources[0] && workingVal._currentDescriptor.resources[0].tableSchema && workingVal._currentDescriptor.resources[0].tableSchema.resources){
-                        return workingVal._currentDescriptor.resources[0].tableSchema.resources;
+                    if (workingVal._currentDescriptor.resources[0] && workingVal._currentDescriptor.resources[0].schema && workingVal._currentDescriptor.resources[0].schema.resources){
+                        return workingVal._currentDescriptor.resources[0].schema.resources;
                     }
                     return workingVal._currentDescriptor.resources
                 }else if (workingVal && workingVal.resources && workingVal.resources[0]){
-                    if (workingVal.resources[0].tableSchema && workingVal.resources[0].tableSchema.resources){
-                        return workingVal.resources[0].tableSchema.resources
+                    if (workingVal.resources[0].schema && workingVal.resources[0].schema.resources){
+                        return workingVal.resources[0].schema.resources
                     }
                     return workingVal.resources;
                 }

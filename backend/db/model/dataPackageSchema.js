@@ -5,7 +5,7 @@ var resourceSchema = new Schema({
    name: {type: String, required: false},
    profile: {type: String, required: true},
    data: {type: [String], required: true},
-   tableSchema:
+   schema:
        {
            type: Object,
            required: true
@@ -13,6 +13,11 @@ var resourceSchema = new Schema({
 }, { _id : false });
 
 var dataPackageSchema = new Schema({
+    inferred: {
+        type: String, 
+        required: true,
+        default: false,
+    }, 
     profile: {type:String, required: true},
     version: {
         type: Schema.Types.ObjectId,

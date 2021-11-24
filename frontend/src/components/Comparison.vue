@@ -462,26 +462,26 @@ export default {
                 for (let i=0; i<r.length; i++){
 
                     let newF = [];
-                    let hiF = (r[i] && r[i].tableSchema && r[i].tableSchema.fields && r[i].tableSchema.fields.length) ? r[i].tableSchema.fields.length-1 : 0;
-                    if (r[i] && r[i].tableSchema && r[i].tableSchema.fields){
-                        for (let j=0; j<r[i].tableSchema.fields.length; j++){
+                    let hiF = (r[i] && r[i].schema && r[i].schema.fields && r[i].schema.fields.length) ? r[i].schema.fields.length-1 : 0;
+                    if (r[i] && r[i].schema && r[i].schema.fields){
+                        for (let j=0; j<r[i].schema.fields.length; j++){
                             let bd = false;
                             try{
-                                bd = this.basicDiff.resources[i].tableSchema.fields[j];
+                                bd = this.basicDiff.resources[i].schema.fields[j];
                             //eslint-disable-next-line
                             }catch(ex){
                             }
 
                             if (bd && (bd.comparedAgainst || bd.comparedAgainst === 0) ){
-                                newF[parseInt(bd.comparedAgainst)] = JSON.parse(JSON.stringify(r[i].tableSchema.fields[j]));
+                                newF[parseInt(bd.comparedAgainst)] = JSON.parse(JSON.stringify(r[i].schema.fields[j]));
                             }else if ( bd && (bd.removed || bd.added) ){
-                                newF[hiF] = JSON.parse(JSON.stringify(r[i].tableSchema.fields[j]));
+                                newF[hiF] = JSON.parse(JSON.stringify(r[i].schema.fields[j]));
                                 hiF--;
                             }else{
-                                newF[j] = JSON.parse(JSON.stringify(r[i].tableSchema.fields[j]));
+                                newF[j] = JSON.parse(JSON.stringify(r[i].schema.fields[j]));
                             }
                         }
-                        r[i].tableSchema.fields = JSON.parse(JSON.stringify(newF));
+                        r[i].schema.fields = JSON.parse(JSON.stringify(newF));
                     }
                     
 
@@ -530,26 +530,26 @@ export default {
                 let newR = [];
                 for (let i=0; i<r.length; i++){
                     let newF = {};
-                    let hiF = (r[i] && r[i].tableSchema && r[i].tableSchema.fields && r[i].tableSchema.fields.length) ? r[i].tableSchema.fields.length-1 : 0;
-                    if (r[i] && r[i].tableSchema && r[i].tableSchema.fields){
-                        for (let j=0; j<r[i].tableSchema.fields.length; j++){
+                    let hiF = (r[i] && r[i].schema && r[i].schema.fields && r[i].schema.fields.length) ? r[i].schema.fields.length-1 : 0;
+                    if (r[i] && r[i].schema && r[i].schema.fields){
+                        for (let j=0; j<r[i].schema.fields.length; j++){
                             let bd = false;
                             try{
-                                bd = rDiff.resources[i].tableSchema.fields[j];
+                                bd = rDiff.resources[i].schema.fields[j];
                             //eslint-disable-next-line
                             }catch(ex){
                             }
 
                             if (bd && (bd.comparedAgainst || bd.comparedAgainst === 0) ){
-                                newF[parseInt(bd.comparedAgainst)] = r[i].tableSchema.fields[j];
+                                newF[parseInt(bd.comparedAgainst)] = r[i].schema.fields[j];
                             }else if ( bd && (bd.removed || bd.added) ){
-                                newF[hiF] = r[i].tableSchema.fields[j];
+                                newF[hiF] = r[i].schema.fields[j];
                                 hiF--;
                             }else{
-                                newF[j] = r[i].tableSchema.fields[j];
+                                newF[j] = r[i].schema.fields[j];
                             }
                         }
-                        r[i].tableSchema.fields = JSON.parse(JSON.stringify(newF));
+                        r[i].schema.fields = JSON.parse(JSON.stringify(newF));
                     }
                     
                     if ( this.basicDiff && this.basicDiff.resources && this.basicDiff.resources[i] && (this.basicDiff.resources[i].comparedAgainst || this.basicDiff.resources[i].comparedAgainst === 0) ){
@@ -579,32 +579,32 @@ export default {
                 let newR = [];
                 for (let i=0; i<r.length; i++){
                     let newF = [];
-                    let hiF = (r[i] && r[i].tableSchema && r[i].tableSchema.fields && r[i].tableSchema.fields.length) ? r[i].tableSchema.fields.length-1 : 0;
+                    let hiF = (r[i] && r[i].schema && r[i].schema.fields && r[i].schema.fields.length) ? r[i].schema.fields.length-1 : 0;
                     newR[i] = JSON.parse(JSON.stringify(r[i]));
-                    if (r[i] && r[i].tableSchema && r[i].tableSchema.fields){
-                        for (let j=0; j<r[i].tableSchema.fields.length; j++){
+                    if (r[i] && r[i].schema && r[i].schema.fields){
+                        for (let j=0; j<r[i].schema.fields.length; j++){
                             let bd = false;
                             try{
-                                bd = rDiff.resources[i].tableSchema.fields[j];
+                                bd = rDiff.resources[i].schema.fields[j];
                             //eslint-disable-next-line
                             }catch(ex){
                             }
 
                             if (bd && (bd.comparedAgainst || bd.comparedAgainst === 0) ){
-                                newF[j-movedToEnd] = r[i].tableSchema.fields[parseInt(bd.comparedAgainst)];
+                                newF[j-movedToEnd] = r[i].schema.fields[parseInt(bd.comparedAgainst)];
                                 changed = (changed || (parseInt(bd.comparedAgainst) !== j));
                             }else if ( bd && (bd.removed || bd.added) ){
-                                newF[hiF] = r[i].tableSchema.fields[j];
+                                newF[hiF] = r[i].schema.fields[j];
                                 movedToEnd++;
                                 hiF--;
                                 changed = (changed || (movedToEnd>=this.previouslyMovedtoEnd));
                             }else{
-                                newF[j-movedToEnd] = r[i].tableSchema.fields[j];
+                                newF[j-movedToEnd] = r[i].schema.fields[j];
                             }
                             
                         }
                         if (Object.keys(newF).length > 0){
-                            newR[i].tableSchema.fields = JSON.parse(JSON.stringify(newF));
+                            newR[i].schema.fields = JSON.parse(JSON.stringify(newF));
                         }
                     }
                     
