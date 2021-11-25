@@ -195,6 +195,7 @@ export default {
         "Academic Data Provider": "Academic Data Provider",
         "Academic data provider": "Academic Data Provider",
         "Metadata listed in B.C. Data Catalogue": "Metadata listed in B.C. Data Catalogue",
-        "Enum": "Enumeration Constraints | Enumeration Constraint | Enumeration Constraints"
+        "Enum": "Enumeration Constraints | Enumeration Constraint | Enumeration Constraints",
+        "Create Without Import": "Create Without Import",
     }
 }

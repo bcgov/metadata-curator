@@ -4,8 +4,8 @@ const Schema = mongoose.Schema;
 var resourceSchema = new Schema({
    name: {type: String, required: false},
    profile: {type: String, required: true},
-   data: {type: [String], required: true},
-   schema:
+   data: {type: [String], required: false, default: []},
+   tableSchema:
        {
            type: Object,
            required: true

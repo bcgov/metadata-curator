@@ -23,6 +23,9 @@
                         </v-row>
                         <v-row v-else>
                             <v-col cols=12>
+                                <v-btn color="primary" @click="createBasic">{{$tc('Create Without Import')}}</v-btn>
+                            </v-col>
+                            <v-col cols=12>
                                 <FileReader
                                     :show-encrypt-button="false"
                                     :show-upload-button="false"
@@ -130,6 +133,12 @@ export default {
             //await this.getBranch({id: this.id});
             await this.getSchema({id: this.id});
             this.loading = false;
+        },
+
+        createBasic(){
+            this.setTableSchema({schema: {resources: []}});
+            this.saveTableSchema();
+            this.editing = true;
         },
 
         closeOrBack() {

@@ -24,6 +24,8 @@
                     v-model="model"
                     :disabled="disabled"
                     outlined dense
+                    @focus="$emit('focus')"
+                    @blur="$emit('blur')"
                     
                 ></v-textarea>
             

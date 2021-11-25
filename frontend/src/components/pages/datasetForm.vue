@@ -32,13 +32,13 @@
 
         </v-row>
         
-        <v-row>
+        <v-row v-if="!creating">
             <v-col cols=12>
                 <h3>Discussion</h3>
             </v-col>
         </v-row>
 
-        <v-row>
+        <v-row v-if="!creating">
             <v-col cols=12>
                 <Comments :id="id" :type="'repo'"></Comments>
             </v-col>
@@ -78,6 +78,7 @@ export default {
             leftHeader: "",
             rightHeader: "",
             reDrawCompareIndex: 0,
+            creating: false,
 
         }
     },

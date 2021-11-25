@@ -3,10 +3,10 @@
         <span v-if="!editing">
             <span class="mr-2">
                 <h2 v-if="large" class="inline">
-                    {{$tc(displayLabel)}}:
+                    {{displayLabel}}:
                 </h2>
                 <span v-else>
-                    {{$tc(displayLabel)}}:
+                    {{displayLabel}}:
                 </span>
             </span>
 
@@ -103,9 +103,9 @@
         computed: {
             displayLabel: function(){
                 if (this.validationRules.toLowerCase().indexOf("required") >= 0) {
-                    return this.label + ' *';
+                    return this.$tc(this.label) + ' *';
                 }
-                return this.label;
+                return this.$tc(this.label);
             }
         },
         watch: {

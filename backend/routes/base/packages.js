@@ -137,9 +137,7 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         if (query.upload_id){
             try{
                 let uploadId = mongoose.Types.ObjectId(query.upload_id);
-                //console.log("UPLO", uploadId);
                 const version = await db.RepoBranchSchema.find({data_upload_id: uploadId});
-                //console.log("VER", version);
                 if (version && version.length && version[version.length-1] && version[version.length-1]._id){
                     let verIds = [];
                     for (let i=0; i<version.length; i++){
@@ -170,9 +168,11 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
     const transformResources = function (resources) {
 
         resources = resources.map(item => {
-            let newItem = {...item, tableSchema: {...item.schema}};
-            delete newItem.schema;
-            return newItem;
+            if (item.schema){
+                let newItem = {...item, tableSchema: {...item.schema}};
+                return newItem;
+            }
+            return item;
         });
         return resources;
     }
@@ -194,7 +194,8 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         dataPackageSchema.profile = descriptor.profile;
 
         if (descriptor.resources && typeof(descriptor.resources) === "object"){
-            dataPackageSchema.resources = transformResources([...descriptor.resources]);
+            let r = transformResources([...descriptor.resources]);
+            dataPackageSchema.resources = JSON.parse(JSON.stringify(r));
         }
 
         let protected = ['resources'];
@@ -202,7 +203,6 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         for (let i=0; i<keys.length; i++){
             let k = keys[i];
             if (protected.indexOf(k) === -1){
-                // console.log("adding ", k, " to datapackageSchema", descriptor[k]);
                 dataPackageSchema[k] = descriptor[k];
             }
         }

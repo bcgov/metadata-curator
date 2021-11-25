@@ -225,7 +225,7 @@
         </v-row>
 
         <v-row>
-            <v-col cols=12>
+            <v-col cols=12 v-if="!creating">
                 <Comments :id="id" :type="'branch'"></Comments>
             </v-col>
         </v-row>
@@ -304,6 +304,9 @@ export default {
         },
 
         closeOrBack() {
+            this.editing = false;
+            this.creating = false;
+            this.alert = false;
             if (this.dialog){
                 this.$emit('close');
             }else if (this.creating){

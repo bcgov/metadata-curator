@@ -17,7 +17,7 @@
                 transition="dialog-bottom-transition">
                     <v-card>
                         <v-card-text>
-                            <BranchForm :dialog="true" @close="branchDia = false" :branchId="branch"></BranchForm>
+                            <BranchForm :dialog="true" @close="closeBranchDia()" :branchId="branch"></BranchForm>
                         </v-card-text>
                     </v-card>
             </v-dialog>
@@ -203,6 +203,11 @@ export default {
         async loadSections() {
             await this.getDataset({id: this.id});
             await this.getBranches({repoId: this.id});
+        },
+
+        closeBranchDia(){
+            this.branchDia = false;
+            this.loadSections();
         },
 
         routeToHome() {

@@ -161,7 +161,7 @@
                                 <v-text-field
                                     :ref="'basicField-' + key + '-' + fKey + '-enum'"
                                     :id="'basicField-' + key + '-' + fKey + '-enum'"
-                                    :value="field.constraints.enum"
+                                    :value="(field.constraints && field.constraints.enum) ? field.constraints.enum : ''"
                                     @focus="onFocusBasic"
                                     :label="$tc('Enum', 1)"
                                     @input="updateResourceEnum(key, fKey, 'constraints', 'enum', $event)"
@@ -562,7 +562,7 @@ export default{
         },
 
         removeField: function(key, fKey){
-            if (this.workingVal.resources[key].tableSchema.fields){
+            if (this.workingVal.resources[key].tableSchema && this.workingVal.resources[key].tableSchema.fields){
                 Vue.delete(this.workingVal.resources[key].tableSchema.fields, fKey);
             }else{
                 Vue.delete(this.workingVal.resources[key].schema.fields, fKey);
@@ -718,12 +718,13 @@ export default{
     mounted(){
         this.workingVal = this.val;
 
-        if (this.workingVal && this.workingVal.resources){
+        if (this.workingVal && this.workingVal.resources && this.workingVal){
             for (let i=0; i<this.workingVal.resources.length; i++){
-                
-                for (let j=0; j<this.workingVal.resources[i].schema.fields.length; j++){
-                    if (typeof(this.workingVal.resources[i].schema.fields[j].constraints) === 'undefined'){
-                        this.workingVal.resources[i].schema.fields[j].constraints = {};
+                if (this.workingVal.resources[i] && this.workingVal.resources[i].schema ** this.workingVal.resources[i].fields){
+                    for (let j=0; j<this.workingVal.resources[i].schema.fields.length; j++){
+                        if (typeof(this.workingVal.resources[i].schema.fields[j].constraints) === 'undefined'){
+                            this.workingVal.resources[i].schema.fields[j].constraints = {};
+                        }
                     }
                 }
             }
