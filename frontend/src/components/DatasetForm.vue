@@ -41,6 +41,7 @@
                                 :large="true"
                                 :editing="editing"
                                 :value="(dataset) ? dataset.name : ''"
+                                helpPrefix="dataset"
                                 @edited="(newValue) => { updateValues('name', newValue) }"
                             ></TextInput>
                         </v-row>
@@ -49,17 +50,18 @@
                             <TextInput
                                 :label="$tc('Description')"
                                 :placeholder="$tc('Description')"
-                                name="name"
+                                name="description"
                                 :large="true"
                                 :editing="editing"
                                 :value="(dataset) ? dataset.description : ''"
+                                helpPrefix="dataset"
                                 @edited="(newValue) => { updateValues('description', newValue) }"
                             ></TextInput>
                         </v-row>
 
                         <v-row class="outline">
                             <v-col cols=12>
-                                <span>{{$tc('Allow Publish')}}</span>
+                                <span class="checkboxGroupHeader">{{$tc('Allow Publish')}}</span>
                             </v-col>
                             <v-col cols=6>
                                 <SimpleCheckbox
@@ -70,6 +72,7 @@
                                     :editing="editing"
                                     :disabled="!editing"
                                     :checked="(dataset) ? dataset.gov_allow_publish : ''"
+                                    helpPrefix="dataset"
                                     @edited="(newValue) => { updateValues('gov_allow_publish', newValue) }">
                                 </SimpleCheckbox>
                             </v-col>
@@ -83,6 +86,7 @@
                                     :editing="editing"
                                     :disabled="!editing"
                                     :checked="(dataset) ? dataset.aca_allow_publish : ''"
+                                    helpPrefix="dataset"
                                     @edited="(newValue) => { updateValues('aca_allow_publish', newValue) }">
                                 </SimpleCheckbox>
                             </v-col>
@@ -90,7 +94,7 @@
 
                         <v-row class="outline">
                             <v-col cols=12>
-                                <span>{{$tc('Approval Needed')}}</span>
+                                <span class="checkboxGroupHeader">{{$tc('Approval Needed')}}</span>
                             </v-col>
                             <v-col cols=6>
                                 <SimpleCheckbox
@@ -101,6 +105,7 @@
                                     :editing="editing"
                                     :disabled="!editing"
                                     :checked="(dataset) ? dataset.gov_approval_needed : ''"
+                                    helpPrefix="dataset"
                                     @edited="(newValue) => { updateValues('gov_approval_needed', newValue) }">
                                 </SimpleCheckbox>
                             </v-col>
@@ -114,6 +119,7 @@
                                     :editing="editing"
                                     :disabled="!editing"
                                     :checked="(dataset) ? dataset.aca_approval_needed : ''"
+                                    helpPrefix="dataset"
                                     @edited="(newValue) => { updateValues('aca_approval_needed', newValue) }">
                                 </SimpleCheckbox>
                             </v-col>
@@ -129,6 +135,7 @@
                                     :editing="editing"
                                     :disabled="!editing"
                                     :checked="(dataset) ? dataset.in_bc_catalogue : ''"
+                                    helpPrefix="dataset"
                                     @edited="(newValue) => { updateValues('in_bc_catalogue', newValue) }">
                                 </SimpleCheckbox>
                             </v-col>
@@ -284,12 +291,19 @@ export default {
 <style scoped>
 
 .pointer{
+    color: var(--v-primary-base);
+    text-decoration: underline;
     cursor: pointer;
 }
 
 .outline{
     border: 1px solid;
     border-color: var(--v-text-base);
+}
+
+.checkboxGroupHeader{
+    font-size: 22px;
+    font-weight: bold;
 }
 
 </style>

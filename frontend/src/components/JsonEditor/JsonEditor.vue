@@ -27,166 +27,251 @@
                 <span v-if="workingVal && workingVal.resources">
                     <v-col v-for="(resource, key) in workingVal.resources" :key="'basic-resource-'+key+'-'+reindexKey" cols=12 class="field">
                         <v-row>
-                            <v-text-field
-                                :value="resource.path"
-                                :ref="'basicField-' + key + '-path'"
-                                :id="'basicField-' + key + '-path'"
+                            <TextInput
+                                :label="$tc('Name')"
+                                placeholder=""
+                                name="name"
+                                :refName="'basicField-' + key + '-name'"
+                                :idName="'basicField-' + key + '-name'"
+                                :large="true"
+                                :editing="true"
+                                :value="resource.name"
+                                helpPrefix="schema"
+                                :focusField="focusProp"
                                 @focus="onFocusBasic"
+                                @edited="(newValue) => { updateResourceName(key, newValue) }"
+                            ></TextInput>
+                           
+                        </v-row>
+                        <v-row>
+                            <TextInput
                                 :label="$tc('Path')"
-                                @input="updateResourcePath(key, $event)"
-                            ></v-text-field>
+                                placeholder=""
+                                name="path"
+                                :refName="'basicField-' + key + '-path'"
+                                :idName="'basicField-' + key + '-path'"
+                                :large="true"
+                                :editing="true"
+                                :value="resource.path"
+                                helpPrefix="schema"
+                                :focusField="focusProp"
+                                @focus="onFocusBasic"
+                                @edited="(newValue) => { updateResourcePath(key, newValue) }"
+                            ></TextInput>
+                           
                         </v-row>
-                        <v-row v-for="(field, fKey) in ((resource.tableSchema && resource.tableSchema.fields) ? resource.tableSchema.fields : resource.schema.fields)" :key="'field-'+key+'-'+fKey+'-'+reindexKey" class="field">
-                            <v-col cols=12>
-                                <v-text-field
-                                    :ref="'basicField-' + key + '-' + fKey + '-name'"
-                                    :id="'basicField-' + key + '-' + fKey + '-name'"
-                                    :value="field.name"
-                                    @focus="onFocusBasic"
-                                    :label="$tc('Name')"
-                                    @input="updateResource(key, fKey, 'name', $event)"
-                                >
-                                </v-text-field>
-                            </v-col>
+                        <span v-if="resource.schema && resource.schema.fields">
+                            <v-row v-for="(field, fKey) in resource.schema.fields" :key="'field-'+key+'-'+fKey+'-'+reindexKey" class="field">
+                                <v-col cols=12>
+                                    <TextInput
+                                        :label="$tc('Name')"
+                                        placeholder=""
+                                        name="name"
+                                        :refName="'basicField-' + key + '-' + fKey + '-name'"
+                                        :idName="'basicField-' + key + '-' + fKey + '-name'"
+                                        :large="true"
+                                        :editing="true"
+                                        :value="field.name"
+                                        helpPrefix="schema"
+                                        :focusField="focusProp"
+                                        @edited="(newValue) => { updateResource(key, fKey, 'name', newValue) }"
+                                        
+                                        @focus="onFocusBasic"
+                                        
+                                    ></TextInput>
+                                </v-col>
 
-                            <v-col cols=12>
-                                <v-text-field
-                                    :ref="'basicField-' + key + '-' + fKey + '-title'"
-                                    :id="'basicField-' + key + '-' + fKey + '-title'"
-                                    :value="field.shortName"
-                                    @focus="onFocusBasic"
-                                    :label="$tc('Title')"
-                                    @input="updateResource(key, fKey, 'title', $event)"
-                                >
-                                </v-text-field>
-                            </v-col>
+                                <v-col cols=12>
+                                    <TextInput
+                                        :label="$tc('Title')"
+                                        placeholder=""
+                                        name="title"
+                                        :refName="'basicField-' + key + '-' + fKey + '-title'"
+                                        :idName="'basicField-' + key + '-' + fKey + '-title'"
+                                        :large="true"
+                                        :editing="true"
+                                        :value="field.title"
+                                        helpPrefix="schema"
+                                        :focusField="focusProp"
+                                        @focus="onFocusBasic"
+                                        @edited="(newValue) => { updateResource(key, fKey, 'title', newValue) }"
+                                    ></TextInput>
+                                </v-col>
 
-                            <v-col cols=12>
-                                <v-text-field
-                                    :ref="'basicField-' + key + '-' + fKey + '-shortName'"
-                                    :id="'basicField-' + key + '-' + fKey + '-shortName'"
-                                    :value="field.shortName"
-                                    @focus="onFocusBasic"
-                                    :label="$tc('Short Name')"
-                                    @input="updateResource(key, fKey, 'shortName', $event)"
-                                >
-                                </v-text-field>
-                            </v-col>
+                                <v-col cols=12>
+                                    <TextInput
+                                        :label="$tc('Short Name')"
+                                        placeholder=""
+                                        name="shortName"
+                                        :refName="'basicField-' + key + '-' + fKey + '-shortName'"
+                                        :idName="'basicField-' + key + '-' + fKey + '-shortName'"
+                                        :large="true"
+                                        :editing="true"
+                                        :value="field.shortName"
+                                        helpPrefix="schema"
+                                        :focusField="focusProp"
+                                        @focus="onFocusBasic"
+                                        @edited="(newValue) => { updateResource(key, fKey, 'shortName', newValue) }"
+                                    ></TextInput>
+                                </v-col>
 
-                            <v-col cols=12>
-                                <v-text-field
-                                    :ref="'basicField-' + key + '-' + fKey + '-type'"
-                                    :id="'basicField-' + key + '-' + fKey + '-type'"
-                                    :value="field.type"
-                                    @focus="onFocusBasic"
-                                    :label="$tc('Type')"
-                                    @input="updateResource(key, fKey, 'type', $event)"
-                                >
-                                </v-text-field>
-                            </v-col>
+                                <v-col cols=12>
+                                    <TextInput
+                                        :label="$tc('Type')"
+                                        placeholder=""
+                                        name="type"
+                                        :refName="'basicField-' + key + '-' + fKey + '-type'"
+                                        :idName="'basicField-' + key + '-' + fKey + '-type'"
+                                        :large="true"
+                                        :editing="true"
+                                        :value="field.type"
+                                        helpPrefix="schema"
+                                        :focusField="focusProp"
+                                        @focus="onFocusBasic"
+                                        @edited="(newValue) => { updateResource(key, fKey, 'type', newValue) }"
+                                    ></TextInput>
+                                </v-col>
 
-                            <v-col cols=12>
-                                <v-text-field
-                                    :ref="'basicField-' + key + '-' + fKey + '-description'"
-                                    :id="'basicField-' + key + '-' + fKey + '-description'"
-                                    :value="field.description"
-                                    @focus="onFocusBasic"
-                                    :label="$tc('Description')"
-                                    @input="updateResource(key, fKey, 'description', $event)"
-                                >
-                                </v-text-field>
-                            </v-col>
+                                <v-col cols=12>
+                                    <TextInput
+                                        :label="$tc('Description')"
+                                        placeholder=""
+                                        name="description"
+                                        :refName="'basicField-' + key + '-' + fKey + '-description'"
+                                        :idName="'basicField-' + key + '-' + fKey + '-description'"
+                                        :large="true"
+                                        :editing="true"
+                                        :value="field.description"
+                                        helpPrefix="schema"
+                                        :focusField="focusProp"
+                                        @focus="onFocusBasic"
+                                        @edited="(newValue) => { updateResource(key, fKey, 'description', newValue) }"
+                                    ></TextInput>
+                                </v-col>
 
-                            <v-col cols=12>
-                                <v-text-field
-                                    :ref="'basicField-' + key + '-' + fKey + '-format'"
-                                    :id="'basicField-' + key + '-' + fKey + '-format'"
-                                    :value="field.format"
-                                    @focus="onFocusBasic"
-                                    :label="$tc('Format')"
-                                    @input="updateResource(key, fKey, 'format', $event)"
-                                >
-                                </v-text-field>
-                            </v-col>
+                                <v-col cols=12>
+                                    <TextInput
+                                        :label="$tc('Format')"
+                                        placeholder=""
+                                        name="format"
+                                        :refName="'basicField-' + key + '-' + fKey + '-format'"
+                                        :idName="'basicField-' + key + '-' + fKey + '-format'"
+                                        :large="true"
+                                        :editing="true"
+                                        :value="field.format"
+                                        helpPrefix="schema"
+                                        :focusField="focusProp"
+                                        @focus="onFocusBasic"
+                                        @edited="(newValue) => { updateResource(key, fKey, 'format', newValue) }"
+                                    ></TextInput>
+                                </v-col>
 
-                            <v-col cols=12>
-                                <v-text-field
-                                    :ref="'basicField-' + key + '-' + fKey + '-var_class'"
-                                    :id="'basicField-' + key + '-' + fKey + '-var_class'"
-                                    :value="field.var_class"
-                                    @focus="onFocusBasic"
-                                    :label="$tc('Var Class')"
-                                    @input="updateResource(key, fKey, 'var_class', $event)"
-                                >
-                                </v-text-field>
-                            </v-col>
+                                <v-col cols=12>
+                                    <TextInput
+                                        :label="$tc('Var Class')"
+                                        placeholder=""
+                                        name="var_class"
+                                        :refName="'basicField-' + key + '-' + fKey + '-var_class'"
+                                        :idName="'basicField-' + key + '-' + fKey + '-var_class'"
+                                        :large="true"
+                                        :editing="true"
+                                        :value="field.var_class"
+                                        helpPrefix="schema"
+                                        :focusField="focusProp"
+                                        @focus="onFocusBasic"
+                                        @edited="(newValue) => { updateResource(key, fKey, 'var_class', newValue) }"
+                                    ></TextInput>
+                                </v-col>
 
-                            <v-col cols=12>
-                                <v-text-field
-                                    :ref="'basicField-' + key + '-' + fKey + '-rdfType'"
-                                    :id="'basicField-' + key + '-' + fKey + '-rdfType'"
-                                    :value="field.rdfType"
-                                    @focus="onFocusBasic"
-                                    :label="$tc('RDF Type')"
-                                    @input="updateResource(key, fKey, 'rdfType', $event)"
-                                >
-                                </v-text-field>
-                            </v-col>
+                                <v-col cols=12>
+                                    <TextInput
+                                        :label="$tc('RDF Type')"
+                                        placeholder=""
+                                        name="rdfType"
+                                        :refName="'basicField-' + key + '-' + fKey + '-rdfType'"
+                                        :idName="'basicField-' + key + '-' + fKey + '-rdfType'"
+                                        :large="true"
+                                        :editing="true"
+                                        :value="field.rdfType"
+                                        helpPrefix="schema"
+                                        :focusField="focusProp"
+                                        @focus="onFocusBasic"
+                                        @edited="(newValue) => { updateResource(key, fKey, 'rdfType', newValue) }"
+                                    ></TextInput>
+                                </v-col>
 
-                            <v-col cols=12>
-                                <v-text-field
-                                    :ref="'basicField-' + key + '-' + fKey + '-tags'"
-                                    :id="'basicField-' + key + '-' + fKey + '-tags'"
-                                    :value="field.tags"
-                                    @focus="onFocusBasic"
-                                    :label="$tc('Tags', 2)"
-                                    @input="updateResource(key, fKey, 'tags', $event)"
-                                >
-                                </v-text-field>
-                            </v-col>
+                                <v-col cols=12>
+                                    <TextInput
+                                        :label="$tc('Tags', 2)"
+                                        placeholder=""
+                                        name="tags"
+                                        :refName="'basicField-' + key + '-' + fKey + '-tags'"
+                                        :idName="'basicField-' + key + '-' + fKey + '-tags'"
+                                        :large="true"
+                                        :editing="true"
+                                        :value="field.tags"
+                                        helpPrefix="schema"
+                                        :focusField="focusProp"
+                                        @focus="onFocusBasic"
+                                        @edited="(newValue) => { updateResource(key, fKey, 'tags', newValue) }"
+                                    ></TextInput>
+                                </v-col>
 
-                            <v-col cols=12>
-                                <v-text-field
-                                    :ref="'basicField-' + key + '-' + fKey + '-comments'"
-                                    :id="'basicField-' + key + '-' + fKey + '-comments'"
-                                    :value="field.comments"
-                                    @focus="onFocusBasic"
-                                    :label="$tc('Comments', 2)"
-                                    @input="updateResource(key, fKey, 'comments', $event)"
-                                >
-                                </v-text-field>
-                            </v-col>
+                                <v-col cols=12>
+                                    <TextInput
+                                        :label="$tc('Comments', 2)"
+                                        placeholder=""
+                                        name="comments"
+                                        :refName="'basicField-' + key + '-' + fKey + '-comments'"
+                                        :idName="'basicField-' + key + '-' + fKey + '-comments'"
+                                        :large="true"
+                                        :editing="true"
+                                        :value="field.comments"
+                                        helpPrefix="schema"
+                                        :focusField="focusProp"
+                                        @focus="onFocusBasic"
+                                        @edited="(newValue) => { updateResource(key, fKey, 'comments', newValue) }"
+                                    ></TextInput>
+                                </v-col>
 
-                            <v-col cols=12>
-                                <v-text-field
-                                    :ref="'basicField-' + key + '-' + fKey + '-enum'"
-                                    :id="'basicField-' + key + '-' + fKey + '-enum'"
-                                    :value="(field.constraints && field.constraints.enum) ? field.constraints.enum : ''"
-                                    @focus="onFocusBasic"
-                                    :label="$tc('Enum', 1)"
-                                    @input="updateResourceEnum(key, fKey, 'constraints', 'enum', $event)"
-                                >
-                                </v-text-field>
-                            </v-col>
+                                <v-col cols=12>
+                                    <TextInput
+                                        :label="$tc('Enum', 1)"
+                                        placeholder=""
+                                        name="enum"
+                                        :refName="'basicField-' + key + '-' + fKey + '-enum'"
+                                        :idName="'basicField-' + key + '-' + fKey + '-enum'"
+                                        :large="true"
+                                        :editing="true"
+                                        :value="(field.constraints && field.constraints.enum) ? field.constraints.enum : ''"
+                                        helpPrefix="schema"
+                                        :focusField="focusProp"
+                                        @focus="onFocusBasic"
+                                        @edited="(newValue) => { updateResourceEnum(key, fKey, 'constraints', 'enum', newValue) }"
+                                    ></TextInput>
+                                </v-col>
 
-                            <v-col cols=12>
-                                <v-select
-                                    :value="field.highlight"
-                                    :label="$tc('Highlight')"
-                                    :items="[ {text: 'Yes', value: true}, {text: 'No', value: false}]"
-                                    @input="updateResource(key, fKey, 'highlight', $event)"
-                                >
-                                </v-select>
-                            </v-col>
+                                <v-col cols=12>
+                                    <Select
+                                        :label="$tc('Highlight')"
+                                        name="highlight"
+                                        :editing="true"
+                                        :value="field.highlight"
+                                        :items="[ {text: 'Yes', value: true}, {text: 'No', value: false}]"
+                                        helpPrefix="schema"
+                                        @edited="(newValue) => { updateResource(key, fKey, 'highlight', newValue) }"
+                                    ></Select>
+                                </v-col>
 
-                            <v-col cols=11>
-                            </v-col>
+                                <v-col cols=11>
+                                </v-col>
 
-                            <v-col cols=1>
-                                <v-btn class="error" @click="removeField(key, fKey)"><v-icon>mdi-minus</v-icon></v-btn>
-                            </v-col>
+                                <v-col cols=1>
+                                    <v-btn class="error" @click="removeField(key, fKey)"><v-icon>mdi-minus</v-icon></v-btn>
+                                </v-col>
 
-                        </v-row>
+                            </v-row>
+                        </span>
                         <v-row>
                             <v-col cols=10>
                             </v-col>
@@ -306,8 +391,8 @@
                         <v-col cols=12>
                             <h1>{{$tc('Resource')}} {{resource.name}}</h1>
                         </v-col>
-                        <v-col cols=12 v-if="(resource.schema && resource.schema.fields) || (resource.tableSchema && resource.tableSchema.fields)">
-                            <div v-for="(field, key) in ((resource.tableSchema && resource.tableSchema.fields) ? resource.tableSchema.fields : resource.schema.fields)" :key="'field-'+key+'-'+field.name" :class="`field${field.highlight ? ' fieldHighlight' : ''}`">
+                        <v-col cols=12 v-if="(resource.schema && resource.schema.fields)">
+                            <div v-for="(field, key) in resource.schema.fields" :key="'field-'+key+'-'+field.name" :class="`field${field.highlight ? ' fieldHighlight' : ''}`">
                                 <v-row v-if="field && field.name" class="my-0">
                                     <!-- <v-col cols=3>
                                         Name:
@@ -454,10 +539,18 @@ import RepeatingObject from './RepeatingObject';
 
 import JsonProcessor from '../../mixins/JsonProcessor';
 
+import TextInput from '../TextInput';
+// import SimpleCheckbox from '../SimpleCheckbox';
+import Select from '../Select';
+
+
 export default{
     mixins:[JsonProcessor],
     components: {
         RepeatingObject,
+        TextInput,
+        Select,
+        // SimpleCheckbox
     },
 
     props: {
@@ -562,11 +655,9 @@ export default{
         },
 
         removeField: function(key, fKey){
-            if (this.workingVal.resources[key].tableSchema && this.workingVal.resources[key].tableSchema.fields){
-                Vue.delete(this.workingVal.resources[key].tableSchema.fields, fKey);
-            }else{
-                Vue.delete(this.workingVal.resources[key].schema.fields, fKey);
-            }
+            
+            Vue.delete(this.workingVal.resources[key].schema.fields, fKey);
+            
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.reindexKey++;
@@ -575,44 +666,52 @@ export default{
             
         },
 
-
-
         addField: function(key){
-            if (this.workingVal.resources[key].tableSchema && this.workingVal.resources[key].tableSchema.fields){
-                this.workingVal.resources[key].tableSchema.fields.push({
-                    name: "",
-                    type: "",
-                    rdfType: "",
-                    var_class: "",
-                    format: "",
-                });
-            }else{
-                this.workingVal.resources[key].schema.fields.push({
-                    name: "",
-                    type: "",
-                    rdfType: "",
-                    var_class: "",
-                    format: "",
-                });
+
+            if (!this.workingVal.resources[key].schema){
+                this.workingVal.resources[key].schema = {};
             }
+            
+            if (!this.workingVal.resources[key].schema.fields){
+                this.workingVal.resources[key].schema.fields = [];
+            }
+            this.workingVal.resources[key].schema.fields.push({
+                name: "",
+                type: "",
+                rdfType: "",
+                    var_class: "",
+                    format: "",
+            });
+            
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.$emit('edited', this.workingVal);
         },
 
         updateResourcePath: function(key, newValue){
-            this.workingVal.resources[key] = newValue;
+            if (!this.workingVal.resources[key]){
+                this.workingVal.resources[key] = {}
+            }
+            this.workingVal.resources[key].path = newValue;
+            let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
+            this.workingStr = str;
+            this.$emit('edited', this.workingVal);
+        },
+
+        updateResourceName: function(key, newValue){
+            if (!this.workingVal.resources[key]){
+                this.workingVal.resources[key] = {}
+            }
+            this.workingVal.resources[key].name = newValue;
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.$emit('edited', this.workingVal);
         },
 
         updateResource: function(key, fieldKey, path, value){
-            if (this.workingVal.resources[key].schema && this.workingVal.resources[key].schema.fields){
-                this.workingVal.resources[key].schema.fields[fieldKey][path] = value;
-            }else{
-                this.workingVal.resources[key].tableSchema.fields[fieldKey][path] = value;
-            }
+            
+            this.workingVal.resources[key].schema.fields[fieldKey][path] = value;
+            
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.$emit('edited', this.workingVal);
@@ -621,11 +720,13 @@ export default{
         updateResourceEnum: function(key, fieldKey, nested, path, value){
             let arrVal = value.split(", ");
             arrVal = arrVal.length === 1 ? arrVal[0].split(",") : arrVal;
-            if (this.workingVal.resources[key].schema && this.workingVal.resources[key].schema.fields){
-                this.workingVal.resources[key].schema.fields[fieldKey][nested][path] = arrVal;
-            }else{
-                this.workingVal.resources[key].tableSchema.fields[fieldKey][nested][path] = arrVal;
+
+            if (!this.workingVal.resources[key].schema.fields[fieldKey][nested]){
+                this.workingVal.resources[key].schema.fields[fieldKey][nested] = {};
             }
+            
+            this.workingVal.resources[key].schema.fields[fieldKey][nested][path] = arrVal;
+            
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.$emit('edited', this.workingVal);
@@ -732,18 +833,20 @@ export default{
 
         this.stateType = this.stateTypeParent;
         this.workingStr = JSON.stringify(this.val, this.replacerFunc(), 4);
-        if (this.focusProp){
-            this.focus = this.focusProp
-            if (this.$refs[this.focus] && this.$refs[this.focus][0]){
-                this.$refs[this.focus][0].focus();
+        if (this.stateType !== 0){
+            if (this.focusProp){
+                this.focus = this.focusProp
+                if (this.$refs[this.focus] && this.$refs[this.focus][0]){
+                    this.$refs[this.focus][0].focus();
+                }
             }
-        }
 
-        this.$nextTick(function () {
-            if (this.$refs[this.focus] && this.$refs[this.focus][0]){
-                this.$refs[this.focus][0].focus();
-            }
-        });
+            this.$nextTick(function () {
+                if (this.$refs[this.focus] && this.$refs[this.focus][0]){
+                    this.$refs[this.focus][0].focus();
+                }
+            });
+        }
     }
 }
 </script>

@@ -1,11 +1,23 @@
 <template>
+    <span>
         <v-checkbox
-            :label="$tc(label)"
             v-model="checkbox"
             :color="clr"
+            class="inline"
             :disabled="disabled"
             @change="$emit('edited', checkbox)"
-        ></v-checkbox>
+        >
+        </v-checkbox>
+        <span class="higher">
+            {{$tc(label)}}
+            <v-tooltip right v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
+                <template v-slot:activator="{ on }">
+                    <v-icon color="label_colour" v-on="on">mdi-help-circle-outline</v-icon>
+                </template>
+                <span>&nbsp;{{$t('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))}}</span>
+            </v-tooltip>
+        </span>
+    </span>
 </template>
 
 <script>
@@ -31,6 +43,16 @@
                 type: Boolean,
                 required: false,
                 default: () => false,
+            },
+            name: {
+                type: String,
+                required: false,
+                default: '',
+            },
+            helpPrefix: {
+                type: String,
+                required: false,
+                default: '',
             },
         },
         data() {
@@ -67,5 +89,16 @@
 </script>
 
 <style scoped>
+
+    .inline.v-input{
+        display: inline-block;
+    }
+
+    .higher{
+        line-height: 28px;
+        vertical-align: text-bottom;
+        font-size: 20px;
+        font-weight: bold;
+    }
 
 </style>

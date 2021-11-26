@@ -197,5 +197,30 @@ export default {
         "Metadata listed in B.C. Data Catalogue": "Metadata listed in B.C. Data Catalogue",
         "Enum": "Enumeration Constraints | Enumeration Constraint | Enumeration Constraints",
         "Create Without Import": "Create Without Import",
+        "Sucessfully created ": "Sucessfully created ",
+
+
+
+        "help.dataset.name": "The name of the dataset",
+        "help.dataset.description": "A description of the dataset",
+        "help.dataset.gov_allow_publish": "Is this allowed to be published to government DAR",
+        "help.dataset.aca_allow_publish": "Is this allowed to be published to academic DAR",
+        "help.dataset.aca_approval_needed": "Does this require academic approval",
+        "help.dataset.gov_approval_needed": "Does this require government approval",
+        "help.dataset.in_bc_catalogue": "Is this listed in the bc data catalogue (https://catalogue.data.gov.bc.ca/)",
+
+        "help.edition.name": "The name of the edition",
+        "help.edition.short_title": "The short name of the edition",
+        "help.edition.type": "Is this a Standard, Restricted, or Reserve edition",
+        "help.edition.description": "A description about this edition",
+        "help.edition.upload_id": "Which upload id(s) is this edition associated with",
+        "help.edition.variable_classification": "Which variable classification index is being used",
+        "help.edition.notes": "Any notes about this edition",
+        "help.edition.faq": "Frequently asked questions about this edition, This is markdown and will be rendered on the published version of this page in a tab",
+        "help.edition.published": "Make information about this edition publicly viewable",
+        "help.edition.approved": "Approve this edition and lock it from further changes",
+
+        "help.schema.enum": "Define the possible values for this field",
+        
     }
 }

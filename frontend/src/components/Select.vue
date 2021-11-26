@@ -1,14 +1,21 @@
 <template>
     <div>
          <span v-if="!editing">
-            <span class="mr-2">{{displayLabel}}</span>
+            <span class="mr-2">
+                {{displayLabel}}
+                <v-tooltip right v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
+                    <template v-slot:activator="{ on }">
+                        <v-icon color="label_colour" v-on="on">mdi-help-circle-outline</v-icon>
+                    </template>
+                    <span>&nbsp;{{$t('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))}}</span>
+                </v-tooltip>
+            </span>
             <span>{{displayVal}}</span>
         </span>
 
         <span v-else>
             <ValidationProvider :rules="validationRules" v-slot="{ errors }" :name="label ? $tc(label) : $tc(name)">
                 <v-select
-                    :label="$tc(displayLabel)"
                     :name="name"
                     v-model="val"
                     :items="items"
@@ -17,7 +24,17 @@
                     :error-messages="errors.length > 0 ? [errors[0]] : []"
                     @change="$emit('edited', val)"
                     outlined
-                ></v-select>
+                >
+                    <template v-slot:label>
+                        {{$tc(displayLabel)}}
+                        <v-tooltip right v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
+                            <template v-slot:activator="{ on }">
+                                <v-icon color="label_colour" v-on="on">mdi-help-circle-outline</v-icon>
+                            </template>
+                            <span>&nbsp;{{$t('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))}}</span>
+                        </v-tooltip>
+                    </template>
+                </v-select>
             </ValidationProvider>
         </span>
     </div>
@@ -66,13 +83,18 @@
                 default: () => 'value'
             },
             value: {
-                type: String,
+                type: [String, Boolean],
             },
             editing: {
                 type: Boolean,
                 required: false,
                 default: () => false
-            }
+            },
+            helpPrefix: {
+                type: String,
+                required: false,
+                default: ''
+            },
 
         },
         data() {

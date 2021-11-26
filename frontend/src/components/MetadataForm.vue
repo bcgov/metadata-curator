@@ -55,7 +55,9 @@
                             </v-col>
                         </v-row>
                     </v-card-text>
-                        <v-card-actions v-if="editing">
+                        <v-card-actions v-if="loading || !schema">
+                        </v-card-actions>
+                        <v-card-actions v-else-if="editing">
                             <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
                             <v-btn @click="save" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
                         </v-card-actions>
@@ -186,8 +188,8 @@ export default {
                 });
                 
             }else{
-                this.updateDataPackageSchema();
-                this.updateBranch().then( () => {
+                this.updateDataPackageSchema().then( () => {
+                // this.updateBranch().then( () => {
                     this.alertType = "success"
                     this.alertText = this.$tc('Sucessfully updated') + " " + this.$tc('version');
                     this.alert = true;

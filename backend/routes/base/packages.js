@@ -80,13 +80,16 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
             }
         }
 
-        data.resources = /*transformResources(*/descriptor.resources/*);*/
+        data.resources = transformResources(descriptor.resources);
 
         let newRecord = await db.DataPackageSchema.findOneAndUpdate(filter, data, {new: true}).catch (e => {
             log.error(e);
             throw new Error(e.message)
         });
 
+        const util = require('util')
+
+        
         newRecord = newRecord.toObject();
 
         // do a transformation to make it compatible with the frictionlessdata schema
@@ -113,6 +116,7 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         // Return a lean() object - simple javascript object, rather than the Model
         // so we can transform the document into a valid data package
 
+
         const branch = await db.RepoBranchSchema.findOne({_id: id});
 
         if ( (!branch || !branch.published) && (!user) ){
@@ -123,6 +127,10 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
             log.error(e);
             throw new Error(e.message)
         });
+        try{
+            current.resources = transformResourcesToFrictionless(current.resources);
+        }catch(e){
+        }
 
         return current;
     }
@@ -170,6 +178,7 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         resources = resources.map(item => {
             if (item.schema){
                 let newItem = {...item, tableSchema: {...item.schema}};
+                delete newItem.schema
                 return newItem;
             }
             return item;
