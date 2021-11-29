@@ -199,6 +199,8 @@ export default {
         "Create Without Import": "Create Without Import",
         "Sucessfully created ": "Sucessfully created ",
 
+        "Resource Name": "Resource Name",
+
 
 
         "help.dataset.name": "The name of the dataset",

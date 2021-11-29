@@ -22,240 +22,250 @@
                 ></v-slider>
             </v-col>
         </v-row>
-        <v-container v-if="editing">
-            <v-row v-if="stateType == 0" :key="'basicState-editing-'+reindexKey">
+        <v-container>
+            <v-row v-if="(stateType == 0 && editing) || (stateType == 1 && !editing)" :key="'basicState-editing-'+reindexKey">
                 <span v-if="workingVal && workingVal.resources">
-                    <v-col v-for="(resource, key) in workingVal.resources" :key="'basic-resource-'+key+'-'+reindexKey" cols=12 class="field">
-                        <v-row>
-                            <TextInput
-                                :label="$tc('Name')"
-                                placeholder=""
-                                name="name"
-                                :refName="'basicField-' + key + '-name'"
-                                :idName="'basicField-' + key + '-name'"
-                                :large="true"
-                                :editing="true"
-                                :value="resource.name"
-                                helpPrefix="schema"
-                                :focusField="focusProp"
-                                @focus="onFocusBasic"
-                                @edited="(newValue) => { updateResourceName(key, newValue) }"
-                            ></TextInput>
+                    <v-col cols=12 v-if="title && !editing">
+                        <h1>{{title}}</h1>
+                    </v-col>
+                    <v-col cols=12 v-if="description  && !editing">
+                        <h3>{{description}}</h3>
+                    </v-col>
+                    <v-col v-for="(resource, key) in workingVal.resources" :key="'basic-resource-'+key+'-'+reindexKey" cols=12 :class="editing ? 'field' : ''">
+                        <v-row v-if="(resource && resource.name) || editing" class="pb-2">
+                            <v-col cols=12>
+                                <TextInput
+                                    :label="$tc('Resource', 1) + ' ' + $tc('Name')"
+                                    placeholder=""
+                                    name="name"
+                                    :refName="'basicField-' + key + '-name'"
+                                    :idName="'basicField-' + key + '-name'"
+                                    :large="true"
+                                    :editing="editing"
+                                    :value="resource.name"
+                                    helpPrefix="schema"
+                                    :focusField="focusProp"
+                                    
+                                    @blur="(event) => { updateResourceName(key, event) }"
+                                ></TextInput>
+                            </v-col>
                            
                         </v-row>
-                        <v-row>
-                            <TextInput
-                                :label="$tc('Path')"
-                                placeholder=""
-                                name="path"
-                                :refName="'basicField-' + key + '-path'"
-                                :idName="'basicField-' + key + '-path'"
-                                :large="true"
-                                :editing="true"
-                                :value="resource.path"
-                                helpPrefix="schema"
-                                :focusField="focusProp"
-                                @focus="onFocusBasic"
-                                @edited="(newValue) => { updateResourcePath(key, newValue) }"
-                            ></TextInput>
+                        <v-row v-if="(resource && resource.path) || editing" class="pb-2">
+                            <v-col cols=12>
+                                <TextInput
+                                    :label="$tc('Path')"
+                                    placeholder=""
+                                    name="path"
+                                    :refName="'basicField-' + key + '-path'"
+                                    :idName="'basicField-' + key + '-path'"
+                                    :large="true"
+                                    :editing="editing"
+                                    :value="resource.path"
+                                    helpPrefix="schema"
+                                    :focusField="focusProp"
+                                    @focus="onFocusBasic"
+                                    @blur="(event) => { updateResourcePath(key, event) }"
+                                ></TextInput>
+                            </v-col>
                            
                         </v-row>
                         <span v-if="resource.schema && resource.schema.fields">
                             <v-row v-for="(field, fKey) in resource.schema.fields" :key="'field-'+key+'-'+fKey+'-'+reindexKey" class="field">
-                                <v-col cols=12>
+                                <v-col cols=12 v-if="(field && field.name) || editing" class="py-1">
                                     <TextInput
                                         :label="$tc('Name')"
                                         placeholder=""
                                         name="name"
                                         :refName="'basicField-' + key + '-' + fKey + '-name'"
                                         :idName="'basicField-' + key + '-' + fKey + '-name'"
-                                        :large="true"
-                                        :editing="true"
+                                        
+                                        :editing="editing"
                                         :value="field.name"
                                         helpPrefix="schema"
                                         :focusField="focusProp"
-                                        @edited="(newValue) => { updateResource(key, fKey, 'name', newValue) }"
+                                        @blur="(event) => { updateResource(key, fKey, 'name', event) }"
                                         
                                         @focus="onFocusBasic"
                                         
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12>
+                                <v-col cols=12 v-if="(field && field.title) || editing" class="pt-0 pb-1">
                                     <TextInput
                                         :label="$tc('Title')"
                                         placeholder=""
                                         name="title"
                                         :refName="'basicField-' + key + '-' + fKey + '-title'"
                                         :idName="'basicField-' + key + '-' + fKey + '-title'"
-                                        :large="true"
-                                        :editing="true"
+
+                                        :editing="editing"
                                         :value="field.title"
                                         helpPrefix="schema"
                                         :focusField="focusProp"
                                         @focus="onFocusBasic"
-                                        @edited="(newValue) => { updateResource(key, fKey, 'title', newValue) }"
+                                        @blur="(event) => { updateResource(key, fKey, 'title', event) }"
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12>
+                                <v-col cols=12 v-if="(field && field.shortName) || editing" class="pt-0 pb-1">
                                     <TextInput
                                         :label="$tc('Short Name')"
                                         placeholder=""
                                         name="shortName"
                                         :refName="'basicField-' + key + '-' + fKey + '-shortName'"
                                         :idName="'basicField-' + key + '-' + fKey + '-shortName'"
-                                        :large="true"
-                                        :editing="true"
+
+                                        :editing="editing"
                                         :value="field.shortName"
                                         helpPrefix="schema"
                                         :focusField="focusProp"
                                         @focus="onFocusBasic"
-                                        @edited="(newValue) => { updateResource(key, fKey, 'shortName', newValue) }"
+                                        @blur="(event) => { updateResource(key, fKey, 'shortName', event) }"
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12>
+                                <v-col cols=12 v-if="(field && field.type) || editing" class="pt-0 pb-1">
                                     <TextInput
                                         :label="$tc('Type')"
                                         placeholder=""
                                         name="type"
                                         :refName="'basicField-' + key + '-' + fKey + '-type'"
                                         :idName="'basicField-' + key + '-' + fKey + '-type'"
-                                        :large="true"
-                                        :editing="true"
+
+                                        :editing="editing"
                                         :value="field.type"
                                         helpPrefix="schema"
                                         :focusField="focusProp"
                                         @focus="onFocusBasic"
-                                        @edited="(newValue) => { updateResource(key, fKey, 'type', newValue) }"
+                                        @blur="(event) => { updateResource(key, fKey, 'type', event) }"
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12>
+                                <v-col cols=12 v-if="(field && field.description) || editing" class="pt-0 pb-1">
                                     <TextInput
                                         :label="$tc('Description')"
                                         placeholder=""
                                         name="description"
                                         :refName="'basicField-' + key + '-' + fKey + '-description'"
                                         :idName="'basicField-' + key + '-' + fKey + '-description'"
-                                        :large="true"
-                                        :editing="true"
+
+                                        :editing="editing"
                                         :value="field.description"
                                         helpPrefix="schema"
                                         :focusField="focusProp"
                                         @focus="onFocusBasic"
-                                        @edited="(newValue) => { updateResource(key, fKey, 'description', newValue) }"
+                                        @blur="(event) => { updateResource(key, fKey, 'description', event) }"
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12>
+                                <v-col cols=12 v-if="(field && field.format) || editing" class="pt-0 pb-1">
                                     <TextInput
                                         :label="$tc('Format')"
                                         placeholder=""
                                         name="format"
                                         :refName="'basicField-' + key + '-' + fKey + '-format'"
                                         :idName="'basicField-' + key + '-' + fKey + '-format'"
-                                        :large="true"
-                                        :editing="true"
+
+                                        :editing="editing"
                                         :value="field.format"
                                         helpPrefix="schema"
                                         :focusField="focusProp"
                                         @focus="onFocusBasic"
-                                        @edited="(newValue) => { updateResource(key, fKey, 'format', newValue) }"
+                                        @blur="(event) => { updateResource(key, fKey, 'format', event) }"
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12>
+                                <v-col cols=12 v-if="(field && field.var_class) || editing" class="pt-0 pb-1">
                                     <TextInput
                                         :label="$tc('Var Class')"
                                         placeholder=""
                                         name="var_class"
                                         :refName="'basicField-' + key + '-' + fKey + '-var_class'"
                                         :idName="'basicField-' + key + '-' + fKey + '-var_class'"
-                                        :large="true"
-                                        :editing="true"
+
+                                        :editing="editing"
                                         :value="field.var_class"
                                         helpPrefix="schema"
                                         :focusField="focusProp"
                                         @focus="onFocusBasic"
-                                        @edited="(newValue) => { updateResource(key, fKey, 'var_class', newValue) }"
+                                        @blur="(event) => { updateResource(key, fKey, 'var_class', event) }"
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12>
+                                <v-col cols=12 v-if="(field && field.rdfType) || editing" class="pt-0 pb-1">
                                     <TextInput
                                         :label="$tc('RDF Type')"
                                         placeholder=""
                                         name="rdfType"
                                         :refName="'basicField-' + key + '-' + fKey + '-rdfType'"
                                         :idName="'basicField-' + key + '-' + fKey + '-rdfType'"
-                                        :large="true"
-                                        :editing="true"
+
+                                        :editing="editing"
                                         :value="field.rdfType"
                                         helpPrefix="schema"
                                         :focusField="focusProp"
                                         @focus="onFocusBasic"
-                                        @edited="(newValue) => { updateResource(key, fKey, 'rdfType', newValue) }"
+                                        @blur="(event) => { updateResource(key, fKey, 'rdfType', event) }"
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12>
+                                <v-col cols=12 v-if="(field && field.tags) || editing" class="pt-0 pb-1">
                                     <TextInput
                                         :label="$tc('Tags', 2)"
                                         placeholder=""
                                         name="tags"
                                         :refName="'basicField-' + key + '-' + fKey + '-tags'"
                                         :idName="'basicField-' + key + '-' + fKey + '-tags'"
-                                        :large="true"
-                                        :editing="true"
+
+                                        :editing="editing"
                                         :value="field.tags"
                                         helpPrefix="schema"
                                         :focusField="focusProp"
                                         @focus="onFocusBasic"
-                                        @edited="(newValue) => { updateResource(key, fKey, 'tags', newValue) }"
+                                        @blur="(event) => { updateResource(key, fKey, 'tags', event) }"
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12>
+                                <v-col cols=12 v-if="(field && field.comments) || editing" class="pt-0 pb-1">
                                     <TextInput
                                         :label="$tc('Comments', 2)"
                                         placeholder=""
                                         name="comments"
                                         :refName="'basicField-' + key + '-' + fKey + '-comments'"
                                         :idName="'basicField-' + key + '-' + fKey + '-comments'"
-                                        :large="true"
-                                        :editing="true"
+
+                                        :editing="editing"
                                         :value="field.comments"
                                         helpPrefix="schema"
                                         :focusField="focusProp"
                                         @focus="onFocusBasic"
-                                        @edited="(newValue) => { updateResource(key, fKey, 'comments', newValue) }"
+                                        @blur="(event) => { updateResource(key, fKey, 'comments', event) }"
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12>
+                                <v-col cols=12 v-if="(field && field.constraints && field.constraints.enum) || editing" class="pt-0 pb-1">
                                     <TextInput
                                         :label="$tc('Enum', 1)"
                                         placeholder=""
                                         name="enum"
                                         :refName="'basicField-' + key + '-' + fKey + '-enum'"
                                         :idName="'basicField-' + key + '-' + fKey + '-enum'"
-                                        :large="true"
-                                        :editing="true"
+
+                                        :editing="editing"
                                         :value="(field.constraints && field.constraints.enum) ? field.constraints.enum : ''"
                                         helpPrefix="schema"
                                         :focusField="focusProp"
                                         @focus="onFocusBasic"
-                                        @edited="(newValue) => { updateResourceEnum(key, fKey, 'constraints', 'enum', newValue) }"
+                                        @blur="(event) => { updateResourceEnum(key, fKey, 'constraints', 'enum', event) }"
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12>
+                                <v-col cols=12 v-if="(field && field.highlight) || editing" class="pt-0 pb-1">
                                     <Select
                                         :label="$tc('Highlight')"
                                         name="highlight"
-                                        :editing="true"
+                                        :editing="editing"
                                         :value="field.highlight"
                                         :items="[ {text: 'Yes', value: true}, {text: 'No', value: false}]"
                                         helpPrefix="schema"
@@ -263,10 +273,10 @@
                                     ></Select>
                                 </v-col>
 
-                                <v-col cols=11>
+                                <v-col cols=11 class="pt-0 pb-1">
                                 </v-col>
 
-                                <v-col cols=1>
+                                <v-col cols=1 class="pt-0 pb-1">
                                     <v-btn class="error" @click="removeField(key, fKey)"><v-icon>mdi-minus</v-icon></v-btn>
                                 </v-col>
 
@@ -285,13 +295,17 @@
                 <v-btn class="primary" @click="addResource">{{$tc('Add File/Resource')}}</v-btn>
             </v-row>
 
-            <v-row v-else-if="stateType == 2">
+            <v-row v-else-if="stateType == 2 && editing">
                 <v-col cols=12>
                     <v-textarea v-model="workingStr" @change="updatedStr"></v-textarea>
                 </v-col>
             </v-row>
 
-            <v-row v-else>
+            <v-row v-else-if="stateType == 2 && !editing">
+                <div class="preserveWhite">{{JSON.stringify(workingVal, replacerFunc(), 4)}}</div>
+            </v-row>
+
+            <v-row v-else-if="editing">
                 <RepeatingObject 
                     :key="'rootRepeating-'+reindexKey" 
                     :val="workingVal" 
@@ -307,229 +321,7 @@
             </v-row>
 
         </v-container>
-        <v-container v-else>
-            <v-row v-if="stateType == 2">
-                <div class="preserveWhite">{{JSON.stringify(workingVal, replacerFunc(), 4)}}</div>
-            </v-row>
-            <v-row v-else>
-                <v-col cols=12 v-if="title">
-                    <h1>{{title}}</h1>
-                </v-col>
-                <v-col cols=12 v-if="description">
-                    <h3>{{description}}</h3>
-                </v-col>
-                
-                <v-col cols=12 v-if="fields && fields.length > 0">
-                    <div v-for="(field, key) in fields" :key="'field-'+key+'-'+field.name" class="field">
-                        <v-row v-if="field && field.name">
-                            <!-- <v-col cols=3>
-                                Name:
-                            </v-col> -->
-                            <v-col cols=9>
-                                <h2>{{field.name}}</h2>
-                            </v-col>
-                        </v-row>
-
-                        <v-row v-if="field && (field.type || (field._descriptor && field._descriptor.type))">
-                            <v-col cols=3>
-                                {{$tc('Type')}}:
-                            </v-col>
-                            <v-col cols=9>
-                                {{field.type ? field.type : field._descriptor.type}}
-                            </v-col>
-                        </v-row>
-
-                        <v-row v-if="field && (field.description || (field._descriptor && field._descriptor.description))">
-                            <v-col cols=3>
-                                {{$tc('Description')}}:
-                            </v-col>
-                            <v-col cols=9>
-                                {{field.description ? field.description : field._descriptor.description}}
-                            </v-col>
-                        </v-row>
-
-                        <v-row v-if="field && (field.example || (field._descriptor && field._descriptor.example))">
-                            <v-col cols=3>
-                                {{$tc('Example')}}:
-                            </v-col>
-                            <v-col cols=9>
-                                {{field.example ? field.example : field._descriptor.example}}
-                            </v-col>
-                        </v-row>
-
-                        <!-- <v-row v-if="field && (field.constraints || (field._descriptor && field._descriptor.constraints))">
-                            <v-col cols=3>
-                                {{$tc('Constraint', 2)}}:
-                            </v-col>
-                            <v-col cols=9>
-                                {{field.constraints ? field.constraints : field._descriptor.constraints}}
-                            </v-col>
-                        </v-row> -->
-
-                        <v-row v-if="field && (field.format || (field._descriptor && field._descriptor.format))">
-                            <v-col cols=3>
-                                {{$tc('Format')}}:
-                            </v-col>
-                            <v-col cols=9>
-                                {{field.format ? field.format : field._descriptor.format}}
-                            </v-col>
-                        </v-row>
-
-                        <v-row v-if="field && (field.missingValues || (field._descriptor && field._descriptor._missingValues))">
-                            <v-col cols=3>
-                                {{$tc('Missing Value', 2)}}:
-                            </v-col>
-                            <v-col cols=9>
-                                {{field.missingValues ? field.missingValues : field._descriptor._missingValues}}
-                            </v-col>
-                        </v-row>
-                    </div>
-                </v-col>
-
-                <v-col cols=12 v-else-if="resources && resources[0]">
-                    <v-row v-for="(resource, key) in resources" :key="'resources'+key">
-                        <v-col cols=12>
-                            <h1>{{$tc('Resource')}} {{resource.name}}</h1>
-                        </v-col>
-                        <v-col cols=12 v-if="(resource.schema && resource.schema.fields)">
-                            <div v-for="(field, key) in resource.schema.fields" :key="'field-'+key+'-'+field.name" :class="`field${field.highlight ? ' fieldHighlight' : ''}`">
-                                <v-row v-if="field && field.name" class="my-0">
-                                    <!-- <v-col cols=3>
-                                        Name:
-                                    </v-col> -->
-                                    <v-col cols=9>
-                                        <h3>{{field.name}}</h3>
-                                    </v-col>
-                                </v-row>
-
-                                <v-row v-if="field && (field.shortName || (field._descriptor && field._descriptor.shortName))" class="my-0">
-                                    <v-col cols=3>
-                                        {{$tc('Short Name')}}:
-                                    </v-col>
-                                    <v-col cols=9>
-                                        {{field.shortName ? field.shortName : field._descriptor.shortName}}
-                                    </v-col>
-                                </v-row>
-
-                                <v-row v-if="field && (field.title || (field._descriptor && field._descriptor.title))" class="my-0">
-                                    <v-col cols=3>
-                                        {{$tc('Title')}}:
-                                    </v-col>
-                                    <v-col cols=9>
-                                        {{field.title ? field.title : field._descriptor.title}}
-                                    </v-col>
-                                </v-row>
-
-                                <v-row v-if="field && (field.var_class || (field._descriptor && field._descriptor.var_class))" class="my-0">
-                                    <v-col cols=3>
-                                        {{$tc('Var Class')}}:
-                                    </v-col>
-                                    <v-col cols=9>
-                                        {{field.var_class ? field.var_class : field._descriptor.var_class}}
-                                    </v-col>
-                                </v-row>
-
-                                <v-row v-if="field && (field.type || (field._descriptor && field._descriptor.type))" class="my-0">
-                                    <v-col cols=3>
-                                        {{$tc('Type')}}:
-                                    </v-col>
-                                    <v-col cols=9>
-                                        {{field.type ? field.type : field._descriptor.type}}
-                                    </v-col>
-                                </v-row>
-
-                                <v-row v-if="field && (field.description || (field._descriptor && field._descriptor.description))" class="my-0">
-                                    <v-col cols=3>
-                                        {{$tc('Description')}}:
-                                    </v-col>
-                                    <v-col cols=9>
-                                        {{field.description ? field.description : field._descriptor.description}}
-                                    </v-col>
-                                </v-row>
-
-                                <v-row v-if="field && (field.example || (field._descriptor && field._descriptor.example))" class="my-0">
-                                    <v-col cols=3>
-                                        {{$tc('Example')}}:
-                                    </v-col>
-                                    <v-col cols=9>
-                                        {{field.example ? field.example : field._descriptor.example}}
-                                    </v-col>
-                                </v-row>
-
-                                <!-- <v-row v-if="field && (field.constraints || (field._descriptor && field._descriptor.constraints))" class="my-0">
-                                    <v-col cols=3>
-                                        {{$tc('Constraint', 2)}}:
-                                    </v-col>
-                                    <v-col cols=9>
-                                        {{field.constraints ? field.constraints : field._descriptor.constraints}}
-                                    </v-col>
-                                </v-row> -->
-
-                                <v-row 
-                                    v-if="field 
-                                        && (field.format || (field._descriptor && field._descriptor.format))
-                                        && ( (field.format && field.format !== 'default') || ((field._descriptor && field._descriptor.format && field._descriptor.format !== 'default')) )" class="my-0">
-                                    <v-col cols=3>
-                                        {{$tc('Format')}}:
-                                    </v-col>
-                                    <v-col cols=9>
-                                        {{field.format ? field.format : field._descriptor.format}}
-                                    </v-col>
-                                </v-row>
-
-                                <v-row v-if="field && (field.rdfType || (field._descriptor && field._descriptor.rdfType))" class="my-0">
-                                    <v-col cols=3>
-                                        {{$tc('RDF Type')}}:
-                                    </v-col>
-                                    <v-col cols=9>
-                                        {{field.rdfType ? field.rdfType : field._descriptor.rdfType}}
-                                    </v-col>
-                                </v-row>
-
-                                <v-row v-if="field && (field.tags || (field._descriptor && field._descriptor.tags))" class="my-0">
-                                    <v-col cols=3>
-                                        {{$tc('Tags', 2)}}:
-                                    </v-col>
-                                    <v-col cols=9>
-                                        {{field.tags ? field.tags : field._descriptor.tags}}
-                                    </v-col>
-                                </v-row>
-
-                                <v-row v-if="field && (field.missingValues || (field._descriptor && field._descriptor._missingValues))" class="my-0">
-                                    <v-col cols=3>
-                                        {{$tc('Missing Value', 2)}}:
-                                    </v-col>
-                                    <v-col cols=9>
-                                        {{field.missingValues ? field.missingValues : field._descriptor._missingValues}}
-                                    </v-col>
-                                </v-row>
-
-                                <v-row v-if="field && (field.comments || (field._descriptor && field._descriptor.comments))" class="my-0">
-                                    <v-col cols=3>
-                                        {{$tc('Comments', 2)}}:
-                                    </v-col>
-                                    <v-col cols=9>
-                                        {{field.comments ? field.comments : field._descriptor.comments}}
-                                    </v-col>
-                                </v-row>
-
-                                <v-row v-if="field && ((field.constraints && field.constraints.enum) || (field._descriptor && field._descriptor.contsraints && field._descriptor.containts.enum))" class="my-0">
-                                    <v-col cols=3>
-                                        {{$tc('Enum', 1)}}:
-                                    </v-col>
-                                    <v-col cols=9>
-                                        {{(field.constraints && field.constraints.enum) ? field.constraints.enum : field._descriptor.constraints.enum}}
-                                    </v-col>
-                                </v-row>
-
-                                
-                            </div>
-                        </v-col>
-                    </v-row>
-                </v-col>
-                
-            </v-row>
-        </v-container>
+        
     </v-container>
 </template>
 
@@ -688,7 +480,8 @@ export default{
             this.$emit('edited', this.workingVal);
         },
 
-        updateResourcePath: function(key, newValue){
+        updateResourcePath: function(key, event){
+            let newValue = event.target.value;
             if (!this.workingVal.resources[key]){
                 this.workingVal.resources[key] = {}
             }
@@ -698,7 +491,8 @@ export default{
             this.$emit('edited', this.workingVal);
         },
 
-        updateResourceName: function(key, newValue){
+        updateResourceName: function(key, event){
+            let newValue = event.target.value;
             if (!this.workingVal.resources[key]){
                 this.workingVal.resources[key] = {}
             }
@@ -708,8 +502,11 @@ export default{
             this.$emit('edited', this.workingVal);
         },
 
-        updateResource: function(key, fieldKey, path, value){
-            
+        updateResource: function(key, fieldKey, path, event){
+            let value = event;
+            if (event && event.target && event.target.value){
+                value = event.target.value;
+            }
             this.workingVal.resources[key].schema.fields[fieldKey][path] = value;
             
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
@@ -717,7 +514,8 @@ export default{
             this.$emit('edited', this.workingVal);
         },
 
-        updateResourceEnum: function(key, fieldKey, nested, path, value){
+        updateResourceEnum: function(key, fieldKey, nested, path, event){
+            let value = event.target.value;
             let arrVal = value.split(", ");
             arrVal = arrVal.length === 1 ? arrVal[0].split(",") : arrVal;
 

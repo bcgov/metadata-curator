@@ -98,7 +98,7 @@ import JsonEditor from './JsonEditor/JsonEditor';
 
             jsonEdited: function(newVal){
                 this.rawSchema = newVal;
-                this.redrawIndex++;
+                // this.redrawIndex++;
                 this.$emit("edited", newVal);
             }
 

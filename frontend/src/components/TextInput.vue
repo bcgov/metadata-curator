@@ -163,27 +163,27 @@
                 // console.log("val changed: ", this.val);
                 this.$emit('edited', this.val);
             },
-            focusField: function(){
-                if (this.focusField===this.refName){
-                    this.$nextTick(function () {
-                        if (this.$refs[this.focusField]){
-                            this.$refs[this.focusField].focus();
-                        }
-                    });
-                }
-            }
+            // focusField: function(){
+            //     if (this.focusField===this.refName){
+            //         this.$nextTick(function () {
+            //             if (this.$refs[this.focusField]){
+            //                 this.$refs[this.focusField].focus();
+            //             }
+            //         });
+            //     }
+            // }
         },
         mounted(){
-            if (this.focusField===this.refName){
-                if (this.$refs[this.focusField]){
-                    this.$refs[this.focusField].focus();
-                }
-                this.$nextTick(function () {
-                    if (this.$refs[this.focusField]){
-                        this.$refs[this.focusField].focus();
-                    }
-                });
-            }
+            // if (this.focusField===this.refName){
+            //     if (this.$refs[this.focusField]){
+            //         this.$refs[this.focusField].focus();
+            //     }
+            //     this.$nextTick(function () {
+            //         if (this.$refs[this.focusField]){
+            //             this.$refs[this.focusField].focus();
+            //         }
+            //     });
+            // }
         },
     };
 </script>
