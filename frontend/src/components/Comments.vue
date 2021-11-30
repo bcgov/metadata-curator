@@ -44,9 +44,11 @@
                 :label="$tc('New Comment')"
                 :editing="true"
                 :placeholder="$tc('New Comment')"
+                @focus="commentFocused = true"
+                @blur="commentFocused = false"
                 @edited="(newValue) => { setComment(newValue) }"
             ></Markdown>
-            <v-btn color="primary" @click="addComment">Add Comment</v-btn>
+            <v-btn color="primary" @click="addComment" :disabled="comment === ''" v-if="(comment !== '') || commentFocused">Add Comment</v-btn>
         </div>
     </div>
 </template>
@@ -74,7 +76,8 @@ import Markdown from './Markdown.vue';
             message: '',
             expanded: [],
             refreshKey: 0,
-            comment: ""
+            comment: "",
+            commentFocused: false,
         }),
         methods: {
             ...mapActions({

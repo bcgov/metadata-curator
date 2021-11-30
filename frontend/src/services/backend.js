@@ -282,17 +282,14 @@ export class Backend {
     postRepo(repo){
         // console.log("BE postdataUpload: " + dataUpload);
         const url = `/api/v1/repos`;
-        const body = { name: repo.name, description: repo.description };
+        const body = repo;
         return axios.post(url, body, {withCredentials: true}).then(response => response.data)
     }
 
     putRepo(repo){
         // console.log("BE putdataUpload: " + dataUpload);
         const url = `/api/v1/repos/${repo._id}`;
-        const body = { 
-            name: repo.name,
-            description: repo.description,
-        };
+        const body = repo;
         return axios.put(url, body, {withCredentials: true}).then(response => response.data)
     }
 

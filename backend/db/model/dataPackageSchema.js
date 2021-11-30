@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 var resourceSchema = new Schema({
    name: {type: String, required: false},
    profile: {type: String, required: true},
-   data: {type: [String], required: true},
+   data: {type: [String], required: false, default: []},
+   path: {type: String, required: false},
    tableSchema:
        {
            type: Object,
@@ -12,7 +13,14 @@ var resourceSchema = new Schema({
        }
 }, { _id : false });
 
+resourceSchema.set('strict', false);
+
 var dataPackageSchema = new Schema({
+    inferred: {
+        type: String, 
+        required: true,
+        default: false,
+    }, 
     profile: {type:String, required: true},
     version: {
         type: Schema.Types.ObjectId,

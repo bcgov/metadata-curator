@@ -248,7 +248,7 @@
                         this.inferredSchema.resources.push({
                             name: this.upload.files[i].name.substring(0,this.upload.files[i].name.lastIndexOf('.')),
                             path: "./"+this.upload.files[i].name,
-                            tableSchema: s.descriptor,
+                            schema: s.descriptor,
                         });
                     }catch(ex){
                         console.error("Error inferring:", ex);

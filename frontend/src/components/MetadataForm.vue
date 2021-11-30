@@ -23,6 +23,9 @@
                         </v-row>
                         <v-row v-else>
                             <v-col cols=12>
+                                <v-btn color="primary" @click="createBasic">{{$tc('Create Without Import')}}</v-btn>
+                            </v-col>
+                            <v-col cols=12>
                                 <FileReader
                                     :show-encrypt-button="false"
                                     :show-upload-button="false"
@@ -52,7 +55,9 @@
                             </v-col>
                         </v-row>
                     </v-card-text>
-                        <v-card-actions v-if="editing">
+                        <v-card-actions v-if="loading || !schema">
+                        </v-card-actions>
+                        <v-card-actions v-else-if="editing">
                             <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
                             <v-btn @click="save" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
                         </v-card-actions>
@@ -132,6 +137,12 @@ export default {
             this.loading = false;
         },
 
+        createBasic(){
+            this.setTableSchema({schema: {resources: []}});
+            this.saveTableSchema();
+            this.editing = true;
+        },
+
         closeOrBack() {
             if (this.dialog){
                 this.$emit('close');
@@ -177,8 +188,8 @@ export default {
                 });
                 
             }else{
-                this.updateDataPackageSchema();
-                this.updateBranch().then( () => {
+                this.updateDataPackageSchema().then( () => {
+                // this.updateBranch().then( () => {
                     this.alertType = "success"
                     this.alertText = this.$tc('Sucessfully updated') + " " + this.$tc('version');
                     this.alert = true;

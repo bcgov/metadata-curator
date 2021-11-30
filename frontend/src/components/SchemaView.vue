@@ -63,7 +63,7 @@ import JsonEditor from './JsonEditor/JsonEditor';
                 this.loading = true;
                 const Schema = require('tableschema').Schema;
                 const DSchema = require('datapackage').Package
-                if (this.schema && this.schema.resources && this.schema.resources[0] && this.schema.resources[0].tableSchema){
+                if (this.schema && this.schema.resources && this.schema.resources[0] && this.schema.resources[0].schema){
                     this.rawSchema = JSON.parse(JSON.stringify(this.schema, this.replacerFunc()));
                     delete this.rawSchema._id;
                     delete this.rawSchema.profile;
@@ -98,7 +98,7 @@ import JsonEditor from './JsonEditor/JsonEditor';
 
             jsonEdited: function(newVal){
                 this.rawSchema = newVal;
-                this.redrawIndex++;
+                // this.redrawIndex++;
                 this.$emit("edited", newVal);
             }
 

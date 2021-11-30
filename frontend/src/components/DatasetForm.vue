@@ -17,7 +17,7 @@
                 transition="dialog-bottom-transition">
                     <v-card>
                         <v-card-text>
-                            <BranchForm :dialog="true" @close="branchDia = false" :branchId="branch"></BranchForm>
+                            <BranchForm :dialog="true" @close="closeBranchDia()" :branchId="branch"></BranchForm>
                         </v-card-text>
                     </v-card>
             </v-dialog>
@@ -41,6 +41,7 @@
                                 :large="true"
                                 :editing="editing"
                                 :value="(dataset) ? dataset.name : ''"
+                                helpPrefix="dataset"
                                 @edited="(newValue) => { updateValues('name', newValue) }"
                             ></TextInput>
                         </v-row>
@@ -49,12 +50,95 @@
                             <TextInput
                                 :label="$tc('Description')"
                                 :placeholder="$tc('Description')"
-                                name="name"
+                                name="description"
                                 :large="true"
                                 :editing="editing"
                                 :value="(dataset) ? dataset.description : ''"
+                                helpPrefix="dataset"
                                 @edited="(newValue) => { updateValues('description', newValue) }"
                             ></TextInput>
+                        </v-row>
+
+                        <v-row class="outline">
+                            <v-col cols=12>
+                                <span class="checkboxGroupHeader">{{$tc('Allow Publish')}}</span>
+                            </v-col>
+                            <v-col cols=6>
+                                <SimpleCheckbox
+                                    :label="$tc('Gov DAR')"
+                                    :placeholder="$tc('Gov DAR')"
+                                    name="gov_allow_publish"
+                                    :large="true"
+                                    :editing="editing"
+                                    :disabled="!editing"
+                                    :checked="(dataset) ? dataset.gov_allow_publish : ''"
+                                    helpPrefix="dataset"
+                                    @edited="(newValue) => { updateValues('gov_allow_publish', newValue) }">
+                                </SimpleCheckbox>
+                            </v-col>
+
+                            <v-col cols=6>
+                                <SimpleCheckbox
+                                    :label="$tc('Academic DAR')"
+                                    :placeholder="$tc('Academic DAR')"
+                                    name="aca_allow_publish"
+                                    :large="true"
+                                    :editing="editing"
+                                    :disabled="!editing"
+                                    :checked="(dataset) ? dataset.aca_allow_publish : ''"
+                                    helpPrefix="dataset"
+                                    @edited="(newValue) => { updateValues('aca_allow_publish', newValue) }">
+                                </SimpleCheckbox>
+                            </v-col>
+                        </v-row>
+
+                        <v-row class="outline">
+                            <v-col cols=12>
+                                <span class="checkboxGroupHeader">{{$tc('Approval Needed')}}</span>
+                            </v-col>
+                            <v-col cols=6>
+                                <SimpleCheckbox
+                                    :label="$tc('Gov data provider')"
+                                    :placeholder="$tc('Gov data provider')"
+                                    name="gov_approval_needed"
+                                    :large="true"
+                                    :editing="editing"
+                                    :disabled="!editing"
+                                    :checked="(dataset) ? dataset.gov_approval_needed : ''"
+                                    helpPrefix="dataset"
+                                    @edited="(newValue) => { updateValues('gov_approval_needed', newValue) }">
+                                </SimpleCheckbox>
+                            </v-col>
+
+                            <v-col cols=6>
+                                <SimpleCheckbox
+                                    :label="$tc('Academic data provider')"
+                                    :placeholder="$tc('Academic data provider')"
+                                    name="aca_approval_needed"
+                                    :large="true"
+                                    :editing="editing"
+                                    :disabled="!editing"
+                                    :checked="(dataset) ? dataset.aca_approval_needed : ''"
+                                    helpPrefix="dataset"
+                                    @edited="(newValue) => { updateValues('aca_approval_needed', newValue) }">
+                                </SimpleCheckbox>
+                            </v-col>
+                        </v-row>
+
+                        <v-row>
+                            <v-col cols=12>
+                                <SimpleCheckbox
+                                    :label="$tc('Metadata listed in B.C. Data Catalogue')"
+                                    :placeholder="$tc('Metadata listed in B.C. Data Catalogue')"
+                                    name="in_bc_catalogue"
+                                    :large="true"
+                                    :editing="editing"
+                                    :disabled="!editing"
+                                    :checked="(dataset) ? dataset.in_bc_catalogue : ''"
+                                    helpPrefix="dataset"
+                                    @edited="(newValue) => { updateValues('in_bc_catalogue', newValue) }">
+                                </SimpleCheckbox>
+                            </v-col>
                         </v-row>
 
                         <v-row wrap v-if="!creating">
@@ -91,11 +175,13 @@
 import {mapActions, mapMutations, mapState} from "vuex";
 import TextInput from './TextInput';
 import BranchForm from './BranchForm';
+import SimpleCheckbox from './SimpleCheckbox';
 
 export default {
     components:{
         TextInput,
         BranchForm,
+        SimpleCheckbox
     },    
     data () {
         return {
@@ -124,6 +210,11 @@ export default {
         async loadSections() {
             await this.getDataset({id: this.id});
             await this.getBranches({repoId: this.id});
+        },
+
+        closeBranchDia(){
+            this.branchDia = false;
+            this.loadSections();
         },
 
         routeToHome() {
@@ -200,7 +291,19 @@ export default {
 <style scoped>
 
 .pointer{
+    color: var(--v-primary-base);
+    text-decoration: underline;
     cursor: pointer;
+}
+
+.outline{
+    border: 1px solid;
+    border-color: var(--v-text-base);
+}
+
+.checkboxGroupHeader{
+    font-size: 22px;
+    font-weight: bold;
 }
 
 </style>

@@ -1,14 +1,21 @@
 <template>
     <div>
          <span v-if="!editing">
-            <span class="mr-2">{{$tc(displayLabel)}}</span>
+            <span class="mr-2">
+                {{displayLabel}}
+                <v-tooltip right v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
+                    <template v-slot:activator="{ on }">
+                        <v-icon color="label_colour" v-on="on">mdi-help-circle-outline</v-icon>
+                    </template>
+                    <span>&nbsp;{{$t('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))}}</span>
+                </v-tooltip>
+            </span>
             <span>{{val}}</span>
         </span>
 
         <span v-else>
             <ValidationProvider ref="provider" :rules="validationRules" v-slot="{ errors }" :name="label ? $tc(label) : $tc(name)">
                 <v-textarea
-                    :label="$tc(displayLabel)"
                     :placeholder="$tc(placeholder)"
                     :name="name"
                     v-model="val"
@@ -16,7 +23,17 @@
                     :auto-grow="autogrow"
                     :error-messages="errors.length > 0 ? [errors[0]] : []"
                     ref="txtArea"
-                ></v-textarea>
+                >
+                    <template v-slot:label>
+                        {{displayLabel}}
+                        <v-tooltip right v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
+                            <template v-slot:activator="{ on }">
+                                <v-icon color="label_colour" v-on="on">mdi-help-circle-outline</v-icon>
+                            </template>
+                            <span>&nbsp;{{$t('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))}}</span>
+                        </v-tooltip>
+                    </template>
+                </v-textarea>
             </ValidationProvider>
         </span>
     </div>
@@ -73,6 +90,11 @@
                 type: Boolean,
                 required: false,
                 default: () => false
+            },
+            helpPrefix: {
+                type: String,
+                required: false,
+                default: ''
             }
         },
         data() {
@@ -96,9 +118,9 @@
         computed: {
             displayLabel: function () {
                 if (this.validationRules.toLowerCase().indexOf("required") >= 0) {
-                    return this.label + ' *';
+                    return this.$tc(this.label) + ' *';
                 }
-                return this.label;
+                return this.$tc(this.label);
             }
         },
         watch: {

@@ -1,12 +1,5 @@
 <template>
     <v-container fluid :key="'branch-'+reIndex">
-        <v-alert
-            :type="alertType"
-            dismissable
-            v-model="alert">
-                {{alertText}}
-        </v-alert>
-
         <span v-if="(loading || !branch) && !creating">
             <v-row dense>
                 {{$tc('Loading')}}...
@@ -26,6 +19,12 @@
                     <v-tab-item key="version">
                         <v-card outlined>
                             <v-card-text>
+                                <v-alert
+                                    :type="alertType"
+                                    dismissable
+                                    v-model="alert">
+                                        {{alertText}}
+                                </v-alert>
                                 <v-row>
                                     <h1 class="display-1 font-weight-thin ml-3 my-3">{{creating ? $tc("New") + " " + $tc("Version") : $tc("Version") + " " + id}}</h1>
                                 </v-row>
@@ -49,6 +48,8 @@
                                             :placeholder="$tc('Default')"
                                             name="name"
                                             :editing="editing"
+                                            validation-rules="required"
+                                            helpPrefix="edition"
                                             :value="(branch) ? branch.name : ''"
                                             @edited="(newValue) => { updateValues('name', newValue) }"
                                         ></TextInput>
@@ -62,6 +63,7 @@
                                             :placeholder="$tc('Short Title')"
                                             name="short_title"
                                             :editing="editing"
+                                            helpPrefix="edition"
                                             :value="(branch) ? branch.short_title : ''"
                                             @edited="(newValue) => { updateValues('short_title', newValue) }"
                                         ></TextInput>
@@ -74,8 +76,10 @@
                                             :label="$tc('Type')"
                                             name="type"
                                             :editing="editing"
+                                            validation-rules="required"
                                             :value="(branch) ? branch.type : ''"
                                             :items="types"
+                                            helpPrefix="edition"
                                             @edited="(newValue) => { updateValues('type', newValue) }"
                                         ></Select>
                                     </v-col>
@@ -87,8 +91,10 @@
                                             :label="$tc('Description')"
                                             :placeholder="$tc('Description')"
                                             name="description"
+                                            validation-rules="required"
                                             :editing="editing"
                                             :value="(branch) ? branch.description : ''"
+                                            helpPrefix="edition"
                                             @edited="(newValue) => { updateValues('description', newValue) }"
                                         ></TextArea>
                                     </v-col>
@@ -104,6 +110,7 @@
                                             :items="dataUploads"
                                             item-text="name"
                                             item-value="_id"
+                                            helpPrefix="edition"
                                             @edited="(newValue) => { updateValues('upload_id', newValue) }"
                                         ></Select>
                                     </v-col>
@@ -117,6 +124,7 @@
                                             name="availability"
                                             :editing="editing"
                                             :value="(branch) ? branch.availability : ''"
+                                            helpPrefix="edition"
                                             @edited="(newValue) => { updateValues('availability', newValue) }"
                                         ></TextInput>
                                     </v-col>
@@ -130,6 +138,7 @@
                                             name="variable_classification"
                                             :editing="editing"
                                             :value="(branch) ? branch.variable_classification : ''"
+                                            helpPrefix="edition"
                                             @edited="(newValue) => { updateValues('variable_classification', newValue) }"
                                         ></TextInput>
                                     </v-col>
@@ -143,6 +152,7 @@
                                             name="notes"
                                             :editing="editing"
                                             :value="(branch) ? branch.notes : ''"
+                                            helpPrefix="edition"
                                             @edited="(newValue) => { updateValues('notes', newValue) }"
                                         ></TextArea>
                                     </v-col>
@@ -156,6 +166,7 @@
                                             name="citation"
                                             :editing="editing"
                                             :value="(branch) ? branch.citation : ''"
+                                            helpPrefix="edition"
                                             @edited="(newValue) => { updateValues('citation', newValue) }"
                                         ></TextInput>
                                     </v-col>
@@ -169,6 +180,7 @@
                                             :label="$tc('FAQ')"
                                             :editing="editing"
                                             :placeholder="$tc('FAQ')"
+                                            helpPrefix="edition"
                                             @edited="(newValue) => { updateValues('faq', newValue) }"
                                         ></Markdown>
                                     </v-col>
@@ -183,6 +195,7 @@
                                             :editing="editing"
                                             :disabled="!editing || !user.isApprover || (branch && branch.approved)"
                                             :checked="(branch) ? branch.published : false"
+                                            helpPrefix="edition"
                                             @edited="(newValue) => { updateValues('published', newValue) }"
                                         ></SimpleCheckbox>
                                         <router-link v-if="branch.published && location" :to="{ name: 'published_version', params: { id: id }}">{{location.protocol + "//" + location.host + $router.resolve({name: 'published_version', params: { id: id } }).href }}</router-link>
@@ -196,8 +209,9 @@
                                             :placeholder="$tc('Approved')"
                                             name="approved"
                                             :editing="editing"
-                                            :disabled="!user.isApprover"
+                                            :disabled="!editing || !user.isApprover"
                                             :checked="(branch) ? branch.approved : ''"
+                                            helpPrefix="edition"
                                             @edited="(newValue) => { updateValues('approved', newValue) }"
                                         ></SimpleCheckbox>
                                     </v-col>
@@ -224,7 +238,7 @@
         </v-row>
 
         <v-row>
-            <v-col cols=12>
+            <v-col cols=12 v-if="!creating">
                 <Comments :id="id" :type="'branch'"></Comments>
             </v-col>
         </v-row>
@@ -303,6 +317,9 @@ export default {
         },
 
         closeOrBack() {
+            this.editing = false;
+            this.creating = false;
+            this.alert = false;
             if (this.dialog){
                 this.$emit('close');
             }else if (this.creating){
@@ -338,13 +355,17 @@ export default {
             if (this.creating){
                 this.saveBranch().then( () => {
                     this.alertType = "success"
-                    this.alertText = "Sucessfully created version";
+                    this.alertText = this.$tc("Sucessfully created ") + this.$tc("version", 1);
                     this.alert = true;
                     this.closeOrBack();
 
                 }).catch( err => {
                     this.alertType = "error"
-                    this.alertText = err.message;
+                    if (err.response && err.response.data && err.response.data.error){
+                        this.alertText = "Error: " + err.response.data.error;
+                    }else{
+                        this.alertText = err.message;
+                    }
                     this.alert = true;
                 });
             }else{
@@ -356,7 +377,11 @@ export default {
 
                 }).catch( err => {
                     this.alertType = "error"
-                    this.alertText = err.message;
+                    if (err.response && err.response.data && err.response.data.error){
+                        this.alertText = "Error: " + err.response.data.error;
+                    }else{
+                        this.alertText = err.message;
+                    }
                     this.alert = true;
                 });
             }

@@ -10,9 +10,18 @@ resource "tls_self_signed_cert" "example" {
   subject {
     common_name  = "example.demo"
     organization = "ACME Examples, Inc"
+    organizational_unit = "Dev"
+    street_address = ["123 Fake St"]
+    locality = "en"
+    province = "bc"
+    country = "ca"
+    postal_code = "v0z 1a1"
+    serial_number = "1234567"
   }
 
-  validity_period_hours = 12
+  dns_names = ["*.example.demo"]
+
+  validity_period_hours = 2000
 
   allowed_uses = [
     "key_encipherment",
