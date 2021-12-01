@@ -8,7 +8,7 @@
                 </v-alert>
             </v-col>
         </v-row>
-        <v-row>
+        <v-row :key="'JsonEditor'+redrawIndex">
             <v-col cols=3>
                 <v-slider
                     v-if="showStates"
@@ -71,7 +71,7 @@
                            
                         </v-row>
                         <span v-if="resource.schema && resource.schema.fields">
-                            <v-row v-for="(field, fKey) in resource.schema.fields" :key="'field-'+key+'-'+fKey+'-'+reindexKey" class="field">
+                            <v-row v-for="(field, fKey) in resource.schema.fields" :key="'field-'+key+'-'+fKey+'-'+reindexKey" :class="'field' + ( (field && field.highlight && !editing) ? ' fieldHighlight': '')">
                                 <v-col cols=12 v-if="(field && field.name) || editing" class="py-1">
                                     <TextInput
                                         :label="$tc('Name')"
@@ -261,7 +261,7 @@
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12 v-if="(field && field.highlight) || editing" class="pt-0 pb-1">
+                                <v-col cols=12 v-if="editing" class="pt-0 pb-1">
                                     <Select
                                         :label="$tc('Highlight')"
                                         name="highlight"
@@ -277,7 +277,7 @@
                                 </v-col>
 
                                 <v-col cols=1 class="pt-0 pb-1">
-                                    <v-btn class="error" @click="removeField(key, fKey)"><v-icon>mdi-minus</v-icon></v-btn>
+                                    <v-btn v-if="editing" class="error" @click="removeField(key, fKey)"><v-icon>mdi-minus</v-icon></v-btn>
                                 </v-col>
 
                             </v-row>
@@ -287,12 +287,12 @@
                             </v-col>
 
                             <v-col cols=2>
-                                <v-btn class="primary" @click="addField(key)">{{$tc('Add Field')}}<v-icon>mdi-plus</v-icon></v-btn>
+                                <v-btn v-if="editing" class="primary" @click="addField(key)">{{$tc('Add Field')}}<v-icon>mdi-plus</v-icon></v-btn>
                             </v-col>
                         </v-row>
                     </v-col>
                 </span>
-                <v-btn class="primary" @click="addResource">{{$tc('Add File/Resource')}}</v-btn>
+                <v-btn v-if="editing" class="primary" @click="addResource">{{$tc('Add File/Resource')}}</v-btn>
             </v-row>
 
             <v-row v-else-if="stateType == 2 && editing">
@@ -383,6 +383,13 @@ export default{
             }else if (!this.editing && (this.stateType == 0)){
                 this.stateType = 1;
             }
+        },
+
+        val: function(){
+            if (!this.editing){
+                this.redrawIndex++;
+                this.$forceUpdate();
+            }
         }
 
     },
@@ -444,6 +451,8 @@ export default{
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.$emit('edited', this.workingVal);   
+            this.reindexKey++;
+            this.$forceUpdate();
         },
 
         removeField: function(key, fKey){
@@ -478,6 +487,8 @@ export default{
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.$emit('edited', this.workingVal);
+            this.reindexKey++;
+            this.$forceUpdate();
         },
 
         updateResourcePath: function(key, event){
@@ -610,7 +621,8 @@ export default{
             expanded: {},
             focus: "",
             showType: {},
-            stateType: this.stateTypeParent
+            stateType: this.stateTypeParent,
+            redrawIndex: 0,
         };
     },
 
@@ -645,6 +657,9 @@ export default{
                 }
             });
         }
+
+        this.redrawIndex++;
+        this.$forceUpdate();
     }
 }
 </script>
