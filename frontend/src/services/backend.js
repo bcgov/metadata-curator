@@ -214,9 +214,23 @@ export class Backend {
     }
 
 
-    getTopics(){
+    async getTopics(){
         const url = `/api/v1/forum/topics`;
-        return axios.get(url,{withCredentials: true}).then(response => response.data)
+        let r = await axios.get(url,{withCredentials: true})
+        if (r.data && r.data.length >= 100){
+            let page = 2;
+            let u = url + "?page=" + page; 
+            let r2 = await axios.get(u,{withCredentials: true})
+            while (r2.data && r2.data.length >= 100){
+                r.data = r.data.concat(r2.data);
+                page++;
+                u = url + "?page=" + page; 
+                r2 = await axios.get(u,{withCredentials: true})
+            }
+            r.data = r.data.concat(r2.data)
+
+        }
+        return r.data
     }
 
     putTopic(id, editedTopic){

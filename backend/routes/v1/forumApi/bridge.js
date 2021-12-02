@@ -76,7 +76,7 @@ var addRoutes = function(router){
     //topics
     router.get('/topics', async function(req, res, next){
         const forumApiConfig = config.get('forumApi');
-        const url = forumApiConfig.baseUrl + "/";
+        let url = forumApiConfig.baseUrl + "/";
         if (!req.user || !req.user.jwt){
             res.status(403);
             return res.json({error: "Forbidden"})
@@ -86,6 +86,12 @@ var addRoutes = function(router){
                 "Authorization": "Bearer " + req.user.jwt
             }
         };
+
+        if (req.query && req.query.page){
+            url += "?page=" + req.query.page;
+        }
+
+        console.log("URL ", url);
 
         const response = await axios.get(url, options);
         res.json(response.data);
