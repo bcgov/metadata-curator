@@ -18,7 +18,7 @@
                         <v-row>
                             <h1 class="display-1 font-weight-thin ml-3 my-3">{{$tc('Metadata')}}</h1>
                         </v-row>
-                        <v-row v-if="!loading && schema && schema !== {}">
+                        <v-row v-if="!loading && schema && schema !== {}" key="">
                             <SchemaView :editing="editing" @edited="updatedObj"></SchemaView>
                         </v-row>
                         <v-row v-else>
@@ -137,9 +137,10 @@ export default {
             this.loading = false;
         },
 
-        createBasic(){
-            this.setTableSchema({schema: {resources: []}});
-            this.saveTableSchema();
+        async createBasic(){
+            this.setDataPackageSchema({schema: {version: this.id, resources: []}});
+            await this.createDataPackageSchema();
+            await this.loadSections();
             this.editing = true;
         },
 
@@ -236,6 +237,10 @@ export default {
         }),
     },
     watch: {
+        rawSchema: function(){
+            this.$forceUpdate();
+        },
+
         branchId: function(){
             this.load();
         }

@@ -46,7 +46,7 @@ import JsonEditor from './JsonEditor/JsonEditor';
                 redrawIndex: 0,
                 rawSchema: null,
                 loading: false,
-                jsonState: 1,
+                jsonState: 0,
                 jsonFocus: "",
             }
         },
@@ -80,6 +80,7 @@ import JsonEditor from './JsonEditor/JsonEditor';
                     this.schemaObj = await Schema.load(s);
                 }
                 this.loading = false;
+                this.redrawIndex++;
             },
 
             replacerFunc: function(){
@@ -87,7 +88,6 @@ import JsonEditor from './JsonEditor/JsonEditor';
                 return (key, value) => {
                     if (typeof value === "object" && value !== null) {
                         if (visited.has(value)) {
-                            console.log("Replacing key", key);
                             return;
                         }
                         visited.add(value);
