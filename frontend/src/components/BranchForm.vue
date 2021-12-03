@@ -14,6 +14,7 @@
                 <v-tabs v-model="tab">
                     <v-tab key="version">{{$tc('Version')}}</v-tab>
                     <v-tab key="schema" v-if="!creating">{{$tc('Schema')}}</v-tab>
+                    <v-tab key="compare" v-if="!creating">{{$tc('Compare')}}</v-tab>
                 </v-tabs>
                 <v-tabs-items v-model="tab" class="fullWidth">
                     <v-tab-item key="version">
@@ -233,6 +234,10 @@
                     <v-tab-item key="schema" v-if="!creating">
                         <MetadataForm :branchId="branchId" :dialog="dialog" @close="closeOrBack()"></MetadataForm>
                     </v-tab-item>
+
+                    <v-tab-item key="compare" v-if="!creating">
+                        <Comparison :left-side-text="JSON.stringify(inferredSchema)" :right-side-text="JSON.stringify(schema)" :diff-json="true"></Comparison>
+                    </v-tab-item>
                 </v-tabs-items>
             </v-col>
         </v-row>
@@ -254,6 +259,7 @@ import Select from './Select';
 import Markdown from './Markdown';
 import MetadataForm from './MetadataForm';
 import Comments from './Comments';
+import Comparison from './Comparison';
 
 import Vue from 'vue';
 import SimpleCheckbox from './SimpleCheckbox.vue';
@@ -267,6 +273,7 @@ export default {
         SimpleCheckbox,
         Markdown,
         Comments,
+        Comparison,
     },
     props: {
         dialog: {
@@ -302,6 +309,8 @@ export default {
             getBranchById: 'repos/getBranchById',
             getRepos: 'repos/getAllRepos',
             getDataUploads: 'dataUploads/getDataUploads',
+            getSchema: 'schemaImport/getTableSchema',
+            getInferredSchema: 'schemaImport/getInferredSchema',
         }),
         ...mapMutations({    
             editBranch: 'repos/editBranch',
@@ -311,6 +320,8 @@ export default {
         async loadSections() {
             //await this.getBranch({id: this.id});
             await this.getBranchById({id: this.id});
+            await this.getInferredSchema({id: this.id});
+            await this.getSchema({id: this.id});
             //await this.getRepos({filterBy: ''});
             //await this.getDataset({id: this.branch.repo_id});
             this.reIndex++;
@@ -396,6 +407,8 @@ export default {
             branch: state => state.repos.branch,
             dataUploads: state => state.dataUploads.dataUploads,
             dataset: state => state.repos.repo,
+            schema: state => state.schemaImport.tableSchema,
+            inferredSchema: state => state.schemaImport.inferredSchema,
         }),
     },
     watch: {

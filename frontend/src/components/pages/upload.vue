@@ -92,7 +92,7 @@
                                 </v-row>
                                 <v-row v-if="!showDiff">
                                     <v-col cols=12>
-                                        <JsonEditor :key="'jsonEditor-'+jsonRedraw" :val="schema" @edited="updateSchema" :raw="false"></JsonEditor>
+                                        <JsonEditor :key="'jsonEditor-'+jsonRedraw" :val="schema" @edited="updateSchema" :state-type-parent="0" :raw="false"></JsonEditor>
                                     </v-col>
                                 </v-row>
                                 <v-row v-else>
@@ -198,6 +198,7 @@
                 getSchema: 'schemaImport/getDataPackageByUploadId',
                 getSchemaFromVersion: 'schemaImport/getDataPackage',
                 createDataPackageSchema: 'schemaImport/createDataPackageSchema',
+                createDataPackageSchemaInferred: 'schemaImport/createDataPackageSchemaInferred',
                 updateDataPackageSchema: 'schemaImport/updateDataPackageSchema',
                 getAllRepos: 'repos/getAllRepos',
                 saveDataset: 'repos/saveRepo',
@@ -397,16 +398,26 @@
                 }
 
                 this.schema.version = this.selectedVersion;
+
+                let oSchema = JSON.parse(JSON.stringify(this.schemaState));
+
+                this.inferredSchema.version = this.selectedVersion;
+                this.setDataPackageSchema({schema: this.inferredSchema});
+                await this.createDataPackageSchemaInferred();
                 
-                if (this.schemaState !== null && Object.keys(this.schemaState).length !== 0){
-                    this.setTableSchema({schema: this.schema});
-                    this.setTableSchemaId({id: this.schema._id});
-                    await this.updateDataPackageSchema();
-                }else{
+                if (oSchema === null || Object.keys(oSchema).length === 0){
+                    if (this.schemaState && this.schemaState._id){
+                        this.schema._id = this.schemaState._id;
+                    }
+                    if (this.schemaState && this.schemaState.profile){
+                        this.schema.profile = this.schemaState.profile;
+                    }
+
+                    this.schema.version = this.selectedVersion;
                     this.setDataPackageSchema({schema: this.schema});
                     await this.createDataPackageSchema();
-                    
                 }
+                
                 if(transitionNextStepAfterSave) { this.step = this.steps.step6UploadProgress; }
             },
 

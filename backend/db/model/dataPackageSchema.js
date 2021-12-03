@@ -3,7 +3,6 @@ const Schema = mongoose.Schema;
 
 var resourceSchema = new Schema({
    name: {type: String, required: false},
-   profile: {type: String, required: true},
    data: {type: [String], required: false, default: []},
    path: {type: String, required: false},
    tableSchema:

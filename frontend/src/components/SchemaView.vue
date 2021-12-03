@@ -35,9 +35,15 @@ import JsonEditor from './JsonEditor/JsonEditor';
                 type: Boolean,
                 required: true,
             },
+
             editable: {
                 type: Boolean,
                 default: true,
+            },
+
+            schema: {
+                type: Object,
+                required: true,
             }
         },
         data() {
@@ -119,7 +125,6 @@ import JsonEditor from './JsonEditor/JsonEditor';
                 user: state => state.user.user,
                 branch: state => state.repos.branch,
                 dataUploads: state => state.dataUploads.dataUploads,
-                schema: state => state.schemaImport.tableSchema,
             })
         },
         

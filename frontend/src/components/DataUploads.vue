@@ -114,10 +114,10 @@ export default {
             this.selectedProviders = this.selectedDataProviders;
             await this.getDataProviders();
         } else if(this.user.isDataProvider) {
-            if(!this.filterBy || this.filterBy === 'provider') { this.filterBy = 'me'; }
+            if(!this.filterBy || this.filterBy === 'provider') { this.filterBy = 'team'; }
             await this.loadDataUploads();
         }else{
-            this.filterBy = 'me';
+            this.filterBy = 'team';
             await this.loadDataUploads();
         }
     },

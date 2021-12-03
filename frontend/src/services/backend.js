@@ -28,12 +28,16 @@ export class Backend {
         return axios.post(uploadUrl, {}, uploadOptions);
     }
 
-    getTableSchema(id, byUploadId){
+    getTableSchema(id, byUploadId, inferred){
         byUploadId = typeof(byUploadId) !== 'undefined' ? byUploadId : false;
+        inferred = typeof(inferred) !== 'undefined' ? inferred : false;
         
         let url = `/api/v1/datapackages/branch/${id}`
         if (byUploadId){
             url = `/api/v1/datapackages/branch?upload_id=${id}`
+            url += `&inferred=${inferred}`
+        }else if (inferred){
+            url += `?inferred=${inferred}`
         }
         return axios.get(url, {withCredentials: true}).then(response => response.data);
     }

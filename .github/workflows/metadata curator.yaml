@@ -71,7 +71,7 @@ jobs:
   deploy_backend:
     runs-on: ubuntu-latest
     needs: ["quay_io_backend", "integration_tests"]
-    if: success() && ( (github.event_name == 'release' && github.event.action == 'created') || (github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') )
+    if: success() && ( (github.event_name == 'release' && github.event.action == 'created') || (github.ref == 'refs/heads/main') || (github.ref == 'refs/heads/develop') )
     env:
       DOCKER_USERNAME: ${{ secrets.DOCKER_DEPLOY_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_DEPLOY_PASSWORD }}
@@ -90,7 +90,7 @@ jobs:
   deploy_frontend:
     runs-on: ubuntu-latest
     needs: ["quay_io_frontend", "deploy_backend", "integration_tests"]
-    if: success() && ( (github.event_name == 'release' && github.event.action == 'created') || (github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') )
+    if: success() && ( (github.event_name == 'release' && github.event.action == 'created') || (github.ref == 'refs/heads/main') || (github.ref == 'refs/heads/develop') )
     env:
       DOCKER_USERNAME: ${{ secrets.DOCKER_DEPLOY_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_DEPLOY_PASSWORD }}

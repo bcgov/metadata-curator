@@ -90,7 +90,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
   - Rebase your branch and force push to your own GitHub repository (this will update your Pull Request):
 
     ``` sh
-    git rebase master -i
+    git rebase main -i
     git push -f
     ```
 

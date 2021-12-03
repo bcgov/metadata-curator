@@ -134,7 +134,6 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             let topicResponse = {data: []};
             topicResponse.data = topicResponse.data.concat(currentData.data);
             
-            
             if(query && query.filterBy) {
                 if(query.filterBy === 'me') {
                     topics = topicResponse.data.filter( (item) => {
