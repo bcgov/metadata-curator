@@ -151,6 +151,7 @@
         },
         async created() {
             this.loading = true;
+            this.$store.commit('file/clearContent');
             await this.getAllRepos();
             if(this.$route.params.id && this.$route.params.id != 'new') { 
                 this.uploadId = this.$route.params.id; 
@@ -218,6 +219,7 @@
                 editBranch: 'repos/editBranch',
                 clearBranch: 'repos/clearBranch',
                 setRepo: 'repos/setRepo',
+                clearContent: 'file/clearContent',
             }),
 
             step2Changed(numFiles){
@@ -250,6 +252,9 @@
                             name: this.upload.files[i].name.substring(0,this.upload.files[i].name.lastIndexOf('.')),
                             path: "./"+this.upload.files[i].name,
                             schema: s.descriptor,
+                            description: this.upload.files[i].description,
+                            temporal_start: this.upload.files[i].start_date,
+                            temporal_end: this.upload.files[i].end_date,
                         });
                     }catch(ex){
                         console.error("Error inferring:", ex);

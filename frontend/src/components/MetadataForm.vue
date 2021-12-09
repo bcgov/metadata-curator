@@ -19,7 +19,7 @@
                             <h1 class="display-1 font-weight-thin ml-3 my-3">{{$tc('Metadata')}}</h1>
                         </v-row>
                         <v-row v-if="!loading && schema && schema !== {}" key="">
-                            <v-select :items="['Provided', 'Inferred']" v-model="viewSchemaType"></v-select>
+                            <v-select v-if="inferredSchema && !editing" :items="['Provided', 'Inferred']" v-model="viewSchemaType"></v-select>
                             <SchemaView :editing="editing" @edited="updatedObj" :schema=" (viewSchemaType === 'Provided') ? schema : inferredSchema"></SchemaView>
                         </v-row>
                         <v-row v-else>
@@ -64,7 +64,7 @@
                         </v-card-actions>
                         <v-card-actions v-else>
                             <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
-                            <v-btn @click="editing=!editing" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
+                            <v-btn @click="editing=!editing; viewSchemaType = 'Provided'" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                         </v-card-actions>
                 </v-card>
             </v-col>

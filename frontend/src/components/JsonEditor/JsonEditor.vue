@@ -70,6 +70,83 @@
                             </v-col>
                            
                         </v-row>
+                        <v-row v-if="(resource && resource.description) || editing" class="pb-2">
+                            <v-col cols=12>
+                                <TextInput
+                                    :label="$tc('Description (resource)')"
+                                    placeholder=""
+                                    name="description"
+                                    :refName="'basicField-' + key + '-description'"
+                                    :idName="'basicField-' + key + '-description'"
+                                    :large="true"
+                                    :editing="editing"
+                                    :value="resource.description"
+                                    helpPrefix="schema"
+                                    :focusField="focusProp"
+                                    @focus="onFocusBasic"
+                                    @blur="(event) => { updateResourceBase(key, 'description', event) }"
+                                ></TextInput>
+                            </v-col>
+                        </v-row>
+
+                         <v-row v-if="(resource && resource.temporal_start) || editing" class="pb-2">
+                            <v-col cols=12>
+                                <TextInput
+                                    :label="$tc('Date Range Start')"
+                                    placeholder=""
+                                    name="temporal_start"
+                                    :refName="'basicField-' + key + '-temporal_start'"
+                                    :idName="'basicField-' + key + '-temporal_start'"
+                                    :large="true"
+                                    :editing="editing"
+                                    :value="resource.temporal_start"
+                                    helpPrefix="schema"
+                                    :focusField="focusProp"
+                                    @focus="onFocusBasic"
+                                    @blur="(event) => { updateResourceBase(key, 'temporal_start', event) }"
+                                ></TextInput>
+                            </v-col>
+                        </v-row>
+
+                        <v-row v-if="(resource && resource.temporal_end) || editing" class="pb-2">
+                            <v-col cols=12>
+                                <TextInput
+                                    :label="$tc('Date Range End')"
+                                    placeholder=""
+                                    name="temporal_end"
+                                    :refName="'basicField-' + key + '-temporal_end'"
+                                    :idName="'basicField-' + key + '-temporal_end'"
+                                    :large="true"
+                                    :editing="editing"
+                                    :value="resource.temporal_end"
+                                    helpPrefix="schema"
+                                    :focusField="focusProp"
+                                    @focus="onFocusBasic"
+                                    @blur="(event) => { updateResourceBase(key, 'temporal_end', event) }"
+                                ></TextInput>
+                            </v-col>
+                        </v-row>
+
+                        <v-row v-if="(resource && resource.source_system) || editing" class="pb-2">
+                            <v-col cols=12>
+                                <TextInput
+                                    :label="$tc('Source System')"
+                                    placeholder=""
+                                    name="source_system"
+                                    :refName="'basicField-' + key + '-source_system'"
+                                    :idName="'basicField-' + key + '-source_system'"
+                                    :large="true"
+                                    :editing="editing"
+                                    :value="resource.source_system"
+                                    helpPrefix="schema"
+                                    :focusField="focusProp"
+                                    @focus="onFocusBasic"
+                                    @blur="(event) => { updateResourceBase(key, 'source_system', event) }"
+                                ></TextInput>
+                            </v-col>
+                        </v-row>
+
+
                         <span v-if="resource.schema && resource.schema.fields">
                             <v-row v-for="(field, fKey) in resource.schema.fields" :key="'field-'+key+'-'+fKey+'-'+reindexKey" :class="'field' + ( (field && field.highlight && !editing) ? ' fieldHighlight': '')">
                                 <v-col cols=12 v-if="(field && field.name) || editing" class="py-1">
@@ -363,7 +440,7 @@ export default{
         stateTypeParent: {
             type: Number,
             required: false,
-            default: 1,
+            default: 0,
         },
         focusProp: {
             type: String,
@@ -513,9 +590,20 @@ export default{
             this.$emit('edited', this.workingVal);
         },
 
+        updateResourceBase: function(key, field, event){
+            let newValue = event.target.value;
+            if (!this.workingVal.resources[key]){
+                this.workingVal.resources[key] = {}
+            }
+            this.workingVal.resources[key][field] = newValue;
+            let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
+            this.workingStr = str;
+            this.$emit('edited', this.workingVal);
+        },
+
         updateResource: function(key, fieldKey, path, event){
             let value = event;
-            if (event && event.target && event.target.value){
+            if (event && event.target && typeof(event.target.value) !== 'undefined'){
                 value = event.target.value;
             }
             this.workingVal.resources[key].schema.fields[fieldKey][path] = value;

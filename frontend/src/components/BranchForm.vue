@@ -14,7 +14,7 @@
                 <v-tabs v-model="tab">
                     <v-tab key="version">{{$tc('Version')}}</v-tab>
                     <v-tab key="schema" v-if="!creating">{{$tc('Schema')}}</v-tab>
-                    <v-tab key="compare" v-if="!creating">{{$tc('Compare')}}</v-tab>
+                    <v-tab key="compare" v-if="!creating && inferredSchema">{{$tc('Compare')}}</v-tab>
                 </v-tabs>
                 <v-tabs-items v-model="tab" class="fullWidth">
                     <v-tab-item key="version">

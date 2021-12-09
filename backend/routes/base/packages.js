@@ -40,7 +40,15 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
     const addDataPackage = async function(descriptor) {
         await validateDataPackage(descriptor);
 
-        const dataPackageSchema = await buildDataPackageSchema(descriptor);
+        let dataPackageSchema = await buildDataPackageSchema(descriptor);
+
+
+        if (dataPackageSchema.inferred){
+            let preInferred = await db.DataPackageSchema.findOne({inferred: true, version: dataPackageSchema.version});
+            if (preInferred){
+                dataPackageSchema._id = preInferred._id;
+            }
+        }
 
         try{
             let d = await dataPackageSchema.save();
