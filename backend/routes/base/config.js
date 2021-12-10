@@ -1,5 +1,3 @@
-const { enabled } = require("../../app");
-
 var buildStatic = function(db, router){
     return router;
 }
