@@ -7,6 +7,8 @@ var buildDynamic = function(db, router, auth, cache){
     //cache keys
     const configListCache = 'config/configs';
     const enabledPhaseCache = 'config/enabledPhase';
+    const safeKeys = ['requiredRoleToCreateRequest']
+    const config = require('config');
 
     router.get('/', async function(req, res, next) {
 
@@ -57,6 +59,9 @@ var buildDynamic = function(db, router, auth, cache){
 
     router.get('/:configKey', async function(req, res, next){
         let conf = await db.ConfigSchema.findOne({key: req.params.configKey});
+        if (!conf && safeKeys.indexOf(req.params.configKey) !== -1 && config.has(req.params.configKey)){
+            conf = {key: req.params.configKey, value: config.get(req.params.configKey)};
+        }
         res.status(200).json(conf);
     });
 

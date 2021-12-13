@@ -62,7 +62,7 @@
         <v-container>
             <v-row>
                 <v-col cols="2">
-                    <v-btn color="primary" to="/upload" id="newUpload" v-if="canUpload">{{$tc('New')}} {{$tc('Uploads')}}</v-btn>
+                    <v-btn color="primary" to="/upload" id="newUpload" v-if="canUpload">{{ ( (user.isApprover) ? $tc('Pre-Create') : $tc('New'))}} {{$tc('Uploads')}}</v-btn>
                 </v-col>
             </v-row>
         </v-container>

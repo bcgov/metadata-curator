@@ -23,7 +23,7 @@ const topics = build('getTopics', 'newTopic', 'putTopic', 'deleteTopic');
 const comments = build('getComments', 'newComment', 'putComment', 'deleteComment');
 const adminDUploads = build('getDataUploads');
 const submissions = build('getFormSubmissions','postFormSubmission', 'putFormSubmission', 'deleteFormSubmission' );
-const config = build('getConfigs','newConfig', 'putConfig', 'deleteConfig' );
+const config = build('getConfigs','newConfig', 'putConfig', 'deleteConfig', 'getConfig' );
 const adminDatasets = build('getRepos');
 const adminVersions = build('getBranches');
 

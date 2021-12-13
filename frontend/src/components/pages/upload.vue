@@ -15,6 +15,9 @@
             <v-col cols=12 v-else>
                 <v-stepper v-model="step">
                     <v-stepper-header>
+                        <v-stepper-step v-if="user.isApprover" :step="steps.step0PreCreate" :complete="step > steps.step0PreCreate" >{{$tc('Pre-Create Info')}}</v-stepper-step>
+                        <v-divider></v-divider>
+
                         <v-stepper-step :step="steps.step1UploadForm" :complete="step > steps.step1UploadForm" >{{$tc('Upload Info')}}</v-stepper-step>
                         <v-divider></v-divider>
 
@@ -37,11 +40,27 @@
                     </v-stepper-header>
 
                     <v-stepper-items>
+
+                        <v-stepper-content :step="steps.step0PreCreate">
+                            <v-card class="mb-12">
+                                <Select
+                                    :label="$tc('Select Data Provider Group to pre-create for')"
+                                    name="providerGroup"
+                                    :editing="true"
+                                    :value="providerGroup"
+                                    :items="selectableGroups"
+                                    helpPrefix="upload"
+                                    @edited="(newValue) => { providerGroup = newValue; }"
+                                ></Select>
+                            </v-card>
+                            <v-btn text @click="step = steps.step1UploadForm" id="next-0">{{$tc('Next')}}</v-btn>
+                        </v-stepper-content>
                         
                         <v-stepper-content :step="steps.step1UploadForm">
                             <v-card class="mb-12">
                                 <UploadForm ref="uploadForm"></UploadForm>
                             </v-card>
+                            <v-btn text v-if="user.isApprover" @click="step = steps.step0PreCreate" id="back-1">{{$tc('Back')}}</v-btn>
                             <v-btn text @click="stepSaveUploadForm(true)" id="next-1">{{$tc('Next')}}</v-btn>
                         </v-stepper-content>
 
@@ -134,6 +153,7 @@
     import FileInfoForm from "../FileInfoForm";
     import FileUploadForm from "../FileUploadForm";
     import Comparison from '../Comparison';
+    import Select from '../Select';
 
     import { Backend } from '../../services/backend';
     import JsonEditor from '../JsonEditor/JsonEditor';
@@ -148,6 +168,7 @@
             FileUploadForm,
             JsonEditor,
             Comparison,
+            Select,
         },
         async created() {
             this.loading = true;
@@ -164,7 +185,17 @@
                 this.steps.step4FileLevelForm = 3;
                 this.steps.step6UploadProgress = 4;
                 this.steps.step7UploadSummary = 5;
-
+            }else{
+                if (this.user.isApprover){
+                    this.step = 0;
+                    let requiredRole = await this.$store.dispatch('config/getItem', {field: 'key', value: 'requiredRoleToCreateRequest', def: {key: 'requiredRoleToCreateRequest', value: false}});
+                    requiredRole = requiredRole.value;
+                    this.selectableGroups = JSON.parse(JSON.stringify(this.user.groups));
+                    let index = this.selectableGroups.indexOf(requiredRole);
+                    if (index !== -1){
+                        this.selectableGroups.splice(index, 1);
+                    }
+                }
             }
             if(this.uploadId) { 
                 await this.getUpload(this.uploadId); 
@@ -283,6 +314,12 @@
                 }
             },
             async stepSaveUploadForm(transitionNextStepAfterSave) {
+              if (this.user.isApprover && ( (this.providerGroup === null) || (this.providerGroup === '') ) ){
+                  this.errorAlert = true;
+                  this.errorText = "As a data approver you must select a data provider group you are creating for";
+                  return false;
+              }
+
               if(this.$refs.uploadForm.validateForm()) {
                   if((!this.uploadId ) && !this.createUploadInProgress) {
                       let data;
@@ -300,7 +337,8 @@
                         description: submission.datauploadDescription,
                         uploader: this.user.email,
                         upload_submission_id: data._id,
-                        form_name: this.formName
+                        form_name: this.formName,
+                        provider_group: this.providerGroup,
                     }
                     try{
                         let d = await this.createInitialUpload(initialUpload);
@@ -494,6 +532,7 @@
         },
         data () {
             let steps = {
+                step0PreCreate: 0,
                 step1UploadForm: 1,
                 step2EditionForm: 2,
                 step3FileSelection: 3,
@@ -519,6 +558,8 @@
                 inferredSchema: {},
                 showDiff: false,
                 loading: false,
+                providerGroup: null,
+                selectableGroups: [],
             }
         },
         computed: {

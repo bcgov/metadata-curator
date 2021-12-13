@@ -198,8 +198,11 @@ export default {
         "Enum": "Enumeration Constraints | Enumeration Constraint | Enumeration Constraints",
         "Create Without Import": "Create Without Import",
         "Sucessfully created ": "Sucessfully created ",
-
         "Resource Name": "Resource Name",
+        "Pre-Create": "Pre-Create",
+        "Upload": "Upload",
+        "Pre-Create Info": "Pre-Create Info",
+        "Select Data Provider Group to pre-create for": "Select Data Provider Group to pre-create for",
 
 
 

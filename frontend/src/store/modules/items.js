@@ -2,7 +2,7 @@ import Vue from 'vue';
 import { Backend } from '../../services/backend';
 const backend = new Backend();
 
-var build = function(getFn, newFn, updateFn, deleteFn){
+var build = function(getFn, newFn, updateFn, deleteFn, getSingle){
 
     const state = {
         items: [],
@@ -36,6 +36,9 @@ var build = function(getFn, newFn, updateFn, deleteFn){
                 await dispatch('getItems', {});
             }
             let rv = state.items.find(item => item[field] === value);
+            if (!rv && getSingle && typeof(backend[getSingle]) !== 'undefined'){
+                rv = await backend[getSingle](value);
+            }
             if ( (!rv) && (def) ){
                 commit('pushItem', {item: def});
                 return def;

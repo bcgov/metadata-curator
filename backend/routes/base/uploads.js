@@ -15,6 +15,22 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             if (!upload.name){
                 throw new Error("Name is required");
             }
+
+            if (!user.groups.some( (el) => el === config.get('requiredRoleToCreateRequest'))){
+                throw new Error("Not permitted to create an upload");
+            }
+
+            let originalGroups = JSON.parse(JSON.stringify(user.groups));
+            let originalJWT = user.jwt;
+
+            if (user.isApprover && !upload.provider_group){
+                throw new Error("Data Approvers must provide a data provider group");
+            }else if (user.isApprover){
+                if (!user.groups.some( (el) => el === upload.provider_group) ){
+                    throw new Error("Data Approvers must select a data provider group they belong to");
+                }
+            }
+
             dataUploadSchema.name = upload.name;
             dataUploadSchema.description = upload.description;
             dataUploadSchema.uploader = user.id;
@@ -37,7 +53,18 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
                 dataUploadSchema.upload_submission_id = upload.upload_submission_id ? upload.upload_submission_id : null;
             }
 
+            if (user.isApprover){
+                user.groups = [config.get('requiredRoleToCreateRequest'), upload.provider_group];
+                var jwtlib = require('jsonwebtoken');
+                user.jwt = jwtlib.sign(user, config.get('jwtSecret'));
+            }
+
             const topic = await forumClient.addTopic(id, user); 
+
+            if (user.isApprover){
+                user.groups = originalGroups;
+                user.jwt = originalJWT;
+            }
             dataUploadSchema.topic_id = topic._id;
             return await dataUploadSchema.save();
         } catch(e) {
