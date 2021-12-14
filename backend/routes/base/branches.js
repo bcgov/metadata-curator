@@ -57,8 +57,6 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
             const topicResponse = await forumClient.getTopics(user, {});
             topics = topicResponse.data.filter(item => item.parent_id);
         }
-
-        console.log("hi ", q, topics);
         
         const branchIds = topics.map( (item) => {
             let id = item.name;

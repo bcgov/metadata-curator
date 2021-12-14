@@ -54,16 +54,29 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             }
 
             if (user.isApprover){
-                user.groups = [config.get('requiredRoleToCreateRequest'), upload.provider_group];
+                user.groups = [];
+                if (user.organization){
+                    user.groups.push(user.organization);
+                }
+                console.log("provider groups1", user.groups);
+                user.groups.push(config.get('requiredRoleToCreateRequest'));
+                console.log("provider groups2", user.groups);
+                user.groups.push(upload.provider_group);
+                console.log("provider groups3", user.groups);
+                console.log("provider group", upload.provider_group);
                 var jwtlib = require('jsonwebtoken');
                 user.jwt = jwtlib.sign(user, config.get('jwtSecret'));
             }
 
+            console.log("groups pre topic", user.groups);
             const topic = await forumClient.addTopic(id, user); 
+            console.log("groups post topic", user.groups);
 
             if (user.isApprover){
-                user.groups = originalGroups;
+                console.log("groups prereset", user.groups);
+                user.groups = JSON.parse(JSON.stringify(originalGroups));
                 user.jwt = originalJWT;
+                console.log("groups reset", user.groups);
             }
             dataUploadSchema.topic_id = topic._id;
             return await dataUploadSchema.save();
@@ -284,9 +297,11 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
 
     router.get('/:dataUploadId', async function(req, res, next){
         const dataUploadId = req.params.dataUploadId;
-        let result = await getDataUploadById(req.user, dataUploadId);
-        if(!result) {
-            throw new Error("Data Upload not found")
+        let result = null;
+        try{
+            result = await getDataUploadById(req.user, dataUploadId);
+        }catch(e){
+            return res.status(404).json({error: "Not found"});
         }
         return res.json(result);
     });

@@ -12,6 +12,10 @@
                 <span>{{$tc('Loading')}}...</span>
                 <v-progress-circular indeterminate></v-progress-circular>
             </v-col>
+            <v-col cols=12 v-else-if="notFound">
+                <span>{{$tc('404 Not Found')}}...</span>
+            </v-col>
+
             <v-col cols=12 v-else>
                 <v-stepper v-model="step">
                     <v-stepper-header>
@@ -53,6 +57,7 @@
                                     @edited="(newValue) => { providerGroup = newValue; }"
                                 ></Select>
                             </v-card>
+                            <span>{{$tc('NOTE: you will be unable to change this after the next form')}}</span>
                             <v-btn text @click="step = steps.step1UploadForm" id="next-0">{{$tc('Next')}}</v-btn>
                         </v-stepper-content>
                         
@@ -60,7 +65,7 @@
                             <v-card class="mb-12">
                                 <UploadForm ref="uploadForm"></UploadForm>
                             </v-card>
-                            <v-btn text v-if="user.isApprover" @click="step = steps.step0PreCreate" id="back-1">{{$tc('Back')}}</v-btn>
+                            <v-btn text v-if="user.isApprover && !uploadId" @click="step = steps.step0PreCreate" id="back-1">{{$tc('Back')}}</v-btn>
                             <v-btn text @click="stepSaveUploadForm(true)" id="next-1">{{$tc('Next')}}</v-btn>
                         </v-stepper-content>
 
@@ -186,7 +191,7 @@
                 this.steps.step6UploadProgress = 4;
                 this.steps.step7UploadSummary = 5;
             }else{
-                if (this.user.isApprover){
+                if (this.user.isApprover && !this.uploadId){
                     this.step = 0;
                     let requiredRole = await this.$store.dispatch('config/getItem', {field: 'key', value: 'requiredRoleToCreateRequest', def: {key: 'requiredRoleToCreateRequest', value: false}});
                     requiredRole = requiredRole.value;
@@ -198,7 +203,16 @@
                 }
             }
             if(this.uploadId) { 
+                
                 await this.getUpload(this.uploadId); 
+                if (this.upload === null){
+                    this.loading = false;
+                    this.notFound = true;
+                    this.errorAlert = true;
+                    this.errorText = "Upload not found";
+                    return;
+                }
+
                 await this.getUploadFormSubmission({formName: this.upload.form_name, submissionId: this.upload.upload_submission_id});
                 if (this.enabledPhase >= 2){
                     await this.getSchema({id: this.uploadId});
@@ -560,6 +574,7 @@
                 loading: false,
                 providerGroup: null,
                 selectableGroups: [],
+                notFound: false,
             }
         },
         computed: {
