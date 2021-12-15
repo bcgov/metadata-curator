@@ -58,29 +58,27 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
                 if (user.organization){
                     user.groups.push(user.organization);
                 }
-                console.log("provider groups1", user.groups);
-                user.groups.push(config.get('requiredRoleToCreateRequest'));
-                console.log("provider groups2", user.groups);
+                
+                user.groups.push(config.get('requiredRoleToCreateRequest'));   
                 user.groups.push(upload.provider_group);
-                console.log("provider groups3", user.groups);
-                console.log("provider group", upload.provider_group);
+                
                 var jwtlib = require('jsonwebtoken');
                 user.jwt = jwtlib.sign(user, config.get('jwtSecret'));
             }
-
-            console.log("groups pre topic", user.groups);
+            
             const topic = await forumClient.addTopic(id, user); 
-            console.log("groups post topic", user.groups);
 
             if (user.isApprover){
-                console.log("groups prereset", user.groups);
                 user.groups = JSON.parse(JSON.stringify(originalGroups));
                 user.jwt = originalJWT;
-                console.log("groups reset", user.groups);
             }
             dataUploadSchema.topic_id = topic._id;
             return await dataUploadSchema.save();
         } catch(e) {
+            if (user.isApprover){
+                user.groups = JSON.parse(JSON.stringify(originalGroups));
+                user.jwt = originalJWT;
+            }
             throw new Error(e.message)
         }
     }

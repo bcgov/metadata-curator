@@ -148,6 +148,7 @@ const createTopic = async function(topicName, parent, user){
     };
 
     const response = await axios.post(url, topic, options);
+    console.log("Created topic", response, "User groups", user.groups);
     return response;
 }
 
@@ -173,8 +174,9 @@ const createTopicIfDoesNotExist = async function(topicName, user){
         if(parentTopicResponse.data.length === 0) {
             // user.groups = [user.organization, config.get('requiredRoleToCreateRequest')];
             // user.jwt = modifyJWTGroups(user.jwt, user.groups);
-
+            
             const response = await createTopic(topicName, parentTopicResponse.data._id, user);
+            console.log("Created parent", response, "User groups", user.groups);
             return response;
 
         } else {

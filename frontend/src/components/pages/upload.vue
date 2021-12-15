@@ -56,8 +56,9 @@
                                     helpPrefix="upload"
                                     @edited="(newValue) => { providerGroup = newValue; }"
                                 ></Select>
+                                <span>{{$tc('NOTE: you will be unable to change this after the next form')}}</span>
                             </v-card>
-                            <span>{{$tc('NOTE: you will be unable to change this after the next form')}}</span>
+                            
                             <v-btn text @click="step = steps.step1UploadForm" id="next-0">{{$tc('Next')}}</v-btn>
                         </v-stepper-content>
                         
