@@ -178,7 +178,7 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
                         return (item.contributors.indexOf(user.id) !== -1 && item.parent_id);
                     });
                 } else if(query.filterBy === 'provider') {
-                    if(query.providerGroups && query.providerGroups.includes('all') ) {
+                    if(!query.providerGroups || query.providerGroups.includes('all') ) {
                         topics = topicResponse.data.filter(item => item.parent_id); }
                     else {
                         topics = topicResponse.data.filter(item => item.parent_id && item.author_groups.some(r => query.providerGroups.includes(r)));
@@ -202,11 +202,12 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             }).filter( (item) => {
                 return (item && String(item).length > 0)
             });
+
             if(query && query.filterBy === 'provider') {
                 let results = await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": -1});
-                results = results.filter( (item) => {
-                    return item.status === "submitted";
-                });
+                // results = results.filter( (item) => {
+                //     return item.status === "submitted";
+                // });
                 return results;
             }else{
                 let results = await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": -1});
