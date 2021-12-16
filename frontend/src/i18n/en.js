@@ -203,7 +203,10 @@ export default {
         "Upload": "Upload",
         "Pre-Create Info": "Pre-Create Info",
         "Select Data Provider Group to pre-create for": "Select Data Provider Group to pre-create for",
-
+        "NOTE: you will be unable to change this after the next form": "NOTE: you will be unable to change this after the next form",
+        "Description (resource)": "Description (resource)",
+        "Enumeration Constraint": "Enumeration Constraint",
+        "Source System": "Source System",
 
 
         "help.dataset.name": "The name of the dataset",

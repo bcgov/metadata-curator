@@ -55,9 +55,9 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
 
             if (user.isApprover){
                 user.groups = [];
-                if (user.organization){
-                    user.groups.push(user.organization);
-                }
+                // if (user.organization){
+                //     user.groups.push(user.organization);
+                // }
                 
                 user.groups.push(config.get('requiredRoleToCreateRequest'));   
                 user.groups.push(upload.provider_group);

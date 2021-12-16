@@ -157,7 +157,7 @@ const createTopicIfDoesNotExist = async function(topicName, user){
     const forumApiConfig = config.get("forumApi");
 
     var newG = user.groups.slice();
-    newG.push("admin");
+    newG.push(config.get('adminGroup'));
 
     const options = {
         withCredentials: true,
