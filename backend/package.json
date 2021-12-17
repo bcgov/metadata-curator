@@ -1,6 +1,6 @@
 {
   "name": "MetadataCurator",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "Brandon Sharratt",
   "description": "Metadata Curator is a simple web app to edit csvs and to help describe, validate and share usable open data",
   "repository": "",
