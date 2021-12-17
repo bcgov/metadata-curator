@@ -40,7 +40,21 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
     const addDataPackage = async function(descriptor) {
         await validateDataPackage(descriptor);
 
-        const dataPackageSchema = await buildDataPackageSchema(descriptor);
+        
+        if (descriptor.inferred){
+            let preInferred = await db.DataPackageSchema.findOne({inferred: true, version: descriptor.version});
+            if (preInferred){
+                let dataPackageSchema = await buildDataPackageSchema(descriptor, true);
+                let d = await db.DataPackageSchema.updateOne({_id: preInferred._id}, dataPackageSchema);
+                if (!d._id){
+                    dataPackageSchema._id = preInferred._id;
+                    return dataPackageSchema;
+                }
+                
+                return d;
+            }
+        }
+        let dataPackageSchema = await buildDataPackageSchema(descriptor);
 
         try{
             let d = await dataPackageSchema.save();
@@ -112,18 +126,18 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         return current;
     }
 
-    const getDataPackageByBranchId = async function (id, user) {
+    const getDataPackageByBranchId = async function (id, user, inferred) {
         // Return a lean() object - simple javascript object, rather than the Model
         // so we can transform the document into a valid data package
 
-
+        inferred = (typeof(inferred) !== 'undefined') ? inferred : false;
         const branch = await db.RepoBranchSchema.findOne({_id: id});
 
         if ( (!branch || !branch.published) && (!user) ){
             throw new Error('404')
         }
 
-        const current = await db.DataPackageSchema.findOne({version: id}).lean().catch (e => {
+        const current = await db.DataPackageSchema.findOne({version: id, inferred: inferred}).lean().catch (e => {
             log.error(e);
             throw new Error(e.message)
         });
@@ -158,6 +172,10 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
             }catch(e){
                 return [];
             }
+        }
+
+        if (query.inferred){
+            q.inferred = query.inferred;
         }
 
         const list = await db.DataPackageSchema.find(q).lean().catch (e => {
@@ -196,10 +214,10 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         return resources;
     }
 
-    const buildDataPackageSchema = async function (descriptor) {
+    const buildDataPackageSchema = async function (descriptor, object) {
         await validateDataPackage(descriptor);
 
-        let dataPackageSchema = new db.DataPackageSchema;
+        let dataPackageSchema =  object ? {} : new db.DataPackageSchema;
         dataPackageSchema.profile = descriptor.profile;
 
         if (descriptor.resources && typeof(descriptor.resources) === "object"){
@@ -249,8 +267,9 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
 
     router.get('/branch/:branchId', async function(req, res, next){
         const id = req.params.branchId;
+        const inferred = (req.query && req.query.inferred) ? req.query.inferred : false;
         try{
-            return res.status(200).json(await getDataPackageByBranchId(id, req.user));
+            return res.status(200).json(await getDataPackageByBranchId(id, req.user, inferred));
         }catch(ex){
             if (ex.message === "404"){
                 return res.status(404).json({error: "Not found"});

@@ -5,6 +5,7 @@ const backend = new Backend();
 const state = {
     tableSchema: null,
     dataPackageSchema: null,
+    inferredSchema: null,
     imported: false,
     error: null,
     successMsg: null,
@@ -50,6 +51,13 @@ const actions = {
         return s;
     },
 
+    getInferredSchema: async function({commit}, {id: id}){
+        commit('setTableSchemaId', {id: -1});
+        let s = await backend.getTableSchema(id, false, true);
+        commit('setInferredSchema', {schema: s});
+        return s;
+    },
+
     getDataPackage: async function({commit}, {id: id}){
         commit('setDataPackageSchema', {schema: null});
         let s = await backend.getTableSchema(id);
@@ -90,6 +98,20 @@ const actions = {
             commit('setError', {error: e.response.data.error});
         });
     },
+
+    createDataPackageSchemaInferred({ commit, state }){
+        let i = JSON.parse(JSON.stringify(state.dataPackageSchema));
+        i.inferred = true;
+
+        backend.postDataPackageSchema(i).then(() => {
+            commit('clearDataPackageSchema');
+            commit('setSuccessMsg', {message: "Successfully saved data package schema"});
+        }).catch((e) => {
+            commit('setError', {error: e.response.data.error});
+        });
+
+    },
+
     updateDataPackageSchema({commit, state}){
 
         commit('clearSuccessMsg');
@@ -121,6 +143,10 @@ const mutations = {
     setDataPackageSchema(state, {schema}){
         // console.log("setSchema: ", schema);
         state.dataPackageSchema = schema;
+    },
+    setInferredSchema(state, {schema}){
+        // console.log("setSchema: ", schema);
+        state.inferredSchema = schema;
     },
     clearDataPackageSchema(state){
         state.dataPackageSchema = null;

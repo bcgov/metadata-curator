@@ -10,12 +10,11 @@ let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 let config = require('config');
 let session = require('express-session');
-let passport = require('passport');
 let history = require('connect-history-api-fallback');
 if (process.env.NODE_ENV !== "test"){
   require('./db/db').init();
 }
-require('./auth/auth');
+let passport = require('./auth/auth');
 
 let backendRouter = require('./routes/backendRouter');
 

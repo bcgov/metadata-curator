@@ -15,7 +15,7 @@ docker build -t $QUAYIO_BASE/$REPO .
 
 printf "\nENV GITHASH $GITHUB_SHA\n" >> Dockerfile
 
-if [ $BRANCH == "master" ]; then
+if [ $BRANCH == "main" ]; then
     docker tag $QUAYIO_BASE/$REPO $BCGOV_BASE/$REPO:latest
     docker tag $QUAYIO_BASE/$REPO $BCGOV_BASE/$REPO:$GITHUB_SHA
     echo "dockerfile tagged pushing now"

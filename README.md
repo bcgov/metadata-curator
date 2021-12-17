@@ -1,4 +1,4 @@
-# Metadata Curator &middot; [![Build Status](https://travis-ci.org/bcgov/metadata-curator.svg?branch=master)](https://travis-ci.org/bcgov/metadata-curator) [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=mdc_backend&metric=alert_status)](https://sonarcloud.io/dashboard?id=mdc_backend) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=mdc_backend&metric=coverage)](https://sonarcloud.io/dashboard?id=mdc_backend) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+# Metadata Curator &middot; [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Metadata Curator is an application for the encrypted (client side) upload of files to another server, that bundles JSON Table schema with the data able to help by infering information about the data.
 

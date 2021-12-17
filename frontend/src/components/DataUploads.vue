@@ -62,7 +62,7 @@
         <v-container>
             <v-row>
                 <v-col cols="2">
-                    <v-btn color="primary" to="/upload" id="newUpload" v-if="canUpload">{{$tc('New')}} {{$tc('Uploads')}}</v-btn>
+                    <v-btn color="primary" to="/upload" id="newUpload" v-if="canUpload">{{ ( (user.isApprover) ? $tc('Pre-Create') : $tc('New'))}} {{$tc('Uploads')}}</v-btn>
                 </v-col>
             </v-row>
         </v-container>
@@ -114,10 +114,10 @@ export default {
             this.selectedProviders = this.selectedDataProviders;
             await this.getDataProviders();
         } else if(this.user.isDataProvider) {
-            if(!this.filterBy || this.filterBy === 'provider') { this.filterBy = 'me'; }
+            if(!this.filterBy || this.filterBy === 'provider') { this.filterBy = 'team'; }
             await this.loadDataUploads();
         }else{
-            this.filterBy = 'me';
+            this.filterBy = 'team';
             await this.loadDataUploads();
         }
     },

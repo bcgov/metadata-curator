@@ -19,7 +19,8 @@
                             <h1 class="display-1 font-weight-thin ml-3 my-3">{{$tc('Metadata')}}</h1>
                         </v-row>
                         <v-row v-if="!loading && schema && schema !== {}" key="">
-                            <SchemaView :editing="editing" @edited="updatedObj"></SchemaView>
+                            <v-select v-if="inferredSchema && !editing" :items="['Provided', 'Inferred']" v-model="viewSchemaType"></v-select>
+                            <SchemaView :editing="editing" @edited="updatedObj" :schema=" (viewSchemaType === 'Provided') ? schema : inferredSchema"></SchemaView>
                         </v-row>
                         <v-row v-else>
                             <v-col cols=12>
@@ -63,7 +64,7 @@
                         </v-card-actions>
                         <v-card-actions v-else>
                             <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
-                            <v-btn @click="editing=!editing" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
+                            <v-btn @click="editing=!editing; viewSchemaType = 'Provided'" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                         </v-card-actions>
                 </v-card>
             </v-col>
@@ -108,6 +109,7 @@ export default {
             loading: true,
             editing: false,
             schemaObj: null,
+            viewSchemaType: "Provided",
         }
     },
     methods: {
@@ -121,6 +123,7 @@ export default {
             updateDataPackageSchema: 'schemaImport/updateDataPackageSchema',
             createDataPackageSchema: 'schemaImport/createDataPackageSchema',
             getSchema: 'schemaImport/getTableSchema',
+            getInferredSchema: 'schemaImport/getInferredSchema',
         }),
         ...mapMutations({    
             editBranch: 'repos/editBranch',
@@ -133,6 +136,7 @@ export default {
         async loadSections() {
             this.loading = true;
             //await this.getBranch({id: this.id});
+            await this.getInferredSchema({id: this.id});
             await this.getSchema({id: this.id});
             this.loading = false;
         },
@@ -234,6 +238,7 @@ export default {
             branch: state => state.repos.branch,
             dataUploads: state => state.dataUploads.dataUploads,
             schema: state => state.schemaImport.tableSchema,
+            inferredSchema: state => state.schemaImport.inferredSchema
         }),
     },
     watch: {

@@ -13,7 +13,7 @@
                 </v-tab-item>
                 <v-tab-item key="schema">
                     <v-select :items="versionDrop" v-model="viewVersion"></v-select>
-                    <SchemaView :key="'schema-view-'+viewVersion+'-'+redrawIndex" :editing="false" :editable="false"></SchemaView>
+                    <SchemaView :key="'schema-view-'+viewVersion+'-'+redrawIndex" :editing="false" :editable="false" :schema="schema"></SchemaView>
                 </v-tab-item>
                 <v-tab-item key="compareS">
                     <v-select :items="versionDrop" v-model="leftSchema"></v-select>
@@ -160,6 +160,7 @@ export default {
             dataset: state => state.repos.repo,
             branches: state => state.repos.branches,
             dataUploads: state => state.dataUploads.dataUploads,
+            schema: state => state.schemaImport.tableSchema,
         }),
     },
     created() {

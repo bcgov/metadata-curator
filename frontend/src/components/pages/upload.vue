@@ -12,9 +12,16 @@
                 <span>{{$tc('Loading')}}...</span>
                 <v-progress-circular indeterminate></v-progress-circular>
             </v-col>
+            <v-col cols=12 v-else-if="notFound">
+                <span>{{$tc('404 Not Found')}}...</span>
+            </v-col>
+
             <v-col cols=12 v-else>
                 <v-stepper v-model="step">
                     <v-stepper-header>
+                        <v-stepper-step v-if="user.isApprover" :step="steps.step0PreCreate" :complete="step > steps.step0PreCreate" >{{$tc('Pre-Create Info')}}</v-stepper-step>
+                        <v-divider></v-divider>
+
                         <v-stepper-step :step="steps.step1UploadForm" :complete="step > steps.step1UploadForm" >{{$tc('Upload Info')}}</v-stepper-step>
                         <v-divider></v-divider>
 
@@ -37,11 +44,29 @@
                     </v-stepper-header>
 
                     <v-stepper-items>
+
+                        <v-stepper-content :step="steps.step0PreCreate">
+                            <v-card class="mb-12">
+                                <Select
+                                    :label="$tc('Select Data Provider Group to pre-create for')"
+                                    name="providerGroup"
+                                    :editing="true"
+                                    :value="providerGroup"
+                                    :items="selectableGroups"
+                                    helpPrefix="upload"
+                                    @edited="(newValue) => { providerGroup = newValue; }"
+                                ></Select>
+                                <span>{{$tc('NOTE: you will be unable to change this after the next form')}}</span>
+                            </v-card>
+                            
+                            <v-btn text @click="step = steps.step1UploadForm" id="next-0">{{$tc('Next')}}</v-btn>
+                        </v-stepper-content>
                         
                         <v-stepper-content :step="steps.step1UploadForm">
                             <v-card class="mb-12">
                                 <UploadForm ref="uploadForm"></UploadForm>
                             </v-card>
+                            <v-btn text v-if="user.isApprover && !uploadId" @click="step = steps.step0PreCreate" id="back-1">{{$tc('Back')}}</v-btn>
                             <v-btn text @click="stepSaveUploadForm(true)" id="next-1">{{$tc('Next')}}</v-btn>
                         </v-stepper-content>
 
@@ -92,7 +117,7 @@
                                 </v-row>
                                 <v-row v-if="!showDiff">
                                     <v-col cols=12>
-                                        <JsonEditor :key="'jsonEditor-'+jsonRedraw" :val="schema" @edited="updateSchema" :raw="false"></JsonEditor>
+                                        <JsonEditor :key="'jsonEditor-'+jsonRedraw" :val="schema" @edited="updateSchema" :state-type-parent="0" :raw="false"></JsonEditor>
                                     </v-col>
                                 </v-row>
                                 <v-row v-else>
@@ -134,6 +159,7 @@
     import FileInfoForm from "../FileInfoForm";
     import FileUploadForm from "../FileUploadForm";
     import Comparison from '../Comparison';
+    import Select from '../Select';
 
     import { Backend } from '../../services/backend';
     import JsonEditor from '../JsonEditor/JsonEditor';
@@ -148,9 +174,11 @@
             FileUploadForm,
             JsonEditor,
             Comparison,
+            Select,
         },
         async created() {
             this.loading = true;
+            this.$store.commit('file/clearContent');
             await this.getAllRepos();
             if(this.$route.params.id && this.$route.params.id != 'new') { 
                 this.uploadId = this.$route.params.id; 
@@ -163,10 +191,29 @@
                 this.steps.step4FileLevelForm = 3;
                 this.steps.step6UploadProgress = 4;
                 this.steps.step7UploadSummary = 5;
-
+            }else{
+                if (this.user.isApprover && !this.uploadId){
+                    this.step = 0;
+                    let requiredRole = await this.$store.dispatch('config/getItem', {field: 'key', value: 'requiredRoleToCreateRequest', def: {key: 'requiredRoleToCreateRequest', value: false}});
+                    requiredRole = requiredRole.value;
+                    this.selectableGroups = JSON.parse(JSON.stringify(this.user.groups));
+                    let index = this.selectableGroups.indexOf(requiredRole);
+                    if (index !== -1){
+                        this.selectableGroups.splice(index, 1);
+                    }
+                }
             }
             if(this.uploadId) { 
+                
                 await this.getUpload(this.uploadId); 
+                if (this.upload === null){
+                    this.loading = false;
+                    this.notFound = true;
+                    this.errorAlert = true;
+                    this.errorText = "Upload not found";
+                    return;
+                }
+
                 await this.getUploadFormSubmission({formName: this.upload.form_name, submissionId: this.upload.upload_submission_id});
                 if (this.enabledPhase >= 2){
                     await this.getSchema({id: this.uploadId});
@@ -198,6 +245,7 @@
                 getSchema: 'schemaImport/getDataPackageByUploadId',
                 getSchemaFromVersion: 'schemaImport/getDataPackage',
                 createDataPackageSchema: 'schemaImport/createDataPackageSchema',
+                createDataPackageSchemaInferred: 'schemaImport/createDataPackageSchemaInferred',
                 updateDataPackageSchema: 'schemaImport/updateDataPackageSchema',
                 getAllRepos: 'repos/getAllRepos',
                 saveDataset: 'repos/saveRepo',
@@ -217,6 +265,7 @@
                 editBranch: 'repos/editBranch',
                 clearBranch: 'repos/clearBranch',
                 setRepo: 'repos/setRepo',
+                clearContent: 'file/clearContent',
             }),
 
             step2Changed(numFiles){
@@ -249,6 +298,9 @@
                             name: this.upload.files[i].name.substring(0,this.upload.files[i].name.lastIndexOf('.')),
                             path: "./"+this.upload.files[i].name,
                             schema: s.descriptor,
+                            description: this.upload.files[i].description,
+                            temporal_start: this.upload.files[i].start_date,
+                            temporal_end: this.upload.files[i].end_date,
                         });
                     }catch(ex){
                         console.error("Error inferring:", ex);
@@ -277,6 +329,12 @@
                 }
             },
             async stepSaveUploadForm(transitionNextStepAfterSave) {
+              if (this.user.isApprover && ( (this.providerGroup === null) || (this.providerGroup === '') ) ){
+                  this.errorAlert = true;
+                  this.errorText = "As a data approver you must select a data provider group you are creating for";
+                  return false;
+              }
+
               if(this.$refs.uploadForm.validateForm()) {
                   if((!this.uploadId ) && !this.createUploadInProgress) {
                       let data;
@@ -294,7 +352,8 @@
                         description: submission.datauploadDescription,
                         uploader: this.user.email,
                         upload_submission_id: data._id,
-                        form_name: this.formName
+                        form_name: this.formName,
+                        provider_group: this.providerGroup,
                     }
                     try{
                         let d = await this.createInitialUpload(initialUpload);
@@ -397,16 +456,26 @@
                 }
 
                 this.schema.version = this.selectedVersion;
+
+                let oSchema = JSON.parse(JSON.stringify(this.schemaState));
+
+                this.inferredSchema.version = this.selectedVersion;
+                this.setDataPackageSchema({schema: this.inferredSchema});
+                await this.createDataPackageSchemaInferred();
                 
-                if (this.schemaState !== null && Object.keys(this.schemaState).length !== 0){
-                    this.setTableSchema({schema: this.schema});
-                    this.setTableSchemaId({id: this.schema._id});
-                    await this.updateDataPackageSchema();
-                }else{
+                if (oSchema === null || Object.keys(oSchema).length === 0){
+                    if (this.schemaState && this.schemaState._id){
+                        this.schema._id = this.schemaState._id;
+                    }
+                    if (this.schemaState && this.schemaState.profile){
+                        this.schema.profile = this.schemaState.profile;
+                    }
+
+                    this.schema.version = this.selectedVersion;
                     this.setDataPackageSchema({schema: this.schema});
                     await this.createDataPackageSchema();
-                    
                 }
+                
                 if(transitionNextStepAfterSave) { this.step = this.steps.step6UploadProgress; }
             },
 
@@ -478,6 +547,7 @@
         },
         data () {
             let steps = {
+                step0PreCreate: 0,
                 step1UploadForm: 1,
                 step2EditionForm: 2,
                 step3FileSelection: 3,
@@ -503,6 +573,9 @@
                 inferredSchema: {},
                 showDiff: false,
                 loading: false,
+                providerGroup: null,
+                selectableGroups: [],
+                notFound: false,
             }
         },
         computed: {

@@ -97,7 +97,7 @@
                         </v-card>
                     </v-tab-item>
                     <v-tab-item key="schema" v-if="schema">
-                        <SchemaView :editing="false"></SchemaView>
+                        <SchemaView :editing="false" :schema="schema"></SchemaView>
                     </v-tab-item>
                     <v-tab-item key="faq" v-if="branch && branch.faq">
                         <Markdown

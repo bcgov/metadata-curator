@@ -15,6 +15,22 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             if (!upload.name){
                 throw new Error("Name is required");
             }
+
+            if (!user.groups.some( (el) => el === config.get('requiredRoleToCreateRequest'))){
+                throw new Error("Not permitted to create an upload");
+            }
+
+            let originalGroups = JSON.parse(JSON.stringify(user.groups));
+            let originalJWT = user.jwt;
+
+            if (user.isApprover && !upload.provider_group){
+                throw new Error("Data Approvers must provide a data provider group");
+            }else if (user.isApprover){
+                if (!user.groups.some( (el) => el === upload.provider_group) ){
+                    throw new Error("Data Approvers must select a data provider group they belong to");
+                }
+            }
+
             dataUploadSchema.name = upload.name;
             dataUploadSchema.description = upload.description;
             dataUploadSchema.uploader = user.id;
@@ -37,10 +53,32 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
                 dataUploadSchema.upload_submission_id = upload.upload_submission_id ? upload.upload_submission_id : null;
             }
 
+            if (user.isApprover){
+                user.groups = [];
+                // if (user.organization){
+                //     user.groups.push(user.organization);
+                // }
+                
+                user.groups.push(config.get('requiredRoleToCreateRequest'));   
+                user.groups.push(upload.provider_group);
+                
+                var jwtlib = require('jsonwebtoken');
+                user.jwt = jwtlib.sign(user, config.get('jwtSecret'));
+            }
+            
             const topic = await forumClient.addTopic(id, user); 
+
+            if (user.isApprover){
+                user.groups = JSON.parse(JSON.stringify(originalGroups));
+                user.jwt = originalJWT;
+            }
             dataUploadSchema.topic_id = topic._id;
             return await dataUploadSchema.save();
         } catch(e) {
+            if (user.isApprover){
+                user.groups = JSON.parse(JSON.stringify(originalGroups));
+                user.jwt = originalJWT;
+            }
             throw new Error(e.message)
         }
     }
@@ -134,14 +172,13 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             let topicResponse = {data: []};
             topicResponse.data = topicResponse.data.concat(currentData.data);
             
-            
             if(query && query.filterBy) {
                 if(query.filterBy === 'me') {
                     topics = topicResponse.data.filter( (item) => {
                         return (item.contributors.indexOf(user.id) !== -1 && item.parent_id);
                     });
                 } else if(query.filterBy === 'provider') {
-                    if(query.providerGroups && query.providerGroups.includes('all') ) {
+                    if(!query.providerGroups || query.providerGroups.includes('all') ) {
                         topics = topicResponse.data.filter(item => item.parent_id); }
                     else {
                         topics = topicResponse.data.filter(item => item.parent_id && item.author_groups.some(r => query.providerGroups.includes(r)));
@@ -165,11 +202,12 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             }).filter( (item) => {
                 return (item && String(item).length > 0)
             });
+
             if(query && query.filterBy === 'provider') {
                 let results = await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": -1});
-                results = results.filter( (item) => {
-                    return item.status === "submitted";
-                });
+                // results = results.filter( (item) => {
+                //     return item.status === "submitted";
+                // });
                 return results;
             }else{
                 let results = await db.DataUploadSchema.find({_id: {$in: uploadIds}}).sort({ "create_date": -1});
@@ -258,9 +296,11 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
 
     router.get('/:dataUploadId', async function(req, res, next){
         const dataUploadId = req.params.dataUploadId;
-        let result = await getDataUploadById(req.user, dataUploadId);
-        if(!result) {
-            throw new Error("Data Upload not found")
+        let result = null;
+        try{
+            result = await getDataUploadById(req.user, dataUploadId);
+        }catch(e){
+            return res.status(404).json({error: "Not found"});
         }
         return res.json(result);
     });

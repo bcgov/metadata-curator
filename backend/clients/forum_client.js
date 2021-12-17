@@ -157,7 +157,7 @@ const createTopicIfDoesNotExist = async function(topicName, user){
     const forumApiConfig = config.get("forumApi");
 
     var newG = user.groups.slice();
-    newG.push("admin");
+    newG.push(config.get('adminGroup'));
 
     const options = {
         withCredentials: true,
@@ -171,9 +171,9 @@ const createTopicIfDoesNotExist = async function(topicName, user){
 
     if(parentTopicResponse) {
         if(parentTopicResponse.data.length === 0) {
-            user.groups = [user.organization, config.get('requiredRoleToCreateRequest')];
-            user.jwt = modifyJWTGroups(user.jwt, user.groups);
-
+            // user.groups = [user.organization, config.get('requiredRoleToCreateRequest')];
+            // user.jwt = modifyJWTGroups(user.jwt, user.groups);
+            
             const response = await createTopic(topicName, parentTopicResponse.data._id, user);
             return response;
 

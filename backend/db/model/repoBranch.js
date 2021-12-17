@@ -67,7 +67,6 @@ var repoBranchSchema = new Schema({
         type: String,
         required: false,
     }
-
 });
 
 

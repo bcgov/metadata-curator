@@ -8,7 +8,8 @@ const state = {
     loading: true,
     useDark: false,
     canUpload: false,
-    jwt: ""
+    jwt: "",
+    isApprover: false,
 };
 
 const getters = {
@@ -23,6 +24,7 @@ const actions = {
         commit('setJWT', {jwt: ""});
         commit('setLoggedIn', {loggedIn: false});
         commit('setUserPermissions', {userPermissions: {}});
+        commit('setIsApprover', {isApprover: false});
     },
 
     async getCurrentUser({ commit, state }) {
@@ -47,6 +49,7 @@ const actions = {
                         commit('setJWT', { jwt: data.jwt });
                         commit('setLoggedIn', {loggedIn: true});
                         commit('setCanUpload', {canUpload: data.canUpload})
+                        commit('setIsApprover', {isApprover: data.isApprover})
                         user = data;
                         loggedIn = true;
                     } else {
@@ -54,6 +57,7 @@ const actions = {
                         commit('setJWT', { jwt: "" });
                         commit('setLoggedIn', {loggedIn: false});
                         commit('setCanUpload', {canUpload: false})
+                        commit('setIsApprover', {isApprover: false})
                         user = {};
                         loggedIn = false;
                     }
@@ -66,6 +70,7 @@ const actions = {
                         commit('setJWT', { jwt: data.jwt });
                         commit('setLoggedIn', {loggedIn: true});
                         commit('setCanUpload', {canUpload: data.canUpload})
+                        commit('setIsApprover', {isApprover: data.isApprover})
                         user = data;
                         loggedIn = true;
                     } else {
@@ -73,6 +78,7 @@ const actions = {
                         commit('setJWT', { jwt: "" });
                         commit('setLoggedIn', {loggedIn: false});
                         commit('setCanUpload', {canUpload: false})
+                        commit('setIsApprover', {isApprover: false})
                         user = {};
                         loggedIn = false;
                     }
@@ -85,6 +91,7 @@ const actions = {
                     commit('setJWT', { jwt: data.jwt });
                     commit('setLoggedIn', {loggedIn: true});
                     commit('setCanUpload', {canUpload: data.canUpload})
+                    commit('setIsApprover', {isApprover: data.isApprover})
                     user = data;
                     loggedIn = true;
                 }else{
@@ -92,6 +99,7 @@ const actions = {
                     commit('setJWT', { jwt: "" });
                     commit('setLoggedIn', {loggedIn: false});
                     commit('setCanUpload', {canUpload: false})
+                    commit('setIsApprover', {isApprover: false})
                     user = null;
                     loggedIn = false;
                 }
@@ -125,6 +133,9 @@ const mutations = {
     },
     setLoggedIn(state, { loggedIn }){
         state.loggedIn = loggedIn;
+    },
+    setIsApprover(state, { isApprover }){
+        state.isApprover = isApprover;
     },
     setUseDark(state, { useDark }){
         state.useDark = useDark;
