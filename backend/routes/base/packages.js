@@ -40,19 +40,17 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
     const addDataPackage = async function(descriptor) {
         await validateDataPackage(descriptor);
 
-        let dataPackageSchema = await buildDataPackageSchema(descriptor);
-
-        console.log("update one", dataPackageSchema);
-        if (dataPackageSchema.inferred){
+        
+        if (descriptor.inferred){
             let preInferred = await db.DataPackageSchema.findOne({inferred: true, version: dataPackageSchema.version});
             if (preInferred){
-                delete dataPackageSchema._id;
-                console.log("update one", dataPackageSchema);
+                let dataPackageSchema = await buildDataPackageSchema(descriptor, true);
                 let d = await db.DataPackageSchema.updateOne({_id: preInferred._id}, dataPackageSchema);
-                console.log("update one success", d);
+                
                 return d;
             }
         }
+        let dataPackageSchema = await buildDataPackageSchema(descriptor);
 
         try{
             let d = await dataPackageSchema.save();
@@ -212,10 +210,10 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         return resources;
     }
 
-    const buildDataPackageSchema = async function (descriptor) {
+    const buildDataPackageSchema = async function (descriptor, object) {
         await validateDataPackage(descriptor);
 
-        let dataPackageSchema = new db.DataPackageSchema;
+        let dataPackageSchema =  object ? {} : new db.DataPackageSchema;
         dataPackageSchema.profile = descriptor.profile;
 
         if (descriptor.resources && typeof(descriptor.resources) === "object"){
