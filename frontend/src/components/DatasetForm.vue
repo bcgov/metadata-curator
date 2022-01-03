@@ -64,6 +64,7 @@
                                 :label="$tc('Data Collection Type')"
                                 name="data_collection_type"
                                 :editing="editing"
+                                :large="true"
                                 :value="(dataset) ? dataset.data_collection_type : ''"
                                 :items="types"
                                 helpPrefix="dataset"
