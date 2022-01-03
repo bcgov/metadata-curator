@@ -188,12 +188,14 @@ import {mapActions, mapMutations, mapState} from "vuex";
 import TextInput from './TextInput';
 import BranchForm from './BranchForm';
 import SimpleCheckbox from './SimpleCheckbox';
+import Select from './Select';
 
 export default {
     components:{
         TextInput,
         BranchForm,
-        SimpleCheckbox
+        SimpleCheckbox,
+        Select
     },    
     data () {
         return {
