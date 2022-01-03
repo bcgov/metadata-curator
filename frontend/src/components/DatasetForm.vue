@@ -59,6 +59,18 @@
                             ></TextInput>
                         </v-row>
 
+                        <v-row>
+                            <Select
+                                :label="$tc('Data Collection Type')"
+                                name="data_collection_type"
+                                :editing="editing"
+                                :value="(dataset) ? dataset.data_collection_type : ''"
+                                :items="types"
+                                helpPrefix="dataset"
+                                @edited="(newValue) => { updateValues('data_collection_type', newValue) }"
+                            ></Select>
+                        </v-row>
+
                         <v-row class="outline">
                             <v-col cols=12>
                                 <span class="checkboxGroupHeader">{{$tc('Allow Publish')}}</span>
@@ -193,6 +205,7 @@ export default {
             alert: false,
             alertText: "",
             alertType: "success",
+            types: [ {text: 'Standard', value: 'standard'}, {text: 'Reserve', value: 'reserve'}, {text: 'Restricted', value: 'restricted'} ],
         }
     },
     methods: {

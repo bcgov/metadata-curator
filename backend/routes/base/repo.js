@@ -83,6 +83,10 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         if (fields.in_bc_catalogue){
             repoSchema.in_bc_catalogue = fields.in_bc_catalogue;
         }
+
+        if (fields.data_collection_type){
+            repoSchema.data_collection_type = data_collection_type;
+        }
     
     
         return await repoSchema.save();
@@ -133,6 +137,10 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
 
         if (fields.in_bc_catalogue){
             record.in_bc_catalogue = fields.in_bc_catalogue;
+        }
+
+        if (fields.data_collection_type){
+            record.data_collection_type = fields.data_collection_type;
         }
     
         return await record.save();

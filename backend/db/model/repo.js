@@ -43,6 +43,10 @@ var repoSchema = new Schema({
         required: false,
         default: false,
     },
+    data_collection_type: {
+        type: String,
+        required: false,
+    },
 });
 
 var model = mongoose.model('repo', repoSchema, 'repo');

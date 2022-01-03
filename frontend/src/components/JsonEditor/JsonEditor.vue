@@ -37,7 +37,7 @@
                                 <TextInput
                                     :label="$tc('Resource', 1) + ' ' + $tc('Name')"
                                     placeholder=""
-                                    name="name"
+                                    name="resource_name"
                                     :refName="'basicField-' + key + '-name'"
                                     :idName="'basicField-' + key + '-name'"
                                     :large="true"
@@ -519,11 +519,11 @@ export default{
                 this.workingVal.resources = [];
             }
 
-            if (this.workingVal.resources.length == 0){
-                this.workingVal.resources.push({
-                    schema: {}
-                }); 
-            }
+            // if (this.workingVal.resources.length == 0){
+            this.workingVal.resources.push({
+                schema: {}
+            }); 
+            //}
 
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;

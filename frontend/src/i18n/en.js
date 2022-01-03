@@ -229,6 +229,8 @@ export default {
         "help.edition.approved": "Approve this edition and lock it from further changes",
 
         "help.schema.enum": "Define the possible values for this field",
+        "help.schema.name": "Name of the column in the data file",
+        "help.schema.title": "Human friendly name for the field",
         
     }
 }
