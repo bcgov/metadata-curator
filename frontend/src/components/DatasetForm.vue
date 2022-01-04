@@ -162,10 +162,13 @@
                                 <v-btn color="primary" @click="addVersion">{{$tc('Add')}} {{$tc('Version')}}</v-btn>
                             </v-col>
 
-                            <v-col cols=12 class="pointer" @click="editVersion(branch._id)" v-for="(branch, i) in branches" :key="'branch-'+i">
-                                {{branch.name}} 
-                                - {{branch.type.charAt(0).toUpperCase() + branch.type.slice(1)}} 
-                                - {{$tc('Created')}} {{branch.create_date | formatDate}} 
+                            <v-col cols=12 v-for="(branch, i) in branches" :key="'branch-'+i">
+                                <span @click="editVersion(branch._id)" class="pointer">
+                                    {{branch.name}} 
+                                    - {{branch.type.charAt(0).toUpperCase() + branch.type.slice(1)}} 
+                                    - {{$tc('Created')}} {{branch.create_date | formatDate}} 
+                                </span>
+                                <v-btn color="success" @click="copyVersion(branch)">{{$tc('Create')}} {{$tc('Version')}} {{$tc('from this')}}</v-btn>
                             </v-col>
                         </v-row>
 
@@ -221,6 +224,7 @@ export default {
         ...mapMutations({    
             editDataset: 'repos/editRepo',
             clearDataset: 'repos/clearRepo',
+            editBranch: 'repos/editBranch',
         }),
 
         async loadSections() {
@@ -244,6 +248,22 @@ export default {
 
         addVersion(){
             this.branch = "create";
+            this.branchDia = true;
+        },
+
+        copyVersion(branch){
+            this.branch = "create";
+
+            let keys = Object.keys(branch);
+            for (let i=0; i<keys.length; i++){
+                if (keys[i] !== "_id"){
+                    this.editBranch({name: keys[i], value: branch[keys[i]]});
+                }else{
+                    this.editBranch({name: keys[i], value: ""});
+                }
+            }
+            
+            
             this.branchDia = true;
         },
 

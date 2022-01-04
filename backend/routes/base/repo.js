@@ -85,7 +85,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
 
         if (fields.data_collection_type){
-            repoSchema.data_collection_type = data_collection_type;
+            repoSchema.data_collection_type = fields.data_collection_type;
         }
     
     
