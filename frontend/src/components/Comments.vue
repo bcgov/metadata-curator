@@ -198,6 +198,9 @@ import Markdown from './Markdown.vue';
             },
             refable: function(){
                 this.computeCommentDisplayItems();
+            },
+            comments: function(){
+                this.computeCommentDisplayItems();
             }
         },
 
