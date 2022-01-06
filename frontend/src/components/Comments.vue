@@ -1,7 +1,11 @@
 <template>
     <div>
-        <div v-if="commentDisplayItems.length == 0" class="ml-3">
+        <div v-if="commentDisplayItems.length == 0 && type !== 'schema'" class="ml-3">
             {{$tc('Nothing here yet, why not start a discussion')}}
+        </div>
+
+        <div v-if="commentDisplayItems.length == 0 && type === 'schema'" class="ml-3">
+            {{$tc('No comments about this field, reference with ')}}!{{resource}}.{{field}}
         </div>
         <v-list v-else three-line class="mb-3">
             <template v-for="(item, index) in commentDisplayItems">
@@ -36,7 +40,7 @@
                 </v-list-item>
             </template>
         </v-list>
-        <div>
+        <div v-if="type !== 'schema'">
             <Markdown
                 name="comment"
                 value=""
@@ -70,6 +74,21 @@ import Markdown from './Markdown.vue';
             type: {
                 type: String,
                 required: true,
+            },
+            resource: {
+                type: String,
+                required: false,
+                default: "",
+            },
+            field: {
+                type: String,
+                required: false,
+                default: "",
+            },
+            refable: {
+                type: Array,
+                required: false,
+                default: () => [],
             }
         },
         data: () => ({
@@ -78,6 +97,7 @@ import Markdown from './Markdown.vue';
             refreshKey: 0,
             comment: "",
             commentFocused: false,
+            commentDisplayItems: [],
         }),
         methods: {
             ...mapActions({
@@ -90,6 +110,40 @@ import Markdown from './Markdown.vue';
                 getBranchComments: 'repos/getBranchComments',
                 addBranchComment: 'repos/addBranchComment',
             }),
+            computeCommentDisplayItems(){
+                this.commentDisplayItems = [];
+                let self = this;
+                this.comments.forEach( (comment) => {
+                    // console.log("comment: ", comment);
+                    const createDate = this.$options.filters.formatDate(comment.create_ts);
+                    const item = {
+                        subtitle: "Updated on " + createDate + " by " + comment.author_user,
+                        content: comment.comment,
+                        comment: comment
+                    };
+
+                    let fieldRef = "!" + self.resource + "." + self.field;
+
+                    if ( (self.type !== 'schema') || ( (fieldRef.length > 2) && (comment.comment.indexOf(fieldRef) !== -1) ) ){
+
+                        for (let i=0; i<this.refable.length; i++){
+                            let target = "!"+this.refable[i].text;
+                            let ind = item.content.indexOf(target);
+                            if (ind !== -1){
+                                item.content = item.content.replaceAll(target, '['+target.substring(1)+']('+this.refable[i].link+')')
+                            }
+                            
+                        }
+
+                        if (self.commentDisplayItems.length > 0){
+                            self.commentDisplayItems.push({ divider: true, inset: true });
+                            self.expanded.push(false);
+                        }
+                        self.commentDisplayItems.push(item);
+                        self.expanded.push(false);
+                    }
+                });
+            },
             expand(index) {
                 this.expanded[index] = !this.expanded[index];
                 this.refreshKey++;
@@ -114,19 +168,36 @@ import Markdown from './Markdown.vue';
                 this.refreshKey++;
             }
         },
-        mounted(){
+        async mounted(){
             switch(this.type){
                 case 'repo':
-                    this.getRepoComments(this.id);
+                    await this.getRepoComments(this.id);
                     break;
                 case 'upload':
-                    this.getUploadComments(this.id);
+                    await this.getUploadComments(this.id);
                     break;
                 case 'branch':
-                    this.getBranchComments(this.id);
+                    await this.getBranchComments({branchId: this.id});
+                    break;
+                case 'schema':
+                    await this.getBranchComments({branchId: this.id, force: false});
                     break;
             }
+            
+            this.computeCommentDisplayItems();
         },
+        watch: {
+            resource: function(){
+                this.computeCommentDisplayItems();
+            },
+            field: function(){
+                this.computeCommentDisplayItems();
+            },
+            refable: function(){
+                this.computeCommentDisplayItems();
+            }
+        },
+
         computed: {
             comments: function(){
                 switch (this.type){
@@ -136,31 +207,11 @@ import Markdown from './Markdown.vue';
                         return this.$store.state.dataUploadComments.comments;
                     case 'branch':
                         return this.$store.state.repos.branchComments;
+                    case 'schema':
+                        return this.$store.state.repos.branchComments;
                 }
                 return []
             },
-            
-            commentDisplayItems: function(){
-                let items = [];
-                let self = this;
-                this.comments.forEach( (comment, index) => {
-                    // console.log("comment: ", comment);
-                    const createDate = this.$options.filters.formatDate(comment.create_ts);
-                    const item = {
-                        subtitle: "Updated on " + createDate + " by " + comment.author_user,
-                        content: comment.comment,
-                        comment: comment
-                    };
-                    items.push(item);
-                    self.expanded.push(false);
-                    if(index <= this.comments.length - 1) {
-                        items.push({ divider: true, inset: true });
-                        self.expanded.push(false);
-                    }
-                });
-                // console.log("computed items: ", items);
-                return items;
-            }
         },
     };
 </script>

@@ -208,6 +208,10 @@ export default {
         "Enumeration Constraint": "Enumeration Constraint",
         "Source System": "Source System",
 
+        "No comments about this field, reference with ": "No comments about this field, reference with ",
+        "from this": "from this",
+        "Data Collection Type": "Data Collection Type",
+
 
         "help.dataset.name": "The name of the dataset",
         "help.dataset.description": "A description of the dataset",

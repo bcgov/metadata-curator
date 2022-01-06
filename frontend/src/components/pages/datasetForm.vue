@@ -13,7 +13,7 @@
                 </v-tab-item>
                 <v-tab-item key="schema">
                     <v-select :items="versionDrop" v-model="viewVersion"></v-select>
-                    <SchemaView :key="'schema-view-'+viewVersion+'-'+redrawIndex" :editing="false" :editable="false" :schema="schema"></SchemaView>
+                    <SchemaView :key="'schema-view-'+viewVersion+'-'+redrawIndex" :editing="false" :branchId="viewVersion" :editable="false" :schema="schema"></SchemaView>
                 </v-tab-item>
                 <v-tab-item key="compareS">
                     <v-select :items="versionDrop" v-model="leftSchema"></v-select>

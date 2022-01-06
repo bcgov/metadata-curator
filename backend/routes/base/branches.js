@@ -222,8 +222,37 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.branchId)));
         }
-        const branch = await getBranchById(req.params.branchId, req.user);
-        res.status(200).json(branch);
+        try{
+            const branch = await getBranchById(req.params.branchId, req.user);
+           res.status(200).json(branch);
+        }catch(e){
+            res.status(500).json(e);
+        }
+    });
+
+    router.put('/:branchId/copy-schema', async function(req, res, next){
+        //version check
+        if (!util.phaseCheck(cache, requiredPhase, db)){
+            return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.branchId+'/copy-schemna')));
+        }
+        try{
+            let copyTo = req.params.branchId;
+            let copyFrom = req.body.copyFrom;
+
+            let original = await db.DataPackageSchema.findOne({version: copyFrom, inferred: false});
+            if (original){
+                original._id = mongoose.Types.ObjectId();
+                original.version = copyTo;
+                let newSchema = await db.DataPackageSchema.insertMany(original);
+                return res.status(201).json(newSchema);
+            }else{
+                return res.status(400).json({error: "No such schema to copy: "+copyFrom});
+            }
+
+        }catch(e){
+            console.log("copy-schema", e);
+            res.status(500).json(e);
+        }
     });
 
     router.put('/:branchId', auth.requireLoggedIn, async function(req, res, next) {

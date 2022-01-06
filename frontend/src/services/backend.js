@@ -317,6 +317,12 @@ export class Backend {
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 
+    copyRepoBranchSchema(copyFromRepoId, copyToRepoId){
+        // console.log("BE putdataUpload: " + dataUpload);
+        const url = `/api/v1/repobranches/${copyToRepoId}/copy-schema`;
+        return axios.put(url, {copyFrom: copyFromRepoId}, {withCredentials: true}).then(response => response.data)
+    }
+
     getBranches(filterObj){
         let url = `/api/v1/repobranches`;
         if ((filterObj) && (filterObj.upload_id)){
