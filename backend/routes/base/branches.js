@@ -196,10 +196,15 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
     
     const getComments = async (branchId, user) => {
         try {
+            if ( (branchId == null) || (typeof(branchId) === "undefined") ) {
+                throw new Error("Invalid branch ID")
+            }
+            
             let branch = await getBranchById(branchId, user);
             if (branch == null) {
                 throw new Error("Invalid branch ID")
             }
+            
             return await forumClient.getComments (branch.topic_id, user);
         } catch(e) {
             console.error(e);
