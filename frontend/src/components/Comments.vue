@@ -17,11 +17,14 @@
 
                     <v-list-item
                         v-else
-                        @click="expand(index)"
                         :key="item.title"
                     >
                         <v-btn icon :key="'comment-icon-btn-'+index+'-'+refreshKey" class="mr-4">
                             <v-icon>mdi-comment-multiple</v-icon>
+                        </v-btn>
+
+                        <v-btn x-small @click="expand(index)">
+                            <v-icon>{{expanded[index] ? 'mdi-minus' : 'mdi-plus'}}</v-icon>
                         </v-btn>
 
                         <v-list-item-content>
@@ -130,7 +133,7 @@ import Markdown from './Markdown.vue';
                             let target = "!"+this.refable[i].text;
                             let ind = item.content.indexOf(target);
                             if (ind !== -1){
-                                item.content = item.content.replaceAll(target, '['+target.substring(1)+']('+this.refable[i].link+')')
+                                item.content = item.content.replaceAll(target, '['+target+']('+this.refable[i].link+')')
                             }
                             
                         }
