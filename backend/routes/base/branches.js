@@ -196,7 +196,7 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
     
     const getComments = async (branchId, user) => {
         try {
-            if ( (branchId == null) || (typeof(branchId) === "undefined") ) {
+            if ( (branchId == null) || (typeof(branchId) === "undefined") || (branchId === "undefined") ) {
                 throw new Error("Invalid branch ID")
             }
             
@@ -341,11 +341,15 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
     });
 
     router.post('/:branchId/comments', async function(req, res, next){
-        if (req.params.branchId !== 'create'){
-            await addComment (req.params.branchId, req.user, req.body.content);
-            return res.status(201).json({
-                message: 'Comment saved successfully.'
-            });
+        try{
+            if (req.params.branchId !== 'create'){
+                await addComment (req.params.branchId, req.user, req.body.content);
+                return res.status(201).json({
+                    message: 'Comment saved successfully.'
+                });
+            }
+        }catch(e){
+            res.status(500).json(e);
         }
         
         return res.status(400).json({error: "Cant add comments to a branch that doesn't exist"});
