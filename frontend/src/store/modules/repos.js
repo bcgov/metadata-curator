@@ -157,7 +157,7 @@ const actions = {
         
         try {
             await backend.postCommentByBranch(branchId, comment);
-            dispatch('getBranchComments', branchId);
+            dispatch('getBranchComments', {branchId: branchId});
         } catch(e) {
             console.error("Unable to add comment error: ", e);
             commit('setError', {error: e.response.data.error});
