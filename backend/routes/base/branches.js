@@ -332,10 +332,12 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
     });
 
     router.get('/:branchId/comments', async function(req, res, next){
-        if (req.params.branchId !== 'create'){
-            const comments = await getComments (req.params.branchId, req.user);
-            return res.json(comments);
-        }
+        try{
+            if (req.params.branchId !== 'create'){
+                const comments = await getComments (req.params.branchId, req.user);
+                return res.json(comments);
+            }
+        }catch(e){}
         return res.json([]);
         
     });
