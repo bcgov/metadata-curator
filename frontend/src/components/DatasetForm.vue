@@ -215,7 +215,7 @@ export default {
             alert: false,
             alertText: "",
             alertType: "success",
-            types: [ {text: 'Standard', value: 'standard'}, {text: 'Reserve', value: 'reserve'}, {text: 'Restricted', value: 'restricted'} ],
+            types: [ {text: 'Main', value: 'main'}, {text: 'Reserve', value: 'reserve'}, {text: 'Restricted', value: 'restricted'} ],
         }
     },
     methods: {
