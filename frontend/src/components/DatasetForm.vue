@@ -1,12 +1,14 @@
 <template>
     <v-container fluid>
         <v-row>
-            <v-alert
-                :type="alertType"
-                dismissable
-                v-model="alert">
-                    {{alertText}}
-            </v-alert>
+            <v-col cols=12>
+                <v-alert
+                    :type="alertType"
+                    dismissible
+                    v-model="alert">
+                        {{alertText}}
+                </v-alert>
+            </v-col>
         </v-row>
 
         <v-row>
@@ -57,6 +59,19 @@
                                 helpPrefix="dataset"
                                 @edited="(newValue) => { updateValues('description', newValue) }"
                             ></TextInput>
+                        </v-row>
+
+                        <v-row>
+                            <Select
+                                :label="$tc('Data Collection Type')"
+                                name="data_collection_type"
+                                :editing="editing"
+                                :large="true"
+                                :value="(dataset) ? dataset.data_collection_type : ''"
+                                :items="types"
+                                helpPrefix="dataset"
+                                @edited="(newValue) => { updateValues('data_collection_type', newValue) }"
+                            ></Select>
                         </v-row>
 
                         <v-row class="outline">
@@ -149,10 +164,13 @@
                                 <v-btn color="primary" @click="addVersion">{{$tc('Add')}} {{$tc('Version')}}</v-btn>
                             </v-col>
 
-                            <v-col cols=12 class="pointer" @click="editVersion(branch._id)" v-for="(branch, i) in branches" :key="'branch-'+i">
-                                {{branch.name}} 
-                                - {{branch.type.charAt(0).toUpperCase() + branch.type.slice(1)}} 
-                                - {{$tc('Created')}} {{branch.create_date | formatDate}} 
+                            <v-col cols=12 v-for="(branch, i) in branches" :key="'branch-'+i">
+                                <span @click="editVersion(branch._id)" class="pointer">
+                                    {{branch.name}} 
+                                    - {{branch.type.charAt(0).toUpperCase() + branch.type.slice(1)}} 
+                                    - {{$tc('Created')}} {{branch.create_date | formatDate}} 
+                                </span>
+                                <v-btn color="success" @click="copyVersion(branch)">{{$tc('Create')}} {{$tc('Version')}} {{$tc('from this')}}</v-btn>
                             </v-col>
                         </v-row>
 
@@ -176,12 +194,16 @@ import {mapActions, mapMutations, mapState} from "vuex";
 import TextInput from './TextInput';
 import BranchForm from './BranchForm';
 import SimpleCheckbox from './SimpleCheckbox';
+import Select from './Select';
+import { Backend } from '../services/backend';
+const backend = new Backend();
 
 export default {
     components:{
         TextInput,
         BranchForm,
-        SimpleCheckbox
+        SimpleCheckbox,
+        Select
     },    
     data () {
         return {
@@ -193,6 +215,7 @@ export default {
             alert: false,
             alertText: "",
             alertType: "success",
+            types: [ {text: 'Main', value: 'main'}, {text: 'Reserve', value: 'reserve'}, {text: 'Restricted', value: 'restricted'} ],
         }
     },
     methods: {
@@ -201,10 +224,13 @@ export default {
             saveDataset: 'repos/saveRepo',
             updateDataset: 'repos/updateRepo',
             getBranches: 'repos/getBranches',
+            saveBranch: 'repos/saveBranch',
+            getDataPackage: 'schemaImport/getDataPackage',
         }),
         ...mapMutations({    
             editDataset: 'repos/editRepo',
             clearDataset: 'repos/clearRepo',
+            editBranch: 'repos/editBranch',
         }),
 
         async loadSections() {
@@ -231,6 +257,54 @@ export default {
             this.branchDia = true;
         },
 
+        async copyVersion(branch){
+            if (!branch._id){
+                this.alertType = "error";
+                this.alertText = "This "+this.$tc('Version', 1)+" has no id"
+                this.alert = true;
+                window.scrollTo(0,0);
+                return;
+            }
+            
+            let schemaExists = await this.getDataPackage({id: branch._id});
+            if (!schemaExists){
+                this.alertType = "error";
+                this.alertText = "This "+this.$tc('Version', 1)+" has no schema, cannot copy without schema";
+                this.alert = true;
+                window.scrollTo(0,0);
+                return;
+            }
+
+            let keys = Object.keys(branch);
+            for (let i=0; i<keys.length; i++){
+                if (keys[i] !== "_id"){
+                    this.editBranch({name: keys[i], value: branch[keys[i]]});
+                }else{
+                    this.editBranch({name: keys[i], value: ""});
+                }
+            }
+            
+            this.saveBranch().then( async (branchRes) => {
+                await backend.copyRepoBranchSchema(branch._id, branchRes.id);
+                await this.getBranches({repoId: this.id});
+
+                this.branch = branchRes.id;
+                this.branchDia = true;
+
+
+            }).catch( err => {
+                this.alertType = "error"
+                if (err.response && err.response.data && err.response.data.error){
+                    this.alertText = "Error: " + err.response.data.error;
+                }else{
+                    this.alertText = err.message;
+                }
+                this.alert = true;
+                window.scrollTo(0,0);
+            });
+
+        },
+
         editVersion(id){
             this.branch = id;
             this.branchDia = true;
@@ -242,24 +316,28 @@ export default {
                         this.alertType = "success"
                         this.alertText = this.$tc("Sucessfully created dataset");
                         this.alert = true;
+                        window.scrollTo(0,0);
                         this.routeToHome();
 
                     }).catch( err => {
                         this.alertType = "error"
                         this.alertText = err.message;
                         this.alert = true;
+                        window.scrollTo(0,0);
                     });
             }else{
                 this.updateDataset().then( () => {
                         this.alertType = "success"
                         this.alertText = this.$tc("Sucessfully created dataset");
                         this.alert = true;
+                        window.scrollTo(0,0);
                         this.routeToHome();
 
                     }).catch( err => {
                         this.alertType = "error"
                         this.alertText = err.message;
                         this.alert = true;
+                        window.scrollTo(0,0);
                     });
             }
                 

@@ -14,6 +14,7 @@ const state = {
     error: null,
     comments: [],
     branchComments: [],
+    recentlyFetchedBranchComments: false,
 };
 
 const getters = {
@@ -131,12 +132,22 @@ const actions = {
         }
     },
 
-    async getBranchComments({ commit }, branchId) {
-        
+    async getBranchComments({ commit, state }, {branchId, force}) {
+        if (typeof(force) === "undefined"){
+            force = true;
+        }
+
         try {
-            const data = await backend.getCommentsByBranch(branchId);
-            commit('clearBranchComments');
-            commit('setBranchComments', {comments: data});
+            let now = new Date();
+            
+            if (force || (now-state.recentlyFetchedBranchComments) >= 5000){ //force or not checked in last 5 seconds
+                commit('setRecentlyFetchedBranchComments')
+                const data = await backend.getCommentsByBranch(branchId);
+                commit('clearBranchComments');
+                if (data){
+                    commit('setBranchComments', {comments: data});
+                }
+            }
         } catch(e) {
             console.error("Retrieve comments error: ", e);
             commit('setError', {error: e.response.data.error});
@@ -146,7 +157,7 @@ const actions = {
         
         try {
             await backend.postCommentByBranch(branchId, comment);
-            dispatch('getBranchComments', branchId);
+            dispatch('getBranchComments', {branchId: branchId});
         } catch(e) {
             console.error("Unable to add comment error: ", e);
             commit('setError', {error: e.response.data.error});
@@ -215,6 +226,9 @@ const mutations = {
     setBranchComments(state, {comments}){
         // console.log("setComments: ", comments);
         state.branchComments = comments;
+    },
+    setRecentlyFetchedBranchComments(state){
+        state.recentlyFetchedBranchComments = new Date();
     },
     clearBranchComments(state){
         state.branchComments = [];

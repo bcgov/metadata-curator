@@ -2,7 +2,7 @@
     <v-container fluid>
         <v-alert
             :type="alertType"
-            dismissable
+            dismissible
             v-model="alert">
                 {{alertText}}
         </v-alert>
@@ -20,7 +20,7 @@
                         </v-row>
                         <v-row v-if="!loading && schema && schema !== {}" key="">
                             <v-select v-if="inferredSchema && !editing" :items="['Provided', 'Inferred']" v-model="viewSchemaType"></v-select>
-                            <SchemaView :editing="editing" @edited="updatedObj" :schema=" (viewSchemaType === 'Provided') ? schema : inferredSchema"></SchemaView>
+                            <SchemaView @commentRefs="(e) => $emit('commentRefs', e)" :branchId="branchId" :editing="editing" @edited="updatedObj" :schema=" (viewSchemaType === 'Provided') ? schema : inferredSchema"></SchemaView>
                         </v-row>
                         <v-row v-else>
                             <v-col cols=12>

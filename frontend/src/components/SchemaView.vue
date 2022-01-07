@@ -7,15 +7,22 @@
     </v-container>
     <v-container v-else fluid :key="'schemaview-'+redrawIndex">
         <v-row>
-            <JsonEditor 
-                :key="'jsonEditor-'+redrawIndex" 
-                :val="rawSchema" 
-                @edited="jsonEdited" 
-                :editing="editing" 
-                @state="updateJsonState" 
-                :state-type-parent="jsonState"
-                :focus-prop="jsonFocus"
-                @focus="setJsonFocus"></JsonEditor>
+            <v-col cols=12>
+                <JsonEditor 
+                    :key="'jsonEditor-'+redrawIndex" 
+                    :val="rawSchema" 
+                    @edited="jsonEdited" 
+                    :editing="editing" 
+                    @state="updateJsonState" 
+                    :state-type-parent="jsonState"
+                    :focus-prop="jsonFocus"
+                    @focus="setJsonFocus"
+                    
+                    :comment-id="branchId"
+                    @commentRefs="(e) => $emit('commentRefs', e)"
+                ></JsonEditor>
+            </v-col>
+
         </v-row>
         
     </v-container>
@@ -27,7 +34,7 @@ import JsonEditor from './JsonEditor/JsonEditor';
 
     export default {
         components: {
-            JsonEditor
+            JsonEditor,
         },
 
         props: {
@@ -44,7 +51,13 @@ import JsonEditor from './JsonEditor/JsonEditor';
             schema: {
                 type: Object,
                 required: true,
-            }
+            },
+            branchId: {
+                type: String,
+                default: "",
+            },
+
+
         },
         data() {
             return {

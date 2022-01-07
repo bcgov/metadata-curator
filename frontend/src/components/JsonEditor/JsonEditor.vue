@@ -148,8 +148,8 @@
 
 
                         <span v-if="resource.schema && resource.schema.fields">
-                            <v-row v-for="(field, fKey) in resource.schema.fields" :key="'field-'+key+'-'+fKey+'-'+reindexKey" :class="'field' + ( (field && field.highlight && !editing) ? ' fieldHighlight': '')">
-                                <v-col cols=12 v-if="(field && field.name) || editing" class="py-1">
+                            <v-row :id="'fieldHeader-'+resource.name+'.'+field.name" v-for="(field, fKey) in resource.schema.fields" :key="'field-'+key+'-'+fKey+'-'+reindexKey" :class="'pa-0 field' + ( (field && field.highlight && !editing) ? ' fieldHighlight': '')">
+                                <v-col cols=7 v-if="(field && field.name) || editing" class="py-1 borderRight">
                                     <TextInput
                                         :label="$tc('Name')"
                                         placeholder=""
@@ -168,7 +168,11 @@
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12 v-if="(field && field.title) || editing" class="pt-0 pb-1">
+                                <v-col cols=5 class="py-1" style="height: 100%">
+                                    <Comments :id="commentId" :type="'schema'" :resource="resource.name" :field="field.name" :refable="commentRefs"></Comments>
+                                </v-col>
+
+                                <v-col cols=7 v-if="(field && field.title) || editing" class="pt-0 pb-1 borderRight">
                                     <TextInput
                                         :label="$tc('Title')"
                                         placeholder=""
@@ -185,7 +189,7 @@
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12 v-if="(field && field.shortName) || editing" class="pt-0 pb-1">
+                                <v-col cols=7 v-if="(field && field.shortName) || editing" class="pt-0 pb-1 borderRight">
                                     <TextInput
                                         :label="$tc('Short Name')"
                                         placeholder=""
@@ -202,7 +206,7 @@
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12 v-if="(field && field.type) || editing" class="pt-0 pb-1">
+                                <v-col cols=7 v-if="(field && field.type) || editing" class="pt-0 pb-1 borderRight">
                                     <TextInput
                                         :label="$tc('Type')"
                                         placeholder=""
@@ -219,7 +223,7 @@
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12 v-if="(field && field.description) || editing" class="pt-0 pb-1">
+                                <v-col cols=7 v-if="(field && field.description) || editing" class="pt-0 pb-1 borderRight">
                                     <TextInput
                                         :label="$tc('Description')"
                                         placeholder=""
@@ -236,7 +240,7 @@
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12 v-if="(field && field.format) || editing" class="pt-0 pb-1">
+                                <v-col cols=7 v-if="(field && field.format) || editing" class="pt-0 pb-1 borderRight">
                                     <TextInput
                                         :label="$tc('Format')"
                                         placeholder=""
@@ -253,7 +257,7 @@
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12 v-if="(field && field.var_class) || editing" class="pt-0 pb-1">
+                                <v-col cols=7 v-if="(field && field.var_class) || editing" class="pt-0 pb-1 borderRight">
                                     <TextInput
                                         :label="$tc('Var Class')"
                                         placeholder=""
@@ -270,7 +274,7 @@
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12 v-if="(field && field.rdfType) || editing" class="pt-0 pb-1">
+                                <v-col cols=7 v-if="(field && field.rdfType) || editing" class="pt-0 pb-1 borderRight">
                                     <TextInput
                                         :label="$tc('RDF Type')"
                                         placeholder=""
@@ -287,7 +291,7 @@
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12 v-if="(field && field.tags) || editing" class="pt-0 pb-1">
+                                <v-col cols=7 v-if="(field && field.tags) || editing" class="pt-0 pb-1 borderRight">
                                     <TextInput
                                         :label="$tc('Tags', 2)"
                                         placeholder=""
@@ -304,7 +308,7 @@
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12 v-if="(field && field.comments) || editing" class="pt-0 pb-1">
+                                <v-col cols=7 v-if="(field && field.comments) || editing" class="pt-0 pb-1 borderRight">
                                     <TextInput
                                         :label="$tc('Comments', 2)"
                                         placeholder=""
@@ -321,7 +325,7 @@
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12 v-if="(field && field.constraints && field.constraints.enum) || editing" class="pt-0 pb-1">
+                                <v-col cols=7 v-if="(field && field.constraints && field.constraints.enum) || editing" class="pt-0 pb-1 borderRight">
                                     <TextInput
                                         :label="$tc('Enum', 1)"
                                         placeholder=""
@@ -338,7 +342,7 @@
                                     ></TextInput>
                                 </v-col>
 
-                                <v-col cols=12 v-if="editing" class="pt-0 pb-1">
+                                <v-col cols=7 v-if="editing" class="pt-0 pb-1 borderRight">
                                     <Select
                                         :label="$tc('Highlight')"
                                         name="highlight"
@@ -350,10 +354,10 @@
                                     ></Select>
                                 </v-col>
 
-                                <v-col cols=11 class="pt-0 pb-1">
+                                <v-col cols=7 class="pt-0 pb-1 borderRight">
                                 </v-col>
 
-                                <v-col cols=1 class="pt-0 pb-1">
+                                <v-col cols=7 class="pt-0 pb-1 borderRight">
                                     <v-btn v-if="editing" class="error" @click="removeField(key, fKey)"><v-icon>mdi-minus</v-icon></v-btn>
                                 </v-col>
 
@@ -411,6 +415,7 @@ import JsonProcessor from '../../mixins/JsonProcessor';
 import TextInput from '../TextInput';
 // import SimpleCheckbox from '../SimpleCheckbox';
 import Select from '../Select';
+import Comments from '../Comments';
 
 
 export default{
@@ -419,6 +424,7 @@ export default{
         RepeatingObject,
         TextInput,
         Select,
+        Comments,
         // SimpleCheckbox
     },
 
@@ -445,7 +451,12 @@ export default{
         focusProp: {
             type: String,
             required: false,
-        }
+        },
+        commentId: {
+            type: String,
+            default: "",
+            required: false,
+        },
     },
 
     watch: {
@@ -496,6 +507,21 @@ export default{
             return this.getTitle(this.workingVal);
         },
 
+        commentRefs: function(){
+            let items = [];
+
+            for (let i=0; i<this.workingVal.resources.length; i++){
+                for (let j=0; j<this.workingVal.resources[i].schema.fields.length; j++){
+                    let baseVal = this.workingVal.resources[i].name+"."+this.workingVal.resources[i].schema.fields[j].name;
+                    items.push({text: baseVal, link: '#fieldHeader-'+baseVal});
+                }
+            }
+
+            this.$emit('commentRefs', items);
+
+            return items;
+        },
+
         description: function(){
             return this.getDescription(this.workingVal);
         },
@@ -519,11 +545,11 @@ export default{
                 this.workingVal.resources = [];
             }
 
-            if (this.workingVal.resources.length == 0){
-                this.workingVal.resources.push({
-                    schema: {}
-                }); 
-            }
+            // if (this.workingVal.resources.length == 0){
+            this.workingVal.resources.push({
+                schema: {}
+            }); 
+            //}
 
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
@@ -762,6 +788,10 @@ export default{
         border: 1px solid;
         margin-bottom: 5px;
         padding-bottom: 10px;
+    }
+
+    .borderRight{
+        border-right: 1px solid;
     }
 
     .fieldHighlight{

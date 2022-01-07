@@ -22,7 +22,7 @@
                             <v-card-text>
                                 <v-alert
                                     :type="alertType"
-                                    dismissable
+                                    dismissible
                                     v-model="alert">
                                         {{alertText}}
                                 </v-alert>
@@ -232,7 +232,7 @@
                     </v-tab-item>
 
                     <v-tab-item key="schema" v-if="!creating">
-                        <MetadataForm :branchId="branchId" :dialog="dialog" @close="closeOrBack()"></MetadataForm>
+                        <MetadataForm @commentRefs="(e) => updateCommentRefs(e)" :branchId="branchId" :dialog="dialog" @close="closeOrBack()"></MetadataForm>
                     </v-tab-item>
 
                     <v-tab-item key="compare" v-if="!creating">
@@ -244,7 +244,7 @@
 
         <v-row>
             <v-col cols=12 v-if="!creating">
-                <Comments :id="id" :type="'branch'"></Comments>
+                <Comments :id="id" :type="'branch'" :refable="commentRefs"></Comments>
             </v-col>
         </v-row>
     </v-container>
@@ -291,14 +291,15 @@ export default {
             id: null,
             editing: false,
             creating: false,
-            types: [ {text: 'Standard', value: 'standard'}, {text: 'Reserve', value: 'reserve'}, {text: 'Restricted', value: 'restricted'} ],
+            types: [ {text: 'Standard', value: 'standard'}, {text: 'Unmasked', value: 'unmasked'} ],
             alert: false,
             alertType: "success",
             alertText: "",
             tab: 'version',
             reIndex: 0,
             loading: true,
-            location: window.location
+            location: window.location,
+            commentRefs: [],
         }
     },
     methods: {
@@ -340,6 +341,10 @@ export default {
             }
         },
 
+        updateCommentRefs: function(e){
+            this.commentRefs = e;
+        },
+
         toggleEditing: function(){
             Vue.set(this, 'editing', !this.editing);
         },
@@ -351,7 +356,10 @@ export default {
         async load(){
             this.loading = true;
             // console.log("dataUpload id: " + this.$route.params.id);
-            this.id = (this.branchId) ? this.branchId : this.$route.params.id;
+            
+            this.branchId = (this.branchId) ? this.branchId : this.$route.params.id;
+            this.id = this.branchId;
+            
             await this.getDataUploads("team");
             if (this.id === 'create'){
                 this.editing = true;

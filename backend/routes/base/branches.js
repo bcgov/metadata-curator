@@ -196,10 +196,15 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
     
     const getComments = async (branchId, user) => {
         try {
+            if ( (branchId == null) || (typeof(branchId) === "undefined") || (branchId === "undefined") ) {
+                throw new Error("Invalid branch ID")
+            }
+            
             let branch = await getBranchById(branchId, user);
             if (branch == null) {
                 throw new Error("Invalid branch ID")
             }
+            
             return await forumClient.getComments (branch.topic_id, user);
         } catch(e) {
             console.error(e);
@@ -222,8 +227,37 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.branchId)));
         }
-        const branch = await getBranchById(req.params.branchId, req.user);
-        res.status(200).json(branch);
+        try{
+            const branch = await getBranchById(req.params.branchId, req.user);
+           res.status(200).json(branch);
+        }catch(e){
+            res.status(500).json(e);
+        }
+    });
+
+    router.put('/:branchId/copy-schema', async function(req, res, next){
+        //version check
+        if (!util.phaseCheck(cache, requiredPhase, db)){
+            return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.branchId+'/copy-schemna')));
+        }
+        try{
+            let copyTo = req.params.branchId;
+            let copyFrom = req.body.copyFrom;
+
+            let original = await db.DataPackageSchema.findOne({version: copyFrom, inferred: false});
+            if (original){
+                original._id = mongoose.Types.ObjectId();
+                original.version = copyTo;
+                let newSchema = await db.DataPackageSchema.insertMany(original);
+                return res.status(201).json(newSchema);
+            }else{
+                return res.status(400).json({error: "No such schema to copy: "+copyFrom});
+            }
+
+        }catch(e){
+            console.log("copy-schema", e);
+            res.status(500).json(e);
+        }
     });
 
     router.put('/:branchId', auth.requireLoggedIn, async function(req, res, next) {
@@ -298,20 +332,26 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
     });
 
     router.get('/:branchId/comments', async function(req, res, next){
-        if (req.params.branchId !== 'create'){
-            const comments = await getComments (req.params.branchId, req.user);
-            return res.json(comments);
-        }
+        try{
+            if (req.params.branchId !== 'create'){
+                const comments = await getComments (req.params.branchId, req.user);
+                return res.json(comments);
+            }
+        }catch(e){}
         return res.json([]);
         
     });
 
     router.post('/:branchId/comments', async function(req, res, next){
-        if (req.params.branchId !== 'create'){
-            await addComment (req.params.branchId, req.user, req.body.content);
-            return res.status(201).json({
-                message: 'Comment saved successfully.'
-            });
+        try{
+            if (req.params.branchId !== 'create'){
+                await addComment (req.params.branchId, req.user, req.body.content);
+                return res.status(201).json({
+                    message: 'Comment saved successfully.'
+                });
+            }
+        }catch(e){
+            res.status(500).json(e);
         }
         
         return res.status(400).json({error: "Cant add comments to a branch that doesn't exist"});

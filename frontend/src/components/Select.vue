@@ -1,7 +1,16 @@
 <template>
     <div>
          <span v-if="!editing">
-            <span class="mr-2">
+             <h2 v-if="large" class="mr-2">
+                {{displayLabel}}
+                <v-tooltip right v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
+                    <template v-slot:activator="{ on }">
+                        <v-icon color="label_colour" v-on="on">mdi-help-circle-outline</v-icon>
+                    </template>
+                    <span>&nbsp;{{$t('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))}}</span>
+                </v-tooltip>
+            </h2>
+            <span v-else class="mr-2">
                 {{displayLabel}}
                 <v-tooltip right v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
                     <template v-slot:activator="{ on }">
@@ -10,7 +19,8 @@
                     <span>&nbsp;{{$t('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))}}</span>
                 </v-tooltip>
             </span>
-            <span>{{displayVal}}</span>
+            <h2 v-if="large">{{displayVal}}</h2>
+            <span v-else>{{displayVal}}</span>
         </span>
 
         <span v-else>
@@ -94,6 +104,11 @@
                 type: String,
                 required: false,
                 default: ''
+            },
+            large: {
+                type: Boolean,
+                required: false,
+                default: () => false
             },
 
         },
