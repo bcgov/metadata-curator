@@ -212,6 +212,13 @@ export default {
         "from this": "from this",
         "Data Collection Type": "Data Collection Type",
 
+        "Variable Classifications":" Variable Classifications",
+        "V01": "V01",
+
+        "Status in DIP Baseline": "Status in DIP Baseline",
+        "Examples": "Examples",
+        "Code": "Code",
+
 
         "help.dataset.name": "The name of the dataset",
         "help.dataset.description": "A description of the dataset",

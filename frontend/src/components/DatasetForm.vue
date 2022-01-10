@@ -277,7 +277,10 @@ export default {
 
             let keys = Object.keys(branch);
             for (let i=0; i<keys.length; i++){
-                if (keys[i] !== "_id"){
+                if (keys[i] === "name"){
+                    let d = new Date();
+                    this.editBranch({name: keys[i], value: branch[keys[i]] + " " + d.toLocaleDateString("en-US")});
+                }else if (keys[i] !== "_id"){
                     this.editBranch({name: keys[i], value: branch[keys[i]]});
                 }else{
                     this.editBranch({name: keys[i], value: ""});

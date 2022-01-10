@@ -36,6 +36,7 @@ db.init = async function (_connString = null) {
     db.MetadataRevisionSchema = require('./model/metadataRevision');
     db.User = require('./model/user');
     db.ConfigSchema = require('./model/config');
+    db.VariableClassification = require('./model/variableClassification');
 };
 
 module.exports = db;

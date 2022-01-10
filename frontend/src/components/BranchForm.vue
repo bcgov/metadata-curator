@@ -133,15 +133,19 @@
 
                                 <v-row>
                                     <v-col cols=12>
-                                        <TextInput
+                                        <Select
+                                            :items="variableClassifications"
                                             :label="$tc('Variable Classification')"
                                             :placeholder="$tc('Variable Classification')"
+                                            itemText="name"
+                                            itemValue="_id"
                                             name="variable_classification"
                                             :editing="editing"
                                             :value="(branch) ? branch.variable_classification : ''"
                                             helpPrefix="edition"
                                             @edited="(newValue) => { updateValues('variable_classification', newValue) }"
-                                        ></TextInput>
+                                        >
+                                        </Select>
                                     </v-col>
                                 </v-row>
 
@@ -194,7 +198,7 @@
                                             :placeholder="$tc('Published')"
                                             name="published"
                                             :editing="editing"
-                                            :disabled="!editing || !user.isApprover || (branch && branch.approved)"
+                                            :disabled="!editing || (!user.isApprover && !user.isAdmin) || (branch && branch.approved)"
                                             :checked="(branch) ? branch.published : false"
                                             helpPrefix="edition"
                                             @edited="(newValue) => { updateValues('published', newValue) }"
@@ -210,7 +214,7 @@
                                             :placeholder="$tc('Approved')"
                                             name="approved"
                                             :editing="editing"
-                                            :disabled="!editing || !user.isApprover"
+                                            :disabled="!editing || (!user.isApprover && !user.isAdmin)"
                                             :checked="(branch) ? branch.approved : ''"
                                             helpPrefix="edition"
                                             @edited="(newValue) => { updateValues('approved', newValue) }"
@@ -312,6 +316,9 @@ export default {
             getDataUploads: 'dataUploads/getDataUploads',
             getSchema: 'schemaImport/getTableSchema',
             getInferredSchema: 'schemaImport/getInferredSchema',
+            getVariableClassification: 'variableClassifications/getItem',
+            getVariableClassifications: 'variableClassifications/getItems',
+            clearVariableClassifications: 'variableClassifications/clearItems',
         }),
         ...mapMutations({    
             editBranch: 'repos/editBranch',
@@ -323,6 +330,12 @@ export default {
             await this.getBranchById({id: this.id});
             await this.getInferredSchema({id: this.id});
             await this.getSchema({id: this.id});
+            await this.clearVariableClassifications();
+            await this.getVariableClassifications({});
+            if (this.branch.variable_classification){
+                this.getVariableClassification({id: this.branch.variable_classification});
+            }
+            
             //await this.getRepos({filterBy: ''});
             //await this.getDataset({id: this.branch.repo_id});
             this.reIndex++;
@@ -349,7 +362,10 @@ export default {
             Vue.set(this, 'editing', !this.editing);
         },
 
-        updateValues(name, value){
+        async updateValues(name, value){
+            if (name === 'variable_classification'){
+                await this.getVariableClassification({id: value});
+            }
             this.editBranch({name: name, value: value});
         },
 
@@ -417,6 +433,7 @@ export default {
             dataset: state => state.repos.repo,
             schema: state => state.schemaImport.tableSchema,
             inferredSchema: state => state.schemaImport.inferredSchema,
+            variableClassifications: state => state.variableClassifications.items,
         }),
     },
     watch: {

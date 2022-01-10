@@ -111,8 +111,12 @@ export default {
                     //   { id: 11, name: "Submit", route: `/submit`, icon: 'mdi-send', disabled: true }
             }
 
+            if ( (this.user) && (this.user.isAdmin) && (this.enabledPhase >= 2) ){
+                t.push({ id: 12, name: "Variable Classification", route: `/variable-classifications`, icon: 'mdi-archive-search', disabled: false });
+            }
+
             if ( (this.user) && (this.user.isAdmin) ){
-                t.push({ id: 12, name: "Admin", route: `/admin`, icon: 'mdi-settings', disabled: false });
+                t.push({ id: 13, name: "Admin", route: `/admin`, icon: 'mdi-cog', disabled: false });
             }
 
             return t;

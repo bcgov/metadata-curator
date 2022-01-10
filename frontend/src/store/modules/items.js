@@ -7,11 +7,15 @@ var build = function(getFn, newFn, updateFn, deleteFn, getSingle){
     const state = {
         items: [],
         error: "",
+        wipItem: {},
     };
 
     const getters = {};
 
     const actions = {
+        async clearItems({ commit }){
+            commit('clearItems');
+        },
         async getItems({ commit }, { param }) {
 
             if ( (typeof(param) !== 'undefined') && (param !== false) ){
@@ -43,6 +47,7 @@ var build = function(getFn, newFn, updateFn, deleteFn, getSingle){
                 commit('pushItem', {item: def});
                 return def;
             }else{
+                commit('setItem', {item: rv});
                 return rv;
             }
         },
@@ -79,6 +84,18 @@ var build = function(getFn, newFn, updateFn, deleteFn, getSingle){
 
 
     let mutations = {
+        clearItems(state){
+            Vue.set(state.items, []);    
+        },
+
+        editItem(state, {name, value}){
+            Vue.set(state.wipItem, name, value);
+        },
+
+        setItem(state, {item}){
+            Vue.set(state, 'wipItem', item);
+        },
+
         setItems(state, {items}){
             if (state.items == []){
                 Vue.set(state, 'items', items);

@@ -258,20 +258,19 @@
                                 </v-col>
 
                                 <v-col cols=7 v-if="(field && field.var_class) || editing" class="pt-0 pb-1 borderRight">
-                                    <TextInput
+                                    <Select
                                         :label="$tc('Var Class')"
                                         placeholder=""
                                         name="var_class"
-                                        :refName="'basicField-' + key + '-' + fKey + '-var_class'"
-                                        :idName="'basicField-' + key + '-' + fKey + '-var_class'"
+                                        :items="variableClassification.values"
+                                        itemText="code"
+                                        itemValue="code"
 
                                         :editing="editing"
                                         :value="field.var_class"
                                         helpPrefix="schema"
-                                        :focusField="focusProp"
-                                        @focus="onFocusBasic"
-                                        @blur="(event) => { updateResource(key, fKey, 'var_class', event) }"
-                                    ></TextInput>
+                                        @edited="(newValue) => { updateResource(key, fKey, 'var_class', newValue) }"
+                                    ></Select>
                                 </v-col>
 
                                 <v-col cols=7 v-if="(field && field.rdfType) || editing" class="pt-0 pb-1 borderRight">
@@ -408,6 +407,7 @@
 
 <script>
 import Vue from 'vue';
+import { mapState } from 'vuex';
 import RepeatingObject from './RepeatingObject';
 
 import JsonProcessor from '../../mixins/JsonProcessor';
@@ -483,6 +483,9 @@ export default{
     },
 
     computed: {
+        ...mapState({
+            variableClassification: state => state.variableClassifications.wipItem,
+        }),
         stateLabels: function(){
             if (this.editing){
                 return [

@@ -87,5 +87,12 @@ module.exports = (router, cache) => {
     tableRouter = tableSchemasRoutes.buildDynamic(db, tableRouter, auth, cache);
     router.use('/tableschemas', auth.requireLoggedIn, tableRouter);
 
+
+    var varClassRoutes = require('../base/variableClassification');
+    var vcRouter = new Router();
+    vcRouter = varClassRoutes.buildStatic(db, vcRouter);
+    vcRouter = varClassRoutes.buildDynamic(db, vcRouter, auth, forumClient);
+    router.use('/varclass', vcRouter);
+
     return router;
 }

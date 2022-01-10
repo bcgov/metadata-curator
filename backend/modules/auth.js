@@ -42,6 +42,26 @@ auth.requireGroup = async function(groupName){
 
 }
 
+auth.isApprover = function(req, res, next){
+    let config = require('config');
+    let approverGroups = config.get('approverGroups');
+    let adminGroup = config.get('adminGroup');
+    console.log("HI");
+    console.log('isA', req.user, req.user.groups, approverGroups, adminGroup);
+    if ( (!req.user) || (!req.user.groups) ){
+        res.status(403);
+        return res.json({error: "Forbidden"});
+    }else{
+        const intersection = req.user.groups.filter(element => approverGroups.includes(element));
+        if ( (intersection.length <= 0) && (req.user.groups.indexOf(adminGroup) === -1) ){
+            res.status(403);
+            return res.json({error: "Forbidden"});
+        }
+    }
+
+    next();
+}
+
 auth.isTokenExpired = function(token){
     const log = require('npmlog');
     let currDate = new Date();
