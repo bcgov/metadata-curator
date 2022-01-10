@@ -49,6 +49,9 @@ server {
     proxy_http_version      1.1;
     proxy_set_header         Upgrade $http_upgrade;
     proxy_set_header         Connection $connection_upgrade;
+    proxy_read_timeout 7200;
+    proxy_connect_timeout 7200;
+    proxy_send_timeout 7200;
 
     proxy_pass http://mc_minio:9000;
   }
@@ -74,6 +77,9 @@ server {
     proxy_hide_header Access-Control-Allow-Origin;
     add_header Access-Control-Allow-Origin *;
     add_header Access-Control-Allow-Headers x-http-method-override;
+    proxy_read_timeout 7200;
+    proxy_connect_timeout 7200;
+    proxy_send_timeout 7200;
     
     proxy_pass http://mc_tusd:1080/files;
 
