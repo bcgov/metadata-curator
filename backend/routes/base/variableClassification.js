@@ -77,7 +77,7 @@ var buildDynamic = function(db, router, auth, forumClient){
     });
 
     router.get('/:varClassId', async function(req, res, next){
-        let varClass = await db.VariableClassification.findOne({key: req.params.varClassId});
+        let varClass = await db.VariableClassification.findOne({id: req.params.varClassId});
 
         if (!varClass.published){
             if (!req.user){
