@@ -233,11 +233,11 @@
                         this.selectedVersion = this.versions[0]._id;
                         this.allowSelect = false;
                         if (this.versions[0].variable_classification){
-                            await this.getVariableClassification({id: this.versions[0].variable_classification})
+                            await this.getVariableClassification({field: '_id', value: this.versions[0].variable_classification});
                         }
                     }else{
                         await this.getVariableClassifications({});
-                        await this.getVariableClassification({id: this.variableClassifications[0]._id});
+                        await this.getVariableClassification({field: '_id', value: this.variableClassifications[0]._id});
                     }
                 }
             }
@@ -638,7 +638,7 @@
                     if (this.versions.length > 0){
                         await this.getSchemaFromVersion({id: this.versions[0]._id});
                         if (this.versions[0].variable_classification){
-                            await this.getVariableClassification({id: this.versions[0].variable_classification})
+                            this.getVariableClassification({field: '_id', value: this.versions[0].variable_classification});
                         }
                         this.selectedVersion = this.versions[0]._id;
                     }

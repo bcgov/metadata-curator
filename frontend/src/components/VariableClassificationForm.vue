@@ -182,7 +182,7 @@ export default {
         }),
 
         async loadSections() {
-            await this.getVariableClassification({id: this.id});
+            await this.getVariableClassification({field: '_id', value: this.id});
         },
 
         addValue() {

@@ -333,7 +333,7 @@ export default {
             await this.clearVariableClassifications();
             await this.getVariableClassifications({});
             if (this.branch.variable_classification){
-                this.getVariableClassification({id: this.branch.variable_classification});
+                await this.getVariableClassification({field: '_id', value: this.branch.variable_classification});
             }
             
             //await this.getRepos({filterBy: ''});
@@ -364,7 +364,7 @@ export default {
 
         async updateValues(name, value){
             if (name === 'variable_classification'){
-                await this.getVariableClassification({id: value});
+                await this.getVariableClassification({field: '_id', value: value});
             }
             this.editBranch({name: name, value: value});
         },
