@@ -48,7 +48,7 @@ import {mapActions, mapState, mapMutations} from "vuex";
 
 export default {
     async created() {
-
+        await this.loadVariableClassifications();
     },
     data() {
         return {
@@ -57,8 +57,9 @@ export default {
         }
     },
     async mounted(){
-        this.loadVariableClassifications();
+        await this.loadVariableClassifications();
     },
+
     methods: {
         ...mapActions({
             getVariableClassifications: 'variableClassifications/getItems',
@@ -83,15 +84,18 @@ export default {
         
         variableClassificationDisplayItems: function(){
             let items = [];
-            this.variableClassifications.forEach( (vc, index) => {
-                const item = {
-                    title: `${vc.name}`,
-                    subtitle: vc.create_date,
-                    id: vc._id,
-                };
-                items.push(item);
-                if(index <= this.variableClassifications.length - 1) {
-                    items.push({ divider: true, inset: true });
+            this.variableClassifications.forEach( (vc) => {
+                if (vc._id){
+                    if (items.length > 0){
+                        items.push({ divider: true, inset: true });
+                    }
+                    const item = {
+                        title: `${vc.name}`,
+                        subtitle: vc.create_date,
+                        id: vc._id,
+                    };
+                    items.push(item);
+                    
                 }
             });
             return items;

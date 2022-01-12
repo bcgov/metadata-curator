@@ -176,12 +176,14 @@ export default {
             getVariableClassification: 'variableClassifications/getItem',
             saveVariableClassification: 'variableClassifications/newItem',
             updateVariableClassification: 'variableClassifications/updateItem',
+            clearVariableClassifications: 'variableClassifications/clearItems',
         }),
         ...mapMutations({
             editVariableClassification: 'variableClassifications/editItem',
         }),
 
         async loadSections() {
+            await this.clearVariableClassifications();
             await this.getVariableClassification({field: '_id', value: this.id});
         },
 
@@ -220,11 +222,12 @@ export default {
 
         save(){
             if (this.creating){
-                this.saveVariableClassification({item: this.variableClassification}).then( () => {
+                this.saveVariableClassification({item: this.variableClassification}).then( async() => {
                         this.alertType = "success"
                         this.alertText = this.$tc("Sucessfully created variable classification");
                         this.alert = true;
                         window.scrollTo(0,0);
+                        await this.clearVariableClassifications();
                         this.routeToHome();
 
                     }).catch( err => {
@@ -234,11 +237,12 @@ export default {
                         window.scrollTo(0,0);
                     });
             }else{
-                this.updateVariableClassification({id: this.id, item: this.variableClassification}).then( () => {
+                this.updateVariableClassification({id: this.id, item: this.variableClassification}).then( async() => {
                         this.alertType = "success"
                         this.alertText = this.$tc("Sucessfully updated variable classification");
                         this.alert = true;
                         window.scrollTo(0,0);
+                        await this.clearVariableClassifications();
                         this.routeToHome();
 
                     }).catch( err => {

@@ -86,6 +86,7 @@ var build = function(getFn, newFn, updateFn, deleteFn, getSingle){
     let mutations = {
         clearItems(state){
             Vue.set(state.items, []);    
+            Vue.set(state, 'wipItem', {});
         },
 
         editItem(state, {name, value}){

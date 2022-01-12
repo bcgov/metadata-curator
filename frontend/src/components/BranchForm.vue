@@ -236,7 +236,7 @@
                     </v-tab-item>
 
                     <v-tab-item key="schema" v-if="!creating">
-                        <MetadataForm @commentRefs="(e) => updateCommentRefs(e)" :branchId="branchId" :dialog="dialog" @close="closeOrBack()"></MetadataForm>
+                        <MetadataForm @commentRefs="(e) => updateCommentRefs(e)" :branchId="id" :dialog="dialog" @close="closeOrBack()"></MetadataForm>
                     </v-tab-item>
 
                     <v-tab-item key="compare" v-if="!creating">
@@ -373,8 +373,8 @@ export default {
             this.loading = true;
             // console.log("dataUpload id: " + this.$route.params.id);
             
-            this.branchId = (this.branchId) ? this.branchId : this.$route.params.id;
-            this.id = this.branchId;
+            //this.branchId = (this.branchId) ? this.branchId : this.$route.params.id;
+            this.id = (this.branchId) ? this.branchId : this.$route.params.id;
             
             await this.getDataUploads("team");
             if (this.id === 'create'){
