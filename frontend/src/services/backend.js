@@ -394,4 +394,35 @@ export class Backend {
         return axios.delete(url, {}, {withCredentials: true}).then(response => response.data)
     }
 
+    getVariableClassifications(){
+        const url = `/api/v1/varclass`
+        return axios.get(url, {withCredentials: true}).then( (response) => {
+            let data = response.data;
+            return data;
+        })
+    }
+
+    getVariableClassification(key){
+        const url = `/api/v1/varclass/${key}`
+        return axios.get(url, {withCredentials: true}).then( (response) => {
+            let data = response.data;
+            return data;
+        })
+    }
+
+    putVariableClassification(id, editedForm){
+        const url = `/api/v1/varclass/${id}`;
+        return axios.put(url, editedForm, {withCredentials: true}).then(response => response.data)
+    }
+
+    newVariableClassification(newForm){
+        const url = `/api/v1/varclass`;
+        return axios.post(url, newForm, {withCredentials: true}).then(response => response.data)
+    }
+
+    deleteVariableClassification(id){
+        const url = `/api/v1/varclass/${id}`;
+        return axios.delete(url, {}, {withCredentials: true}).then(response => response.data)
+    }
+
 }

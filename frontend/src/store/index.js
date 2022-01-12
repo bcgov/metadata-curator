@@ -27,6 +27,8 @@ const config = build('getConfigs','newConfig', 'putConfig', 'deleteConfig', 'get
 const adminDatasets = build('getRepos');
 const adminVersions = build('getBranches');
 
+const variableClassifications = build('getVariableClassifications', 'newVariableClassification', 'putVariableClassification', 'deleteVariableClassification', 'getVariableClassification');
+
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -51,6 +53,7 @@ export default new Vuex.Store({
     config,
     adminDatasets,
     adminVersions,
+    variableClassifications,
   },
   plugins: [createPersistedState({
     paths: [

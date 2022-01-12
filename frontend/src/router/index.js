@@ -16,6 +16,10 @@ const LoggedOut = () => import(/* webpackChunkName: "LoggedOut" */ "../component
 const user = () => import(/* webpackChunkName: "user" */ "../components/pages/user");
 const publishedVersion = () => import(/* webpackChunkName: "publishedVersion" */ "../components/pages/publishedVersion");
 
+const variableClassifications = () => import(/* webpackChunkName: "variableClassifications" */ "../components/pages/variableClassifications");
+const variableClassification = () => import(/* webpackChunkName: "variableClassificationForm" */ "../components/pages/variableClassificationForm");
+const publishedVariableClassificationForm = () => import(/* webpackChunkName: "publishedVariableClassification" */ "../components/pages/publishedVariableClassification");
+
 Vue.use(Router)
 let r = new Router({
   mode: "history",
@@ -159,6 +163,36 @@ let r = new Router({
       meta: {
           title: "Admin",
           requiresAuth: true
+      }
+    },
+    {
+      path: '/variable-classifications',
+      name: 'variableClassifications',
+      component: variableClassifications,
+      meta: {
+          title: "Variable Classifications",
+          requiresAuth: true,
+          phase: 2
+      }
+    },
+    {
+      path: '/variable-classification/:id',
+      name: 'variableClassificationForm',
+      component: variableClassification,
+      meta: {
+          title: "Variable Classification",
+          requiresAuth: true,
+          phase: 2
+      }
+    },
+    {
+      path: '/pub/c/:id',
+      name: 'publishedVariableClassification',
+      component: publishedVariableClassificationForm,
+      meta: {
+          title: "Variable Classification",
+          requiresAuth: false,
+          phase: 2
       }
     },
     {
