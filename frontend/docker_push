@@ -13,7 +13,7 @@ echo "logged in, building now";
 echo "Building Docker image..."
 docker build -t $QUAYIO_BASE/$REPO .
 
-printf "\nENV GITHASH $GITHUB_SHA\n" >> Dockerfile
+echo "ENV GITHASH $GITHUB_SHA\n" | cat - Dockerfile > temp && mv temp Dockerfile
 
 if [ $BRANCH == "main" ]; then
     docker tag $QUAYIO_BASE/$REPO $BCGOV_BASE/$REPO:latest
