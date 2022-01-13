@@ -326,7 +326,12 @@
 
             async triggerUploadFormSubmit() {
                 try{
-                    //await this.$refs.uploadForm.submitForm();
+                    await this.$refs.uploadForm.submitForm();
+                    if (!this.$refs.uploadForm.validateForm()){
+                        this.errorText = "Missing required fields";
+                        this.errorAlert = true;
+                        return {error: "Missing required fields"}
+                    }
                     let submission = await this.$refs.uploadForm.getSubmission()
                     let data = await backend.postFormSubmission(this.formName, submission.data);
                     return data;

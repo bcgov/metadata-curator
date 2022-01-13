@@ -1,6 +1,6 @@
 {
   "name": "metadata-curator",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -79,7 +79,7 @@
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.3",
     "babel-preset-vue": "^2.0.2",
-    "chromedriver": "^95.0.0",
+    "chromedriver": "^97.0.0",
     "edgedriver": "^4.17134.1",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.2.3",

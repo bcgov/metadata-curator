@@ -95,6 +95,7 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             }
         } catch(e) {
             log.error(e);
+            throw e;
         }
     
         if (updatedData.name){
@@ -306,8 +307,12 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
     });
 
     router.put('/:dataUploadId', async function(req, res, next){
-        const dataUpload = await updateDataUpload(req.user, req.params.dataUploadId, req.body);
-        return res.status(200).json(dataUpload);
+        try{
+            const dataUpload = await updateDataUpload(req.user, req.params.dataUploadId, req.body);
+            return res.status(200).json(dataUpload);
+        }catch(e){
+            return res.status(500).json({error: e});
+        }
     });
 
     router.get('/:dataUploadId/comments', async function(req, res, next){
