@@ -12,6 +12,7 @@
                     :key="'jsonEditor-'+redrawIndex" 
                     :val="rawSchema" 
                     @edited="jsonEdited" 
+                    @editedHighlight="editedHighlight" 
                     :editing="editing" 
                     @state="updateJsonState" 
                     :state-type-parent="jsonState"
@@ -119,6 +120,10 @@ import JsonEditor from './JsonEditor/JsonEditor';
                 this.rawSchema = newVal;
                 // this.redrawIndex++;
                 this.$emit("edited", newVal);
+            },
+
+            editedHighlight: function(editing){
+                this.$emit("editedHighlight", editing);
             }
 
         },

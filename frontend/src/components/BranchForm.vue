@@ -236,7 +236,7 @@
                     </v-tab-item>
 
                     <v-tab-item key="schema" v-if="!creating">
-                        <MetadataForm @commentRefs="(e) => updateCommentRefs(e)" :branchId="id" :dialog="dialog" @close="closeOrBack()"></MetadataForm>
+                        <MetadataForm @commentRefs="(e) => updateCommentRefs(e)" :branchId="id" :dialog="dialog"></MetadataForm>
                     </v-tab-item>
 
                     <v-tab-item key="compare" v-if="!creating">
@@ -392,7 +392,7 @@ export default {
                     this.alertType = "success"
                     this.alertText = this.$tc("Sucessfully created ") + this.$tc("version", 1);
                     this.alert = true;
-                    this.closeOrBack();
+                    //this.closeOrBack();
 
                 }).catch( err => {
                     this.alertType = "error"
@@ -408,7 +408,7 @@ export default {
                     this.alertType = "success"
                     this.alertText = "Sucessfully updated version";
                     this.alert = true;
-                    this.closeOrBack();
+                    //this.closeOrBack();
 
                 }).catch( err => {
                     this.alertType = "error"
