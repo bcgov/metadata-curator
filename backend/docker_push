@@ -14,6 +14,7 @@ echo "Building Docker image..."
 docker build -t $QUAYIO_BASE/$REPO .
 
 echo "ENV GITHASH $GITHUB_SHA\n" | cat - Dockerfile > temp && mv temp Dockerfile
+cat Dockerfile
 
 if [ $BRANCH == "main" ]; then
     docker tag $QUAYIO_BASE/$REPO $BCGOV_BASE/$REPO:latest
