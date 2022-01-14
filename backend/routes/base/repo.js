@@ -192,9 +192,12 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('GET', 'repos'));
         }
-        
-        let repos = await listRepositories(req.user, req.query);
-        res.status(200).json(repos);
+        try{
+            let repos = await listRepositories(req.user, req.query);
+            res.status(200).json(repos);
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     router.post('/', async function(req, res, next){
@@ -202,6 +205,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('POST', 'repos'));
         }
+        
         let fields = {...req.body};
 
         if (!fields.name){
@@ -222,24 +226,36 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('PUT', ('repos/'+req.params.repoId)));
         }
-        const repo = await updateRepo(req.user, req.params.repoId, req.body);
-        res.status(200).json(repo);
+        try{
+            const repo = await updateRepo(req.user, req.params.repoId, req.body);
+            res.status(200).json(repo);
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     router.get('/:repoId/comments', async function(req, res, next){
-        if (req.params.repoId !== 'create'){
-            const comments = await getComments (req.params.repoId, req.user);
-            return res.json(comments);
-        }else{
-            return res.json([]);
+        try{
+            if (req.params.repoId !== 'create'){
+                const comments = await getComments (req.params.repoId, req.user);
+                return res.json(comments);
+            }else{
+                return res.json([]);
+            }
+        }catch(ex){
+            res.status(500).json({error: ex});
         }
     });
 
     router.post('/:repoId/comments', async function(req, res, next){
-        await addComment (req.params.repoId, req.user, req.body.content);
-        return res.status(201).json({
-            message: 'Comment saved successfully.'
-        });
+        try{
+            await addComment (req.params.repoId, req.user, req.body.content);
+            return res.status(201).json({
+                message: 'Comment saved successfully.'
+            });
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     return router;

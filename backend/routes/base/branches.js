@@ -213,13 +213,17 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
     }
     
     router.get('/', auth.requireLoggedIn, async function(req, res, next) {
-        //version check
-        if (!util.phaseCheck(cache, requiredPhase, db)){
-            return res.status(404).send(util.phaseText('GET', 'repobranches'));
-        }
+        try{
+            //version check
+            if (!util.phaseCheck(cache, requiredPhase, db)){
+                return res.status(404).send(util.phaseText('GET', 'repobranches'));
+            }
 
-        const branches = await getBranches(req.user, req.query.data_upload_id);
-        res.status(200).json(branches);
+            const branches = await getBranches(req.user, req.query.data_upload_id);
+            res.status(200).json(branches);
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     router.get('/:branchId', async function(req, res, next) {
@@ -285,8 +289,12 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('DELETE', ('repobranches/'+req.params.branchId)));
         }
-        await deleteBranch(req.params.branchId);
-        res.status(200).json({status: "ok"});
+        try{
+            await deleteBranch(req.params.branchId);
+            res.status(200).json({status: "ok"});
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     router.post('/:repoId/branches', auth.requireLoggedIn,  async function(req, res, next){
@@ -326,9 +334,13 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
             return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.repoId+"/branches")));
         }
 
-        const repoId = req.params.repoId;
-        const branches = await listBranches(repoId);
-        res.status(200).json(branches);
+        try{
+            const repoId = req.params.repoId;
+            const branches = await listBranches(repoId);
+            res.status(200).json(branches);
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     router.get('/:branchId/comments', async function(req, res, next){
@@ -363,14 +375,18 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('POST', ('repobranches/'+req.params.branchId+"/revisions")));
         }
-        let f = {...req.body};
-        const branchId = req.params.branchId;
-        const branch = await getBranchById(branchId, req.user);
-        const rev = await revisionService.createRevisionWithDataPackage(branch, f.change_summary, f.updater, f.descriptor)
-    
-        res.status(201).json({
-            id: rev._id.toString()
-        });
+        try{
+            let f = {...req.body};
+            const branchId = req.params.branchId;
+            const branch = await getBranchById(branchId, req.user);
+            const rev = await revisionService.createRevisionWithDataPackage(branch, f.change_summary, f.updater, f.descriptor)
+        
+            res.status(201).json({
+                id: rev._id.toString()
+            });
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     router.get('/:branchId/revisions', async function(req, res, next) {
@@ -378,10 +394,14 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.branchId+"/revisions")));
         }
-        const branchId = req.params.branchId;
-        await getBranchById(branchId, req.user);
-        const revisions = await revisionService.listRevisionsByBranch(branchId);
-        res.status(200).json(revisions);
+        try{
+            const branchId = req.params.branchId;
+            await getBranchById(branchId, req.user);
+            const revisions = await revisionService.listRevisionsByBranch(branchId);
+            res.status(200).json(revisions);
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     router.put('/:branchId/revisions/:revId', auth.requireLoggedIn,  async function(req, res, next) {
@@ -389,13 +409,17 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('PUT', ('repobranches/'+req.params.branchId+"/revisions/"+req.params.revId)));
         }
-        let f = {...req.body};
-        const branchId = req.params.branchId;
-        const revId = req.params.revId;
-        await getBranchById(branchId, req.user);
-        const rev = await revisionService.updateRevision(revId, f.changeSummary, f.updater)
-    
-        res.status(200).json(rev);
+        try{
+            let f = {...req.body};
+            const branchId = req.params.branchId;
+            const revId = req.params.revId;
+            await getBranchById(branchId, req.user);
+            const rev = await revisionService.updateRevision(revId, f.changeSummary, f.updater)
+        
+            res.status(200).json(rev);
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     router.delete('/:branchId/revisions/:revId', auth.requireLoggedIn,  async function(req, res, next) {
@@ -403,11 +427,15 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('DELETE', ('repobranches/'+req.params.branchId+"/revisions/"+req.params.revId)));
         }
-        const branchId = req.params.branchId;
-        const revId = req.params.revId;
-        await getBranchById(branchId, req.user);
-        await revisionService.deleteRevision(revId)
-        res.status(204).send();
+        try{
+            const branchId = req.params.branchId;
+            const revId = req.params.revId;
+            await getBranchById(branchId, req.user);
+            await revisionService.deleteRevision(revId)
+            res.status(204).send();
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     return router;

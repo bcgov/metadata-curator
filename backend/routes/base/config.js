@@ -17,15 +17,19 @@ var buildDynamic = function(db, router, auth, cache){
         if (cVal !== undefined){
             return res.status(200).json(cVal)
         }
-        var q = {};
-        const configs = await db.ConfigSchema.find(q);
-        cache.set(configListCache, configs);
-        let enabledPhase = configs.find(item => item.key === 'enabledPhase');
-        if (enabledPhase){
-            cache.set(enabledPhaseCache, enabledPhase);
-        }
+        try{
+            var q = {};
+            const configs = await db.ConfigSchema.find(q);
+            cache.set(configListCache, configs);
+            let enabledPhase = configs.find(item => item.key === 'enabledPhase');
+            if (enabledPhase){
+                cache.set(enabledPhaseCache, enabledPhase);
+            }
 
-        res.status(200).json(configs);
+            res.status(200).json(configs);
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     router.post('/', auth.requireLoggedIn, auth.requireAdmin, async function(req, res, next){
@@ -46,50 +50,67 @@ var buildDynamic = function(db, router, auth, cache){
         configSchema.key = f.key;
         configSchema.value = f.value;
 
-        let conf =  await configSchema.save();
+        try{
 
-        cache.del(configListCache)
+            let conf =  await configSchema.save();
 
-        if (conf.key == 'enabledPhase'){
-            cache.set(enabledPhaseCache, conf);
+            cache.del(configListCache)
+
+            if (conf.key == 'enabledPhase'){
+                cache.set(enabledPhaseCache, conf);
+            }
+        
+            res.status(201).json(conf);
+        }catch(ex){
+            res.status(500).json({error: ex});
         }
-    
-        res.status(201).json(conf);
     });
 
     router.get('/:configKey', async function(req, res, next){
-        let conf = await db.ConfigSchema.findOne({key: req.params.configKey});
-        if (!conf && safeKeys.indexOf(req.params.configKey) !== -1 && config.has(req.params.configKey)){
-            conf = {key: req.params.configKey, value: config.get(req.params.configKey)};
+        try{
+            let conf = await db.ConfigSchema.findOne({key: req.params.configKey});
+            if (!conf && safeKeys.indexOf(req.params.configKey) !== -1 && config.has(req.params.configKey)){
+                conf = {key: req.params.configKey, value: config.get(req.params.configKey)};
+            }
+            res.status(200).json(conf);
+        }catch(ex){
+            res.status(500).json({error: ex});
         }
-        res.status(200).json(conf);
     });
 
     router.put('/:configKey', auth.requireLoggedIn, auth.requireAdmin, async function(req, res, next){
-        let f = {...req.body};
-        let configSchema = await db.ConfigSchema.findOne({key: req.params.configKey});
-        if (!configSchema){
-            res.status(404).json({error: "No such config"});
-        }
-        configSchema.value = f.value;
-        
-        await configSchema.save();
+        try{
+            let f = {...req.body};
+            let configSchema = await db.ConfigSchema.findOne({key: req.params.configKey});
+            if (!configSchema){
+                res.status(404).json({error: "No such config"});
+            }
+            configSchema.value = f.value;
+            
+            await configSchema.save();
 
-        cache.del(configListCache);
-        if (configSchema.key === "enabledPhase"){
-            cache.set(enabledPhaseCache, configSchema);
-        }
+            cache.del(configListCache);
+            if (configSchema.key === "enabledPhase"){
+                cache.set(enabledPhaseCache, configSchema);
+            }
 
-        res.status(200).json(configSchema);
+            res.status(200).json(configSchema);
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     router.delete('/:configKey', auth.requireLoggedIn, auth.requireAdmin, async function(req, res, next){
-        await db.ConfigSchema.deleteOne({key: req.params.configKey});
-        cache.del(configListCache);
-        if (req.params.configKey === "enabledPhase"){
-            cache.del(enabledPhaseCache);
+        try{
+            await db.ConfigSchema.deleteOne({key: req.params.configKey});
+            cache.del(configListCache);
+            if (req.params.configKey === "enabledPhase"){
+                cache.del(enabledPhaseCache);
+            }
+            res.status(204).send();
+        }catch(ex){
+            res.status(500).json({error: ex});
         }
-        res.status(204).send();
     });    
 
     return router;

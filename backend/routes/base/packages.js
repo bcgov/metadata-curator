@@ -237,32 +237,52 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
     }
     
     router.get('/', auth.requireLoggedIn, async function(req, res, next) {
-        res.status(200).json(await listDataPackages(req.query));
+        try{
+            res.status(200).json(await listDataPackages(req.query));
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     router.post('/', auth.requireLoggedIn, async function(req, res, next){
-        let descriptor = {...req.body};
-        descriptor.profile = "tabular-data-package";
+        try{
+            let descriptor = {...req.body};
+            descriptor.profile = "tabular-data-package";
 
 
-        const pkg = await addDataPackage(descriptor);
-        res.status(201).json({id: pkg._id.toString()});
+            const pkg = await addDataPackage(descriptor);
+            res.status(201).json({id: pkg._id.toString()});
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     router.put('/:id', auth.requireLoggedIn, async function(req, res, next){
-        let descriptor = {...req.body};
-        descriptor.profile = "tabular-data-package";
-        const pkg = await updateDataPackage(req.params.id, descriptor)
-        res.status(200).json({id: pkg._id.toString()});
+        try{
+            let descriptor = {...req.body};
+            descriptor.profile = "tabular-data-package";
+            const pkg = await updateDataPackage(req.params.id, descriptor)
+            res.status(200).json({id: pkg._id.toString()});
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     router.get('/branch', auth.requireLoggedIn, async function(req, res, next){
-        res.status(200).json(await listDataPackages(req.query));
+        try{
+            res.status(200).json(await listDataPackages(req.query));
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     router.get('/:dataPackageId', auth.requireLoggedIn, async function(req, res, next){
-        const id = req.params.dataPackageId;
-        res.status(200).json(await getDataPackageById(id));
+        try{
+            const id = req.params.dataPackageId;
+            res.status(200).json(await getDataPackageById(id));
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     router.get('/branch/:branchId', async function(req, res, next){
@@ -279,8 +299,12 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
     });
 
     router.delete('/:dataPackageId', auth.requireLoggedIn, auth.requireAdmin, async function(req, res, next){
-        const id = req.params.dataPackageId;
-        res.status(204).json(await deleteDataPackage(id));
+        try{
+            const id = req.params.dataPackageId;
+            res.status(204).json(await deleteDataPackage(id));
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });    
 
     return router;

@@ -23,9 +23,8 @@ var buildDynamic = function(db, router, auth, forumClient){
                     }
                 }
         
-            } catch (e) {
-                log.error(e);
-                throw new Error(e.message)
+            }catch(ex){
+                res.status(500).json({error: ex});
             }
             res.json(providers);
     }); 
