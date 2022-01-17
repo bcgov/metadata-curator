@@ -225,7 +225,7 @@
 
                             </v-card-text>
                              <v-card-actions v-if="editing">
-                                <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
+                                <v-btn @click="closeOrBack()" class="mt-1">{{$tc('Cancel')}}</v-btn>
                                 <v-btn @click="save" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
                             </v-card-actions>
                             <v-card-actions v-else>
@@ -236,7 +236,7 @@
                     </v-tab-item>
 
                     <v-tab-item key="schema" v-if="!creating">
-                        <MetadataForm @commentRefs="(e) => updateCommentRefs(e)" :branchId="id" :dialog="dialog"></MetadataForm>
+                        <MetadataForm @commentRefs="(e) => updateCommentRefs(e)" :branchId="id" @close="closeOrBack" :dialog="dialog"></MetadataForm>
                     </v-tab-item>
 
                     <v-tab-item key="compare" v-if="!creating">
@@ -341,12 +341,17 @@ export default {
             this.reIndex++;
         },
 
-        closeOrBack() {
+        async closeOrBack() {
             this.editing = false;
             this.creating = false;
             this.alert = false;
             if (this.dialog){
-                this.$emit('close');
+                if (!this.editing){
+                    this.$emit('close');
+                }else{
+                    this.editing = false;
+                    await this.load();
+                }
             }else if (this.creating){
                 this.$router.push({ name: 'versions' });
             }else{

@@ -23,6 +23,7 @@
                     :auto-grow="autogrow"
                     :error-messages="errors.length > 0 ? [errors[0]] : []"
                     ref="txtArea"
+                    :id="idName ? idName : ''"
                 >
                     <template v-slot:label>
                         {{displayLabel}}
@@ -92,6 +93,11 @@
                 default: () => false
             },
             helpPrefix: {
+                type: String,
+                required: false,
+                default: ''
+            },
+            idName: {
                 type: String,
                 required: false,
                 default: ''

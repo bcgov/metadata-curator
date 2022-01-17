@@ -31,6 +31,7 @@
                     :items="items"
                     :item-text="itemText"
                     :item-value="itemValue"
+                    :id="idName ? idName : ''"
                     :error-messages="errors.length > 0 ? [errors[0]] : []"
                     @change="$emit('edited', val)"
                     outlined
@@ -110,6 +111,11 @@
                 required: false,
                 default: () => false
             },
+            idName: {
+                type: String,
+                required: false,
+                default: "",
+            },
 
         },
         data() {
@@ -129,7 +135,7 @@
                 let displayVal = this.val;
                 for (let i=0; i<this.items.length; i++){
                     if (this.items[i].value === this.val){
-                        displayVal = this.items[i].text;
+                        displayVal = this.items[i][this.itemText];
                     }
                 }
                 return displayVal

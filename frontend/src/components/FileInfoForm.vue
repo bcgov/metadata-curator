@@ -15,90 +15,79 @@
                         </v-col>
                     </v-row>
                     <v-row>
-                        <v-text-field
-                            v-model="title[index]"
-                            :id="'fileinfo-'+ index + '-title'"
-                            :label="$tc('Title')"
-                            @change="updateFormSubmission"
-                            :placeholder="$tc('Title')">
-                        </v-text-field>
+                        <v-col cols=12>
+                            <TextInput
+                                :label="$tc('Title')"
+                                :placeholder="$tc('Title')"
+                                name="title"
+                                :editing="true"
+                                :value="(title[index]) ? title[index] : ''"
+                                helpPrefix="upload"
+                                :idName="'fileinfo-'+ index + '-title'"
+                                @edited="(newValue) => { ( title[index] = newValue) && updateFormSubmission }"
+                            ></TextInput>
+                        </v-col>
                     </v-row>
 
                     <v-row>
-                        <v-select
-                            v-model="type[index]"
-                            :id="'fileinfo-'+ index + '-type'"
-                            :items="typeOptions"
+                        <Select
                             :label="$tc('File Type')"
-                            @change="updateFormSubmission"
-                            :placeholder="$tc('File Type')">
-                        </v-select>
+                            :placeholder="$tc('File Type')"
+                            name="filetype"
+                            :id="'fileinfo-'+ index + '-type'"
+                            :editing="true"
+                            :value="(type[index]) ? type[index] : ''"
+                            :items="typeOptions"
+                            helpPrefix="upload"
+                            @edited="(newValue) => { (type[index] = newValue) && updateFormSubmission }"
+                        ></Select>
                     </v-row>
 
                     <v-row>
-                        <v-menu
-                            v-model="menu[index]"
-                            :close-on-content-click="false"
-                            :nudge-right="40"
-                            transition="scale-transition"
-                            offset-y
-                            min-width="290px"
-                        >
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-text-field
-                                    v-model="start[index]"
-                                    :rules="[
-                                        () => !!start[index] || 'This field is required',
-                                    ]"
-                                    :label="$tc('Date Range Start') + '*'"
-                                    prepend-icon="mdi-calendar"
-                                    autocomplete="off"
-                                    v-bind="attrs"
-                                    v-on="on"
-                                    @change="updateFormSubmission"
-                                    :id="'fileinfo-'+ index + '-start'"
-                                ></v-text-field>
-                            </template>
-                            <v-date-picker v-model="start[index]" @input="menu[index] = false" @change="updateFormSubmission"></v-date-picker>
-                        </v-menu>
+                        <v-col cols=12>
+                            <DateInput
+                                :label="$tc('Date Range Start')"
+                                :placeholder="(new Date()).toLocaleDateString()"
+                                name="dateRangeStart"
+                                :editing="true"
+                                validation-rules="required"
+                                helpPrefix="upload"
+                                :idName="'fileinfo-'+ index + '-start'"
+                                :value="(start[index]) ? start[index] : ''"
+                                @edited="(newValue) => { (start[index] = newValue) && updateFormSubmission() }">
+                            </DateInput>
+                        </v-col>
                     </v-row>
 
                     <v-row>
-                        <v-menu
-                            v-model="menu2[index]"
-                            :close-on-content-click="false"
-                            :nudge-right="40"
-                            transition="scale-transition"
-                            offset-y
-                            min-width="290px"
-                        >
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-text-field
-                                    v-model="end[index]"
-                                    :rules="[
-                                        () => !!end[index] || 'This field is required',
-                                    ]"
-                                    :label="$tc('Date Range End') + '*'"
-                                    autocomplete="off"
-                                    prepend-icon="mdi-calendar"
-                                    v-bind="attrs"
-                                    @change="updateFormSubmission"
-                                    :id="'fileinfo-'+ index + '-end'"
-                                    v-on="on"
-                                ></v-text-field>
-                            </template>
-                            <v-date-picker v-model="end[index]" @input="menu2[index] = false" @change="updateFormSubmission"></v-date-picker>
-                        </v-menu>
+                        <v-col cols=12>
+                            <DateInput
+                                :label="$tc('Date Range End')"
+                                :placeholder="(new Date()).toLocaleDateString()"
+                                name="dateRangeEnd"
+                                :editing="true"
+                                validation-rules="required"
+                                helpPrefix="upload"
+                                :value="(end[index]) ? end[index] : ''"
+                                :idName="'fileinfo-'+ index + '-end'"
+                                @edited="(newValue) => { (end[index] = newValue) && updateFormSubmission() }">
+                            </DateInput>
+                        </v-col>
                     </v-row>
 
                     <v-row>
-                        <v-textarea
-                            v-model="description[index]"
-                            :label="$tc('File Description')"
-                            @change="updateFormSubmission"
-                            :id="'fileinfo-'+ index + '-desc'"
-                            placeholder="Description">
-                        </v-textarea>
+                        <v-col cols=12>
+                            <TextArea
+                                :label="$tc('File Description')"
+                                :placeholder="$tc('File Description')"
+                                name="fileDescription"
+                                :editing="true"
+                                :value="(description && description[index]) ? description[index] : ''"
+                                helpPrefix="upload"
+                                :idName="'fileinfo-'+ index + '-desc'"
+                                @edited="(newValue) => { (description[index] = newValue) && updateFormSubmission() }"
+                            ></TextArea>
+                        </v-col>
                     </v-row>
                 </v-col>
             </v-row>   
@@ -108,10 +97,18 @@
 
 <script>
     import { mapState, mapActions } from "vuex";
+    import DateInput from './DateInput'
+    import TextArea from './TextArea'
+    import Select from './Select'
+    import TextInput from './TextInput'
 
     export default {
         name: 'FileInfoForm',
         components:{
+            DateInput,
+            TextArea,
+            Select,
+            TextInput
         },
         props: {
             visible: {

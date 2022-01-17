@@ -72,16 +72,34 @@
 
                         <v-stepper-content :step="steps.step2EditionForm" v-if="enabledPhase >= 2">
                             <v-card class="mb-12">
-                                <v-select 
-                                    v-model="selectedDataset" 
-                                    
-                                    :items="datasetList"  
-                                    item-text="name"
-                                    item-value="_id"
-                                    :label="$tc('Datasets')">
-                                </v-select>
-                                <div v-if="admin && this.selectedVersion && this.versions && this.versions[0]">Version: {{this.selectedVersion}} - {{this.versions[0].name}}</div>
-                                <v-btn v-if="allowCreate" id="newDatasetButton" @click="createDataset">{{$tc('New')}} {{$tc('Datasets')}}</v-btn>
+                                <v-row>
+                                    <v-col cols=9>
+                                        <v-select 
+                                            v-model="selectedDataset" 
+                                            :items="datasetList"  
+                                            item-text="name"
+                                            item-value="_id"
+                                            :label="$tc('Datasets')">
+                                        </v-select>
+                                    </v-col>
+                                    <v-col cols=3>
+                                        <v-btn v-if="allowCreate" id="newDatasetButton" @click="createDataset">{{$tc('New')}} {{$tc('Datasets')}}</v-btn>
+                                    </v-col>
+                                </v-row>
+                                <v-row>
+                                    <v-col cols=9>
+                                        <v-select 
+                                            v-model="selectedVersion" 
+                                            :items="versions"  
+                                            item-text="name"
+                                            item-value="_id"
+                                            :label="$tc('Versions')">
+                                        </v-select>
+                                    </v-col>
+                                    <v-col cols=3>
+                                        <v-btn v-if="allowCreateVersion" id="newVersionButton" @click="createVersion">{{$tc('New')}} {{$tc('Versions')}}</v-btn>
+                                    </v-col>
+                                </v-row>
                             </v-card>
                             <v-btn text @click="step=steps.step1UploadForm" id="back-2">{{$tc('Back')}}</v-btn>
                             <v-btn text @click="stepSaveEditionForm(true)" id="next-2">{{$tc('Next')}}</v-btn>
@@ -532,14 +550,13 @@
                 this.schema = newVal;
             },
 
-            async createDataset(){
-                this.clearDataset();
-                this.editDataset({name: 'name', value: this.upload.name});
-                let d = await this.saveDataset();
-                await this.getAllRepos();
-                this.setRepo({repo: {_id: d.id}});
-                this.selectedDataset = d.id;
-                
+            async createVersion(){
+                if (!this.selectedDataset){
+                    this.errorAlert = true;
+                    this.errorText = "Must select a " + this.$tc("Datasets") + " first"
+                    return;
+                }
+
                 this.clearBranch();
                 this.editBranch({name: 'name', value: this.upload.name});
                 let desc = ((this.submission) && (this.submission.data) && (this.submission.data.description)) ? this.submission.data.description : this.upload.name;
@@ -552,9 +569,21 @@
                 this.editBranch({name: 'data_upload_id', value: this.uploadId});
                 this.editBranch({name: "repo_id", value: this.selectedDataset});
                 let b = await this.saveBranch();
+                this.selectedVersion = b.id;
+                this.allowCreateVersion = false;
+                this.allowSelectVersion = false;
+            },
+
+            async createDataset(){
+                this.clearDataset();
+                this.editDataset({name: 'name', value: this.upload.name});
+                let d = await this.saveDataset();
+                await this.getAllRepos();
+                this.setRepo({repo: {_id: d.id}});
+                this.selectedDataset = d.id;
+                
                 this.allowCreate = false;
                 this.allowSelect = false;
-                this.selectedVersion = b.id;
 
             },
         },
@@ -589,6 +618,8 @@
                 providerGroup: null,
                 selectableGroups: [],
                 notFound: false,
+                allowCreateVersion: true,
+                allowSelectVersion: true,
             }
         },
         computed: {

@@ -66,7 +66,7 @@
                         <v-card-actions v-if="loading || !schema">
                         </v-card-actions>
                         <v-card-actions v-else-if="editing">
-                            <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
+                            <v-btn @click="closeOrBack()" class="mt-1">{{$tc('Cancel')}}</v-btn>
                             <v-btn @click="save" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
                         </v-card-actions>
                         <v-card-actions v-else>
@@ -155,9 +155,13 @@ export default {
             this.editing = true;
         },
 
-        closeOrBack() {
+        async closeOrBack() {
             if (this.dialog){
-                this.$emit('close');
+                if (!this.editing){
+                    this.$emit('close');
+                }else{
+                    await this.loadSections();
+                }
             }else if (this.creating){
                 this.$router.push({ name: 'versions' });
             }

@@ -36,7 +36,7 @@
                                     <v-btn color="orange" id="uploadDetail-showInfo" text @click="showViewDialog()">{{$tc('Uploads')}} &amp; {{$tc('File Info')}}</v-btn>
                                 </v-row>
                                 <v-row class="mb-3 fixedHeight" v-if="this.selectedVersion !== '-1'">
-                                    <v-btn color="orange" id="uploadDetail-showSchema" text @click="showSchemaDialog()">{{$tc('Schema')}} {{$tc('Info')}}</v-btn>
+                                    <v-btn color="orange" id="uploadDetail-showSchema" text @click="showSchemaDialog()">{{$tc('Version')}} {{$tc('Info')}}</v-btn>
                                 </v-row>
                                 <v-row class="ml-3 fixedHeight">
                                     <v-checkbox class="mt-0 pt-0" :disabled="true" :label="$tc('Approver has viewed (since last update)')" v-model="dataUpload.opened_by_approver"></v-checkbox>
