@@ -37,7 +37,7 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         return dataPackage;
     }
 
-    const addDataPackage = async function(descriptor) {
+    const addDataPackage = async function(descriptor, user) {
         await validateDataPackage(descriptor);
 
         
@@ -56,6 +56,13 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         }
         let dataPackageSchema = await buildDataPackageSchema(descriptor);
 
+        const branch = await db.RepoBranchSchema.findOne({_id: dataPackageSchema.version});
+        if (!branch){
+            throw new Error("No version");
+        }else if ( (branch.approved) && (!user.isAdmin)){
+            throw new Error("The branch is approved no metadata changes")
+        }
+
         try{
             let d = await dataPackageSchema.save();
             return d;
@@ -69,7 +76,10 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         }
     }
 
-    const deleteDataPackage = async function(id) {
+    const deleteDataPackage = async function(id, user) {
+        if (!user.isAdmin){
+            throw new Error("Not allowed to delete packages")
+        }
         const current = await db.DataPackageSchema.findOne({_id: id});
         if (!current) {
             throw new Error("Data package not found")
@@ -78,6 +88,7 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
     }
 
     const updateDataPackage = async function (id, descriptor) {
+        
         await validateDataPackage(descriptor);
 
         //let dataPackageSchema = await db.DataPackageSchema.findOne({_id: id});
@@ -95,6 +106,13 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         }
 
         data.resources = transformResources(descriptor.resources);
+
+        const branch = await db.RepoBranchSchema.findOne({_id: data.version});
+        if (!branch){
+            throw new Error("No version");
+        }else if ( (branch.approved) && (!user.isAdmin)){
+            throw new Error("The branch is approved no metadata changes")
+        }
 
         let newRecord = await db.DataPackageSchema.findOneAndUpdate(filter, data, {new: true}).catch (e => {
             log.error(e);
@@ -250,7 +268,7 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
             descriptor.profile = "tabular-data-package";
 
 
-            const pkg = await addDataPackage(descriptor);
+            const pkg = await addDataPackage(descriptor, req.user);
             res.status(201).json({id: pkg._id.toString()});
         }catch(ex){
             res.status(500).json({error: ex});
@@ -301,7 +319,7 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
     router.delete('/:dataPackageId', auth.requireLoggedIn, auth.requireAdmin, async function(req, res, next){
         try{
             const id = req.params.dataPackageId;
-            res.status(204).json(await deleteDataPackage(id));
+            res.status(204).json(await deleteDataPackage(id, req.user));
         }catch(ex){
             res.status(500).json({error: ex});
         }

@@ -43,7 +43,7 @@
                                     :large="true"
                                     :editing="editing"
                                     :value="resource.name"
-                                    helpPrefix="schema"
+                                    helpPrefix="schema.res"
                                     :focusField="focusProp"
                                     
                                     @blur="(event) => { updateResourceName(key, event) }"
@@ -91,39 +91,39 @@
 
                          <v-row v-if="(resource && resource.temporal_start) || editing" class="pb-2">
                             <v-col cols=12>
-                                <TextInput
+                                <DateInput
                                     :label="$tc('Date Range Start')"
-                                    placeholder=""
+                                    :placeholder="(new Date()).toISOString().split('T')[0]"
                                     name="temporal_start"
+                                    :editing="editing"
+                                    helpPrefix="schema"
+                                    :value="resource.temporal_start"
+                                    :large="true"
                                     :refName="'basicField-' + key + '-temporal_start'"
                                     :idName="'basicField-' + key + '-temporal_start'"
-                                    :large="true"
-                                    :editing="editing"
-                                    :value="resource.temporal_start"
-                                    helpPrefix="schema"
                                     :focusField="focusProp"
                                     @focus="onFocusBasic"
-                                    @blur="(event) => { updateResourceBase(key, 'temporal_start', event) }"
-                                ></TextInput>
+                                    @edited="(newValue) => { updateResourceBase(key, 'temporal_start', newValue) }">
+                                </DateInput>
                             </v-col>
                         </v-row>
 
                         <v-row v-if="(resource && resource.temporal_end) || editing" class="pb-2">
                             <v-col cols=12>
-                                <TextInput
+                                <DateInput
                                     :label="$tc('Date Range End')"
-                                    placeholder=""
+                                    :placeholder="(new Date()).toISOString().split('T')[0]"
                                     name="temporal_end"
+                                    :editing="editing"
+                                    helpPrefix="schema"
+                                    :value="resource.temporal_end"
+                                    :large="true"
                                     :refName="'basicField-' + key + '-temporal_end'"
                                     :idName="'basicField-' + key + '-temporal_end'"
-                                    :large="true"
-                                    :editing="editing"
-                                    :value="resource.temporal_end"
-                                    helpPrefix="schema"
                                     :focusField="focusProp"
                                     @focus="onFocusBasic"
-                                    @blur="(event) => { updateResourceBase(key, 'temporal_end', event) }"
-                                ></TextInput>
+                                    @edited="(newValue) => { updateResourceBase(key, 'temporal_end', newValue) }">
+                                </DateInput>
                             </v-col>
                         </v-row>
 
@@ -372,18 +372,17 @@
                                     
                                     
                                     <v-col v-if="expandedBasic[key][fKey]" cols=5 class="py-1 borderLeft rightFillDown">
-                                        <Comments :id="commentId" :type="'schema'" :resource="resource.name" :field="field.name" :refable="commentRefs"></Comments>
+                                        <Comments @setComment="(e) => { $emit('setComment', e) }" :id="commentId" :type="'schema'" :resource="resource.name" :field="field.name" :refable="commentRefs"></Comments>
                                     </v-col>
 
                                 </v-row>
                             </draggable>
                         </span>
                         <v-row>
-                            <v-col cols=10>
-                            </v-col>
-
                             <v-col cols=2>
                                 <v-btn v-if="editing" class="primary" @click="addField(key)">{{$tc('Add Field')}}<v-icon>mdi-plus</v-icon></v-btn>
+                            </v-col>
+                            <v-col cols=10>
                             </v-col>
                         </v-row>
                     </v-col>
@@ -431,6 +430,7 @@ import JsonProcessor from '../../mixins/JsonProcessor';
 import TextInput from '../TextInput';
 // import SimpleCheckbox from '../SimpleCheckbox';
 import Select from '../Select';
+import DateInput from '../DateInput';
 import Comments from '../Comments';
 import draggable from 'vuedraggable'
 
@@ -443,7 +443,8 @@ export default{
         Select,
         Comments,
         draggable,
-        // SimpleCheckbox
+        // SimpleCheckbox,
+        DateInput,
     },
 
     props: {
@@ -667,7 +668,12 @@ export default{
         },
 
         updateResourceBase: function(key, field, event){
-            let newValue = event.target.value;
+            let newValue;
+            try{
+                newValue = event.target.value;
+            }catch(e){
+                newValue = event;
+            }
             if (!this.workingVal.resources[key]){
                 this.workingVal.resources[key] = {}
             }

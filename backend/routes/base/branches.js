@@ -29,6 +29,9 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         repoBranchSchema.description = description;
         repoBranchSchema.data_upload_id = upload_id;
         repoBranchSchema.create_date = new Date();
+        
+        repoBranchSchema.collectionMethod = fields.collectionMethod;
+        
 
         repoBranchSchema.availability = fields.availability;
         repoBranchSchema.variable_classification = fields.variable_classification;
@@ -36,7 +39,7 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         repoBranchSchema.citation = fields.citation;
         repoBranchSchema.short_title = fields.short_title;
 
-        if (user.isApprover){
+        if ( (user.isApprover) || (user.isAdmin) ){
             repoBranchSchema.published = typeof(fields.published) !== 'undefined' ? fields.published : false;
             repoBranchSchema.faq = fields.faq;
             repoBranchSchema.approved = typeof(fields.approved) !== 'undefined' ? fields.approved : false;
@@ -86,7 +89,7 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
             throw new Error('404');
         }
 
-        if (repoBranchSchema.approved){
+        if (!user.isAdmin && repoBranchSchema.approved){
             throw new Error('approved');
         }
 
@@ -122,19 +125,23 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
             repoBranchSchema.citation = fields.citation;
         }
 
+        if (fields.collectionMethod){
+            repoBranchSchema.collectionMethod = fields.collectionMethod;
+        }
+
         if (fields.short_title){
             repoBranchSchema.short_title = fields.short_title;
         }
 
-        if ( (user.isApprover) && (typeof(fields.published) !== 'undefined') ){
+        if ( ( (user.isApprover) || (user.isAdmin) ) && (typeof(fields.published) !== 'undefined') ){
             repoBranchSchema.published = fields.published;
         }
 
-        if ( (user.isApprover) && (typeof(fields.approved) !== 'undefined') ){
+        if ( ( (user.isApprover) || (user.isAdmin) ) && (typeof(fields.approved) !== 'undefined') ){
             repoBranchSchema.approved = fields.approved;
         }
 
-        if ( (user.isApprover) && (typeof(fields.faq) !== 'undefined') ){
+        if ( ( (user.isApprover) || (user.isAdmin) ) && (typeof(fields.faq) !== 'undefined') ){
             repoBranchSchema.faq = fields.faq;
         }
         

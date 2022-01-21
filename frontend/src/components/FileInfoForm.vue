@@ -47,7 +47,7 @@
                         <v-col cols=12>
                             <DateInput
                                 :label="$tc('Date Range Start')"
-                                :placeholder="(new Date()).toLocaleDateString()"
+                                :placeholder="(new Date()).toISOString().split('T')[0]"
                                 name="dateRangeStart"
                                 :editing="true"
                                 validation-rules="required"
@@ -63,7 +63,7 @@
                         <v-col cols=12>
                             <DateInput
                                 :label="$tc('Date Range End')"
-                                :placeholder="(new Date()).toLocaleDateString()"
+                                :placeholder="(new Date()).toISOString().split('T')[0]"
                                 name="dateRangeEnd"
                                 :editing="true"
                                 validation-rules="required"

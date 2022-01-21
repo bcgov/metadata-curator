@@ -30,6 +30,11 @@ var repoBranchSchema = new Schema({
         ref: 'data_upload'
     },
 
+    collectionMethod: {
+        type: String,
+        required: false,
+    },
+
     availability: {
         type: String,
         required: false,

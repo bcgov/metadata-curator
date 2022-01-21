@@ -22,6 +22,7 @@
                             <v-select v-if="inferredSchema && !editing" :items="['Provided', 'Inferred']" v-model="viewSchemaType"></v-select>
                             <SchemaView 
                                 @commentRefs="(e) => $emit('commentRefs', e)" 
+                                @setComment="(e) => { $emit('setComment', e) }"
                                 :branchId="branchId" 
                                 :editing="editing" 
                                 @edited="updatedObj" 
@@ -71,7 +72,7 @@
                         </v-card-actions>
                         <v-card-actions v-else>
                             <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
-                            <v-btn @click="editing=!editing; viewSchemaType = 'Provided'" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
+                            <v-btn v-if="canEdit" @click="editing=!editing; viewSchemaType = 'Provided'" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                         </v-card-actions>
                 </v-card>
             </v-col>
@@ -100,6 +101,10 @@ export default {
             type: String,
             default: "",
         },
+        branchApproved: {
+            type: Boolean,
+            default: false,
+        }
 
     },
     data () {
@@ -257,6 +262,9 @@ export default {
             schema: state => state.schemaImport.tableSchema,
             inferredSchema: state => state.schemaImport.inferredSchema
         }),
+        canEdit: function(){
+            return this.branchApproved ? this.user.isAdmin : true;
+        }
     },
     watch: {
         rawSchema: function(){

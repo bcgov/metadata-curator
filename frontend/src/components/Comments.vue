@@ -46,7 +46,7 @@
         <div v-if="type !== 'schema'">
             <Markdown
                 name="comment"
-                value=""
+                :value="comment"
                 :key="'md-comment-'+refreshKey"
                 :label="$tc('New Comment')"
                 :editing="true"
@@ -56,6 +56,9 @@
                 @edited="(newValue) => { setComment(newValue) }"
             ></Markdown>
             <v-btn color="primary" @click="addComment" :disabled="comment === ''" v-if="(comment !== '') || commentFocused">Add Comment</v-btn>
+        </div>
+        <div v-else>
+            <v-btn color="primary" @click="scrollBottom">Add a comment below</v-btn>
         </div>
     </div>
 </template>
@@ -92,6 +95,11 @@ import Markdown from './Markdown.vue';
                 type: Array,
                 required: false,
                 default: () => [],
+            },
+            commentValue: {
+                type: String,
+                required: false,
+                default: ""
             }
         },
         data: () => ({
@@ -169,6 +177,12 @@ import Markdown from './Markdown.vue';
                 
                 this.comment = "";
                 this.refreshKey++;
+            },
+
+            scrollBottom(){
+                let fieldRef = "!" + this.resource + "." + this.field;
+                window.scrollTo(0,document.body.scrollHeight);
+                this.$emit("setComment", fieldRef);
             }
         },
         async mounted(){
@@ -201,6 +215,9 @@ import Markdown from './Markdown.vue';
             },
             comments: function(){
                 this.computeCommentDisplayItems();
+            },
+            commentValue: function(newV){
+                this.comment = newV;
             }
         },
 

@@ -83,21 +83,21 @@
                                         </v-select>
                                     </v-col>
                                     <v-col cols=3>
-                                        <v-btn v-if="allowCreate" id="newDatasetButton" @click="createDataset">{{$tc('New')}} {{$tc('Datasets')}}</v-btn>
+                                        <v-btn v-if="allowCreate" color="success" id="newDatasetButton" @click="createDataset">{{$tc('New')}} {{$tc('Datasets')}}</v-btn>
                                     </v-col>
                                 </v-row>
                                 <v-row>
                                     <v-col cols=9>
                                         <v-select 
                                             v-model="selectedVersion" 
-                                            :items="versions"  
+                                            :items="versionList"  
                                             item-text="name"
                                             item-value="_id"
                                             :label="$tc('Versions')">
                                         </v-select>
                                     </v-col>
                                     <v-col cols=3>
-                                        <v-btn v-if="allowCreateVersion" id="newVersionButton" @click="createVersion">{{$tc('New')}} {{$tc('Versions')}}</v-btn>
+                                        <v-btn v-if="allowCreateVersion" color="success" :disabled="!selectedDataset || selectedDataset === '-1'" id="newVersionButton" @click="createVersion">{{$tc('New')}} {{$tc('Versions')}}</v-btn>
                                     </v-col>
                                 </v-row>
                             </v-card>
@@ -451,7 +451,7 @@
                     return;
                 }
 
-                if (this.selectedVersion == -1){
+                if (this.selectedVersion === "-1"){
                     this.clearBranch();
                     this.editBranch({name: 'name', value: this.upload.name});
                     let desc = ((this.submission) && (this.submission.data) && (this.submission.data.description)) ? this.submission.data.description : this.upload.name;
@@ -611,7 +611,7 @@
                 datasetList: [],
                 allowCreate: true,
                 allowSelect: true,
-                selectedVersion: -1,
+                selectedVersion: "-1",
                 inferredSchema: {},
                 showDiff: false,
                 loading: false,
@@ -647,6 +647,12 @@
                 let en = this.$store.state.config.items.find(item => item['key'] === 'enabledPhase');
                 return (en) ? parseInt(en.value) : 1;
             },
+
+            versionList: function(){
+                let v = JSON.parse(JSON.stringify(this.versions));
+                v.unshift({name: "", _id: "-1"});
+                return v;
+            }
         },
         watch: {
 

@@ -120,6 +120,20 @@
                                 <v-row>
                                     <v-col cols=12>
                                         <TextInput
+                                            :label="$tc('Collection Method')"
+                                            :placeholder="$tc('Collection Method')"
+                                            name="collectionMethod"
+                                            :editing="editing"
+                                            :value="(branch) ? branch.collectionMethod : ''"
+                                            helpPrefix="edition"
+                                            @edited="(newValue) => { updateValues('collectionMethod', newValue) }"
+                                        ></TextInput>
+                                    </v-col>
+                                </v-row>
+
+                                <v-row>
+                                    <v-col cols=12>
+                                        <TextInput
                                             :label="$tc('Availability')"
                                             :placeholder="$tc('Availability')"
                                             name="availability"
@@ -230,13 +244,13 @@
                             </v-card-actions>
                             <v-card-actions v-else>
                                 <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
-                                <v-btn @click="toggleEditing" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
+                                <v-btn v-if="canEdit" @click="toggleEditing" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-tab-item>
 
                     <v-tab-item key="schema" v-if="!creating">
-                        <MetadataForm @commentRefs="(e) => updateCommentRefs(e)" :branchId="id" @close="closeOrBack" :dialog="dialog"></MetadataForm>
+                        <MetadataForm @setComment="(e) => { forceCommentVal = e }" :branch-approved="(branch && branch.approved) ? branch.approved : false" @commentRefs="(e) => updateCommentRefs(e)" :branchId="id" @close="closeOrBack" :dialog="dialog"></MetadataForm>
                     </v-tab-item>
 
                     <v-tab-item key="compare" v-if="!creating">
@@ -248,7 +262,7 @@
 
         <v-row>
             <v-col cols=12 v-if="!creating">
-                <Comments :id="id" :type="'branch'" :refable="commentRefs"></Comments>
+                <Comments :commentValue="forceCommentVal" :id="id" :type="'branch'" :refable="commentRefs"></Comments>
             </v-col>
         </v-row>
     </v-container>
@@ -304,6 +318,7 @@ export default {
             loading: true,
             location: window.location,
             commentRefs: [],
+            forceCommentVal: ""
         }
     },
     methods: {
@@ -398,6 +413,7 @@ export default {
                     this.alertText = this.$tc("Sucessfully created ") + this.$tc("version", 1);
                     this.alert = true;
                     //this.closeOrBack();
+                    this.editing = false;
 
                 }).catch( err => {
                     this.alertType = "error"
@@ -414,6 +430,7 @@ export default {
                     this.alertText = "Sucessfully updated version";
                     this.alert = true;
                     //this.closeOrBack();
+                    this.editing = false;
 
                 }).catch( err => {
                     this.alertType = "error"
@@ -440,6 +457,12 @@ export default {
             inferredSchema: state => state.schemaImport.inferredSchema,
             variableClassifications: state => state.variableClassifications.items,
         }),
+        canEdit: function(){
+            if (this.branch.approved){
+                return this.user.isAdmin; //|| this.user.isApprover;
+            }
+            return true;
+        }
     },
     watch: {
         branchId: async function(){

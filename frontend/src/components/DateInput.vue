@@ -105,7 +105,7 @@
                 default: () => ''
             },
             value: {
-                type: [String, Array],
+                type: [String, Date],
                 required: false,
                 default: () => ''
             },
@@ -147,8 +147,14 @@
             
         },
         data() {
+            let v = this.value;
+            try{
+                v = this.value.toISOString().split('T')[0];
+            }catch{
+                v = new Date(this.value).toISOString().split('T')[0];
+            }
             return {
-                val: Array.isArray(this.value) ? this.value.join(",") : this.value,
+                val: v,
                 menuOpen: false,
             }
         },
@@ -173,7 +179,11 @@
         },
         watch: {
             value: function (newVal) {
-                this.val = Array.isArray(newVal) ? newVal.join(',') : newVal;
+                try{
+                    this.val = newVal.toISOString().split('T')[0];
+                }catch{
+                    this.val = new Date(newVal).toISOString().split('T')[0];
+                }
             },
             val(){
                 this.$emit('edited', this.val);
