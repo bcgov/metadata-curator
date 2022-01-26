@@ -31,7 +31,7 @@ passport.use('jwt', new JWTStrategy({
             decodedJWT = buildProfile(decodedJWT, 'a');
             var db = require('../db/db');
   
-    if (decodedJWT.email){
+    if (process.env !== 'TEST' && decodedJWT.email){
       try{
         var u = await db.User.findOne({email: decodedJWT.email});
         decodedJWT.lastLogin = u.lastLogin;
