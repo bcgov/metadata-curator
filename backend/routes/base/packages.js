@@ -56,7 +56,7 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         }
         let dataPackageSchema = await buildDataPackageSchema(descriptor);
 
-        const branch = await db.RepoBranchSchema.findOne({_id: dataPackageSchema.version});
+        const branch = await db.RepoBranchSchema.findOne({_id: mongoose.Types.ObjectId(dataPackageSchema.version)});
         if (!branch){
             throw new Error("No version");
         }else if ( (branch.approved) && (!user.isAdmin)){
@@ -106,8 +106,19 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         }
 
         data.resources = transformResources(descriptor.resources);
-
-        const branch = await db.RepoBranchSchema.findOne({_id: data.version});
+        
+        let branchQ = {};
+        if (descriptor.version){
+            let branchId = mongoose.Types.ObjectId(descriptor.version);
+            branchQ = {_id: branchId}
+            
+        }else{
+            let oldRecord = await db.DataPackageSchema.findOne(filter);
+            let branchId = mongoose.Types.ObjectId(oldRecord.version);
+            branchQ = {_id: branchId}
+        }
+        
+        const branch = await db.RepoBranchSchema.findOne(branchQ);
         if (!branch){
             throw new Error("No version");
         }else if ( (branch.approved) && (!user.isAdmin)){
@@ -151,17 +162,24 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         inferred = (typeof(inferred) !== 'undefined') ? inferred : false;
         const branch = await db.RepoBranchSchema.findOne({_id: id});
 
+        console.log("Get dPS by branch id1.5", id);
+        id = mongoose.Types.ObjectId(id);
+
         if ( (!branch || !branch.published) && (!user) ){
             throw new Error('404')
         }
 
-        const current = await db.DataPackageSchema.findOne({version: id, inferred: inferred}).lean().catch (e => {
-            log.error(e);
-            throw new Error(e.message)
-        });
+        let current = null;
         try{
+            current = await db.DataPackageSchema.findOne({version: id, inferred: inferred}).lean()
+            console.log("Get dPS by branch id2", current, {version: id, inferred: inferred});
+            if (!current){
+                return current;
+            }
             current.resources = transformResourcesToFrictionless(current.resources);
+            console.log("Get dPS by branch id3", current);
         }catch(e){
+            throw e
         }
 
         return current;
@@ -282,7 +300,7 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
             const pkg = await updateDataPackage(req.params.id, descriptor)
             res.status(200).json({id: pkg._id.toString()});
         }catch(ex){
-            res.status(500).json({error: ex});
+            res.status(500).json({error: ex.message});
         }
     });
 

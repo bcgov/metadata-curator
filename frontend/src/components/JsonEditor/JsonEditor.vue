@@ -632,11 +632,15 @@ export default{
                 name: "",
                 type: "",
                 rdfType: "",
-                    var_class: "",
-                    format: "",
+                var_class: "",
+                format: "",
             });
             
-            this.expandedBasic[key] = [true];
+            this.expandedBasic[key] = [];
+            let key0 = Object.keys(this.workingVal.resources)[0];
+            for (let i=0; i<this.workingVal.resources[key0].schema.fields.length; i++){
+                this.expandedBasic[key].push(true);
+            }
 
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;

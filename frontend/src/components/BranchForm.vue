@@ -103,7 +103,7 @@
 
                                 <v-row>
                                     <v-col cols=12>
-                                        <Select
+                                        <DataUploadSelect
                                             :label="$tc('Data Upload')"
                                             name="upload_id"
                                             :editing="editing"
@@ -113,7 +113,7 @@
                                             item-value="_id"
                                             helpPrefix="edition"
                                             @edited="(newValue) => { updateValues('upload_id', newValue) }"
-                                        ></Select>
+                                        ></DataUploadSelect>
                                     </v-col>
                                 </v-row>
 
@@ -250,10 +250,10 @@
                     </v-tab-item>
 
                     <v-tab-item key="schema" v-if="!creating">
-                        <MetadataForm @setComment="(e) => { forceCommentVal = e }" :branch-approved="(branch && branch.approved) ? branch.approved : false" @commentRefs="(e) => updateCommentRefs(e)" :branchId="id" @close="closeOrBack" :dialog="dialog"></MetadataForm>
+                        <MetadataForm @setComment="(e) => { setComment(e) }" :branch-approved="(branch && branch.approved) ? branch.approved : false" @commentRefs="(e) => updateCommentRefs(e)" :branchId="id" @close="closeOrBack" :dialog="dialog"></MetadataForm>
                     </v-tab-item>
 
-                    <v-tab-item key="compare" v-if="!creating">
+                    <v-tab-item key="compare" v-if="!creating && inferredSchema">
                         <Comparison :left-side-text="JSON.stringify(inferredSchema)" :right-side-text="JSON.stringify(schema)" :diff-json="true"></Comparison>
                     </v-tab-item>
                 </v-tabs-items>
@@ -261,7 +261,7 @@
         </v-row>
 
         <v-row>
-            <v-col cols=12 v-if="!creating">
+            <v-col cols=12 v-if="!creating" id="commentArea">
                 <Comments :commentValue="forceCommentVal" :id="id" :type="'branch'" :refable="commentRefs"></Comments>
             </v-col>
         </v-row>
@@ -280,7 +280,8 @@ import Comments from './Comments';
 import Comparison from './Comparison';
 
 import Vue from 'vue';
-import SimpleCheckbox from './SimpleCheckbox.vue';
+import SimpleCheckbox from './SimpleCheckbox';
+import DataUploadSelect from './DataUploadSelect';
 
 export default {
     components:{
@@ -292,6 +293,7 @@ export default {
         Markdown,
         Comments,
         Comparison,
+        DataUploadSelect
     },
     props: {
         dialog: {
@@ -339,6 +341,15 @@ export default {
             editBranch: 'repos/editBranch',
             clearBranch: 'repos/clearBranch',
         }),
+
+        setComment(e){
+            this.forceCommentVal = e; 
+            if (this.dialog){
+                document
+                    .getElementById("commentArea")
+                    .scrollIntoView({ behavior: "smooth" });
+            }
+        },
 
         async loadSections() {
             //await this.getBranch({id: this.id});
@@ -499,6 +510,7 @@ export default {
         line-height: 36px;
         vertical-align: middle;
     }
+    
 
 </style>
 

@@ -66,7 +66,8 @@ export default {
             loggedIn: state => state.user.loggedIn,
             userPermissions: state => state.user.userPermissions,
             loading: state => state.user.loading,
-            useDark: state => state.user.useDark
+            useDark: state => state.user.useDark,
+            jwt: state => state.user.jwt,
         }),
 
         enabledPhase(){
@@ -138,7 +139,7 @@ export default {
     methods: {
         preserveToken: function(){
             let timeOut = 1000 * 60 // 1 minute
-            timeOut *= 5; // 5 minutes
+            timeOut *= .5; // 5 minutes
 
             if (this.loggedIn){
                 if (!this.stayLoggedIn){
@@ -154,7 +155,7 @@ export default {
 
         keepAlive: function(){
             //no need to await as we don't really care about the token here
-            authServ.getToken();
+            authServ.getToken(this.jwt);
         },
     },
 

@@ -147,9 +147,15 @@ export default {
 
         async loadSections() {
             this.loading = true;
-            //await this.getBranch({id: this.id});
-            await this.getInferredSchema({id: this.id});
-            await this.getSchema({id: this.id});
+            try{
+                //await this.getBranch({id: this.id});
+                await this.getInferredSchema({id: this.id});
+                await this.getSchema({id: this.id});
+            }catch(e){
+                console.err(e);
+                this.loading = true;
+                return;
+            }
             this.loading = false;
         },
 

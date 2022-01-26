@@ -220,6 +220,15 @@ export default {
         "Code": "Code",
         "Collection Method": "Collection Method",
 
+        "uploads": "Uploads | Upload | Uploads",
+        "repos": "Datasets | Dataset | Datasets",
+        "branches": "Editions | Edition | Editions",
+
+        "Update Information": "Update Information",
+        "Updates": "Updates",
+        "Gov project": "Gov project",
+        "Academic project": "Academic project",
+
 
         "help.dataset.name": "The name of the dataset",
         "help.dataset.description": "A description of the dataset",

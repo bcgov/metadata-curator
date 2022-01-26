@@ -46,8 +46,6 @@ auth.isApprover = function(req, res, next){
     let config = require('config');
     let approverGroups = config.get('approverGroups');
     let adminGroup = config.get('adminGroup');
-    console.log("HI");
-    console.log('isA', req.user, req.user.groups, approverGroups, adminGroup);
     if ( (!req.user) || (!req.user.groups) ){
         res.status(403);
         return res.json({error: "Forbidden"});
@@ -153,12 +151,12 @@ auth.removeExpired = async function(req, res, next){
     if ( (typeof(req.user) !== "undefined") && (typeof(req.user.jwt) !== "undefined") && (req.user.jwt !== null) ){
         log.verbose("remove expired not undef");
         if (auth.isTokenExpired(req.user.jwt)){
-            console.log("remove expired token is expired");
+            
             if ( (typeof(req.user.refreshToken) !== "undefined") && (req.user.refreshToken !== null) ){
-                console.log("remove expired refresh token exists");
+                
 
                 if (auth.isRenewable(req.user.refreshToken)){
-                    console.log("remove expired refreshable");
+                    
                     auth.renew(req.user.jwt, req.user.refreshToken, function(refreshErr, accessToken, refreshToken){
                         if (refreshErr){
                             console.error("refresh token error", refreshErr);
@@ -166,20 +164,17 @@ auth.removeExpired = async function(req, res, next){
                             return;
 
                         }
-                        console.log("renewed");
 
                         req.user.jwt = accessToken;
                         req.user.refreshToken =  refreshToken;
                         next();
                     });
                 } else {
-                    console.log("remove expired not refreshable");
                     req.user = null;
                     delete req.user;
                     next();
                 }
             } else {
-                console.log("remove expired no refresh token");
                 req.user = null;
                 delete req.user;
                 next();

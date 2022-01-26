@@ -148,11 +148,21 @@
         },
         data() {
             let v = this.value;
+            let tryDate = false;
             try{
                 v = this.value.toISOString().split('T')[0];
-            }catch{
-                v = new Date(this.value).toISOString().split('T')[0];
+            }catch(ex){
+                tryDate = true;
             }
+
+            if (tryDate){
+                try{
+                    v = new Date(this.value).toISOString().split('T')[0];
+                }catch(ex){
+                    v = ""
+                }
+            }
+
             return {
                 val: v,
                 menuOpen: false,
