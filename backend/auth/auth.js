@@ -31,7 +31,7 @@ passport.use('jwt', new JWTStrategy({
             decodedJWT = buildProfile(decodedJWT, 'a');
             var db = require('../db/db');
   
-    if (process.env !== 'TEST' && decodedJWT.email){
+    if (process.env.NODE_ENV !== "test" && decodedJWT.email){
       try{
         var u = await db.User.findOne({email: decodedJWT.email});
         decodedJWT.lastLogin = u.lastLogin;
@@ -39,7 +39,6 @@ passport.use('jwt', new JWTStrategy({
       }catch(ex){
         console.log("No previous user info", ex);
       }
-      
     }
         } catch(err) {
             console.log("Error resigning", err);
