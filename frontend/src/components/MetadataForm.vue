@@ -22,6 +22,7 @@
                             <v-select v-if="inferredSchema && !editing" :items="['Provided', 'Inferred']" v-model="viewSchemaType"></v-select>
                             <SchemaView 
                                 @commentRefs="(e) => $emit('commentRefs', e)" 
+                                @setComment="(e) => { $emit('setComment', e) }"
                                 :branchId="branchId" 
                                 :editing="editing" 
                                 @edited="updatedObj" 
@@ -66,12 +67,12 @@
                         <v-card-actions v-if="loading || !schema">
                         </v-card-actions>
                         <v-card-actions v-else-if="editing">
-                            <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
+                            <v-btn @click="closeOrBack()" class="mt-1">{{$tc('Cancel')}}</v-btn>
                             <v-btn @click="save" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
                         </v-card-actions>
                         <v-card-actions v-else>
                             <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
-                            <v-btn @click="editing=!editing; viewSchemaType = 'Provided'" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
+                            <v-btn v-if="canEdit" @click="editing=!editing; viewSchemaType = 'Provided'" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                         </v-card-actions>
                 </v-card>
             </v-col>
@@ -100,6 +101,10 @@ export default {
             type: String,
             default: "",
         },
+        branchApproved: {
+            type: Boolean,
+            default: false,
+        }
 
     },
     data () {
@@ -142,9 +147,15 @@ export default {
 
         async loadSections() {
             this.loading = true;
-            //await this.getBranch({id: this.id});
-            await this.getInferredSchema({id: this.id});
-            await this.getSchema({id: this.id});
+            try{
+                //await this.getBranch({id: this.id});
+                await this.getInferredSchema({id: this.id});
+                await this.getSchema({id: this.id});
+            }catch(e){
+                console.err(e);
+                this.loading = true;
+                return;
+            }
             this.loading = false;
         },
 
@@ -155,9 +166,13 @@ export default {
             this.editing = true;
         },
 
-        closeOrBack() {
+        async closeOrBack() {
             if (this.dialog){
-                this.$emit('close');
+                if (!this.editing){
+                    this.$emit('close');
+                }else{
+                    await this.loadSections();
+                }
             }else if (this.creating){
                 this.$router.push({ name: 'versions' });
             }
@@ -253,6 +268,9 @@ export default {
             schema: state => state.schemaImport.tableSchema,
             inferredSchema: state => state.schemaImport.inferredSchema
         }),
+        canEdit: function(){
+            return this.branchApproved ? this.user.isAdmin : true;
+        }
     },
     watch: {
         rawSchema: function(){

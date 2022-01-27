@@ -21,6 +21,7 @@
                     
                     :comment-id="branchId"
                     @commentRefs="(e) => $emit('commentRefs', e)"
+                    @setComment="(e) => { $emit('setComment', e) }"
                 ></JsonEditor>
             </v-col>
 

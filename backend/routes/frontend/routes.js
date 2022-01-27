@@ -51,9 +51,17 @@ module.exports = (router) => {
         res.redirect(config.get("oidc.tokenURL"));
     });
 
-    router.get('/token', auth.removeExpired, function(req, res){
+    router.get('/token', auth.removeExpired, async function(req, res){
         if (req.user && req.user.jwt && req.user.refreshToken) {
             res.json(req.user);
+        }else if (req.headers.authorization){
+            await passport.authenticate('jwt')(req, res, function(){});
+            await auth.removeExpired(req, res, function(){});
+            if (req.user){
+                res.json(req.user);
+            }else{
+                res.json({error: "Not logged in"});
+            }
         }else{
             req.user =  null;
             res.json({error: "Not logged in"});

@@ -54,9 +54,13 @@ var buildDynamic = function(db, router, auth, cache){
     }
 
     router.post('/', auth.requireLoggedIn, async function(req, res, next){
-        let schema = {...req.body};
-        const pkg = await addDataPackageFromTableSchema(schema);
-        res.status(201).json({id: pkg._id.toString()});
+        try{
+            let schema = {...req.body};
+            const pkg = await addDataPackageFromTableSchema(schema);
+            res.status(201).json({id: pkg._id.toString()});
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     return router;

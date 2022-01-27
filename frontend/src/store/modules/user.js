@@ -43,7 +43,7 @@ const actions = {
             exp.setUTCSeconds(jwtObj.exp);
 
             if (currDate > exp) {
-                await authServ.getToken().then((data) => {
+                await authServ.getToken(state.jwt).then((data) => {
                     if ((typeof (data.error) === "undefined") && (typeof (data) === "object")) {
                         commit('setUser', { user: data });
                         commit('setJWT', { jwt: data.jwt });
@@ -64,7 +64,7 @@ const actions = {
                 });
             }else{
                 //catch scenario where server crashed
-                authServ.getToken().then((data) => {
+                authServ.getToken(state.jwt).then((data) => {
                     if ((typeof (data.error) === "undefined") && (typeof (data) === "object")) {
                         commit('setUser', { user: data });
                         commit('setJWT', { jwt: data.jwt });
@@ -85,7 +85,7 @@ const actions = {
                 });
             }
         } else {
-            await authServ.getToken().then((data) => {
+            await authServ.getToken(state.jwt).then((data) => {
                 if ((typeof (data.error) === "undefined") && (typeof (data) === "object")) {
                     commit('setUser', { user: data });
                     commit('setJWT', { jwt: data.jwt });

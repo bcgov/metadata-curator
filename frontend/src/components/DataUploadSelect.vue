@@ -1,7 +1,16 @@
 <template>
     <div>
          <span v-if="!editing">
-            <span class="mr-2">
+             <h2 v-if="large" class="mr-2">
+                {{displayLabel}}
+                <v-tooltip right v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
+                    <template v-slot:activator="{ on }">
+                        <v-icon color="label_colour" v-on="on">mdi-help-circle-outline</v-icon>
+                    </template>
+                    <span>&nbsp;{{$t('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))}}</span>
+                </v-tooltip>
+            </h2>
+            <span v-else class="mr-2">
                 {{displayLabel}}
                 <v-tooltip right v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
                     <template v-slot:activator="{ on }">
@@ -10,23 +19,25 @@
                     <span>&nbsp;{{$t('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))}}</span>
                 </v-tooltip>
             </span>
-            <span>{{val}}</span>
+            <h2 v-if="large">{{displayVal}}</h2>
+            <span v-else>{{displayVal}}</span>
         </span>
 
         <span v-else>
-            <ValidationProvider ref="provider" :rules="validationRules" v-slot="{ errors }" :name="label ? $tc(label) : $tc(name)">
-                <v-textarea
-                    :placeholder="$tc(placeholder)"
+            <ValidationProvider :rules="validationRules" v-slot="{ errors }" :name="label ? $tc(label) : $tc(name)">
+                <v-select
                     :name="name"
                     v-model="val"
-                    :outlined="outlined"
-                    :auto-grow="autogrow"
-                    :error-messages="errors.length > 0 ? [errors[0]] : []"
-                    ref="txtArea"
+                    :items="items"
+                    :item-text="itemText"
+                    :item-value="itemValue"
                     :id="idName ? idName : ''"
+                    :error-messages="errors.length > 0 ? [errors[0]] : []"
+                    @change="$emit('edited', val)"
+                    outlined
                 >
                     <template v-slot:label>
-                        {{displayLabel}}
+                        {{$tc(displayLabel)}}
                         <v-tooltip right v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
                             <template v-slot:activator="{ on }">
                                 <v-icon color="label_colour" v-on="on">mdi-help-circle-outline</v-icon>
@@ -34,7 +45,7 @@
                             <span>&nbsp;{{$t('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))}}</span>
                         </v-tooltip>
                     </template>
-                </v-textarea>
+                </v-select>
             </ValidationProvider>
         </span>
     </div>
@@ -62,30 +73,28 @@
                 required: false,
                 default: () => ''
             },
-            autogrow: {
-                type: Boolean,
-                required: false,
-                default: () => true
-            },
             validationRules: {
                 type: String,
                 required: false,
                 default: () => ''
             },
-            value: {
+            items: {
+                type: Array,
+                required: false,
+                default: () => []
+            },
+            itemText: {
                 type: String,
                 required: false,
-                default: () => ''
+                default: () => 'text'
             },
-            outlined: {
-                type: Boolean,
+            itemValue: {
+                type: String,
                 required: false,
-                default: () => true
+                default: () => 'value'
             },
-            normal: {
-                type: Boolean,
-                required: false,
-                default: () => true
+            value: {
+                type: [String, Array],
             },
             editing: {
                 type: Boolean,
@@ -97,46 +106,49 @@
                 required: false,
                 default: ''
             },
+            large: {
+                type: Boolean,
+                required: false,
+                default: () => false
+            },
             idName: {
                 type: String,
                 required: false,
-                default: ''
-            }
+                default: "",
+            },
+
         },
         data() {
             return {
-                val: this.value,
+                val: null
             }
         },
-
-        methods: {
-            clearValidation() {
-                this.$refs.provider.reset();
-            },
-            reset() {
-                this.$refs.txtArea.reset();
-            },
-            focus() {
-                this.$refs.txtArea.focus();
-            }
-        },
-
         computed: {
             displayLabel: function () {
                 if (this.validationRules.toLowerCase().indexOf("required") >= 0) {
-                    return this.$tc(this.label) + ' *';
+                    return this.label + ' *';
                 }
-                return this.$tc(this.label);
+                return this.label;
+            },
+
+            displayVal: function(){
+                let displayVal = this.val;
+                for (let i=0; i<this.items.length; i++){
+                    if (this.items[i].value === this.val){
+                        displayVal = this.items[i][this.itemText];
+                    }
+                }
+                return displayVal
             }
+
         },
         watch: {
             value: function (newVal) {
                 this.val = newVal
             },
-            val(){
-                // console.log("val changed: ", this.val);
-                this.$emit('edited', this.val);
-            },
+        },
+        mounted(){
+            this.val = this.value;
         }
 
     };

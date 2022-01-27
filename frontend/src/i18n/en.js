@@ -189,11 +189,11 @@ export default {
         "Gov DAR": "Gov DAR",
         "Academic DAR": "Academic DAR",
         
-        "Approval Needed": "Approval Needed",
-        "Gov Data Provider": "Gov Data Provider",
-        "Gov data provider": "Gov Data Provider",
-        "Academic Data Provider": "Academic Data Provider",
-        "Academic data provider": "Academic Data Provider",
+        "Approval Needed": "Data Provider Approval Needed",
+        "Gov Data Provider": "Gov Project",
+        "Gov data provider": "Gov project",
+        "Academic Data Provider": "Academic Project",
+        "Academic data provider": "Academic project",
         "Metadata listed in B.C. Data Catalogue": "Metadata listed in B.C. Data Catalogue",
         "Enum": "Enumeration Constraints | Enumeration Constraint | Enumeration Constraints",
         "Create Without Import": "Create Without Import",
@@ -218,6 +218,16 @@ export default {
         "Status in DIP Baseline": "Status in DIP Baseline",
         "Examples": "Examples",
         "Code": "Code",
+        "Collection Method": "Collection Method",
+
+        "uploads": "Uploads | Upload | Uploads",
+        "repos": "Datasets | Dataset | Datasets",
+        "branches": "Editions | Edition | Editions",
+
+        "Update Information": "Update Information",
+        "Updates": "Updates",
+        "Gov project": "Gov project",
+        "Academic project": "Academic project",
 
 
         "help.dataset.name": "The name of the dataset",
@@ -242,6 +252,7 @@ export default {
         "help.schema.enum": "Define the possible values for this field",
         "help.schema.name": "Name of the column in the data file",
         "help.schema.title": "Human friendly name for the field",
+        "help.schema.res.name": "A simple name or identifier for this resource.  Names must be unique amongst all resources in this dataset and must consist only of lowercase alphanumeric characters plus \".\", \"-\" and \"_\". It would be usual for the name to correspond to the file name (minus the extension) of the data file the resource describes.",
         
     }
 }

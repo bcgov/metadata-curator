@@ -3,9 +3,20 @@ import axios from 'axios';
 export class Backend {
     constructor(){}
 
-    getToken(){
+    getToken(jwt){
         const url = '/api/token'
-        return axios.get(url, {withCredentials: true}).then(response => response.data)
+        let options = {
+            withCredentials: true
+        }
+
+        if (jwt){
+            options = {
+                headers: {
+                    'Authorization': "Bearer " + jwt
+                }
+            }
+        }
+        return axios.get(url, options).then(response => response.data)
     }
 
     getPublicKey(){

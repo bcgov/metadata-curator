@@ -14,6 +14,19 @@
             </v-card>
         </v-dialog>
 
+        <v-dialog v-model="changesDia">
+            <v-card>
+                <v-card-title>
+                    {{$tc('Update Information')}}
+                    <v-spacer></v-spacer>
+                    <v-btn @click="changesDia = false">X</v-btn>
+                </v-card-title>
+                <v-card-text>
+                    <Changes></Changes>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
+
         <v-progress-circular
             v-if="loading"
             indeterminate
@@ -47,10 +60,13 @@
 import { mapState } from 'vuex';
 import md5 from 'md5'
 import About from './About'
+import Changes from './Changes';
+
 export default {
 
     components:{
-        About
+        About,
+        Changes
     },
 
     props: {
@@ -67,7 +83,8 @@ export default {
     data() {
         return {
             showImage: true,
-            aboutDia: false
+            aboutDia: false,
+            changesDia: false,
         }
     },
 
@@ -96,6 +113,16 @@ export default {
             }
 
             items.push(item2);
+
+            item2 = {};
+            item2.title = "Updates";
+            item2.action = function(){
+                // eslint-disable-next-line
+                self.changesDia = true;
+            }
+
+            items.push(item2);
+
             items.push(item);
 
             return items;

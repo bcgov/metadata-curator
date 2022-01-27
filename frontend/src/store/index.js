@@ -62,6 +62,7 @@ export default new Vuex.Store({
       'user.loggedIn',
       'user.loading',
       'user.useDark',
+      'user.jwt',
       'file.fileName',
       'file.fileSig',
       'file.key',

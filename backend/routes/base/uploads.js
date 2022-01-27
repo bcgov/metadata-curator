@@ -279,11 +279,15 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
     }
     
     router.get('/', async function(req, res, next) {
-        let list = null;
-        
-        list = await listDataUploads(req.user, req.query);
-        
-        return res.status(200).json(list);
+        try{
+            let list = null;
+            
+            list = await listDataUploads(req.user, req.query);
+            
+            return res.status(200).json(list);
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     router.post('/', async function(req, res, next){
@@ -316,20 +320,32 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
     });
 
     router.get('/:dataUploadId/comments', async function(req, res, next){
-        const comments = await getComments (req.params.dataUploadId, req.user);
-        return res.json(comments);
+        try{
+            const comments = await getComments (req.params.dataUploadId, req.user);
+            return res.json(comments);
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     router.post('/:dataUploadId/comments', async function(req, res, next){
-        await addComment (req.params.dataUploadId, req.user, req.body.content);
-        return res.status(201).json({
-            message: 'Comment saved successfully.'
-        });
+        try{
+            await addComment (req.params.dataUploadId, req.user, req.body.content);
+            return res.status(201).json({
+                message: 'Comment saved successfully.'
+            });
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     router.get('/:dataUploadId/revisions', async function(req, res, next){
-        const result = await revisionService.listRevisionsByDataUpload(req.params.dataUploadId);
-        return res.json(result);
+        try{
+            const result = await revisionService.listRevisionsByDataUpload(req.params.dataUploadId);
+            return res.json(result);
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
     });
 
     return router;

@@ -103,7 +103,7 @@
 
                                 <v-row>
                                     <v-col cols=12>
-                                        <Select
+                                        <DataUploadSelect
                                             :label="$tc('Data Upload')"
                                             name="upload_id"
                                             :editing="editing"
@@ -113,7 +113,21 @@
                                             item-value="_id"
                                             helpPrefix="edition"
                                             @edited="(newValue) => { updateValues('upload_id', newValue) }"
-                                        ></Select>
+                                        ></DataUploadSelect>
+                                    </v-col>
+                                </v-row>
+
+                                <v-row>
+                                    <v-col cols=12>
+                                        <TextInput
+                                            :label="$tc('Collection Method')"
+                                            :placeholder="$tc('Collection Method')"
+                                            name="collectionMethod"
+                                            :editing="editing"
+                                            :value="(branch) ? branch.collectionMethod : ''"
+                                            helpPrefix="edition"
+                                            @edited="(newValue) => { updateValues('collectionMethod', newValue) }"
+                                        ></TextInput>
                                     </v-col>
                                 </v-row>
 
@@ -225,21 +239,21 @@
 
                             </v-card-text>
                              <v-card-actions v-if="editing">
-                                <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
+                                <v-btn @click="closeOrBack()" class="mt-1">{{$tc('Cancel')}}</v-btn>
                                 <v-btn @click="save" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
                             </v-card-actions>
                             <v-card-actions v-else>
                                 <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
-                                <v-btn @click="toggleEditing" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
+                                <v-btn v-if="canEdit" @click="toggleEditing" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-tab-item>
 
                     <v-tab-item key="schema" v-if="!creating">
-                        <MetadataForm @commentRefs="(e) => updateCommentRefs(e)" :branchId="id" :dialog="dialog"></MetadataForm>
+                        <MetadataForm @setComment="(e) => { setComment(e) }" :branch-approved="(branch && branch.approved) ? branch.approved : false" @commentRefs="(e) => updateCommentRefs(e)" :branchId="id" @close="closeOrBack" :dialog="dialog"></MetadataForm>
                     </v-tab-item>
 
-                    <v-tab-item key="compare" v-if="!creating">
+                    <v-tab-item key="compare" v-if="!creating && inferredSchema">
                         <Comparison :left-side-text="JSON.stringify(inferredSchema)" :right-side-text="JSON.stringify(schema)" :diff-json="true"></Comparison>
                     </v-tab-item>
                 </v-tabs-items>
@@ -247,8 +261,8 @@
         </v-row>
 
         <v-row>
-            <v-col cols=12 v-if="!creating">
-                <Comments :id="id" :type="'branch'" :refable="commentRefs"></Comments>
+            <v-col cols=12 v-if="!creating" id="commentArea">
+                <Comments :commentValue="forceCommentVal" :id="id" :type="'branch'" :refable="commentRefs"></Comments>
             </v-col>
         </v-row>
     </v-container>
@@ -266,7 +280,8 @@ import Comments from './Comments';
 import Comparison from './Comparison';
 
 import Vue from 'vue';
-import SimpleCheckbox from './SimpleCheckbox.vue';
+import SimpleCheckbox from './SimpleCheckbox';
+import DataUploadSelect from './DataUploadSelect';
 
 export default {
     components:{
@@ -278,6 +293,7 @@ export default {
         Markdown,
         Comments,
         Comparison,
+        DataUploadSelect
     },
     props: {
         dialog: {
@@ -304,6 +320,7 @@ export default {
             loading: true,
             location: window.location,
             commentRefs: [],
+            forceCommentVal: ""
         }
     },
     methods: {
@@ -325,6 +342,15 @@ export default {
             clearBranch: 'repos/clearBranch',
         }),
 
+        setComment(e){
+            this.forceCommentVal = e; 
+            if (this.dialog){
+                document
+                    .getElementById("commentArea")
+                    .scrollIntoView({ behavior: "smooth" });
+            }
+        },
+
         async loadSections() {
             //await this.getBranch({id: this.id});
             await this.getBranchById({id: this.id});
@@ -341,12 +367,17 @@ export default {
             this.reIndex++;
         },
 
-        closeOrBack() {
+        async closeOrBack() {
             this.editing = false;
             this.creating = false;
             this.alert = false;
             if (this.dialog){
-                this.$emit('close');
+                if (!this.editing){
+                    this.$emit('close');
+                }else{
+                    this.editing = false;
+                    await this.load();
+                }
             }else if (this.creating){
                 this.$router.push({ name: 'versions' });
             }else{
@@ -393,6 +424,7 @@ export default {
                     this.alertText = this.$tc("Sucessfully created ") + this.$tc("version", 1);
                     this.alert = true;
                     //this.closeOrBack();
+                    this.editing = false;
 
                 }).catch( err => {
                     this.alertType = "error"
@@ -409,6 +441,7 @@ export default {
                     this.alertText = "Sucessfully updated version";
                     this.alert = true;
                     //this.closeOrBack();
+                    this.editing = false;
 
                 }).catch( err => {
                     this.alertType = "error"
@@ -435,6 +468,12 @@ export default {
             inferredSchema: state => state.schemaImport.inferredSchema,
             variableClassifications: state => state.variableClassifications.items,
         }),
+        canEdit: function(){
+            if (this.branch.approved){
+                return this.user.isAdmin; //|| this.user.isApprover;
+            }
+            return true;
+        }
     },
     watch: {
         branchId: async function(){
@@ -471,6 +510,7 @@ export default {
         line-height: 36px;
         vertical-align: middle;
     }
+    
 
 </style>
 

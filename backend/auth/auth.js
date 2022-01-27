@@ -14,7 +14,7 @@ passport.use('jwt', new JWTStrategy({
         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
         secretOrKey: secret,
         passReqToCallback: true,
-    }, function(req, jwtPayload, cb) {
+    }, async function(req, jwtPayload, cb) {
 
         var originalJwt = req.headers['authorization'].substring("Bearer ".length);
         var encodedJWT = originalJwt;
@@ -29,6 +29,17 @@ passport.use('jwt', new JWTStrategy({
             decodedJWT.aud = config.get('jwtAud');
             decodedJWT._json = JSON.parse(JSON.stringify(decodedJWT));
             decodedJWT = buildProfile(decodedJWT, 'a');
+            var db = require('../db/db');
+  
+    if (process.env.NODE_ENV !== "test" && decodedJWT.email){
+      try{
+        var u = await db.User.findOne({email: decodedJWT.email});
+        decodedJWT.lastLogin = u.lastLogin;
+        decodedJWT = await buildActivity(decodedJWT);
+      }catch(ex){
+        console.log("No previous user info", ex);
+      }
+    }
         } catch(err) {
             console.log("Error resigning", err);
             return cb(err, null);
@@ -99,6 +110,25 @@ var buildProfile = function(token, refreshToken){
     return profile;
 }
 
+var buildActivity = async function(profile){
+
+  profile.activity = {}
+  if (profile.lastLogin){  
+    var db = require('../db/db');
+    
+    let ups = await db.DataUploadSchema.find({upload_date: {$gt: profile.lastLogin}});
+    profile.activity.uploads = ups.length;
+    
+    let rs = await db.RepoSchema.find({create_date: {$gt: profile.lastLogin}});
+    profile.activity.repos = rs.length;
+    
+    let bs = await db.RepoBranchSchema.find({create_date: {$gt: profile.lastLogin}});
+    profile.activity.branches = bs.length;
+
+  }
+
+  return profile;
+}
 
 var strategy = new OidcStrategy(config.get('oidc'), async function(issuer, sub, profile, accessToken, refreshToken, done){
     
@@ -115,6 +145,7 @@ var strategy = new OidcStrategy(config.get('oidc'), async function(issuer, sub, 
       try{
         var u = await db.User.findOne({email: profile.email});
         profile.lastLogin = u.lastLogin;
+        profile = await buildActivity(profile);
       }catch(ex){
         console.log("No previous user info", ex);
       }
