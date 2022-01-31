@@ -67,7 +67,6 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
             let d = await dataPackageSchema.save();
             return d;
         }catch(e){
-            console.log("caught", e);
             if (e instanceof mongoose.Error.ValidationError) {
                 throw new ValidationError("DB Validation Error", e.errors);
             } else {
@@ -162,7 +161,6 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         inferred = (typeof(inferred) !== 'undefined') ? inferred : false;
         const branch = await db.RepoBranchSchema.findOne({_id: id});
 
-        console.log("Get dPS by branch id1.5", id);
         id = mongoose.Types.ObjectId(id);
 
         if ( (!branch || !branch.published) && (!user) ){
@@ -172,12 +170,10 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         let current = null;
         try{
             current = await db.DataPackageSchema.findOne({version: id, inferred: inferred}).lean()
-            console.log("Get dPS by branch id2", current, {version: id, inferred: inferred});
             if (!current){
                 return current;
             }
             current.resources = transformResourcesToFrictionless(current.resources);
-            console.log("Get dPS by branch id3", current);
         }catch(e){
             throw e
         }

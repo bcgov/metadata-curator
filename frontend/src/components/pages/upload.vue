@@ -59,7 +59,7 @@
                                 <span>{{$tc('NOTE: you will be unable to change this after the next form')}}</span>
                             </v-card>
                             
-                            <v-btn text @click="step = steps.step1UploadForm" id="next-0">{{$tc('Next')}}</v-btn>
+                            <v-btn text @click="stepSavePreCreate" id="next-0">{{$tc('Next')}}</v-btn>
                         </v-stepper-content>
                         
                         <v-stepper-content :step="steps.step1UploadForm">
@@ -298,6 +298,15 @@
                 this.validStep3 = numFiles > 0;
             },
 
+            stepSavePreCreate(){
+                if (this.providerGroup){
+                    this.step = this.steps.step1UploadForm
+                }else{
+                    this.errorAlert = true;
+                    this.errorText = "You must select a group"
+                }
+            },
+
             async infer(){
                 this.inferredSchema = {resources: []}
                 for (let i=0; ( (i<this.inferContent.length) && (i<this.upload.files.length) ); i++){
@@ -452,19 +461,10 @@
                 }
 
                 if (this.selectedVersion === "-1"){
-                    this.clearBranch();
-                    this.editBranch({name: 'name', value: this.upload.name});
-                    let desc = ((this.submission) && (this.submission.data) && (this.submission.data.description)) ? this.submission.data.description : this.upload.name;
-                    if ((desc === this.upload.name) && (this.submission.data.uploadDescription)){
-                        desc = this.submission.data.uploadDescription;
-                    }
-                    this.editBranch({name: 'description', value: desc});
-                    this.editBranch({name: 'upload_id', value: this.uploadId});
-                    this.editBranch({name: 'type', value: 'standard'});
-                    this.editBranch({name: 'data_upload_id', value: this.uploadId});
-                    this.editBranch({name: "repo_id", value: this.selectedDataset});
-                    let b = await this.saveBranch();
-                    this.selectedVersion = b.id;
+                    this.errorText = "You must select or create an edition first";
+                    this.errorAlert = true;
+                    this.transitionNextStepAfterSave = false;
+                    return;
                 }
 
                 if(transitionNextStepAfterSave) { this.step = this.steps.step3FileSelection; }
@@ -572,6 +572,8 @@
                 this.selectedVersion = b.id;
                 this.allowCreateVersion = false;
                 this.allowSelectVersion = false;
+                await this.getBranches({repoId: this.selectedDataset});
+                this.versions
             },
 
             async createDataset(){
@@ -683,12 +685,26 @@
                             this.getVariableClassification({field: '_id', value: this.versions[0].variable_classification});
                         }
                         this.selectedVersion = this.versions[0]._id;
+                    }else{
+                        this.selectedVersion = "-1";
                     }
 
                 }else{
-                    this.selectedVersion = -1;
+                    this.selectedVersion = "-1";
                     this.schema = {resources: []};
                     this.jsonRedraw++;
+                }
+            },
+
+            selectedVersion: async function(){
+                if (this.selectedVersion != -1){
+                    await this.getSchemaFromVersion({id: this.selectedVersion});
+                    let selectedV = this.versions.filter(obj => {
+                        return obj._id === this.selectedVersion;
+                    })[0];
+                    if (selectedV.variable_classification){
+                        this.getVariableClassification({field: '_id', value: selectedV.variable_classification});
+                    }
                 }
             },
 

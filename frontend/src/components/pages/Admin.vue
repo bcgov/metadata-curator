@@ -63,7 +63,7 @@
                             :title="$tc('Data Upload', 2)"
                             :headers="dataUploadHeaders"
                             storeName="adminDUploads"
-                            :showDelete="false"
+                            :showDelete="true"
                             :formComponent="permissionSubComponent"
                         ></DataTable>
                     </v-tab-item>
@@ -301,6 +301,11 @@ export default {
                         text: this.$tc('Uploader'), 
                         value: 'uploader' 
                     },
+                    { 
+                        text: this.$tc('Action', 2), 
+                        value: 'actions', 
+                        sortable: false 
+                    }
                     // { 
                     //     text: 'Files', 
                     //     value: 'files' 

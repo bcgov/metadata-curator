@@ -1,5 +1,26 @@
 # Changelog
 
+<br />
+
+## Version 1.2.3
+February 1, 2022
+ - Changed value and display for variable classification on schema to be "code. name"
+ - Tightened validation on group select for approvers pre creating an upload
+ - Tightened validation on version information for upload
+ - Added ability for admin to delete uploads
+ - Made save/cancel button float on schema (edition) edit page
+ - Toggling highlight of a schema field will no longer close the dialog or go back to the list
+ - Fixed description losing focus after anything is entered on upload file info page
+ - Added first of filters to the basic schema view, allows filtering on variable classification.
+
+<br />
+
+## Table Of Contents
+- [Version 1.2.3 (February 1 2022)](#version-123)
+- [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
 ## Version 1.2.2 
 January 27, 2022
  - Ability to toggle highlighting from the basic view screen
@@ -17,6 +38,3 @@ January 27, 2022
  - Added date picker to temporal fields at resource level on basic schema editor
  - Added this changelog and page to view
  - Added "Add Comment Below" Functionality to schema comment areas
-
-## Table Of Contents
-[Version 1.2.2 (January 27 2022)](#version122)

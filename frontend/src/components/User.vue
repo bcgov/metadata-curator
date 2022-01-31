@@ -14,7 +14,7 @@
             </v-card>
         </v-dialog>
 
-        <v-dialog v-model="changesDia">
+        <v-dialog scrollable v-model="changesDia">
             <v-card>
                 <v-card-title>
                     {{$tc('Update Information')}}
@@ -148,5 +148,9 @@ export default {
 </script>
 
 <style scoped>
+
+    .fixed{
+        position: fixed;
+    }
 
 </style>

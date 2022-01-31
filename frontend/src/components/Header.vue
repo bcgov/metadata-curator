@@ -139,7 +139,7 @@ export default {
     methods: {
         preserveToken: function(){
             let timeOut = 1000 * 60 // 1 minute
-            timeOut *= .5; // 5 minutes
+            timeOut *= 5; // 5 minutes
 
             if (this.loggedIn){
                 if (!this.stayLoggedIn){
