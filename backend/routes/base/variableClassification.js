@@ -115,7 +115,7 @@ var buildDynamic = function(db, router, auth, forumClient){
                 return res.status(404).json({error: "Not Found"});
             }
             
-            let varClass = await db.VariableClassification.findOne({key: req.params.varClassId});;
+            let varClass = {};
             if (f.name){
                 varClass.name = f.name;
             }
@@ -142,10 +142,10 @@ var buildDynamic = function(db, router, auth, forumClient){
             if (error.length > 0){
                 return res.status(400).json({error: error})
             }
-            console.log("Updating ", varClass);
-    
-            varClass.save();
-            res.status(200).json(varClass);
+            
+            let newV = await db.VariableClassification.updateOne({_id: req.params.varClassId}, varClass);
+            newV = await db.VariableClassification.findOne({key: req.params.varClassId});
+            res.status(200).json(newV);
         }catch(ex){
             res.status(500).json(ex);
         }

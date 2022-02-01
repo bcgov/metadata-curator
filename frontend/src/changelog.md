@@ -12,6 +12,7 @@ February 1, 2022
  - Toggling highlight of a schema field will no longer close the dialog or go back to the list
  - Fixed description losing focus after anything is entered on upload file info page
  - Added first of filters to the basic schema view, allows filtering on variable classification.
+ - Fixed issue updating variable classifications as non admin
 
 <br />
 
