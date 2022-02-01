@@ -453,7 +453,7 @@ export default {
                     this.alert = true;
                 });
             }
-            
+            this.load();
             
             
         }

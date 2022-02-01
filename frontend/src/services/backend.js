@@ -107,6 +107,11 @@ export class Backend {
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 
+    deleteDataUpload(dataUploadId){
+        const url = `/api/v1/datauploads/${dataUploadId}`;
+        return axios.delete(url, {withCredentials: true}).then(response => response.data)
+    }
+
     getRevisionsByDataUpload(dataUploadId){
         const url = '/api/v1/metadatarevisions/' + dataUploadId;
         return axios.get(url, {withCredentials: true}).then(response => response.data)

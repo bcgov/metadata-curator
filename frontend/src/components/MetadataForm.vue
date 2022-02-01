@@ -66,7 +66,7 @@
                     </v-card-text>
                         <v-card-actions v-if="loading || !schema">
                         </v-card-actions>
-                        <v-card-actions v-else-if="editing">
+                        <v-card-actions class="fixed" v-else-if="editing">
                             <v-btn @click="closeOrBack()" class="mt-1">{{$tc('Cancel')}}</v-btn>
                             <v-btn @click="save" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
                         </v-card-actions>
@@ -122,6 +122,7 @@ export default {
             editing: false,
             schemaObj: null,
             viewSchemaType: "Provided",
+            skipClose: false,
         }
     },
     methods: {
@@ -169,7 +170,10 @@ export default {
         async closeOrBack() {
             if (this.dialog){
                 if (!this.editing){
-                    this.$emit('close');
+                    if (!this.skipClose){
+                        this.$emit('close');
+                    }
+                    this.skipClose = false;
                 }else{
                     await this.loadSections();
                 }
@@ -185,6 +189,7 @@ export default {
 
         editedHighlight: async function(){
             if (!this.editing){
+                this.skipClose = true;
                 await this.save();
             }
         },
@@ -300,10 +305,10 @@ export default {
         position: relative;
         padding-bottom: 15px;
     }
-    .card-actions {
-        position: absolute;
-        bottom: 0;
-        right: 0;
+    .v-card__actions.fixed {
+        position: fixed;
+        bottom: 300px;
+        
     }
     
     .fixedHeight{

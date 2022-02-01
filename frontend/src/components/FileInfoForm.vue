@@ -85,7 +85,7 @@
                                 :value="(description && description[index]) ? description[index] : ''"
                                 helpPrefix="upload"
                                 :idName="'fileinfo-'+ index + '-desc'"
-                                @edited="(newValue) => { (description[index] = newValue) && updateFormSubmission() }"
+                                @edited="(newValue) => { (description[index] = newValue) && updateFormSubmission }"
                             ></TextArea>
                         </v-col>
                     </v-row>

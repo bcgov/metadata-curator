@@ -21,6 +21,7 @@ const actions = {
             commit('setError', {error: e.response.data.error});
         });
     },
+   
     async updateDataUpload({ commit }, dataUpload) {
         try {
             dataUpload = await backend.putDataUpload(dataUpload);
