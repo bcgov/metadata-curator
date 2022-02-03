@@ -2,6 +2,37 @@
 
 <br />
 
+## Version 1.2.4
+February 7, 2022
+ - Fixed issue where delting a data upload would delete the oldest instead of the selected one
+ - Changed selection of upload on edition to allow a searchable table
+ - Added ability to collapse resources on schema view to improve navigation
+ - Added close/back to schema compare page
+ - Hyperlinked Data Upload on Edition page to the data upload it relates to (non edit only)
+ - Made it so that field comments properly expand the field box when there is multiple
+ - Fixed issue where select wasn't showing the proper display value
+ - Removed approved versions from list on upload
+ - Removed ability to create new datasets/editions on the upload page
+ - Fixed issue where variable classifications would prevent basic view of schema
+ - Added next button to top of compare schema on upload
+ - Edition select on upload now saves information into the selected version to bind to the upload
+    - This will warn if the edition has that information already but not prevent it from being overwritten
+ - Added back/close, edit to top of schema page
+ - Added dataset tab to schema page
+    - This closes the dialog if your in a dialog, or shows you the dataset information if you aren't
+ - Added Number of records to file info page for data type files
+
+
+
+<br />
+
+## Table Of Contents
+- [Version 1.2.4 (February 8 2022)](#version-124)
+- [Version 1.2.3 (February 1 2022)](#version-123)
+- [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
 ## Version 1.2.3
 February 1, 2022
  - Changed value and display for variable classification on schema to be "code. name"
@@ -14,13 +45,7 @@ February 1, 2022
  - Added first of filters to the basic schema view, allows filtering on variable classification.
  - Fixed issue updating variable classifications as non admin
 
-<br />
-
-## Table Of Contents
-- [Version 1.2.3 (February 1 2022)](#version-123)
-- [Version 1.2.2 (January 27 2022)](#version-122)
-
-<br />
+ <br />
 
 ## Version 1.2.2 
 January 27, 2022

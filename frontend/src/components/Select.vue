@@ -134,7 +134,7 @@
             displayVal: function(){
                 let displayVal = this.val;
                 for (let i=0; i<this.items.length; i++){
-                    if (this.items[i].value === this.val){
+                    if (this.items[i][this.itemValue] === this.val){
                         displayVal = this.items[i][this.itemText];
                     }
                 }

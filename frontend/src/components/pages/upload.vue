@@ -7,6 +7,13 @@
                 </v-alert>
             </v-col>
         </v-row>
+        <v-row v-if="warningAlert">
+            <v-col cols=12 class="pa-0">
+                <v-alert class="mb-0" v-model="warningAlert" type="warning" dismissible>
+                    {{warningText}}
+                </v-alert>
+            </v-col>
+        </v-row>
         <v-row>
             <v-col cols=12 v-if="loading">
                 <span>{{$tc('Loading')}}...</span>
@@ -82,9 +89,7 @@
                                             :label="$tc('Datasets')">
                                         </v-select>
                                     </v-col>
-                                    <v-col cols=3>
-                                        <v-btn v-if="allowCreate" color="success" id="newDatasetButton" @click="createDataset">{{$tc('New')}} {{$tc('Datasets')}}</v-btn>
-                                    </v-col>
+                                    
                                 </v-row>
                                 <v-row>
                                     <v-col cols=9>
@@ -95,9 +100,6 @@
                                             item-value="_id"
                                             :label="$tc('Versions')">
                                         </v-select>
-                                    </v-col>
-                                    <v-col cols=3>
-                                        <v-btn v-if="allowCreateVersion" color="success" :disabled="!selectedDataset || selectedDataset === '-1'" id="newVersionButton" @click="createVersion">{{$tc('New')}} {{$tc('Versions')}}</v-btn>
                                     </v-col>
                                 </v-row>
                             </v-card>
@@ -139,6 +141,10 @@
                                     </v-col>
                                 </v-row>
                                 <v-row v-else>
+                                    <v-col cols=12>
+                                        <v-btn text @click="step=steps.step4FileLevelForm" id="back-5-2">{{$tc('Back')}}</v-btn>
+                                        <v-btn color="primary" @click="stepSaveSchemaForm(true)" id="next-5-2">{{$tc('Next')}}</v-btn>
+                                    </v-col>
                                     <v-col cols=12>
                                         <Comparison :left-side-text="JSON.stringify(inferredSchema)" :right-side-text="JSON.stringify(schema)" :diff-json="true"></Comparison>
                                     </v-col>
@@ -276,6 +282,7 @@
                 getBranches: "repos/getBranches",
                 getBranchesByUpload: "repos/getBranchesByUpload",
                 saveBranch: 'repos/saveBranch',
+                updateBranch: 'repos/updateBranch',
                 getUploadFormSubmission: 'uploadForm/getUploadFormSubmission',
                 getVariableClassifications: 'variableClassifications/getItems',
                 getVariableClassification: 'variableClassifications/getItem',
@@ -467,6 +474,11 @@
                     return;
                 }
 
+                this.editBranch({name: 'upload_id', value: this.uploadId});
+                await this.updateBranch();
+
+
+
                 if(transitionNextStepAfterSave) { this.step = this.steps.step3FileSelection; }
             },
 
@@ -551,6 +563,8 @@
             },
 
             async createVersion(){
+                return false;
+                // eslint-disable-next-line
                 if (!this.selectedDataset){
                     this.errorAlert = true;
                     this.errorText = "Must select a " + this.$tc("Datasets") + " first"
@@ -577,6 +591,8 @@
             },
 
             async createDataset(){
+                return false;
+                // eslint-disable-next-line
                 this.clearDataset();
                 this.editDataset({name: 'name', value: this.upload.name});
                 let d = await this.saveDataset();
@@ -622,6 +638,8 @@
                 notFound: false,
                 allowCreateVersion: true,
                 allowSelectVersion: true,
+                warningAlert: false,
+                warningText: '',
             }
         },
         computed: {
@@ -652,6 +670,9 @@
 
             versionList: function(){
                 let v = JSON.parse(JSON.stringify(this.versions));
+                v = v.filter(obj => {
+                    return obj.approved === false;
+                });
                 v.unshift({name: "", _id: "-1"});
                 return v;
             }
@@ -704,6 +725,10 @@
                     })[0];
                     if (selectedV.variable_classification){
                         this.getVariableClassification({field: '_id', value: selectedV.variable_classification});
+                    }
+                    if (selectedV.data_upload_id){
+                        this.warningAlert = true;
+                        this.warningText = "This " + this.$tc('version', 1) + " is already associated with an upload, pressing next will overwrite that information";
                     }
                 }
             },
