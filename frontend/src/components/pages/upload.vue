@@ -89,7 +89,9 @@
                                             :label="$tc('Datasets')">
                                         </v-select>
                                     </v-col>
-                                    
+                                    <v-col cols=3>
+                                        <v-btn v-if="allowCreate" color="success" id="newDatasetButton" @click="createDataset">{{$tc('New')}} {{$tc('Datasets')}}</v-btn>
+                                    </v-col>
                                 </v-row>
                                 <v-row>
                                     <v-col cols=9>
@@ -100,6 +102,9 @@
                                             item-value="_id"
                                             :label="$tc('Versions')">
                                         </v-select>
+                                    </v-col>
+                                    <v-col cols=3>
+                                        <v-btn v-if="allowCreateVersion" color="success" :disabled="!selectedDataset || selectedDataset === '-1'" id="newVersionButton" @click="createVersion">{{$tc('New')}} {{$tc('Versions')}}</v-btn>
                                     </v-col>
                                 </v-row>
                             </v-card>
@@ -563,8 +568,10 @@
             },
 
             async createVersion(){
-                return false;
-                // eslint-disable-next-line
+                if (this.user._json.preferred_username !== 'provider_1'){
+                    return false;
+                }
+                
                 if (!this.selectedDataset){
                     this.errorAlert = true;
                     this.errorText = "Must select a " + this.$tc("Datasets") + " first"
@@ -591,8 +598,9 @@
             },
 
             async createDataset(){
-                return false;
-                // eslint-disable-next-line
+                if (this.user._json.preferred_username !== 'provider_1'){
+                    return false;
+                }
                 this.clearDataset();
                 this.editDataset({name: 'name', value: this.upload.name});
                 let d = await this.saveDataset();
