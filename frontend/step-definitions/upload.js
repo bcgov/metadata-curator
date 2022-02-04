@@ -51,7 +51,7 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
 
     await client.click('#next-1');
     
-    await client.pause(300);
+    await client.pause(1000);
     await client.click('#newDatasetButton');
     await client.pause(3000);
     await client.click('#newVersionButton');
