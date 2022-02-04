@@ -270,6 +270,12 @@
                     }
                 }
             }
+
+            if (this.user._json.preferred_username === 'provider_1'){
+                this.allowCreate = true;
+                this.allowCreateVersion = true;
+            }
+
             this.loading = false;
         },
         methods: {
@@ -284,6 +290,7 @@
                 updateDataPackageSchema: 'schemaImport/updateDataPackageSchema',
                 getAllRepos: 'repos/getAllRepos',
                 saveDataset: 'repos/saveRepo',
+                getBranchById: 'repos/getBranchById',
                 getBranches: "repos/getBranches",
                 getBranchesByUpload: "repos/getBranchesByUpload",
                 saveBranch: 'repos/saveBranch',
@@ -465,7 +472,7 @@
             },
 
             async stepSaveEditionForm(transitionNextStepAfterSave){
-                if (this.selectedDataset == -1){
+                if (this.selectedDataset == "-1"){
                     this.errorText = "You must select or create a dataset first";
                     this.errorAlert = true;
                     this.transitionNextStepAfterSave = false;
@@ -477,13 +484,22 @@
                     this.errorAlert = true;
                     this.transitionNextStepAfterSave = false;
                     return;
+                }else{
+                    await this.getBranchById({id: this.selectedVersion});
                 }
 
-                this.editBranch({name: 'upload_id', value: this.uploadId});
-                await this.updateBranch();
+                try{
+                    this.editBranch({name: 'upload_id', value: this.uploadId});
+                    await this.updateBranch();
+                }catch(e){
+                    transitionNextStepAfterSave = false;
+                    this.errorAlert = true;
+                    this.errorText = e.message;
+                }
 
 
-
+                this.warningAlert = false;
+                this.warningText = '';
                 if(transitionNextStepAfterSave) { this.step = this.steps.step3FileSelection; }
             },
 
@@ -591,6 +607,7 @@
                 this.editBranch({name: "repo_id", value: this.selectedDataset});
                 let b = await this.saveBranch();
                 this.selectedVersion = b.id;
+                this.editBranch({name: "_id", value: this.selectedVersion});
                 this.allowCreateVersion = false;
                 this.allowSelectVersion = false;
                 await this.getBranches({repoId: this.selectedDataset});
@@ -635,7 +652,7 @@
                 selectedDataset: "-1",
                 jsonRedraw: 0,
                 datasetList: [],
-                allowCreate: true,
+                allowCreate: false,
                 allowSelect: true,
                 selectedVersion: "-1",
                 inferredSchema: {},
@@ -644,7 +661,7 @@
                 providerGroup: null,
                 selectableGroups: [],
                 notFound: false,
-                allowCreateVersion: true,
+                allowCreateVersion: false,
                 allowSelectVersion: true,
                 warningAlert: false,
                 warningText: '',
