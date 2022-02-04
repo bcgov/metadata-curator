@@ -54,6 +54,8 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
     await client.pause(500);
     await client.click('#newDatasetButton');
     await client.pause(3000);
+    await client.click('#newVersionButton');
+    await client.pause(3000);
     await client.click('#next-2');
     
     let f = require('path').resolve(__dirname + '/sample.csv');
