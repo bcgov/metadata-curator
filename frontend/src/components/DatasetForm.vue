@@ -156,7 +156,7 @@
                             </v-col>
                         </v-row>
 
-                        <v-row wrap v-if="!creating">
+                        <v-row wrap v-if="!creating && !hideEditions">
                             <v-col cols=3>
                                 <h2>{{$tc('Versions', 2)}}</h2>
                             </v-col>
@@ -176,11 +176,11 @@
 
                     </v-card-text>
                 </v-card>
-                <v-card-actions v-if="editing">
+                <v-card-actions v-if="editing && !hideEditions">
                     <v-btn @click="routeToHome()" class="mt-1">{{$tc('Cancel')}}</v-btn>
                     <v-btn @click="save" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
                 </v-card-actions>
-                <v-card-actions v-else>
+                <v-card-actions v-else-if="!editing && !hideEditions">
                     <v-btn @click="routeToHome()" class="mt-1">{{$tc('Back')}}</v-btn>
                     <v-btn @click="editing=!editing" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                 </v-card-actions>
@@ -204,7 +204,19 @@ export default {
         BranchForm,
         SimpleCheckbox,
         Select
-    },    
+    },
+
+    props: {
+        idOverride: {
+            required: false,
+            default: false,
+        },
+        hideEditions: {
+            required: false,
+            default: false,
+        },
+    },
+
     data () {
         return {
             id: null,
@@ -355,7 +367,11 @@ export default {
     },
     created() {
         // console.log("dataUpload id: " + this.$route.params.id);
+        
         this.id = this.$route.params.id;
+        if (this.idOverride){
+            this.id = this.idOverride;
+        }
         if (this.id === 'create'){
             this.editing = true;
             this.creating = true;

@@ -1,66 +1,80 @@
 <template>
-    <div>
-        <div v-if="commentDisplayItems.length == 0 && type !== 'schema'" class="ml-3">
-            {{$tc('Nothing here yet, why not start a discussion')}}
-        </div>
+    <v-container fluid>
+        <v-row v-if="commentDisplayItems.length == 0 && type !== 'schema'" class="ml-3">
+            <v-col cols=12>
+                {{$tc('Nothing here yet, why not start a discussion')}}
+            </v-col>
+        </v-row>
 
-        <div v-if="commentDisplayItems.length == 0 && type === 'schema'" class="ml-3">
-            {{$tc('No comments about this field, reference with ')}}!{{resource}}.{{field}}
-        </div>
-        <v-list v-else three-line class="mb-3">
-            <template v-for="(item, index) in commentDisplayItems">
-                    <v-divider
-                        v-if="item.divider"
-                        :key="index"
-                        :inset="item.inset"
-                    ></v-divider>
+        <v-row v-if="commentDisplayItems.length == 0 && type === 'schema'" class="ml-3">
+            <v-col cols=12>
+                {{$tc('No comments about this field, reference with ')}}!{{resource}}.{{field}}
+            </v-col>
+        </v-row>
+        <v-row v-else>
+            <v-col cols=12>
+                <v-list three-line class="mb-3">
+                    <template v-for="(item, index) in commentDisplayItems">
+                            <v-divider
+                                v-if="item.divider"
+                                :key="index"
+                                :inset="item.inset"
+                            ></v-divider>
 
-                    <v-list-item
-                        v-else
-                        :key="item.title"
-                    >
-                        <v-btn icon :key="'comment-icon-btn-'+index+'-'+refreshKey" class="mr-4">
-                            <v-icon>mdi-comment-multiple</v-icon>
-                        </v-btn>
+                            <v-list-item
+                                v-else
+                                :key="item.title"
+                            >
+                                <v-btn icon :key="'comment-icon-btn-'+index+'-'+refreshKey" class="mr-4">
+                                    <v-icon>mdi-comment-multiple</v-icon>
+                                </v-btn>
 
-                        <v-btn x-small @click="expand(index)">
-                            <v-icon>{{expanded[index] ? 'mdi-minus' : 'mdi-plus'}}</v-icon>
-                        </v-btn>
+                                <v-btn x-small @click="expand(index)">
+                                    <v-icon>{{expanded[index] ? 'mdi-minus' : 'mdi-plus'}}</v-icon>
+                                </v-btn>
 
-                        <v-list-item-content>
-                            <v-list-item-title :class="expanded[index] ? 'expanded' : ''">
-                                <Markdown
-                                    name=""
-                                    :value="item.content"
-                                    :label="$tc('')"
-                                    :editing="false"
-                                    :placeholder="$tc('')"
-                                ></Markdown>
-                            </v-list-item-title>
-                            <v-list-item-action-text v-html="item.subtitle"></v-list-item-action-text>
-                        </v-list-item-content>
+                                <v-list-item-content>
+                                    <v-list-item-title :class="expanded[index] ? 'expanded' : ''">
+                                        <Markdown
+                                            name=""
+                                            :value="item.content"
+                                            :label="$tc('')"
+                                            :editing="false"
+                                            :placeholder="$tc('')"
+                                        ></Markdown>
+                                    </v-list-item-title>
+                                    <v-list-item-action-text v-html="item.subtitle"></v-list-item-action-text>
+                                </v-list-item-content>
 
-                </v-list-item>
-            </template>
-        </v-list>
-        <div v-if="type !== 'schema'">
-            <Markdown
-                name="comment"
-                :value="comment"
-                :key="'md-comment-'+refreshKey"
-                :label="$tc('New Comment')"
-                :editing="true"
-                :placeholder="$tc('New Comment')"
-                @focus="commentFocused = true"
-                @blur="commentFocused = false"
-                @edited="(newValue) => { setComment(newValue) }"
-            ></Markdown>
-            <v-btn color="primary" @click="addComment" :disabled="comment === ''" v-if="(comment !== '') || commentFocused">Add Comment</v-btn>
-        </div>
-        <div v-else>
-            <v-btn color="primary" @click="scrollBottom">Add a comment below</v-btn>
-        </div>
-    </div>
+                        </v-list-item>
+                    </template>
+                </v-list>
+            </v-col>
+        </v-row>
+        <v-row v-if="type !== 'schema'">
+            <v-col cols=12>
+                <Markdown
+                    name="comment"
+                    :value="comment"
+                    :key="'md-comment-'+refreshKey"
+                    :label="$tc('New Comment')"
+                    :editing="true"
+                    :placeholder="$tc('New Comment')"
+                    @focus="commentFocused = true"
+                    @blur="commentFocused = false"
+                    @edited="(newValue) => { setComment(newValue) }"
+                ></Markdown>
+            </v-col>
+            <v-col cols=12>
+                <v-btn color="primary" @click="addComment" :disabled="comment === ''" v-if="(comment !== '') || commentFocused">Add Comment</v-btn>
+            </v-col>
+        </v-row>
+        <v-row v-else>
+            <v-col cols=12>
+                <v-btn color="primary" @click="scrollBottom">Add a comment below</v-btn>
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
 
 <script>

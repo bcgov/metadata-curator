@@ -51,10 +51,15 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
 
     await client.click('#next-1');
     
-    await client.pause(500);
+    await client.pause(1000);
     await client.click('#newDatasetButton');
     await client.pause(3000);
+    await client.click('#newVersionButton');
+    await client.pause(3000);
+    await client.saveScreenshot("./"+path+"/preNext2.png");
     await client.click('#next-2');
+    await client.pause(300);
+    await client.saveScreenshot("./"+path+"/postNext2.png");
     
     let f = require('path').resolve(__dirname + '/sample.csv');
     await client.setValue('#fileForm-reader input[type="file"]', f);

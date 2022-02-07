@@ -13,6 +13,7 @@
             <v-col cols="12">
                 <v-tabs v-model="tab">
                     <v-tab key="version">{{$tc('Version')}}</v-tab>
+                    <v-tab v-if="dataset" key="dataset" @click="dialog ? closeOrBack() : true">{{$tc('Dataset')}}</v-tab>
                     <v-tab key="schema" v-if="!creating">{{$tc('Schema')}}</v-tab>
                     <v-tab key="compare" v-if="!creating && inferredSchema">{{$tc('Compare')}}</v-tab>
                 </v-tabs>
@@ -249,12 +250,20 @@
                         </v-card>
                     </v-tab-item>
 
+                    <v-tab-item key="dataset">
+                        <span v-if="branch && branch.repo_id && branch.repo_id._id">
+                            <DatasetForm :hideEditions="true" :idOverride="branch.repo_id._id"></DatasetForm>
+                            <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
+                        </span>
+                    </v-tab-item>
+
                     <v-tab-item key="schema" v-if="!creating">
                         <MetadataForm @setComment="(e) => { setComment(e) }" :branch-approved="(branch && branch.approved) ? branch.approved : false" @commentRefs="(e) => updateCommentRefs(e)" :branchId="id" @close="closeOrBack" :dialog="dialog"></MetadataForm>
                     </v-tab-item>
 
                     <v-tab-item key="compare" v-if="!creating && inferredSchema">
                         <Comparison :left-side-text="JSON.stringify(inferredSchema)" :right-side-text="JSON.stringify(schema)" :diff-json="true"></Comparison>
+                        <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
                     </v-tab-item>
                 </v-tabs-items>
             </v-col>
@@ -278,6 +287,7 @@ import Markdown from './Markdown';
 import MetadataForm from './MetadataForm';
 import Comments from './Comments';
 import Comparison from './Comparison';
+import DatasetForm from './DatasetForm';
 
 import Vue from 'vue';
 import SimpleCheckbox from './SimpleCheckbox';
@@ -293,7 +303,8 @@ export default {
         Markdown,
         Comments,
         Comparison,
-        DataUploadSelect
+        DataUploadSelect,
+        DatasetForm,
     },
     props: {
         dialog: {
@@ -361,10 +372,8 @@ export default {
             if (this.branch.variable_classification){
                 await this.getVariableClassification({field: '_id', value: this.branch.variable_classification});
             }
-            
-            //await this.getRepos({filterBy: ''});
-            //await this.getDataset({id: this.branch.repo_id});
             this.reIndex++;
+            
         },
 
         async closeOrBack() {

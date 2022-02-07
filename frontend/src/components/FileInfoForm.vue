@@ -89,6 +89,22 @@
                             ></TextArea>
                         </v-col>
                     </v-row>
+
+                    <v-row v-if="type[index] === 'Data'">
+                        <TextInput
+                            :label="$tc('Number of Records')"
+                            :placeholder="$tc('2022')"
+                            name="num_records"
+                            :editing="true"
+                            :value="(num_records[index]) ? num_records[index] : ''"
+                            helpPrefix="upload"
+                            :idName="'fileinfo-'+ index + '-num_records'"
+                            @edited="(newValue) => { ( num_records[index] = newValue) && updateFormSubmission }"
+                        ></TextInput>
+                    </v-row>
+                    <v-row v-else>
+                        {{$tc('Record number not required for non data type files')}}
+                    </v-row>
                 </v-col>
             </v-row>   
         </span>    

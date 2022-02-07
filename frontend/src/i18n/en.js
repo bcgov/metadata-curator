@@ -43,6 +43,7 @@ export default {
         "Type": "Types | Type | Types",
         "Format": "Formats | Format | Formats",
         "Var Class": "Variable Classification",
+        "var_class": "Variable Classification",
         "RDF Type": "RDF Types | RDF Type | RDF Types",
         "Add File/Resource": "Add File/Resource",
         "Description": "Descriptions | Description | Descriptions",

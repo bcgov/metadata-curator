@@ -15,6 +15,7 @@ var dataUploadSchema = new Schema({
         sig: {type: String, required: false},
         start_date: {type: Date, required: false},
         end_date: {type: Date, required: false},
+        num_records: {type: Number, required: false},
         title: {type: String, required: false},
         description: {type: String, required: false},
         type: {type: String, required: false},

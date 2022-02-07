@@ -15,6 +15,14 @@
             <v-col cols="12">
                 <v-card outlined>
                     <v-card-text>
+                        <v-row v-if="editing">
+                            <v-btn @click="closeOrBack()" class="mt-1">{{$tc('Cancel')}}</v-btn>
+                            <v-btn @click="save" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
+                        </v-row>
+                        <v-row v-else>
+                            <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
+                            <v-btn v-if="canEdit" @click="editing=!editing; viewSchemaType = 'Provided'" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
+                        </v-row>
                         <v-row>
                             <h1 class="display-1 font-weight-thin ml-3 my-3">{{$tc('Metadata')}}</h1>
                         </v-row>

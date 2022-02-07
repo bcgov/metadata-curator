@@ -351,7 +351,7 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
     router.delete('/:dataUploadId', auth.requireAdmin, async function(req, res, next){
         
         try{
-            await db.DataUploadSchema.deleteOne({id: req.params.dataUploadId});
+            await db.DataUploadSchema.deleteOne({_id: req.params.dataUploadId});
             return res.status(204).json({});
         }catch(ex){
             res.status(500).json({ex});

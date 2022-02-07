@@ -52,10 +52,12 @@ import Select from './Select';
 
             variableClassificationValues: function(){
                 let rv = [];
-                let k = Object.keys(this.variableClassification.values);
-                rv.push({code: ""})
-                for (let i=0; i<k.length; i++){
-                    rv.push({code: this.variableClassification.values[k[i]].code + ". " + this.variableClassification.values[k[i]].title})
+                if (this.variableClassification && this.variableClassification.values){
+                    let k = Object.keys(this.variableClassification.values);
+                    rv.push({code: ""})
+                    for (let i=0; i<k.length; i++){
+                        rv.push({code: this.variableClassification.values[k[i]].code + ". " + this.variableClassification.values[k[i]].title})
+                    }
                 }
                 return rv;
             },
