@@ -26,7 +26,7 @@
             <v-col cols=12 v-else>
                 <v-stepper v-model="step">
                     <v-stepper-header>
-                        <v-stepper-step v-if="user.isApprover" :step="steps.step0PreCreate" :complete="step > steps.step0PreCreate" >{{$tc('Pre-Create Info')}}</v-stepper-step>
+                        <v-stepper-step v-if="user.isApprover || user.isAdmin" :step="steps.step0PreCreate" :complete="step > steps.step0PreCreate" >{{$tc('Pre-Create Info')}}</v-stepper-step>
                         <v-divider></v-divider>
 
                         <v-stepper-step :step="steps.step1UploadForm" :complete="step > steps.step1UploadForm" >{{$tc('Upload Info')}}</v-stepper-step>
@@ -73,7 +73,7 @@
                             <v-card class="mb-12">
                                 <UploadForm ref="uploadForm"></UploadForm>
                             </v-card>
-                            <v-btn text v-if="user.isApprover && !uploadId" @click="step = steps.step0PreCreate" id="back-1">{{$tc('Back')}}</v-btn>
+                            <v-btn text v-if="(user.isApprover || user.isAdmin) && !uploadId" @click="step = steps.step0PreCreate" id="back-1">{{$tc('Back')}}</v-btn>
                             <v-btn text @click="stepSaveUploadForm(true)" id="next-1">{{$tc('Next')}}</v-btn>
                         </v-stepper-content>
 
@@ -221,7 +221,7 @@
                 this.steps.step6UploadProgress = 4;
                 this.steps.step7UploadSummary = 5;
             }else{
-                if (this.user.isApprover && !this.uploadId){
+                if ( (this.user.isApprover || this.user.isAdmin) && !this.uploadId){
                     this.step = 0;
                     let requiredRole = await this.$store.dispatch('config/getItem', {field: 'key', value: 'requiredRoleToCreateRequest', def: {key: 'requiredRoleToCreateRequest', value: false}});
                     requiredRole = requiredRole.value;
@@ -388,7 +388,7 @@
                 }
             },
             async stepSaveUploadForm(transitionNextStepAfterSave) {
-              if (this.user.isApprover && ( (this.providerGroup === null) || (this.providerGroup === '') ) ){
+              if ( (this.user.isApprover || this.user.isAdmin) && ( (this.providerGroup === null) || (this.providerGroup === '') ) ){
                   this.errorAlert = true;
                   this.errorText = "As a data approver you must select a data provider group you are creating for";
                   return false;
@@ -489,7 +489,7 @@
                 }
 
                 try{
-                    this.editBranch({name: 'upload_id', value: this.uploadId});
+                    this.editBranch({name: 'data_upload_id', value: this.uploadId});
                     await this.updateBranch();
                 }catch(e){
                     transitionNextStepAfterSave = false;
@@ -601,7 +601,6 @@
                     desc = this.submission.data.uploadDescription;
                 }
                 this.editBranch({name: 'description', value: desc});
-                this.editBranch({name: 'upload_id', value: this.uploadId});
                 this.editBranch({name: 'type', value: 'standard'});
                 this.editBranch({name: 'data_upload_id', value: this.uploadId});
                 this.editBranch({name: "repo_id", value: this.selectedDataset});
@@ -751,7 +750,7 @@
                     if (selectedV.variable_classification){
                         this.getVariableClassification({field: '_id', value: selectedV.variable_classification});
                     }
-                    if (selectedV.data_upload_id){
+                    if ( (selectedV.data_upload_id) && (this.step == this.steps.step2EditionForm)){
                         this.warningAlert = true;
                         this.warningText = "This " + this.$tc('version', 1) + " is already associated with an upload, pressing next will overwrite that information";
                     }

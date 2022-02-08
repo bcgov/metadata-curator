@@ -2,9 +2,34 @@
 
 <br />
 
+## Version 1.2.5
+February 8, 2022
+ - Fixed bug setting the upload id on an edition from upload.
+ - Fixed bug preventing setting of num records on files
+ - Fixed issue that prevented Add comment below from working the second+ time it was pressed
+ - Fixed an issue that prevented logout
+ - Added ability to delete editions to admin
+ - Data approvers will now be forced to select a provider group when creating a dataset or edition
+ - Added * to denote required dataset field name
+ - Added * to denote required schema fields resource.name resource.path and resource.field.name
+ - Upgraded recent activity to allow getting the actual information that they have access to
+ - Recent activity now also shows the most recent items for each category and links directly to them (capped at 10 per section)
+
+
+
+<br />
+
+## Table Of Contents
+- [Version 1.2.5 (February 8 2022)](#version-125)
+- [Version 1.2.4 (February 7 2022)](#version-124)
+- [Version 1.2.3 (February 1 2022)](#version-123)
+- [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
 ## Version 1.2.4
 February 7, 2022
- - Fixed issue where delting a data upload would delete the oldest instead of the selected one
+ - Fixed issue where deleting a data upload would delete the oldest instead of the selected one
  - Changed selection of upload on edition to allow a searchable table
  - Added ability to collapse resources on schema view to improve navigation
  - Added close/back to schema compare page
@@ -21,17 +46,6 @@ February 7, 2022
  - Added dataset tab to schema page
     - This closes the dialog if your in a dialog, or shows you the dataset information if you aren't
  - Added Number of records to file info page for data type files
-
-
-
-<br />
-
-## Table Of Contents
-- [Version 1.2.4 (February 8 2022)](#version-124)
-- [Version 1.2.3 (February 1 2022)](#version-123)
-- [Version 1.2.2 (January 27 2022)](#version-122)
-
-<br />
 
 ## Version 1.2.3
 February 1, 2022

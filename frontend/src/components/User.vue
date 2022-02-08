@@ -101,6 +101,7 @@ export default {
             var self = this;
             item.title = "Logout";
             item.action = function(){
+                self.$store.dispatch('user/removeUser');
                 // eslint-disable-next-line
                 self.$router.push({name: "logout"});
             }

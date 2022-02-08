@@ -39,7 +39,7 @@
                             :value="(type[index]) ? type[index] : ''"
                             :items="typeOptions"
                             helpPrefix="upload"
-                            @edited="(newValue) => { (type[index] = newValue) && updateFormSubmission }"
+                            @edited="(newValue) => { editFileType(index, newValue) }"
                         ></Select>
                     </v-row>
 
@@ -91,19 +91,21 @@
                     </v-row>
 
                     <v-row v-if="type[index] === 'Data'">
-                        <TextInput
-                            :label="$tc('Number of Records')"
-                            :placeholder="$tc('2022')"
-                            name="num_records"
-                            :editing="true"
-                            :value="(num_records[index]) ? num_records[index] : ''"
-                            helpPrefix="upload"
-                            :idName="'fileinfo-'+ index + '-num_records'"
-                            @edited="(newValue) => { ( num_records[index] = newValue) && updateFormSubmission }"
-                        ></TextInput>
+                        <v-col cols=12>
+                            <TextInput
+                                :label="$tc('Number of Records')"
+                                :placeholder="$tc('2022')"
+                                name="num_records"
+                                :editing="true"
+                                :value="(num_records[index]) ? num_records[index] : ''"
+                                helpPrefix="upload"
+                                :idName="'fileinfo-'+ index + '-num_records'"
+                                @edited="(newValue) => { ( num_records[index] = newValue) && updateFormSubmission }"
+                            ></TextInput>
+                        </v-col>
                     </v-row>
                     <v-row v-else>
-                        {{$tc('Record number not required for non data type files')}}
+                        {{$tc('Record number is only for data type files')}}
                     </v-row>
                 </v-col>
             </v-row>   
@@ -140,6 +142,12 @@
                 getUploadFormSubmission: 'uploadForm/getUploadFormSubmission',
             }),
 
+            async editFileType(index, newValue){
+                console.log('file type event', newValue);
+                this.type[index] = newValue;
+                await this.updateFormSubmission();
+            },
+
             async updateFormSubmission(){
                 let f = JSON.parse(JSON.stringify(this.formSubmission));
 
@@ -149,8 +157,10 @@
                     f.files[i].title = this.title[i];
                     f.files[i].type = this.type[i];
                     f.files[i].description = this.description[i];
+                    f.files[i].num_records = this.num_records[i];
                 }
                 await this.modifyStoreUpload(f);
+                this.spanKey++;
             },
 
             buildFiles(){
@@ -234,6 +244,7 @@
                             this.title[i] = fileName;
                             this.type[i] = type;
                             this.description[i] = this.formSubmission.files[i].description;
+                            this.num_records[i] = null;
                         }
                     }
                     if (usingADefault){
@@ -258,6 +269,7 @@
                 end: [],
                 start: [],
                 type: [],
+                num_records: [],
                 typeOptions: ['Metadata', 'Documentation', 'Data', 'Other'],
                 menu: [],
                 menu2: [],

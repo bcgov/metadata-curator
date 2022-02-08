@@ -1,5 +1,6 @@
 import { Backend } from '../../services/backend';
 const authServ = new Backend();
+import Vue from 'vue';
 
 const state = {
     user: {},
@@ -129,7 +130,7 @@ const mutations = {
         state.userPermissions = userPermissions;
     },
     setUser(state, { user }) {
-        state.user = user;
+        Vue.set(state, 'user', user);
     },
     setLoggedIn(state, { loggedIn }){
         state.loggedIn = loggedIn;

@@ -43,6 +43,7 @@ app.use(session({
   secret: config.get('sessionSecret'),
   resave: false,
   saveUninitialized: true,
+  name: 'mc',
   cookie: {
     httpOnly: false,
     secure: false,

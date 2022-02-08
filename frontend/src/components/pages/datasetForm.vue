@@ -3,9 +3,9 @@
         <v-row dense>
             <v-tabs v-model="tab">
                 <v-tab key="dataset">{{$tc('Datasets', 1)}}</v-tab>
-                <v-tab key="schema">{{$tc('Schema', 1)}}</v-tab>
-                <v-tab key="compareS">{{$tc('Compare', 1)}} {{$tc('Schema', 1)}}</v-tab>
-                <v-tab key="uploads" v-if="uploads.length>0">{{$tc('Uploads', 2)}}</v-tab>
+                <v-tab key="schema" v-if="!creating">{{$tc('Schema', 1)}}</v-tab>
+                <v-tab key="compareS" v-if="!creating">{{$tc('Compare', 1)}} {{$tc('Schema', 1)}}</v-tab>
+                <v-tab key="uploads" v-if="!creating && (uploads.length>0)">{{$tc('Uploads', 2)}}</v-tab>
             </v-tabs>
             <v-tabs-items v-model="tab" class="fullWidth">
                 <v-tab-item key="dataset">

@@ -112,19 +112,69 @@ var buildProfile = function(token, refreshToken){
 
 var buildActivity = async function(profile){
 
-  profile.activity = {}
-  if (profile.lastLogin){  
-    var db = require('../db/db');
-    
-    let ups = await db.DataUploadSchema.find({upload_date: {$gt: profile.lastLogin}});
-    profile.activity.uploads = ups.length;
-    
-    let rs = await db.RepoSchema.find({create_date: {$gt: profile.lastLogin}});
-    profile.activity.repos = rs.length;
-    
-    let bs = await db.RepoBranchSchema.find({create_date: {$gt: profile.lastLogin}});
-    profile.activity.branches = bs.length;
+  if (!profile.activity){
+    profile.activity = {}
+    // profile.lastLogin = new Date("01/01/1900");
+    if (profile.lastLogin){  
+      var db = require('../db/db');
+      var forumClient = require('../clients/forum_client');
+      const mongoose = require('mongoose');
 
+      let topics = [];
+              
+      let currentData = await forumClient.getTopics(profile, {});
+      
+      let topicResponse = {data: []};
+      topicResponse.data = topicResponse.data.concat(currentData.data);
+
+      topics = topicResponse.data.filter(item => item.parent_id);
+      
+      const uploadIds = topics.map( (item) => {
+          if ( (item) && (item.name) && (String(item.name).indexOf("repo") === -1) && (String(item.name).indexOf("branch") ===-1) && (String(item.name).indexOf("varClass") === -1)){
+              return item.name
+          }
+          return ""
+      }).filter( (item) => {
+          return (item && String(item).length > 0)
+      });
+
+      let ups = await db.DataUploadSchema.find({_id: {$in: uploadIds}, upload_date: {$gt: profile.lastLogin}}).sort({ "upload_date": -1});;
+      profile.activity.uploads = ups;
+
+
+      const repoIds = topics.map( (item) => {
+          let id = item.name;
+          if (!id || id.indexOf("repo") === -1){
+              return;
+          }
+          
+          id = id.substring(0,id.length-4);
+          let oid = mongoose.Types.ObjectId(id);
+          return oid;
+
+      }).filter( (item) => { 
+          return (item && String(item).length > 0)
+      });
+      let rs = await db.RepoSchema.find({_id: {$in: repoIds}, create_date: {$gt: profile.lastLogin}}).sort({ "create_date": -1});;
+      profile.activity.repos = rs;
+      
+      const branchIds = topics.map( (item) => {
+          let id = item.name;
+          if (!id || id.indexOf("branch") === -1){
+              return;
+          }
+          
+          id = id.substring(0,id.length-6);
+          let oid = mongoose.Types.ObjectId(id);
+          return oid;
+
+      }).filter( (item) => { 
+          return (item && String(item).length > 0)
+      });
+      let bs = await db.RepoBranchSchema.find({_id: {$in: branchIds}, create_date: {$gt: profile.lastLogin}}).sort({ "create_date": -1});;
+      profile.activity.branches = bs;
+
+    }
   }
 
   return profile;

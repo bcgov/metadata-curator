@@ -20,8 +20,19 @@
             </v-col>
             <v-col v-else-if="user && user.activity" cols=12>
                 <v-row v-for="(activity, key) in user.activity" :key="'newActivity-'+key">
-                    <router-link v-if="key !== 'branches'" :to="{name: $tc(key, 2).toLowerCase()}">{{activity}} new {{$tc(key, activity)}}</router-link>
-                    <router-link v-else :to="{name: 'versions'}">{{activity}} new {{$tc(key, activity)}}</router-link>
+                    <v-col cols=12>
+                        <router-link v-if="key !== 'branches'" :to="{name: $tc(key, 2).toLowerCase()}">{{activity.length}} new {{$tc(key, activity)}}</router-link>
+                        <router-link v-else :to="{name: 'versions'}">{{activity.length}} new {{$tc(key, activity)}}</router-link>
+                    </v-col>
+                    <v-col cols=12 v-if="activity.length > 0">
+                        <ul>
+                        <li v-for="(item, index) in activity.slice(0,10)" :key="'activity-line-'+key+'-'+index">
+                            <router-link v-if="key === 'uploads'" :to="{name: 'upload_view', params: { id: item._id }}">{{item.name}}</router-link>
+                            <router-link v-else-if="key === 'repos'" :to="{name: 'datasets_form', params: { id: item._id }}">{{item.name}}</router-link>
+                            <router-link v-else :to="{name: 'version_form', params: { id: item._id }}">{{item.name}}</router-link>
+                        </li>
+                        </ul>
+                    </v-col>
                 </v-row>
             </v-col>
         </v-row>
@@ -44,7 +55,7 @@ export default {
             let keys = Object.keys(this.user.activity);
             let noUpdates = true;
             for (let i=0; i<keys.length; i++){
-                if (this.user.activity[keys[i]] > 0){
+                if (this.user.activity[keys[i]].length > 0){
                     noUpdates = false;
                 }
             }
