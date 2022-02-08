@@ -114,7 +114,7 @@ var buildActivity = async function(profile){
 
   if (!profile.activity){
     profile.activity = {}
-    profile.lastLogin = new Date("01/01/1900");
+    // profile.lastLogin = new Date("01/01/1900");
     if (profile.lastLogin){  
       var db = require('../db/db');
       var forumClient = require('../clients/forum_client');
