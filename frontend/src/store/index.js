@@ -25,7 +25,7 @@ const adminDUploads = build('getDataUploads', 'postDataUpload', 'putDataUpload',
 const submissions = build('getFormSubmissions','postFormSubmission', 'putFormSubmission', 'deleteFormSubmission' );
 const config = build('getConfigs','newConfig', 'putConfig', 'deleteConfig', 'getConfig' );
 const adminDatasets = build('getRepos');
-const adminVersions = build('getBranches');
+const adminVersions = build('getBranches', 'postRepoBranch', 'putRepoBranch', 'deleteRepoBranch', 'getBranchById');
 
 const variableClassifications = build('getVariableClassifications', 'newVariableClassification', 'putVariableClassification', 'deleteVariableClassification', 'getVariableClassification');
 

@@ -53,13 +53,48 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
 
     const createRepo = async function(user, fields) {
         const id = mongoose.Types.ObjectId();
-        const topic = await forumClient.addTopic((id+"repo"), user);
         const repoSchema = new db.RepoSchema;
         repoSchema._id = id;
         repoSchema.name = fields.name;
         if (fields.description){
             repoSchema.description = fields.description
         }
+
+        if (!user.groups.some( (el) => el === config.get('requiredRoleToCreateRequest'))){
+            throw new Error("Not permitted to create an repo");
+        }
+
+        let originalGroups = JSON.parse(JSON.stringify(user.groups));
+        let originalJWT = user.jwt;
+
+        if (( (user.isApprover) || (user.isAdmin) ) && !fields.provider_group){
+            throw new Error("Data Approvers must provide a data provider group");
+        }else if ( (user.isApprover) || (user.isAdmin) ){
+            if (!user.groups.some( (el) => el === fields.provider_group) ){
+                throw new Error("Data Approvers must select a data provider group they belong to");
+            }
+        }
+
+        if ( (user.isApprover) || (user.isAdmin) ){
+            user.groups = [];
+            // if (user.organization){
+            //     user.groups.push(user.organization);
+            // }
+            
+            user.groups.push(config.get('requiredRoleToCreateRequest'));   
+            user.groups.push(upload.provider_group);
+            
+            var jwtlib = require('jsonwebtoken');
+            user.jwt = jwtlib.sign(user, config.get('jwtSecret'));
+        }
+
+        const topic = await forumClient.addTopic((id+"repo"), user);
+
+        if ( (user.isApprover) || (user.isAdmin) ){
+            user.groups = JSON.parse(JSON.stringify(originalGroups));
+            user.jwt = originalJWT;
+        }
+
         repoSchema.create_date = new Date();
         repoSchema.created_by = user.id;
         repoSchema.topic_id = topic._id;
@@ -149,7 +184,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
     const listRepositories = async (user, query) => {
         try {
             const topicResponse = await forumClient.getTopics(user, query);
-            topics = topicResponse.data.filter(item => item.parent_id);
+            let topics = topicResponse.data.filter(item => item.parent_id);
 
             const repoIds = topics.map( (item) => {
                 let id = item.name;

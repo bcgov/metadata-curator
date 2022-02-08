@@ -53,6 +53,7 @@
                                     :large="true"
                                     :editing="editing"
                                     :value="resource.name"
+                                    validation-rules="required"
                                     helpPrefix="schema.res"
                                     :focusField="focusProp"
                                     
@@ -73,6 +74,7 @@
                                         :large="true"
                                         :editing="editing"
                                         :value="resource.path"
+                                        validation-rules="required"
                                         helpPrefix="schema"
                                         :focusField="focusProp"
                                         @focus="onFocusBasic"
@@ -181,7 +183,7 @@
                                                                 name="name"
                                                                 :refName="'basicField-' + key + '-' + fKey + '-name'"
                                                                 :idName="'basicField-' + key + '-' + fKey + '-name'"
-                                                                
+                                                                validation-rules="required"
                                                                 :editing="editing"
                                                                 :value="field.name"
                                                                 helpPrefix="schema"

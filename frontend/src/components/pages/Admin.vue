@@ -89,7 +89,7 @@
                             :title="$tc('Versions', 2)"
                             :headers="versionHeaders"
                             storeName="adminVersions"
-                            :showDelete="false"
+                            :showDelete="true"
                             :formComponent="permissionSubComponent"
                         ></DataTable>
                     </v-tab-item>
@@ -411,6 +411,11 @@ export default {
                         text: this.$tc('FAQ'), 
                         value: 'faq' 
                     },
+                    { 
+                        text: this.$tc('Action', 2), 
+                        value: 'actions', 
+                        sortable: false 
+                    }
                 ],
 
             submissionHeaders: [

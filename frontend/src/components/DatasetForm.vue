@@ -35,43 +35,68 @@
                             <span>{{id}}</span>
                         </v-row>
 
-                        <v-row>
-                            <TextInput
-                                :label="$tc('Name')"
-                                :placeholder="$tc('My') + ' ' + $tc('Dataset')"
-                                name="name"
-                                :large="true"
-                                :editing="editing"
-                                :value="(dataset) ? dataset.name : ''"
-                                helpPrefix="dataset"
-                                @edited="(newValue) => { updateValues('name', newValue) }"
-                            ></TextInput>
+                        <v-row v-else-if="user.isApprover || user.isAdmin">
+                            <v-col cols=12>
+                                <Select
+                                    :label="$tc('Select Data Provider Group')"
+                                    name="providerGroup"
+                                    :editing="true"
+                                    :value="(dataset) ? dataset.providerGroup : ''"
+                                    :items="selectableGroups"
+                                    validation-rules="required"
+                                    helpPrefix="dataset"
+                                    @edited="(newValue) => { updateValues('providerGroup', newValue) }"
+                                ></Select>
+                            </v-col>
+                            <v-col cols=12>
+                                <span>{{$tc('NOTE: you will be unable to change this after initial creation')}}</span>
+                            </v-col>
                         </v-row>
 
                         <v-row>
-                            <TextInput
-                                :label="$tc('Description')"
-                                :placeholder="$tc('Description')"
-                                name="description"
-                                :large="true"
-                                :editing="editing"
-                                :value="(dataset) ? dataset.description : ''"
-                                helpPrefix="dataset"
-                                @edited="(newValue) => { updateValues('description', newValue) }"
-                            ></TextInput>
+                            <v-col cols=12>
+                                <TextInput
+                                    :label="$tc('Name')"
+                                    :placeholder="$tc('My') + ' ' + $tc('Dataset')"
+                                    name="name"
+                                    :large="true"
+                                    :editing="editing"
+                                    :value="(dataset) ? dataset.name : ''"
+                                    validation-rules="required"
+                                    helpPrefix="dataset"
+                                    @edited="(newValue) => { updateValues('name', newValue) }"
+                                ></TextInput>
+                            </v-col>
                         </v-row>
 
                         <v-row>
-                            <Select
-                                :label="$tc('Data Collection Type')"
-                                name="data_collection_type"
-                                :editing="editing"
-                                :large="true"
-                                :value="(dataset) ? dataset.data_collection_type : ''"
-                                :items="types"
-                                helpPrefix="dataset"
-                                @edited="(newValue) => { updateValues('data_collection_type', newValue) }"
-                            ></Select>
+                            <v-col cols=12>
+                                <TextInput
+                                    :label="$tc('Description')"
+                                    :placeholder="$tc('Description')"
+                                    name="description"
+                                    :large="true"
+                                    :editing="editing"
+                                    :value="(dataset) ? dataset.description : ''"
+                                    helpPrefix="dataset"
+                                    @edited="(newValue) => { updateValues('description', newValue) }"
+                                ></TextInput>
+                            </v-col>
+                        </v-row>
+
+                        <v-row>
+                            <v-col cols=12>
+                                <Select
+                                    :label="$tc('Data Collection Type')"
+                                    name="data_collection_type"
+                                    :editing="editing"
+                                    :large="true"
+                                    :value="(dataset) ? dataset.data_collection_type : ''"
+                                    :items="types"
+                                    helpPrefix="dataset"
+                                    @edited="(newValue) => { updateValues('data_collection_type', newValue) }"
+                                ></Select>
+                            </v-col>
                         </v-row>
 
                         <v-row class="outline">
@@ -228,6 +253,8 @@ export default {
             alertText: "",
             alertType: "success",
             types: [ {text: 'Main', value: 'main'}, {text: 'Reserve', value: 'reserve'}, {text: 'Restricted', value: 'restricted'} ],
+            providerGroup: null,
+            selectableGroups: [],
         }
     },
     methods: {
@@ -365,7 +392,7 @@ export default {
             branches: state => state.repos.branches,
         }),
     },
-    created() {
+    async created() {
         // console.log("dataUpload id: " + this.$route.params.id);
         
         this.id = this.$route.params.id;
@@ -375,6 +402,15 @@ export default {
         if (this.id === 'create'){
             this.editing = true;
             this.creating = true;
+            if ( (this.user.isApprover) || (this.user.isAdmin) ){
+                let requiredRole = await this.$store.dispatch('config/getItem', {field: 'key', value: 'requiredRoleToCreateRequest', def: {key: 'requiredRoleToCreateRequest', value: false}});
+                requiredRole = requiredRole.value;
+                this.selectableGroups = JSON.parse(JSON.stringify(this.user.groups));
+                let index = this.selectableGroups.indexOf(requiredRole);
+                if (index !== -1){
+                    this.selectableGroups.splice(index, 1);
+                }
+            }
         }else{
             this.loadSections();
         }

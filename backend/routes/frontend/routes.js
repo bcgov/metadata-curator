@@ -31,19 +31,20 @@ module.exports = (router) => {
     
     router.get('/logout', auth.removeExpired,  function(req, res, next){
         req.logout();
-        delete req.session;
+        req.session.destroy( () => {
+            res.clearCookie('mc');
+            let config = require('config');
 
-        let config = require('config');
+            let fe = config.get('frontend') + '/loggedout';
 
-        let fe = config.get('frontend') + '/loggedout';
-
-        if (config.has('oidc.logoutURL')){
-            let logoutUrl = config.get('oidc.logoutURL');
-            logoutUrl += "?redirect_uri=" + fe;
-            res.redirect(logoutUrl);
-        }else{
-            res.redirect(fe);
-        }
+            if (config.has('oidc.logoutURL')){
+                let logoutUrl = config.get('oidc.logoutURL');
+                logoutUrl += "?redirect_uri=" + fe;
+                res.redirect(logoutUrl);
+            }else{
+                res.redirect(fe);
+            }
+        });
     });
 
     router.get('/oauth/token', auth.removeExpired, function(req, res){

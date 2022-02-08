@@ -362,6 +362,11 @@ export class Backend {
         return axios.put(url, branch, {withCredentials: true}).then(response => response.data)
     }
 
+    deleteRepoBranch(id){
+        const url = `/api/v1/repobranches/${id}`;
+        return axios.delete(url, {}, {withCredentials: true}).then(response => response.data)
+    }
+
     getMcVersion(){
         let url = `/api/version`;
         return axios.get(url, {withCredentials: true}).then(response => response.data)

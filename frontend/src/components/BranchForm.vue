@@ -13,7 +13,7 @@
             <v-col cols="12">
                 <v-tabs v-model="tab">
                     <v-tab key="version">{{$tc('Version')}}</v-tab>
-                    <v-tab v-if="dataset" key="dataset" @click="dialog ? closeOrBack() : true">{{$tc('Dataset')}}</v-tab>
+                    <v-tab v-if="dataset && !creating" key="dataset" @click="dialog ? closeOrBack() : true">{{$tc('Dataset')}}</v-tab>
                     <v-tab key="schema" v-if="!creating">{{$tc('Schema')}}</v-tab>
                     <v-tab key="compare" v-if="!creating && inferredSchema">{{$tc('Compare')}}</v-tab>
                 </v-tabs>
@@ -40,6 +40,24 @@
                                 <v-row>
                                     <v-col cols=12 v-if="branch && branch.repo_id && branch.repo_id.description">
                                         Dataset Description: {{branch.repo_id.description}}
+                                    </v-col>
+                                </v-row>
+
+                                <v-row v-if="creating && (user.isApprover || user.isAdmin)">
+                                    <v-col cols=12>
+                                        <Select
+                                            :label="$tc('Select Data Provider Group')"
+                                            name="providerGroup"
+                                            :editing="true"
+                                            :value="(branch) ? branch.providerGroup : ''"
+                                            :items="selectableGroups"
+                                            validation-rules="required"
+                                            helpPrefix="dataset"
+                                            @edited="(newValue) => { updateValues('providerGroup', newValue) }"
+                                        ></Select>
+                                    </v-col>
+                                    <v-col cols=12>
+                                        <span>{{$tc('NOTE: you will be unable to change this after initial creation')}}</span>
                                     </v-col>
                                 </v-row>
 
@@ -331,7 +349,9 @@ export default {
             loading: true,
             location: window.location,
             commentRefs: [],
-            forceCommentVal: ""
+            forceCommentVal: "",
+            providerGroup: null,
+            selectableGroups: [],
         }
     },
     methods: {
@@ -354,7 +374,10 @@ export default {
         }),
 
         setComment(e){
-            this.forceCommentVal = e; 
+            this.forceCommentVal = "";
+            this.$nextTick(() => {
+                this.forceCommentVal = e;
+            }) 
             if (this.dialog){
                 document
                     .getElementById("commentArea")
@@ -420,6 +443,15 @@ export default {
             if (this.id === 'create'){
                 this.editing = true;
                 this.creating = true;
+                if ( (this.user.isApprover) || (this.user.isAdmin) ){
+                    let requiredRole = await this.$store.dispatch('config/getItem', {field: 'key', value: 'requiredRoleToCreateRequest', def: {key: 'requiredRoleToCreateRequest', value: false}});
+                    requiredRole = requiredRole.value;
+                    this.selectableGroups = JSON.parse(JSON.stringify(this.user.groups));
+                    let index = this.selectableGroups.indexOf(requiredRole);
+                    if (index !== -1){
+                        this.selectableGroups.splice(index, 1);
+                    }
+                }
             }else{
                 this.loadSections();
             }
@@ -428,12 +460,16 @@ export default {
 
         save(){
             if (this.creating){
-                this.saveBranch().then( () => {
+                this.saveBranch().then( (data) => {
                     this.alertType = "success"
                     this.alertText = this.$tc("Sucessfully created ") + this.$tc("version", 1);
                     this.alert = true;
                     //this.closeOrBack();
                     this.editing = false;
+                    window.scrollTo(0,0);
+                    this.creating = false;
+                    this.id=data.id;
+                    
 
                 }).catch( err => {
                     this.alertType = "error"

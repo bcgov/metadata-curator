@@ -23,9 +23,9 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             let originalGroups = JSON.parse(JSON.stringify(user.groups));
             let originalJWT = user.jwt;
 
-            if (user.isApprover && !upload.provider_group){
+            if (( (user.isApprover) || (user.isAdmin) ) && !upload.provider_group){
                 throw new Error("Data Approvers must provide a data provider group");
-            }else if (user.isApprover){
+            }else if ( (user.isApprover) || (user.isAdmin) ){
                 if (!user.groups.some( (el) => el === upload.provider_group) ){
                     throw new Error("Data Approvers must select a data provider group they belong to");
                 }
@@ -53,7 +53,7 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
                 dataUploadSchema.upload_submission_id = upload.upload_submission_id ? upload.upload_submission_id : null;
             }
 
-            if (user.isApprover){
+            if ( (user.isApprover) || (user.isAdmin) ){
                 user.groups = [];
                 // if (user.organization){
                 //     user.groups.push(user.organization);
@@ -68,14 +68,14 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             
             const topic = await forumClient.addTopic(id, user); 
 
-            if (user.isApprover){
+            if ( (user.isApprover) || (user.isAdmin) ){
                 user.groups = JSON.parse(JSON.stringify(originalGroups));
                 user.jwt = originalJWT;
             }
             dataUploadSchema.topic_id = topic._id;
             return await dataUploadSchema.save();
         } catch(e) {
-            if (user.isApprover){
+            if ( (user.isApprover) || (user.isAdmin) ){
                 user.groups = JSON.parse(JSON.stringify(originalGroups));
                 user.jwt = originalJWT;
             }

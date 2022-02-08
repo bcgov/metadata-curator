@@ -18,7 +18,40 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
 
         const id = mongoose.Types.ObjectId();
 
+        let originalGroups = JSON.parse(JSON.stringify(user.groups));
+        let originalJWT = user.jwt;
+
+        if (!user.groups.some( (el) => el === config.get('requiredRoleToCreateRequest'))){
+            throw new Error("Not permitted to create a branch");
+        }
+
+        if (( (user.isApprover) || (user.isAdmin) ) && !fields.provider_group){
+            throw new Error("Data Approvers must provide a data provider group");
+        }else if ( (user.isApprover) || (user.isAdmin) ){
+            if (!user.groups.some( (el) => el === fields.provider_group) ){
+                throw new Error("Data Approvers must select a data provider group they belong to");
+            }
+        }
+
+        if ( (user.isApprover) || (user.isAdmin) ){
+            user.groups = [];
+            // if (user.organization){
+            //     user.groups.push(user.organization);
+            // }
+            
+            user.groups.push(config.get('requiredRoleToCreateRequest'));   
+            user.groups.push(upload.provider_group);
+            
+            var jwtlib = require('jsonwebtoken');
+            user.jwt = jwtlib.sign(user, config.get('jwtSecret'));
+        }
+
         const topic = await forumClient.addTopic((id+"branch"), user);
+
+        if ( (user.isApprover) || (user.isAdmin) ){
+            user.groups = JSON.parse(JSON.stringify(originalGroups));
+            user.jwt = originalJWT;
+        }
         
         const repoBranchSchema = new db.RepoBranchSchema;
         repoBranchSchema._id = id;
@@ -174,10 +207,27 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         return await db.RepoBranchSchema.deleteOne({_id: id});
     }
 
-    const listBranches = async (repoId) => {
+    const listBranches = async (user, repoId) => {
+        const topicResponse = await forumClient.getTopics(user, query);
+        let topics = topicResponse.data.filter(item => item.parent_id);
+        
+        const branchIds = topics.map( (item) => {
+            let id = item.name;
+            if (!id || id.indexOf("branch") === -1){
+                return;
+            }
+            
+            id = id.substring(0,id.length-6);
+            let oid = mongoose.Types.ObjectId(id);
+            return oid;
+    
+        }).filter( (item) => { 
+            return (item && String(item).length > 0)
+        });
+
         let id = mongoose.Types.ObjectId(repoId);
         try {
-            return await db.RepoBranchSchema.find({repo_id: id}).sort({ "create_date": -1});
+            return await db.RepoBranchSchema.find({_id: {$in: branchIds}, repo_id: id}).sort({ "create_date": -1});
         } catch (e) {
             log.error(e);
             throw new Error(e.message)
@@ -297,8 +347,12 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
             return res.status(404).send(util.phaseText('DELETE', ('repobranches/'+req.params.branchId)));
         }
         try{
-            await deleteBranch(req.params.branchId);
-            res.status(200).json({status: "ok"});
+            if (req.user.isAdmin){
+                await deleteBranch(req.params.branchId);
+                res.status(200).json({status: "ok"});
+            }else{
+                res.status(401).json({error: "Not authorized"});
+            }
         }catch(ex){
             res.status(500).json({error: ex});
         }
@@ -343,7 +397,7 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
 
         try{
             const repoId = req.params.repoId;
-            const branches = await listBranches(repoId);
+            const branches = await listBranches(req.user, repoId);
             res.status(200).json(branches);
         }catch(ex){
             res.status(500).json({error: ex});

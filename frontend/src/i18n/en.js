@@ -229,6 +229,8 @@ export default {
         "Updates": "Updates",
         "Gov project": "Gov project",
         "Academic project": "Academic project",
+        "Record number is only for data type files": "Record number is only for data type files",
+        "No new activity since you last logged in. You're all caught up": "No new activity since you last logged in. You're all caught up",
 
 
         "help.dataset.name": "The name of the dataset",
@@ -250,7 +252,7 @@ export default {
         "help.edition.published": "Make information about this edition publicly viewable",
         "help.edition.approved": "Approve this edition and lock it from further changes",
 
-        "help.schema.enum": "Define the possible values for this field",
+        "help.schema.enum": "Define the possible values this field can be",
         "help.schema.name": "Name of the column in the data file",
         "help.schema.title": "Human friendly name for the field",
         "help.schema.res.name": "A simple name or identifier for this resource.  Names must be unique amongst all resources in this dataset and must consist only of lowercase alphanumeric characters plus \".\", \"-\" and \"_\". It would be usual for the name to correspond to the file name (minus the extension) of the data file the resource describes.",
