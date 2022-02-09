@@ -184,7 +184,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
     
     const listRepositories = async (user, query) => {
         try {
-            const topicResponse = await forumClient.getTopics(user, query);
+            const topicResponse = await forumClient.getTopics(user, {});
             let topics = topicResponse.data.filter(item => item.parent_id);
 
             const repoIds = topics.map( (item) => {
