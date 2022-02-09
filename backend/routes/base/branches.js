@@ -20,15 +20,16 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
 
         let originalGroups = JSON.parse(JSON.stringify(user.groups));
         let originalJWT = user.jwt;
+        const config = require('config');
 
         if (!user.groups.some( (el) => el === config.get('requiredRoleToCreateRequest'))){
             throw new Error("Not permitted to create a branch");
         }
 
-        if (( (user.isApprover) || (user.isAdmin) ) && !fields.provider_group){
+        if (( (user.isApprover) || (user.isAdmin) ) && !fields.providerGroup){
             throw new Error("Data Approvers must provide a data provider group");
         }else if ( (user.isApprover) || (user.isAdmin) ){
-            if (!user.groups.some( (el) => el === fields.provider_group) ){
+            if (!user.groups.some( (el) => el === fields.providerGroup) ){
                 throw new Error("Data Approvers must select a data provider group they belong to");
             }
         }
@@ -40,7 +41,7 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
             // }
             
             user.groups.push(config.get('requiredRoleToCreateRequest'));   
-            user.groups.push(upload.provider_group);
+            user.groups.push(fields.providerGroup);
             
             var jwtlib = require('jsonwebtoken');
             user.jwt = jwtlib.sign(user, config.get('jwtSecret'));
@@ -208,7 +209,7 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
     }
 
     const listBranches = async (user, repoId) => {
-        const topicResponse = await forumClient.getTopics(user, query);
+        const topicResponse = await forumClient.getTopics(user, {});
         let topics = topicResponse.data.filter(item => item.parent_id);
         
         const branchIds = topics.map( (item) => {

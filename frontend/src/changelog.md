@@ -3,7 +3,7 @@
 <br />
 
 ## Version 1.2.5
-February 8, 2022
+February 9, 2022
  - Fixed bug setting the upload id on an edition from upload.
  - Fixed bug preventing setting of num records on files
  - Fixed issue that prevented Add comment below from working the second+ time it was pressed
@@ -20,7 +20,7 @@ February 8, 2022
 <br />
 
 ## Table Of Contents
-- [Version 1.2.5 (February 8 2022)](#version-125)
+- [Version 1.2.5 (February 9 2022)](#version-125)
 - [Version 1.2.4 (February 7 2022)](#version-124)
 - [Version 1.2.3 (February 1 2022)](#version-123)
 - [Version 1.2.2 (January 27 2022)](#version-122)
