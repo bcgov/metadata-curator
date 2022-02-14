@@ -1,7 +1,19 @@
 <template>
     <v-container fluid ma-0 pa-0>
         <v-app-bar>
-            <v-toolbar-title class="font-weight-light">{{title}}</v-toolbar-title>
+            <v-toolbar-title class="font-weight-light">
+                <span>{{title}}</span>
+                <span v-if="month===0 && date===1">&nbsp;<v-icon color="yellow">mdi-party-popper</v-icon></span>
+                <span v-if="month===1 && date===14">&nbsp;<v-icon color="red">mdi-cards-heart</v-icon></span>
+                <span v-if="month===2 && date===17">&nbsp;<v-icon color="green">mdi-clover</v-icon></span>
+                <!-- <span v-if="month===3 && date===15">&nbsp;<v-icon color="purple">mdi-egg-easter</v-icon></span> -->
+                <span v-if="month===6 && date===1">&nbsp;<v-icon color="red">mdi-leaf-maple</v-icon></span>
+                <span v-if="month===8 && date===30">&nbsp;<v-icon color="orange">mdi-tshirt-crew</v-icon></span>
+                <!-- <span v-if="month===9 && date===10">&nbsp;<v-icon color="brown">mdi-turkey</v-icon></span> -->
+                <span v-if="month===10 && date===11">&nbsp;<v-icon color="red">mdi-flower-poppy</v-icon></span>
+                <span v-if="month===11 && date===25">&nbsp;<v-icon color="red">mdi-string-lights</v-icon></span>
+                <span v-if="month===11 && date===25"><v-icon color="green">mdi-string-lights</v-icon></span>
+            </v-toolbar-title>
 
             <div v-show="loggedIn && (tabs.length > 0)">
                 <v-tabs v-model="activeTab"
@@ -69,6 +81,16 @@ export default {
             useDark: state => state.user.useDark,
             jwt: state => state.user.jwt,
         }),
+
+        month(){
+            let d = new Date();
+            return d.getMonth();
+        },
+
+        date(){
+            let d = new Date();
+            return d.getDate();
+        },
 
         enabledPhase(){
             let en = this.$store.state.config.items.find(item => item['key'] === 'enabledPhase');

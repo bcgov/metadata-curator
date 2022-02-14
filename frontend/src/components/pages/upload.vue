@@ -32,7 +32,7 @@
                         <v-stepper-step :step="steps.step1UploadForm" :complete="step > steps.step1UploadForm" >{{$tc('Upload Info')}}</v-stepper-step>
                         <v-divider></v-divider>
 
-                        <v-stepper-step v-if="enabledPhase >= 2" :step="steps.step2EditionForm" :complete="step > steps.step2EditionForm" >{{$tc('Version') + ' ' +$tc('Information')}}</v-stepper-step>
+                        <v-stepper-step v-if="enabledPhase >= 2 && (user.isApprover || user.isAdmin)" :step="steps.step2EditionForm" :complete="step > steps.step2EditionForm" >{{$tc('Version') + ' ' +$tc('Information')}}</v-stepper-step>
                         <v-divider></v-divider>
 
                         <v-stepper-step :step="steps.step3FileSelection" :complete="step > steps.step3FileSelection" >{{$tc('File Selection')}}</v-stepper-step>
@@ -77,7 +77,7 @@
                             <v-btn text @click="stepSaveUploadForm(true)" id="next-1">{{$tc('Next')}}</v-btn>
                         </v-stepper-content>
 
-                        <v-stepper-content :step="steps.step2EditionForm" v-if="enabledPhase >= 2">
+                        <v-stepper-content :step="steps.step2EditionForm" v-if="enabledPhase >= 2 && (user.isApprover || user.isAdmin)">
                             <v-card class="mb-12">
                                 <v-row>
                                     <v-col cols=9>
@@ -117,7 +117,7 @@
                                 <FileForm v-if="step === steps.step3FileSelection" ref="fileForm" @changed="step2Changed"></FileForm>
                             </v-card>
                             
-                            <v-btn text @click="step=(enabledPhase >= 2) ? steps.step2EditionForm : steps.steps.step1UploadForm" id="back-3">{{$tc('Back')}}</v-btn>
+                            <v-btn text @click="step=(enabledPhase >= 2 && (user.isAdmin || user.isApprover)) ? steps.step2EditionForm : steps.steps.step1UploadForm" id="back-3">{{$tc('Back')}}</v-btn>
                             <v-btn color="primary" :disabled="!validStep3" @click="stepSaveFileForm(true)" id="next-3">{{$tc('Next')}}</v-btn>
                             
                         </v-stepper-content>
@@ -151,7 +151,7 @@
                                         <v-btn color="primary" @click="stepSaveSchemaForm(true)" id="next-5-2">{{$tc('Next')}}</v-btn>
                                     </v-col>
                                     <v-col cols=12>
-                                        <Comparison :left-side-text="JSON.stringify(inferredSchema)" :right-side-text="JSON.stringify(schema)" :diff-json="true"></Comparison>
+                                        <Comparison :key="'comparisonObj-'+jsonRedraw" :left-side-text="JSON.stringify(inferredSchema)" :right-side-text="JSON.stringify(schema)" :diff-json="true"></Comparison>
                                     </v-col>
                                 </v-row>
                             </v-card>
@@ -314,7 +314,8 @@
             }),
 
             step2Changed(numFiles){
-                this.validStep3 = numFiles > 0;
+                let requiredFileNum = (this.submission && this.submission.data && this.submission.data.numOfUploadFiles) ? this.submission.data.numOfUploadFiles : 0;
+                this.validStep3 = numFiles == requiredFileNum;
             },
 
             stepSavePreCreate(){
@@ -388,7 +389,7 @@
                 }
             },
             async stepSaveUploadForm(transitionNextStepAfterSave) {
-              if ( (this.user.isApprover || this.user.isAdmin) && ( (this.providerGroup === null) || (this.providerGroup === '') ) ){
+              if ( (this.user.isApprover || this.user.isAdmin) && ( (this.providerGroup === null) || (this.providerGroup === '') ) && (!this.uploadId) ){
                   this.errorAlert = true;
                   this.errorText = "As a data approver you must select a data provider group you are creating for";
                   return false;
@@ -457,7 +458,19 @@
                       }
                   }
                   if(transitionNextStepAfterSave) { 
-                      this.step = (this.enabledPhase >= 2) ? this.steps.step2EditionForm : this.steps.step3FileSelection; }
+                    if (this.user.isApprover || this.user.isAdmin){
+                        this.step = (this.enabledPhase >= 2) ? this.steps.step2EditionForm : this.steps.step3FileSelection;
+                    }else{
+                        if ( (this.enabledPhase >= 2) && this.selectedVersion === "-1"){
+                            this.errorAlert = true;
+                            this.errorText = "You are not allowed to proceed until this upload has been assigned an "+this.$tc('version',1);
+                            return false;
+                        }
+                        this.step = this.steps.step3FileSelection; 
+                    }
+                  }
+
+                      
               }else{
                 //still trigger submit so form displays all validation errors on UI
                 this.triggerUploadFormSubmit();
@@ -465,6 +478,9 @@
             },
 
             async stepSaveFileForm(transitionNextStepAfterSave) {
+                if (!this.validStep3){
+                    transitionNextStepAfterSave = false;
+                }
                 await this.updateUpload(this.upload);
                 if(transitionNextStepAfterSave) { 
                     this.step = this.steps.step4FileLevelForm; 
@@ -776,13 +792,13 @@
                                 this.allowSelect = false;
                                 this.selectedVersion = this.versions[0]._id;
                             }
-                            if ( (this.selectedDataset === '-1') || (this.selectedVersion === '-1') ){
-                                this.step = this.steps.step2EditionForm;
-                            }else{
-                                this.step = this.steps.step3FileSelection;
-                            }
-                        }else{
-                            this.step = this.steps.step3FileSelection;
+                        //     if ( (this.selectedDataset === '-1') || (this.selectedVersion === '-1') ){
+                        //         this.step = this.steps.step2EditionForm;
+                        //     }else{
+                        //         this.step = this.steps.step3FileSelection;
+                        //     }
+                        // }else{
+                        //     this.step = this.steps.step3FileSelection;
                         }
                         
                         if (this.upload && this.upload.files && this.upload.files.length >= 1){

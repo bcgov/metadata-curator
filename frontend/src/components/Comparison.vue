@@ -261,11 +261,20 @@ export default {
                             }
                         }
 
+                        let allRKeys = Object.keys(r);
+                        allRKeys.forEach(function (e, i, a) {
+                            a[i] = parseInt(e)
+                        });
+                        let notComparedAgainst = [...allRKeys].filter(v => (compareAgainst.indexOf(v) === -1));
 
                         for (let i=0; i<l.length; i++){
                             
                             if (compareAgainst[i] === -1){
-                                b[i] = {removed: true},
+                                b[i] = {removed: true};
+                                if (notComparedAgainst.length > 0){
+                                    b[i].comparedAgainst = notComparedAgainst[0]
+                                    notComparedAgainst = notComparedAgainst.slice(1);
+                                }
                                 hasDiff = true;
                             }else{
                                 let innerDiff = this.calcJsonDiff(l[i], r[compareAgainst[i]]);
@@ -279,6 +288,10 @@ export default {
                                 
                                 hasDiff = (hasDiff || innerDiff.diff || innerDiff.removed || innerDiff.added)
                             }
+                        }
+
+                        for (let i=0; i<notComparedAgainst.length; i++){
+                            b[notComparedAgainst[i]] = {added: true};
                         }
 
                         b.hasDiff = hasDiff
@@ -372,8 +385,6 @@ export default {
                 
                 
             }
-
-
 
             return b;
         },
@@ -591,7 +602,9 @@ export default {
                             }
 
                             if (bd && (bd.comparedAgainst || bd.comparedAgainst === 0) ){
-                                newF[j-movedToEnd] = r[i].schema.fields[parseInt(bd.comparedAgainst)];
+                                let ind = j-movedToEnd;
+                                ind = ind<0 ? 0 : ind;
+                                newF[ind] = r[i].schema.fields[parseInt(bd.comparedAgainst)];
                                 changed = (changed || (parseInt(bd.comparedAgainst) !== j));
                             }else if ( bd && (bd.removed || bd.added) ){
                                 newF[hiF] = r[i].schema.fields[j];
@@ -599,7 +612,9 @@ export default {
                                 hiF--;
                                 changed = (changed || (movedToEnd>=this.previouslyMovedtoEnd));
                             }else{
-                                newF[j-movedToEnd] = r[i].schema.fields[j];
+                                let ind = j-movedToEnd;
+                                ind = ind<0 ? 0 : ind;
+                                newF[ind] = r[i].schema.fields[j];
                             }
                             
                         }

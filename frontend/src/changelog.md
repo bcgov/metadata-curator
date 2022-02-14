@@ -2,6 +2,33 @@
 
 <br />
 
+## Version 1.2.6
+February 14, 2022
+ - Changed how all labels are displayed to support tooltips working when no information is in a field
+ - Edition page now shows name instead of guid at the top when it has that information
+ - Added helper text to field level (edition schema) "type"
+ - Added helper text to field level (edition schema) "tag"
+ - Made all resources start collapsed on basic schema page
+ - Comparison issues
+   - Fixed issue when there was a similar amount of things to reorder and one thing didn't have a 'good' match
+   - Fixed issue when there was reordering and no difference in some of the later items
+- Changed basic schema editing functionality to remove fields when they are blank rather than set them to blank
+- Replaced "Enumeration Constraint" with "Field values"
+- Closing edition dialog with dataset tab resets the tab to the first one
+- Fixed issue with leaving schema page on upload and going back not showing results
+
+
+<br />
+
+## Table Of Contents
+- [Version 1.2.6 (February 14 2022)](#version-126)
+- [Version 1.2.5 (February 9 2022)](#version-125)
+- [Version 1.2.4 (February 7 2022)](#version-124)
+- [Version 1.2.3 (February 1 2022)](#version-123)
+- [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
 ## Version 1.2.5
 February 9, 2022
  - Fixed bug setting the upload id on an edition from upload.
@@ -14,16 +41,6 @@ February 9, 2022
  - Added * to denote required schema fields resource.name resource.path and resource.field.name
  - Upgraded recent activity to allow getting the actual information that they have access to
  - Recent activity now also shows the most recent items for each category and links directly to them (capped at 10 per section)
-
-
-
-<br />
-
-## Table Of Contents
-- [Version 1.2.5 (February 9 2022)](#version-125)
-- [Version 1.2.4 (February 7 2022)](#version-124)
-- [Version 1.2.3 (February 1 2022)](#version-123)
-- [Version 1.2.2 (January 27 2022)](#version-122)
 
 <br />
 
@@ -46,6 +63,8 @@ February 7, 2022
  - Added dataset tab to schema page
     - This closes the dialog if your in a dialog, or shows you the dataset information if you aren't
  - Added Number of records to file info page for data type files
+
+ <br />
 
 ## Version 1.2.3
 February 1, 2022

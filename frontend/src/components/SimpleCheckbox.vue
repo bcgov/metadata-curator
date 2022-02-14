@@ -10,17 +10,22 @@
         </v-checkbox>
         <span class="higher">
             {{$tc(label)}}
-            <v-tooltip right v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
-                <template v-slot:activator="{ on }">
-                    <v-icon color="label_colour" v-on="on">mdi-help-circle-outline</v-icon>
+            <v-tooltip right v-model="showTooltip" v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
+                <template v-slot:activator="{}">
+                    <v-icon color="label_colour" 
+                        @mouseenter="showTooltip = true"
+                        @mouseleave="closeOnLeave ? (showTooltip = false) : false">
+                        mdi-help-circle-outline
+                    </v-icon>
                 </template>
-                <span>&nbsp;{{$t('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))}}</span>
+                <span v-html="displayTooltip"></span>
             </v-tooltip>
         </span>
     </span>
 </template>
 
 <script>
+    let marked = require('marked');
 
     export default {
         props: {
@@ -58,8 +63,20 @@
         data() {
             return {
                 checkbox: false,
-                clr: 'blue'
+                clr: 'blue',
+                showTooltip: false,
+                closeOnLeave: true,
             }
+        },
+        computed:{
+            displayTooltip: function(){
+                let t = ''
+                let translateKey = 'help.'+((this.helpPrefix) ? this.helpPrefix + '.' + this.name : this.name);
+                if (this.$te(translateKey)){
+                    t = this.$t(translateKey);
+                }
+                return marked(t);
+            },
         },
         mounted() {
             // console.log(`mounted - checked: ${this.checked}, color: ${this.color}`);
@@ -100,5 +117,11 @@
         font-size: 20px;
         font-weight: bold;
     }
+    
 
 </style>
+
+<style>
+
+</style>
+

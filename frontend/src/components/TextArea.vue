@@ -3,11 +3,15 @@
          <span v-if="!editing">
             <span class="mr-2">
                 {{displayLabel}}
-                <v-tooltip right v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
-                    <template v-slot:activator="{ on }">
-                        <v-icon color="label_colour" v-on="on">mdi-help-circle-outline</v-icon>
+                <v-tooltip right v-model="showTooltip" v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
+                    <template v-slot:activator="{}">
+                        <v-icon color="label_colour" 
+                            @mouseenter="showTooltip = true"
+                            @mouseleave="closeOnLeave ? (showTooltip = false) : false">
+                            mdi-help-circle-outline
+                        </v-icon>
                     </template>
-                    <span>&nbsp;{{$t('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))}}</span>
+                    <span v-html="displayTooltip"></span>
                 </v-tooltip>
             </span>
             <span>{{val}}</span>
@@ -25,13 +29,17 @@
                     ref="txtArea"
                     :id="idName ? idName : ''"
                 >
-                    <template v-slot:label>
-                        {{displayLabel}}
-                        <v-tooltip right v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
-                            <template v-slot:activator="{ on }">
-                                <v-icon color="label_colour" v-on="on">mdi-help-circle-outline</v-icon>
+                    <template v-slot:prepend>
+                        {{displayLabel}}&nbsp;
+                        <v-tooltip right v-model="showTooltip" v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
+                            <template v-slot:activator="{}">
+                                <v-icon color="label_colour" 
+                                    @mouseenter="showTooltip = true"
+                                    @mouseleave="closeOnLeave ? (showTooltip = false) : false">
+                                    mdi-help-circle-outline
+                                </v-icon>
                             </template>
-                            <span>&nbsp;{{$t('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))}}</span>
+                            <span v-html="displayTooltip"></span>
                         </v-tooltip>
                     </template>
                 </v-textarea>
@@ -43,6 +51,7 @@
 <script>
 
     import ValidationRules from "../mixins/ValidationRules";
+    let marked = require('marked');
 
     export default {
         mixins: [ValidationRules],
@@ -106,6 +115,8 @@
         data() {
             return {
                 val: this.value,
+                showTooltip: false,
+                closeOnLeave: true,
             }
         },
 
@@ -122,9 +133,18 @@
         },
 
         computed: {
+            displayTooltip: function(){
+                let t = ''
+                let translateKey = 'help.'+((this.helpPrefix) ? this.helpPrefix + '.' + this.name : this.name);
+                if (this.$te(translateKey)){
+                    t = this.$t(translateKey);
+                }
+                return marked(t);
+            },
+
             displayLabel: function () {
                 if (this.validationRules.toLowerCase().indexOf("required") >= 0) {
-                    return this.$tc(this.label) + ' *';
+                    return this.$tc(this.label) + '*';
                 }
                 return this.$tc(this.label);
             }
@@ -142,6 +162,6 @@
     };
 </script>
 
-<style scoped>
+<style>
 
 </style>

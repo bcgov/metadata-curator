@@ -718,7 +718,11 @@ export default{
             if (!this.workingVal.resources[key]){
                 this.workingVal.resources[key] = {}
             }
-            this.workingVal.resources[key].path = newValue;
+            if (newValue !== ""){
+                this.workingVal.resources[key].path = newValue;
+            }else{
+                delete this.workingVal.resources[key].path
+            }
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.$emit('edited', this.workingVal);
@@ -729,7 +733,12 @@ export default{
             if (!this.workingVal.resources[key]){
                 this.workingVal.resources[key] = {}
             }
-            this.workingVal.resources[key].name = newValue;
+
+            if (newValue !== ""){
+                this.workingVal.resources[key].name = newValue;
+            }else{
+                delete this.workingVal.resources[key].name;
+            }
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.$emit('edited', this.workingVal);
@@ -745,7 +754,12 @@ export default{
             if (!this.workingVal.resources[key]){
                 this.workingVal.resources[key] = {}
             }
-            this.workingVal.resources[key][field] = newValue;
+
+            if (newValue !== ""){
+                this.workingVal.resources[key][field] = newValue;
+            }else{
+                delete this.workingVal.resources[key][field];
+            }
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.$emit('edited', this.workingVal);
@@ -756,7 +770,12 @@ export default{
             if (event && event.target && typeof(event.target.value) !== 'undefined'){
                 value = event.target.value;
             }
-            this.workingVal.resources[key].schema.fields[fieldKey][path] = value;
+
+            if (value !== ""){
+                this.workingVal.resources[key].schema.fields[fieldKey][path] = value;
+            }else{
+                delete this.workingVal.resources[key].schema.fields[fieldKey][path];
+            }
             
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
@@ -785,7 +804,11 @@ export default{
                 this.workingVal.resources[key].schema.fields[fieldKey][nested] = {};
             }
             
-            this.workingVal.resources[key].schema.fields[fieldKey][nested][path] = arrVal;
+            if (value !== ""){
+                this.workingVal.resources[key].schema.fields[fieldKey][nested][path] = arrVal;
+            }else{
+                delete this.workingVal.resources[key].schema.fields[fieldKey][nested][path];
+            }
             
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
@@ -886,7 +909,7 @@ export default{
         if (this.workingVal && this.workingVal.resources && this.workingVal){
             for (let i=0; i<this.workingVal.resources.length; i++){
                 this.expandedBasic[i] = [];
-                this.expandedBasicResource[i] = true;
+                this.expandedBasicResource[i] = false;
                 if (this.workingVal.resources[i] && this.workingVal.resources[i].schema && this.workingVal.resources[i].schema.fields){
                     for (let j=0; j<this.workingVal.resources[i].schema.fields.length; j++){
                         this.expandedBasic[i][j] = true;
