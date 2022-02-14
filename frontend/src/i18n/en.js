@@ -196,7 +196,7 @@ export default {
         "Academic Data Provider": "Academic Project",
         "Academic data provider": "Academic project",
         "Metadata listed in B.C. Data Catalogue": "Metadata listed in B.C. Data Catalogue",
-        "Enum": "Enumeration Constraints | Enumeration Constraint | Enumeration Constraints",
+        "Enum": "Field values",
         "Create Without Import": "Create Without Import",
         "Sucessfully created ": "Sucessfully created ",
         "Resource Name": "Resource Name",
@@ -206,7 +206,7 @@ export default {
         "Select Data Provider Group to pre-create for": "Select Data Provider Group to pre-create for",
         "NOTE: you will be unable to change this after the next form": "NOTE: you will be unable to change this after the next form",
         "Description (resource)": "Description (resource)",
-        "Enumeration Constraint": "Enumeration Constraint",
+        "Enumeration Constraint": "Field values",
         "Source System": "Source System",
 
         "No comments about this field, reference with ": "No comments about this field, reference with ",
@@ -252,10 +252,15 @@ export default {
         "help.edition.published": "Make information about this edition publicly viewable",
         "help.edition.approved": "Approve this edition and lock it from further changes",
 
-        "help.schema.enum": "Define the possible values this field can be",
+        "help.schema.enum": "Define the comma seperated list of possible values this field can be",
         "help.schema.name": "Name of the column in the data file",
         "help.schema.title": "Human friendly name for the field",
         "help.schema.res.name": "A simple name or identifier for this resource.  Names must be unique amongst all resources in this dataset and must consist only of lowercase alphanumeric characters plus \".\", \"-\" and \"_\". It would be usual for the name to correspond to the file name (minus the extension) of the data file the resource describes.",
+        "help.schema.type": "e.g., string, number, integer, boolean, object, array, date, time, datetime, year, yearmonth, duration, geopoint, geojson, any",
+        "help.schema.tags": "comma separate list of keywords used to group fields of interest e.g., GBA+, indigenous, geospatial, primary linking key",
+        "help.schema.rdfType": "Resource Description Framework (RDF) is a W3C standard for denoting the sematic meaning of fields.  e.g., for a field representing a country you could use an RDF Type value of https://schema.org/Country RDF types can be used to map common fields across datasets",
+        "help.schema.shortName": "A shorter name for the field; userful if name is very long",
+        "help.schema.format": "Format for the field type. e.g., string formats: default (any valid string), email, uri, uuid; date formats:  default (which assumes YYYY-MM-DD), %d/%m/%y; time formats: default (which assumes YYYY-MM-DDThh:mm:ssZ).  For a full list of format options see https://specs.frictionlessdata.io/table-schema/#types-and-formats",
         
     }
 }

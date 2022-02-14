@@ -1,6 +1,6 @@
 {
   "name": "metadata_curator",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "author": "Brandon Sharratt",
   "description": "Metadata Curator is a simple web app to edit csvs and to help describe, validate and share usable open data",
   "repository": "https://github.com/bcgov/metadata-curator",

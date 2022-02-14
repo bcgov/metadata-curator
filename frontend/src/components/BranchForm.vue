@@ -28,7 +28,7 @@
                                         {{alertText}}
                                 </v-alert>
                                 <v-row>
-                                    <h1 class="display-1 font-weight-thin ml-3 my-3">{{creating ? $tc("New") + " " + $tc("Version") : $tc("Version") + " " + id}}</h1>
+                                    <h1 class="display-1 font-weight-thin ml-3 my-3">{{creating ? $tc("New") + " " + $tc("Version") : $tc("Version") + " " +  ((branch && branch.name) ? branch.name : id)}}</h1>
                                 </v-row>
 
                                 <v-row>

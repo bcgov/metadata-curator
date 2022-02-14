@@ -4,20 +4,28 @@
             <span class="mr-2">
                 <h2 v-if="large" class="inline">
                     {{displayLabel}}:
-                    <v-tooltip right v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
-                        <template v-slot:activator="{ on }">
-                            <v-icon color="label_colour" v-on="on">mdi-help-circle-outline</v-icon>
+                    <v-tooltip right v-model="showTooltip" v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
+                        <template v-slot:activator="{}">
+                            <v-icon color="label_colour" 
+                                @mouseenter="showTooltip = true"
+                                @mouseleave="closeOnLeave ? (showTooltip = false) : false">
+                                mdi-help-circle-outline
+                            </v-icon>
                         </template>
-                        <span>&nbsp;{{$t('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))}}</span>
+                        <span v-html="displayTooltip"></span>
                     </v-tooltip>
                 </h2>
                 <span v-else>
                     {{displayLabel}}:
-                    <v-tooltip right v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
-                        <template v-slot:activator="{ on }">
-                            <v-icon color="label_colour" v-on="on">mdi-help-circle-outline</v-icon>
+                    <v-tooltip right v-model="showTooltip" v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
+                        <template v-slot:activator="{}">
+                            <v-icon color="label_colour" 
+                                @mouseenter="showTooltip = true"
+                                @mouseleave="closeOnLeave ? (showTooltip = false) : false">
+                                mdi-help-circle-outline
+                            </v-icon>
                         </template>
-                        <span>&nbsp;{{$t('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))}}</span>
+                        <span v-html="displayTooltip"></span>
                     </v-tooltip>
                 </span>
             </span>
@@ -45,13 +53,17 @@
                     @focus="$emit('focus', $event)"
                     @blur="$emit('blur', $event)"
                 >
-                    <template v-slot:label>
-                        {{displayLabel}}
-                        <v-tooltip right v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
-                            <template v-slot:activator="{ on }">
-                                <v-icon color="label_colour" v-on="on">mdi-help-circle-outline</v-icon>
+                    <template v-slot:prepend>
+                        {{displayLabel}}&nbsp;
+                        <v-tooltip right v-model="showTooltip" v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
+                            <template v-slot:activator="{}">
+                                <v-icon color="label_colour" 
+                                    @mouseenter="showTooltip = true"
+                                    @mouseleave="closeOnLeave ? (showTooltip = false) : false">
+                                    mdi-help-circle-outline
+                                </v-icon>
                             </template>
-                            <span>&nbsp;{{$t('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))}}</span>
+                            <span v-html="displayTooltip"></span>
                         </v-tooltip>
                     </template>
                 </v-text-field>
@@ -63,6 +75,7 @@
 <script>
 
     import ValidationRules from "../mixins/ValidationRules";
+    let marked = require('marked');
 
     export default {
         mixins: [ValidationRules],
@@ -132,9 +145,12 @@
         data() {
             return {
                 val: Array.isArray(this.value) ? this.value.join(",") : this.value,
+                showTooltip: false,
+                closeOnLeave: true,
             }
         },
         methods: {
+
             clearValidation() {
                 this.$refs.provider.reset();
             },
@@ -146,9 +162,18 @@
             }
         },
         computed: {
+            displayTooltip: function(){
+                let t = ''
+                let translateKey = 'help.'+((this.helpPrefix) ? this.helpPrefix + '.' + this.name : this.name);
+                if (this.$te(translateKey)){
+                    t = this.$t(translateKey);
+                }
+                return marked(t);
+            },
+
             displayLabel: function(){
                 if (this.validationRules.toLowerCase().indexOf("required") >= 0) {
-                    return this.$tc(this.label) + ' *';
+                    return this.$tc(this.label) + '*';
                 }
                 return this.$tc(this.label);
             }
