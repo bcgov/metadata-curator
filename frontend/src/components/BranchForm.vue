@@ -13,9 +13,11 @@
             <v-col cols="12">
                 <v-tabs v-model="tab">
                     <v-tab key="version">{{$tc('Version')}}</v-tab>
-                    <v-tab v-if="dataset && !creating" key="dataset" @click="dialog ? closeOrBack() : true">{{$tc('Dataset')}}</v-tab>
+                    <v-tab v-if="dataset && !creating" key="dataset" @click="dialog ? tab=0 && closeOrBack() : true">{{$tc('Dataset')}}</v-tab>
                     <v-tab key="schema" v-if="!creating">{{$tc('Schema')}}</v-tab>
                     <v-tab key="compare" v-if="!creating && inferredSchema">{{$tc('Compare')}}</v-tab>
+                    <v-tab key="revisions" v-if="revisionsLoading === false && revisions.length>0">{{$tc('Revisions', 2)}}</v-tab>
+                    <v-tab key="schemaRevisions" v-if="schemaRevisionsLoading === false && schemaRevisions.length>0">{{$tc('Schema Revisions', 2)}}</v-tab>
                 </v-tabs>
                 <v-tabs-items v-model="tab" class="fullWidth">
                     <v-tab-item key="version">
@@ -283,6 +285,14 @@
                         <Comparison :left-side-text="JSON.stringify(inferredSchema)" :right-side-text="JSON.stringify(schema)" :diff-json="true"></Comparison>
                         <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
                     </v-tab-item>
+
+                    <v-tab-item key="revisions" v-if="revisionsLoading === false && revisions.length>0">
+                        <Revisions :revisions="revisions"></Revisions>
+                    </v-tab-item>
+
+                    <v-tab-item key="schemaRevisions" v-if="schemaRevisionsLoading === false && schemaRevisions.length>0">
+                        <Revisions :revisions="schemaRevisions"></Revisions>
+                    </v-tab-item>
                 </v-tabs-items>
             </v-col>
         </v-row>
@@ -306,6 +316,7 @@ import MetadataForm from './MetadataForm';
 import Comments from './Comments';
 import Comparison from './Comparison';
 import DatasetForm from './DatasetForm';
+import Revisions from './Revisions';
 
 import Vue from 'vue';
 import SimpleCheckbox from './SimpleCheckbox';
@@ -323,6 +334,7 @@ export default {
         Comparison,
         DataUploadSelect,
         DatasetForm,
+        Revisions,
     },
     props: {
         dialog: {
@@ -512,6 +524,10 @@ export default {
             schema: state => state.schemaImport.tableSchema,
             inferredSchema: state => state.schemaImport.inferredSchema,
             variableClassifications: state => state.variableClassifications.items,
+            revisions: state => state.repos.branchRevisions,
+            revisionsLoading: state => state.repos.branchRevisionsLoading,
+            schemaRevisions: state => state.schemaImport.revisions,
+            schemaRevisionsLoading: state => state.schemaImport.revisionsLoading,
         }),
         canEdit: function(){
             if (this.branch.approved){

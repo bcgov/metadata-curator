@@ -56,7 +56,19 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         const repoSchema = new db.RepoSchema;
         repoSchema._id = id;
         repoSchema.name = fields.name;
+
+        let revision = new db.RevisionSchema();
+        revision.old_content = {};
+        revision.source_id = id;
+        revision.updater = user.id;
+        revision.type = "repo";
+        revision.revision_number = 0;
+        revision.create_date = new Date();
+        revision.revise('name', '', fields.name);
+        
+
         if (fields.description){
+            revision.revise('description', '', fields.description);
             repoSchema.description = fields.description
         }
         const config = require('config');
@@ -97,35 +109,46 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
 
         repoSchema.create_date = new Date();
+        revision.revise('create_date', '', repoSchema.create_date);
         repoSchema.created_by = user.id;
+        revision.revise('created_by', '', repoSchema.created_by);
         repoSchema.topic_id = topic._id;
+        revision.revise('topic_id', '', repoSchema.topic_id);
 
         if (fields.gov_allow_publish){
+            revision.revise('gov_allow_publish', '', fields.gov_allow_publish);
             repoSchema.gov_allow_publish = fields.gov_allow_publish;
         }
 
         if (fields.aca_allow_publish){
+            revision.revise('aca_allow_publish', '', fields.aca_allow_publish);
             repoSchema.aca_allow_publish = fields.aca_allow_publish;
         }
 
         if (fields.gov_approval_needed){
+            revision.revise('gov_approval_needed', '', fields.gov_approval_needed);
             repoSchema.gov_approval_needed = fields.gov_approval_needed;
         }
 
         if (fields.aca_approval_needed){
+            revision.revise('aca_approval_needed', '', fields.aca_approval_needed);
             repoSchema.aca_approval_needed = fields.aca_approval_needed;
         }
 
         if (fields.in_bc_catalogue){
+            revision.revise('in_bc_catalogue', '', fields.in_bc_catalogue);
             repoSchema.in_bc_catalogue = fields.in_bc_catalogue;
         }
 
         if (fields.data_collection_type){
+            revision.revise('data_collection_type', '', fields.data_collection_type);
             repoSchema.data_collection_type = fields.data_collection_type;
         }
     
     
-        return await repoSchema.save();
+        let r = await repoSchema.save();
+        await revision.save();
+        return r;
     }
     
     const updateRepo = async function(user, id, body) {
@@ -144,42 +167,60 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             log.error(ex);
             throw new Error(ex.message);
         }
+
+        let existingRevisions = await db.RevisionSchema.find({source_id: mongoose.Types.ObjectId(id), type: 'repo'});
+        let revision = new db.RevisionSchema();
+        revision.old_content = JSON.parse(JSON.stringify(record));
+        revision.source_id = mongoose.Types.ObjectId(id);
+        revision.updater = user.id;
+        revision.type = "repo";
+        revision.revision_number = (existingRevisions && existingRevisions.length) ? existingRevisions.length : 0;
+        revision.create_date = new Date();
     
         //record exists
         if (fields.name){
+            revision.revise('name', record.name, fields.name);
             record.name = fields.name;
         }
 
         if (fields.description){
-            
+            revision.revise('description', record.description, fields.description);
             record.description = fields.description;
         }
 
         if (fields.gov_allow_publish){
+            revision.revise('gov_allow_publish', record.gov_allow_publish, fields.gov_allow_publish);
             record.gov_allow_publish = fields.gov_allow_publish;
         }
 
         if (fields.aca_allow_publish){
+            revision.revise('aca_allow_publish', record.aca_allow_publish, fields.aca_allow_publish);
             record.aca_allow_publish = fields.aca_allow_publish;
         }
 
         if (fields.gov_approval_needed){
+            revision.revise('gov_approval_needed', record.gov_approval_needed, fields.gov_approval_needed);
             record.gov_approval_needed = fields.gov_approval_needed;
         }
 
         if (fields.aca_approval_needed){
+            revision.revise('aca_approval_needed', record.aca_approval_needed, fields.aca_approval_needed);
             record.aca_approval_needed = fields.aca_approval_needed;
         }
 
         if (fields.in_bc_catalogue){
+            revision.revise('in_bc_catalogue', record.in_bc_catalogue, fields.in_bc_catalogue);
             record.in_bc_catalogue = fields.in_bc_catalogue;
         }
 
         if (fields.data_collection_type){
+            revision.revise('data_collection_type', record.data_collection_type, fields.data_collection_type);
             record.data_collection_type = fields.data_collection_type;
         }
     
-        return await record.save();
+        let r = await record.save();
+        await revision.save();
+        return r;
     }
     
     const listRepositories = async (user, query) => {
@@ -266,6 +307,17 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             const repo = await updateRepo(req.user, req.params.repoId, req.body);
             res.status(200).json(repo);
         }catch(ex){
+            console.log(ex);
+            res.status(500).json({error: ex});
+        }
+    });
+
+    router.get('/:repoId/revisions', async function(req, res, next){
+        try{
+            let revs = await db.RevisionSchema.find({source_id: mongoose.Types.ObjectId(req.params.repoId), type: 'repo'});
+            return res.json({revisions: revs});
+        }catch(ex){
+            console.log(ex);
             res.status(500).json({error: ex});
         }
     });

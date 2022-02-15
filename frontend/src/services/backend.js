@@ -64,6 +64,11 @@ export class Backend {
             ).then(response => response.data);
     }
 
+    getDataPackageRevs(id){
+        let url = `/api/v1/datapackages/${id}/revisions`;
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
     postDataPackageSchema(schema) {
         const url = '/api/v1/datapackages'
         // console.log("postTabDataPackage: ", tabDataPackage);
@@ -313,6 +318,11 @@ export class Backend {
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 
+    getRepoRevs(id){
+        let url = `/api/v1/repos/${id}/revisions`;
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
     postRepo(repo){
         // console.log("BE postdataUpload: " + dataUpload);
         const url = `/api/v1/repos`;
@@ -349,6 +359,11 @@ export class Backend {
 
     getBranchById(id){
         let url = `/api/v1/repobranches/${id}`;
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+    getBranchRevsById(id){
+        let url = `/api/v1/repobranches/${id}/revisions`;
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 

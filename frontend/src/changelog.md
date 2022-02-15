@@ -2,6 +2,24 @@
 
 <br />
 
+## Version 1.3.0
+February 21, 2022
+ - Closing edition dialog with dataset tab resets the tab to the first one
+ - Added number of records to data summary page
+ - Added revisions to datasets, editions and schemas
+
+<br />
+
+## Table Of Contents
+- [Version 1.3.0 (February 21 2022)](#version-130)
+- [Version 1.2.6 (February 14 2022)](#version-126)
+- [Version 1.2.5 (February 9 2022)](#version-125)
+- [Version 1.2.4 (February 7 2022)](#version-124)
+- [Version 1.2.3 (February 1 2022)](#version-123)
+- [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
 ## Version 1.2.6
 February 14, 2022
  - Changed how all labels are displayed to support tooltips working when no information is in a field
@@ -16,16 +34,6 @@ February 14, 2022
 - Replaced "Enumeration Constraint" with "Field values"
 - Closing edition dialog with dataset tab resets the tab to the first one
 - Fixed issue with leaving schema page on upload and going back not showing results
-
-
-<br />
-
-## Table Of Contents
-- [Version 1.2.6 (February 14 2022)](#version-126)
-- [Version 1.2.5 (February 9 2022)](#version-125)
-- [Version 1.2.4 (February 7 2022)](#version-124)
-- [Version 1.2.3 (February 1 2022)](#version-123)
-- [Version 1.2.2 (January 27 2022)](#version-122)
 
 <br />
 

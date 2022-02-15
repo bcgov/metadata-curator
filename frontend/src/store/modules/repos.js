@@ -15,6 +15,10 @@ const state = {
     comments: [],
     branchComments: [],
     recentlyFetchedBranchComments: false,
+    revisions: [],
+    revisionsLoading: false,
+    branchRevisions: [],
+    branchRevisionsLoading: false,
 };
 
 const getters = {
@@ -28,6 +32,9 @@ const actions = {
         }
         let r = state.repos.find(repo => repo._id === id);
         commit('setRepo', {repo: r});
+
+        dispatch('getRevisions', {id: r._id});
+
         return state.repo;
     },
 
@@ -50,17 +57,17 @@ const actions = {
         
     },
 
-    async getBranch({state, commit}, {id}) {
+    async getBranch({state, commit, dispatch}, {id}) {
         let b = state.branches.find(branch => branch._id === id);
         commit('setBranch', {branch: b});
+        dispatch('getBranchRevisions', {id: b._id});
         return state.branch;
     },
 
-    async getBranchById({state, commit}, {id}) {
+    async getBranchById({state, commit, dispatch}, {id}) {
         const data = await backend.getBranchById(id);
-        
-        
         commit('setBranch', {branch: data});
+        dispatch('getBranchRevisions', {id: data._id});
         return state.branch;
     },
 
@@ -77,6 +84,20 @@ const actions = {
             commit('setError', {error: e.response.data.error});
         }
 
+    },
+
+    async getRevisions({commit}, {id}){
+        commit('setRevisionsLoading', {loading: true});
+        const data = await backend.getRepoRevs(id);
+        commit('setRevisions', {revisions: data.revisions});
+        commit('setRevisionsLoading', {loading: false});
+    },
+
+    async getBranchRevisions({commit}, {id}){
+        commit('setBranchRevisionsLoading', {loading: true});
+        const data = await backend.getBranchRevsById(id);
+        commit('setBranchRevisions', {branchRevisions: data.revisions});
+        commit('setBranchRevisionsLoading', {loading: false});
     },
 
     async getAllRepos({ commit }) {
@@ -195,7 +216,21 @@ const mutations = {
     clearSelectedFilterBy(state){
         state.selectedFilterBy = null;
     },
-    
+
+    setRevisions(state, { revisions }) {
+        state.revisions = revisions;
+    },
+    setRevisionsLoading(state, { loading }) {
+        state.revisionsLoading = loading
+    },
+
+    setBranchRevisions(state, { branchRevisions }) {
+        state.branchRevisions = branchRevisions;
+    },
+    setBranchRevisionsLoading(state, { loading }) {
+        state.branchRevisionsLoading = loading
+    },
+
     setError(state, { error }) {
         state.error = Object.assign({}, error);
     },

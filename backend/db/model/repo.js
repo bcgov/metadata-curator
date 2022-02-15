@@ -51,4 +51,7 @@ var repoSchema = new Schema({
 
 var model = mongoose.model('repo', repoSchema, 'repo');
 
-module.exports = model;
+module.exports = {
+    repoSchema,   
+    model
+};

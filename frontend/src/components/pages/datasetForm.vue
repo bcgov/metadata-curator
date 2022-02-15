@@ -6,6 +6,7 @@
                 <v-tab key="schema" v-if="!creating">{{$tc('Schema', 1)}}</v-tab>
                 <v-tab key="compareS" v-if="!creating">{{$tc('Compare', 1)}} {{$tc('Schema', 1)}}</v-tab>
                 <v-tab key="uploads" v-if="!creating && (uploads.length>0)">{{$tc('Uploads', 2)}}</v-tab>
+                <v-tab key="revisions" v-if="revisionsLoading === false && revisions.length>0">{{$tc('Revisions', 2)}}</v-tab>
             </v-tabs>
             <v-tabs-items v-model="tab" class="fullWidth">
                 <v-tab-item key="dataset">
@@ -27,6 +28,9 @@
                             <v-col cols=4>{{$tc('Uploads')}}: <a :href="(dataUpload.status === 'submitted' ? '/dataUploads/' : '/uploads/') + dataUpload._id">{{dataUpload.name}}</a></v-col>
                         </v-row>
                     </span>
+                </v-tab-item>
+                <v-tab-item key="revisions" v-if="revisionsLoading === false && revisions.length>0">
+                    <Revisions :revisions="revisions"></Revisions>
                 </v-tab-item>
             </v-tabs-items>
 
@@ -51,6 +55,7 @@ import DatasetForm from '../DatasetForm';
 import SchemaView from '../SchemaView';
 import Comments from '../Comments';
 import Comparison from '../Comparison';
+import Revisions from '../Revisions';
 import { mapActions, mapState } from 'vuex';
 import { Backend } from '../../services/backend';
 const backend = new Backend();
@@ -60,7 +65,8 @@ export default {
         DatasetForm,
         SchemaView,
         Comments,
-        Comparison
+        Comparison,
+        Revisions,
     },
     
     data () {
@@ -161,6 +167,8 @@ export default {
             branches: state => state.repos.branches,
             dataUploads: state => state.dataUploads.dataUploads,
             schema: state => state.schemaImport.tableSchema,
+            revisions: state => state.repos.revisions,
+            revisionsLoading: state => state.repos.revisionsLoading,
         }),
     },
     created() {
