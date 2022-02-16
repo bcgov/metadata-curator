@@ -270,10 +270,22 @@ export default {
                         for (let i=0; i<l.length; i++){
                             
                             if (compareAgainst[i] === -1){
-                                b[i] = {removed: true};
+                                if (typeof(b) === 'undefined'){
+                                    b = {};
+                                }
+                                if (typeof(b[i]) === 'undefined'){
+                                    b[i] = {};
+                                }
                                 if (notComparedAgainst.length > 0){
-                                    b[i].comparedAgainst = notComparedAgainst[0]
+                                    
+                                    let innerDiff = this.calcJsonDiff(l[i], r[notComparedAgainst[0]]);
+                                    b[i] = innerDiff;
+                                    b[i].comparedAgainst = notComparedAgainst[0];
+                                    //b[i].diff = true;
                                     notComparedAgainst = notComparedAgainst.slice(1);
+                                    
+                                }else{
+                                    b[i].removed = true;
                                 }
                                 hasDiff = true;
                             }else{

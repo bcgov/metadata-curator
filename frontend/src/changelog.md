@@ -7,6 +7,12 @@ February 21, 2022
  - Closing edition dialog with dataset tab resets the tab to the first one
  - Added number of records to data summary page
  - Added revisions to datasets, editions and schemas
+ - Fixed an issue where file info wasn't saving on uploads
+ - All form views have colons after each field label
+ - Fixed issue preventing data approvers/admins from copying editions
+ - Fixed another issue with comparison related to when a good match doesn't exist
+ - Added ministry or organization to dataset page
+ - Added create from this to create data upload based on dataset/version/schema combo
 
 <br />
 

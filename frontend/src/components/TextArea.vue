@@ -2,7 +2,7 @@
     <div>
          <span v-if="!editing">
             <span class="mr-2">
-                {{displayLabel}}
+                {{displayLabel}}:
                 <v-tooltip right v-model="showTooltip" v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
                     <template v-slot:activator="{}">
                         <v-icon color="label_colour" 
@@ -28,6 +28,7 @@
                     :error-messages="errors.length > 0 ? [errors[0]] : []"
                     ref="txtArea"
                     :id="idName ? idName : ''"
+                    @blur="$emit('blur', $event)"
                 >
                     <template v-slot:prepend>
                         {{displayLabel}}&nbsp;

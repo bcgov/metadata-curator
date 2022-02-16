@@ -72,6 +72,21 @@
                         <v-row>
                             <v-col cols=12>
                                 <TextInput
+                                    :label="$tc('Ministry or Organization')"
+                                    placeholder=""
+                                    name="ministry_organization"
+                                    :large="true"
+                                    :editing="editing"
+                                    :value="(dataset) ? dataset.ministry_organization : ''"
+                                    helpPrefix="dataset"
+                                    @edited="(newValue) => { updateValues('ministry_organization', newValue) }"
+                                ></TextInput>
+                            </v-col>
+                        </v-row>
+
+                        <v-row>
+                            <v-col cols=12>
+                                <TextInput
                                     :label="$tc('Description')"
                                     :placeholder="$tc('Description')"
                                     name="description"
@@ -319,6 +334,8 @@ export default {
                 if (keys[i] === "name"){
                     let d = new Date();
                     this.editBranch({name: keys[i], value: branch[keys[i]] + " " + d.toISOString().split('T')[0]});
+                }else if (keys[i] === "author_groups"){
+                    this.editBranch({name: "providerGroup", value: branch[keys[i]][0]});
                 }else if (keys[i] !== "_id"){
                     this.editBranch({name: keys[i], value: branch[keys[i]]});
                 }else{

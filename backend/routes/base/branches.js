@@ -262,6 +262,7 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
     const listBranches = async (user, repoId) => {
         const topicResponse = await forumClient.getTopics(user, {});
         let topics = topicResponse.data.filter(item => item.parent_id);
+        let author_groups = {};
         
         const branchIds = topics.map( (item) => {
             let id = item.name;
@@ -271,6 +272,8 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
             
             id = id.substring(0,id.length-6);
             let oid = mongoose.Types.ObjectId(id);
+            
+            author_groups[item._id] = item.author_groups;
             return oid;
     
         }).filter( (item) => { 
@@ -279,7 +282,14 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
 
         let id = mongoose.Types.ObjectId(repoId);
         try {
-            return await db.RepoBranchSchema.find({_id: {$in: branchIds}, repo_id: id}).sort({ "create_date": -1});
+            let r = await db.RepoBranchSchema.find({_id: {$in: branchIds}, repo_id: id}).sort({ "create_date": -1});
+            if (user.isAdmin || user.isApprover){
+                for (let i=0; i<r.length; i++){
+                    r[i] = JSON.parse(JSON.stringify(r[i]));
+                    r[i].author_groups = author_groups[r[i].topic_id];
+                }
+            }
+            return r;
         } catch (e) {
             log.error(e);
             throw new Error(e.message)
@@ -446,6 +456,7 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
                 id: branch._id.toString()
             });
         }catch(ex){
+            console.log("X", ex);
             res.status(400).json({e: ex});
         }
     });

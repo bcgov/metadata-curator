@@ -101,7 +101,7 @@
                 default: () => ''
             },
             value: {
-                type: [String, Array],
+                type: [String, Number, Array],
                 required: false,
                 default: () => ''
             },

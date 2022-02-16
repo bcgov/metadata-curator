@@ -47,6 +47,10 @@ var repoSchema = new Schema({
         type: String,
         required: false,
     },
+    ministry_organization: {
+        type: String,
+        required: false,
+    },
 });
 
 var model = mongoose.model('repo', repoSchema, 'repo');

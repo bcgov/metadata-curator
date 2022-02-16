@@ -73,6 +73,7 @@ export default {
                 let d = new Date(this.revisions[i].create_date)
                 let text = "Revision " + this.revisions[i].revision_number + " - "
                 text +=  d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate();
+                text +=  " (" + this.revisions[i].uploader + ")"
                 rv.push({text: text, value: i});
             }
             return rv;

@@ -124,7 +124,7 @@
 
                         <v-stepper-content :step="steps.step4FileLevelForm">
                             <v-card class="mb-12">
-                                <FileInfoForm v-if="step === steps.step4FileLevelForm" ref="fileInfoForm"></FileInfoForm>
+                                <FileInfoForm v-if="step === steps.step4FileLevelForm" ref="fileInfoForm" :modifyStoreNow="fileInfoModify"></FileInfoForm>
                             </v-card>
                             <v-btn text @click="step=steps.step3FileSelection" id="back-4">{{$tc('Back')}}</v-btn>
                             <v-btn color="primary" @click="stepSaveFileInfoForm(true)" id="next-4">{{$tc('Next')}}</v-btn>
@@ -560,6 +560,7 @@
             },
 
             async stepSaveFileInfoForm(transitionNextStepAfterSave) {
+                this.fileInfoModify = true;
                 let valid = true;
                 if (this.upload.files){
                     
@@ -576,9 +577,11 @@
                     this.errorText = "";
                     try{
                         await this.updateUpload(this.upload);
+                        
                         if(transitionNextStepAfterSave) { 
                             await this.infer();
                             this.step = (this.enabledPhase >= 2) ? this.steps.step5SchemaInformation : this.steps.step6UploadProgress; 
+                            this.fileInfoModify = false;
                         }
                     }catch(e){
                         this.errorAlert = true;
@@ -680,6 +683,7 @@
                 allowSelectVersion: true,
                 warningAlert: false,
                 warningText: '',
+                fileInfoModify: false,
             }
         },
         computed: {

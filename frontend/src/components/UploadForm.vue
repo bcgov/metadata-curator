@@ -40,7 +40,7 @@
                 //this.getUploadFormSubmission({formName: this.upload.form_name, submissionId: this.upload.upload_submission_id});
                 await this.getUploadForm(this.upload.form_name);
             }else{
-                await this.resetState();
+                //await this.resetState();
                 await this.getDefaultUploadForm();
             }
             

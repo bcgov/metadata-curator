@@ -115,6 +115,9 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         repoSchema.topic_id = topic._id;
         revision.revise('topic_id', '', repoSchema.topic_id);
 
+        repoSchema.ministry_organization = fields.ministry_organization
+        revision.revise('ministry_organization', '', fields.ministry_organization);
+
         if (fields.gov_allow_publish){
             revision.revise('gov_allow_publish', '', fields.gov_allow_publish);
             repoSchema.gov_allow_publish = fields.gov_allow_publish;
@@ -216,6 +219,11 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         if (fields.data_collection_type){
             revision.revise('data_collection_type', record.data_collection_type, fields.data_collection_type);
             record.data_collection_type = fields.data_collection_type;
+        }
+
+        if (fields.ministry_organization){
+            revision.revise('ministry_organization', record.ministry_organization, fields.ministry_organization);
+            record.ministry_organization = fields.ministry_organization
         }
     
         let r = await record.save();
