@@ -32,7 +32,7 @@
                         <v-stepper-step :step="steps.step1UploadForm" :complete="step > steps.step1UploadForm" >{{$tc('Upload Info')}}</v-stepper-step>
                         <v-divider></v-divider>
 
-                        <v-stepper-step v-if="enabledPhase >= 2 && (user.isApprover || user.isAdmin)" :step="steps.step2EditionForm" :complete="step > steps.step2EditionForm" >{{$tc('Version') + ' ' +$tc('Information')}}</v-stepper-step>
+                        <v-stepper-step v-if="enabledPhase >= 2 && (user.isApprover || user.isAdmin || (user._json.preferred_username === TEST_ACCOUNT) )" :step="steps.step2EditionForm" :complete="step > steps.step2EditionForm" >{{$tc('Version') + ' ' +$tc('Information')}}</v-stepper-step>
                         <v-divider></v-divider>
 
                         <v-stepper-step :step="steps.step3FileSelection" :complete="step > steps.step3FileSelection" >{{$tc('File Selection')}}</v-stepper-step>
@@ -77,7 +77,7 @@
                             <v-btn text @click="stepSaveUploadForm(true)" id="next-1">{{$tc('Next')}}</v-btn>
                         </v-stepper-content>
 
-                        <v-stepper-content :step="steps.step2EditionForm" v-if="enabledPhase >= 2 && (user.isApprover || user.isAdmin)">
+                        <v-stepper-content :step="steps.step2EditionForm" v-if="enabledPhase >= 2 && (user.isApprover || user.isAdmin || (user._json.preferred_username === TEST_ACCOUNT))">
                             <v-card class="mb-12">
                                 <v-row>
                                     <v-col cols=9>
@@ -124,7 +124,11 @@
 
                         <v-stepper-content :step="steps.step4FileLevelForm">
                             <v-card class="mb-12">
-                                <FileInfoForm v-if="step === steps.step4FileLevelForm" ref="fileInfoForm" :modifyStoreNow="fileInfoModify"></FileInfoForm>
+                                <FileInfoForm 
+                                    v-if="step === steps.step4FileLevelForm" 
+                                    ref="fileInfoForm" 
+                                    @update="(s, e, t, ty, d, n) => { fileInfo = {start: s, end: e, title: t, type: ty, description: d, num_records: n} }"
+                                    :modifyStoreNow="fileInfoModify"></FileInfoForm>
                             </v-card>
                             <v-btn text @click="step=steps.step3FileSelection" id="back-4">{{$tc('Back')}}</v-btn>
                             <v-btn color="primary" @click="stepSaveFileInfoForm(true)" id="next-4">{{$tc('Next')}}</v-btn>
@@ -194,7 +198,7 @@
     import JsonEditor from '../JsonEditor/JsonEditor';
     const backend = new Backend();
     const { Schema } = require('tableschema')
-    const TEST_ACCOUNT = "provider_1"
+    const TEST_ACCOUNT = "letti"
 
     export default {
         components:{
@@ -299,6 +303,7 @@
                 getUploadFormSubmission: 'uploadForm/getUploadFormSubmission',
                 getVariableClassifications: 'variableClassifications/getItems',
                 getVariableClassification: 'variableClassifications/getItem',
+                modifyStoreUpload: 'upload/modifyStoreUpload',
             }),
             ...mapMutations({
                 resetState: 'upload/resetState',
@@ -467,7 +472,11 @@
                             this.errorText = "You are not allowed to proceed until this upload has been assigned an "+this.$tc('version',1);
                             return false;
                         }
-                        this.step = this.steps.step3FileSelection; 
+                        if (this.user._json.preferred_username === TEST_ACCOUNT){
+                            this.step = (this.enabledPhase >= 2) ? this.steps.step2EditionForm : this.steps.step3FileSelection;
+                        }else{
+                            this.step = this.steps.step3FileSelection; 
+                        }
                     }
                   }
 
@@ -561,7 +570,17 @@
             },
 
             async stepSaveFileInfoForm(transitionNextStepAfterSave) {
-                this.fileInfoModify = true;
+                let f = JSON.parse(JSON.stringify(this.upload));
+                for (let i=0; i<f.files.length; i++){
+                    f.files[i].start_date = this.fileInfo.start[i];
+                    f.files[i].end_date = this.fileInfo.end[i];
+                    f.files[i].title = this.fileInfo.title[i];
+                    f.files[i].type = this.fileInfo.type[i];
+                    f.files[i].description = this.fileInfo.description[i];
+                    f.files[i].num_records = this.fileInfo.num_records[i];
+                }
+                await this.modifyStoreUpload(f);
+
                 let valid = true;
                 if (this.upload.files){
                     
@@ -582,7 +601,7 @@
                         if(transitionNextStepAfterSave) { 
                             await this.infer();
                             this.step = (this.enabledPhase >= 2) ? this.steps.step5SchemaInformation : this.steps.step6UploadProgress; 
-                            this.fileInfoModify = false;
+                            
                         }
                     }catch(e){
                         this.errorAlert = true;
@@ -685,6 +704,8 @@
                 warningAlert: false,
                 warningText: '',
                 fileInfoModify: false,
+                TEST_ACCOUNT: TEST_ACCOUNT,
+                fileInfo: {}
             }
         },
         computed: {

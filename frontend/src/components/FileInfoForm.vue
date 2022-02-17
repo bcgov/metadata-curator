@@ -146,10 +146,9 @@
                 getUploadFormSubmission: 'uploadForm/getUploadFormSubmission',
             }),
 
-            async editFileInfoIndex(key, index, newValue){
+            editFileInfoIndex(key, index, newValue){
                 this[key][index] = newValue;
-                await this.updateFormSubmission(false);
-                return true;
+                this.$emit('update', this.start, this.end, this.title, this.type, this.description, this.num_records);
             },
 
             async editFileType(index, newValue){
