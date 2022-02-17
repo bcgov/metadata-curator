@@ -3,7 +3,7 @@
 <br />
 
 ## Version 1.3.0
-February 21, 2022
+February 18, 2022
  - Closing edition dialog with dataset tab resets the tab to the first one
  - Added number of records to data summary page
  - Added revisions to datasets, editions and schemas
@@ -13,6 +13,11 @@ February 21, 2022
  - Fixed another issue with comparison related to when a good match doesn't exist
  - Added ministry or organization to dataset page
  - Added create from this to create data upload based on dataset/version/schema combo
+ - Added export option to edition
+ - Added ability to filter by multiple variable classifications (matching any of the selected will show)
+ - Changed published verison page to show name instead of guid for branch
+ - Removed data upload id published version page
+ - Added ability to filter datasets by ministry / organization
 
 <br />
 

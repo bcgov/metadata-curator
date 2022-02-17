@@ -12,7 +12,7 @@
                         <v-card outlined>
                             <v-card-text>
                                 <v-row>
-                                    <h1 class="display-1 font-weight-thin ml-3 my-3">{{$tc("Version") + " " + id}}</h1>
+                                    <h1 class="display-1 font-weight-thin ml-3 my-3">{{$tc("Version") + " " + ((branch && branch.name) ? branch.name : id)}}</h1>
                                 </v-row>
 
                                 <v-row>
@@ -48,12 +48,6 @@
                                 <v-row>
                                     <v-col cols=12 v-if="branch && branch.description">
                                         Description: {{branch.description}}
-                                    </v-col>
-                                </v-row>
-
-                                <v-row>
-                                    <v-col cols=12 v-if="branch && branch.data_upload_id">
-                                        Data Upload: {{branch.data_upload_id}}
                                     </v-col>
                                 </v-row>
 

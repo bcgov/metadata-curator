@@ -23,6 +23,7 @@
     "css-loader": "^3.6.0",
     "datapackage": "^1.1.10",
     "diff": "^5.0.0",
+    "downloadjs": "^1.4.7",
     "es6-promise": "^4.2.8",
     "formiojs": "^4.13.11",
     "handsontable": "6.2.2",

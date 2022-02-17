@@ -40,6 +40,7 @@
                     :item-text="itemText"
                     :item-value="itemValue"
                     :id="idName ? idName : ''"
+                    :multiple="multiple"
                     :error-messages="errors.length > 0 ? [errors[0]] : []"
                     @change="$emit('edited', val)"
                     outlined
@@ -129,6 +130,11 @@
                 required: false,
                 default: "",
             },
+            multiple: {
+                type: Boolean,
+                required: false,
+                default: false,
+            }
 
         },
         data() {

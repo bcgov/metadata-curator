@@ -72,7 +72,7 @@
                         <v-row>
                             <v-col cols=12>
                                 <TextInput
-                                    :label="$tc('Ministry or Organization')"
+                                    :label="$tc('Ministry / Organization')"
                                     placeholder=""
                                     name="ministry_organization"
                                     :large="true"
