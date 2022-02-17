@@ -194,6 +194,7 @@
     import JsonEditor from '../JsonEditor/JsonEditor';
     const backend = new Backend();
     const { Schema } = require('tableschema')
+    const TEST_ACCOUNT = "provider_1"
 
     export default {
         components:{
@@ -271,7 +272,7 @@
                 }
             }
 
-            if (this.user._json.preferred_username === 'provider_1'){
+            if (this.user._json.preferred_username === TEST_ACCOUNT){
                 this.allowCreate = true;
                 this.allowCreateVersion = true;
             }
@@ -461,7 +462,7 @@
                     if (this.user.isApprover || this.user.isAdmin){
                         this.step = (this.enabledPhase >= 2) ? this.steps.step2EditionForm : this.steps.step3FileSelection;
                     }else{
-                        if ( (this.enabledPhase >= 2) && this.selectedVersion === "-1"){
+                        if ( (this.enabledPhase >= 2) && (this.selectedVersion === "-1") && (this.user._json.preferred_username !== TEST_ACCOUNT) ){
                             this.errorAlert = true;
                             this.errorText = "You are not allowed to proceed until this upload has been assigned an "+this.$tc('version',1);
                             return false;
@@ -603,7 +604,7 @@
             },
 
             async createVersion(){
-                if (this.user._json.preferred_username !== 'provider_1'){
+                if (this.user._json.preferred_username !== TEST_ACCOUNT){
                     return false;
                 }
                 
@@ -633,7 +634,7 @@
             },
 
             async createDataset(){
-                if (this.user._json.preferred_username !== 'provider_1'){
+                if (this.user._json.preferred_username !== TEST_ACCOUNT){
                     return false;
                 }
                 this.clearDataset();
