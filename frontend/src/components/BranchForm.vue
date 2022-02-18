@@ -11,15 +11,15 @@
 
         <v-row v-else dense>
             <v-col cols="12">
-                <v-tabs v-model="tab">
+                <v-tabs v-model="tab" @change="changeTab">
                     <v-tab key="version">{{$tc('Version')}}</v-tab>
-                    <v-tab v-if="dataset && !creating" key="dataset" @click="dialog ? tab=0 && closeOrBack() : true">{{$tc('Dataset')}}</v-tab>
+                    <v-tab v-if="dataset && !creating" key="dataset">{{$tc('Dataset')}}</v-tab>
                     <v-tab key="schema" v-if="!creating">{{$tc('Schema')}}</v-tab>
                     <v-tab key="compare" v-if="!creating && inferredSchema">{{$tc('Compare')}}</v-tab>
                     <v-tab key="revisions" v-if="revisionsLoading === false && revisions.length>0">{{$tc('Revisions', 2)}}</v-tab>
                     <v-tab key="schemaRevisions" v-if="schemaRevisionsLoading === false && schemaRevisions.length>0">{{$tc('Schema Revisions', 2)}}</v-tab>
                 </v-tabs>
-                <v-tabs-items v-model="tab" class="fullWidth">
+                <v-tabs-items v-model="tabItem" class="fullWidth">
                     <v-tab-item key="version">
                         <v-card outlined>
                             <v-card-text>
@@ -272,7 +272,7 @@
 
                     <v-tab-item key="dataset">
                         <span v-if="branch && branch.repo_id && branch.repo_id._id">
-                            <DatasetForm :hideEditions="true" :idOverride="branch.repo_id._id"></DatasetForm>
+                            <DatasetForm v-if="!dialog" :hideEditions="true" :idOverride="branch.repo_id._id"></DatasetForm>
                             <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
                         </span>
                     </v-tab-item>
@@ -419,7 +419,8 @@ export default {
             alert: false,
             alertType: "success",
             alertText: "",
-            tab: 'version',
+            tab: 0,
+            tabItem: 0,
             reIndex: 0,
             loading: true,
             location: window.location,
@@ -455,13 +456,24 @@ export default {
             clearBranch: 'repos/clearBranch',
         }),
 
+        changeTab(){
+            if (this.tab === 1 && this.dialog){
+                this.$nextTick(() => {
+                    this.tab = this.tabItem;
+                })
+                this.closeOrBack();
+            }else{
+                this.tabItem = this.tab;
+            }
+            return false;
+        },
+
         setExportFields(){
             let keys = Object.keys(this.branch);
             this.exportFields = {all: true};
             for (let i=0; i<keys.length; i++){
                 if (keys[i] === "repo_id"){
                     let datasetKeys = Object.keys(this.branch.repo_id);
-                    console.log("REPO_ID", datasetKeys);
                     for (let j=0; j<datasetKeys.length; j++){
                         this.exportFields[this.DATASET_PREFIX+'.'+datasetKeys[j]] = true;
                     }
@@ -500,7 +512,6 @@ export default {
                     if (k.indexOf('.') === -1){
                         if (this.exportFields['all'] || this.exportFields[k]){
                             json[k] = this.branch[k];
-                            console.log("Adding field", k, this.branch[k]);
                         }
                     }else if(k.indexOf(this.DATASET_PREFIX) === 0){
                         if (this.exportFields['all'] || this.exportFields[k]){
@@ -612,7 +623,6 @@ export default {
 
         async load(){
             this.loading = true;
-            // console.log("dataUpload id: " + this.$route.params.id);
             
             //this.branchId = (this.branchId) ? this.branchId : this.$route.params.id;
             this.id = (this.branchId) ? this.branchId : this.$route.params.id;

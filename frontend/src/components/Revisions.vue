@@ -70,10 +70,10 @@ export default {
         revisionList: function(){
             let rv = []
             for (let i=0; i<this.revisions.length; i++){
-                let d = new Date(this.revisions[i].create_date)
-                let text = "Revision " + this.revisions[i].revision_number + " - "
+                let d = new Date(this.revisions[i].create_date);
+                let text = "Revision " + this.revisions[i].revision_number + " - ";
                 text +=  d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate();
-                text +=  " (" + this.revisions[i].uploader + ")"
+                text +=  " (" + this.revisions[i].updater + ")";
                 rv.push({text: text, value: i});
             }
             return rv;

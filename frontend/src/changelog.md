@@ -3,7 +3,7 @@
 <br />
 
 ## Version 1.3.0
-February 18, 2022
+February 22, 2022
  - Closing edition dialog with dataset tab resets the tab to the first one
  - Added number of records to data summary page
  - Added revisions to datasets, editions and schemas
@@ -22,7 +22,7 @@ February 18, 2022
 <br />
 
 ## Table Of Contents
-- [Version 1.3.0 (February 21 2022)](#version-130)
+- [Version 1.3.0 (February 22 2022)](#version-130)
 - [Version 1.2.6 (February 14 2022)](#version-126)
 - [Version 1.2.5 (February 9 2022)](#version-125)
 - [Version 1.2.4 (February 7 2022)](#version-124)

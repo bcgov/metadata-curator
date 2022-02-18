@@ -71,7 +71,7 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         }
 
         try{
-            let d = await dataPackageSchema.save();
+            let d = await db.DataPackageSchema.create(dataPackageSchema);
             revision.source_id = d._id;
             await revision.save();
             return d;
@@ -314,6 +314,7 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
             const pkg = await addDataPackage(descriptor, req.user);
             res.status(201).json({id: pkg._id.toString()});
         }catch(ex){
+            console.error("Post DP", ex);
             res.status(500).json({error: ex});
         }
     });
