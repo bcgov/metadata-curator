@@ -251,22 +251,28 @@ export default {
         },
 
         async importButtonClicked(content) {
-            content = JSON.parse(content);
-            content.version = this.id;
-            content = JSON.stringify(content);
+            try{
+                content = JSON.parse(content);
+                content.version = this.id;
+                content = JSON.stringify(content);
 
-            if(this.metadataType == 'table') {    
-                this.setTableSchema({schema: content});
-                this.saveTableSchema();
-                this.loading = true;
-                await this.load();
-                this.loading = false;
-            }else{
-                this.setDataPackageSchema({schema: content});
-                await this.createDataPackageSchema();
-                this.loading = true;
-                await this.load();
-                this.loading = false;
+                if(this.metadataType == 'table') {    
+                    this.setTableSchema({schema: content});
+                    this.saveTableSchema();
+                    this.loading = true;
+                    await this.load();
+                    this.loading = false;
+                }else{
+                    this.setDataPackageSchema({schema: content});
+                    await this.createDataPackageSchema();
+                    this.loading = true;
+                    await this.load();
+                    this.loading = false;
+                }
+            }catch(ex){
+                this.alertType = "error";
+                this.alert = true;
+                this.alertText = "Error " + ex.message;
             }
         },
         saveTableSchema() {

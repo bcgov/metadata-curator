@@ -31,9 +31,9 @@ db.init = async function (_connString = null) {
     //db.TableSchema = require('./model/tableSchema').model;
     db.DataPackageSchema = require('./model/dataPackageSchema').model;
     db.DataUploadSchema = require('./model/dataUpload');
-    db.RepoSchema = require('./model/repo');
+    db.RepoSchema = require('./model/repo').model;
     db.RepoBranchSchema = require('./model/repoBranch').model;
-    db.MetadataRevisionSchema = require('./model/metadataRevision');
+    db.RevisionSchema = require('./model/revision');
     db.User = require('./model/user');
     db.ConfigSchema = require('./model/config');
     db.VariableClassification = require('./model/variableClassification');

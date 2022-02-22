@@ -231,6 +231,9 @@ export default {
         "Academic project": "Academic project",
         "Record number is only for data type files": "Record number is only for data type files",
         "No new activity since you last logged in. You're all caught up": "No new activity since you last logged in. You're all caught up",
+        "Revisions": "Revisions",
+        "Revised By": "Revised By",
+        "Schema Revisions": "Schema Revisions",
 
 
         "help.dataset.name": "The name of the dataset",

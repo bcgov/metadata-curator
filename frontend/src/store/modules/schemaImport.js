@@ -9,7 +9,9 @@ const state = {
     imported: false,
     error: null,
     successMsg: null,
-    tableSchemaId: -1
+    tableSchemaId: -1,
+    revisions: [],
+    revisionsLoading: false,
 };
 
 const getters = {
@@ -41,14 +43,22 @@ const getters = {
 
 
 const actions = {
-    getTableSchema: async function({commit}, {id: id}){
+    getTableSchema: async function({commit, dispatch}, {id: id}){
         commit('setTableSchemaId', {id: -1});
         let s = await backend.getTableSchema(id);
         if (s && s._id){
             commit('setTableSchemaId', {id: s._id});
+            dispatch('getRevisions', {id: s._id});
         }
         commit('setTableSchema', {schema: s});
         return s;
+    },
+
+    async getRevisions({commit}, {id}){
+        commit('setRevisionsLoading', {loading: true});
+        const data = await backend.getDataPackageRevs(id);
+        commit('setRevisions', {revisions: data.revisions});
+        commit('setRevisionsLoading', {loading: false});
     },
 
     getInferredSchema: async function({commit}, {id: id}){
@@ -58,18 +68,20 @@ const actions = {
         return s;
     },
 
-    getDataPackage: async function({commit}, {id: id}){
+    getDataPackage: async function({commit, dispatch}, {id: id}){
         commit('setDataPackageSchema', {schema: null});
         let s = await backend.getTableSchema(id);
         commit('setDataPackageSchema', {schema: s});
+        dispatch('getRevisions', {id: s._id});
         return s;
     },
 
-    getDataPackageByUploadId: async function({commit}, {id: id}){
+    getDataPackageByUploadId: async function({commit, dispatch}, {id: id}){
         commit('setDataPackageSchema', {schema: null});
         let s = await backend.getTableSchema(id, true);
         if (s && s.length > 0){
             commit('setDataPackageSchema', {schema: s[0]});
+            dispatch('getRevisions', {id: s[0]._id});
         }
         return s;
     },
@@ -172,7 +184,14 @@ const mutations = {
             error: null,
             successMsg: null
         };
-    }
+    },
+
+    setRevisions(state, { revisions }) {
+        state.revisions = revisions;
+    },
+    setRevisionsLoading(state, { loading }) {
+        state.revisionsLoading = loading
+    },
 
 }
 

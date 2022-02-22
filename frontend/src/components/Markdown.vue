@@ -1,7 +1,7 @@
 <template>
     <div>
         <label class="label">
-            {{$tc(displayLabel)}}{{ (displayLabel.length > 0) ? ':' : ''}}
+            {{$tc(displayLabel)}}:
         </label>
         <span v-if="!editing" v-html="displayValue" class="value"></span>
         <div v-else>

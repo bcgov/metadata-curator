@@ -39,7 +39,6 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
 
     const addDataPackage = async function(descriptor, user) {
         await validateDataPackage(descriptor);
-
         
         if (descriptor.inferred){
             let preInferred = await db.DataPackageSchema.findOne({inferred: true, version: descriptor.version});
@@ -54,7 +53,15 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
                 return d;
             }
         }
-        let dataPackageSchema = await buildDataPackageSchema(descriptor);
+
+        let revision = new db.RevisionSchema();
+        revision.old_content = {};
+        revision.updater = user.id;
+        revision.type = "tabular_data_package";
+        revision.revision_number = 0;
+        revision.create_date = new Date();
+
+        let dataPackageSchema = await buildDataPackageSchema(descriptor, true, revision);
 
         const branch = await db.RepoBranchSchema.findOne({_id: mongoose.Types.ObjectId(dataPackageSchema.version)});
         if (!branch){
@@ -64,7 +71,9 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         }
 
         try{
-            let d = await dataPackageSchema.save();
+            let d = await db.DataPackageSchema.create(dataPackageSchema);
+            revision.source_id = d._id;
+            await revision.save();
             return d;
         }catch(e){
             if (e instanceof mongoose.Error.ValidationError) {
@@ -86,33 +95,47 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         await current.delete();
     }
 
-    const updateDataPackage = async function (id, descriptor) {
+    const updateDataPackage = async function (id, descriptor, user) {
         
         await validateDataPackage(descriptor);
 
         //let dataPackageSchema = await db.DataPackageSchema.findOne({_id: id});
         let filter = {_id: id};
-        let data = {}
 
+        let oldRecord = await db.DataPackageSchema.findOne(filter);
+        let data = {};
+
+        let existingRevisions = await db.RevisionSchema.find({source_id: mongoose.Types.ObjectId(id), type: 'tabular_data_package'});
+        let revision = new db.RevisionSchema();
+        revision.old_content = JSON.parse(JSON.stringify(oldRecord));
+        revision.source_id = mongoose.Types.ObjectId(id);
+        revision.updater = user.id;
+        revision.type = "tabular_data_package";
+        revision.revision_number = (existingRevisions && existingRevisions.length) ? existingRevisions.length : 0;
+        revision.create_date = new Date();
+
+        revision.revise('profile', oldRecord.profile, descriptor.profile);
         data.profile = descriptor.profile;
         let k = Object.keys(descriptor);
         let dontSet = ['resources', '_id', '__v', 'version'];
         for (let i=0; i<k.length; i++){
             let key = k[i];
             if (dontSet.indexOf(key) === -1){
+                revision.revise(key, data[key], descriptor[key]);
                 data[key] = descriptor[key]
             }
         }
 
         data.resources = transformResources(descriptor.resources);
+        revision.revise('resources', oldRecord.resources, data.resources);
         
         let branchQ = {};
         if (descriptor.version){
+            revision.revise('resources', oldRecord.version, descriptor.version);
             let branchId = mongoose.Types.ObjectId(descriptor.version);
             branchQ = {_id: branchId}
             
         }else{
-            let oldRecord = await db.DataPackageSchema.findOne(filter);
             let branchId = mongoose.Types.ObjectId(oldRecord.version);
             branchQ = {_id: branchId}
         }
@@ -136,6 +159,8 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
 
         // do a transformation to make it compatible with the frictionlessdata schema
         newRecord.resources = transformResourcesToFrictionless(newRecord.resources);
+
+        await revision.save();
 
         return newRecord;
     }
@@ -246,14 +271,17 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         return resources;
     }
 
-    const buildDataPackageSchema = async function (descriptor, object) {
+    const buildDataPackageSchema = async function (descriptor, object, revision) {
         await validateDataPackage(descriptor);
 
         let dataPackageSchema =  object ? {} : new db.DataPackageSchema;
+        revision.revise('profile', dataPackageSchema.profile, descriptor.profile);
         dataPackageSchema.profile = descriptor.profile;
+        
 
         if (descriptor.resources && typeof(descriptor.resources) === "object"){
             let r = transformResources([...descriptor.resources]);
+            revision.revise('resources', dataPackageSchema.resources, descriptor.profile);
             dataPackageSchema.resources = JSON.parse(JSON.stringify(r));
         }
 
@@ -262,6 +290,7 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         for (let i=0; i<keys.length; i++){
             let k = keys[i];
             if (protected.indexOf(k) === -1){
+                revision.revise(k, dataPackageSchema[k] , descriptor[k]);
                 dataPackageSchema[k] = descriptor[k];
             }
         }
@@ -285,6 +314,7 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
             const pkg = await addDataPackage(descriptor, req.user);
             res.status(201).json({id: pkg._id.toString()});
         }catch(ex){
+            console.error("Post DP", ex);
             res.status(500).json({error: ex});
         }
     });
@@ -293,9 +323,10 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         try{
             let descriptor = {...req.body};
             descriptor.profile = "tabular-data-package";
-            const pkg = await updateDataPackage(req.params.id, descriptor)
+            const pkg = await updateDataPackage(req.params.id, descriptor, req.user)
             res.status(200).json({id: pkg._id.toString()});
         }catch(ex){
+            console.log("PUT dp", ex);
             res.status(500).json({error: ex.message});
         }
     });
@@ -312,6 +343,15 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         try{
             const id = req.params.dataPackageId;
             res.status(200).json(await getDataPackageById(id));
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
+    });
+
+    router.get('/:dataPackageId/revisions', async function(req, res, next){
+        try{
+            let revs = await db.RevisionSchema.find({source_id: mongoose.Types.ObjectId(req.params.dataPackageId), type: 'tabular_data_package'});
+            return res.json({revisions: revs});
         }catch(ex){
             res.status(500).json({error: ex});
         }

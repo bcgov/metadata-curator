@@ -20,6 +20,7 @@
                                         <v-row v-if="file.size">{{$tc('Size')}}: {{file.size}}</v-row>
                                         <v-row v-if="file.start_date">{{$tc('Date Range')}}: {{formatDate(file.start_date)}} - {{formatDate(file.end_date)}} </v-row>
                                         <v-row v-if="file.description">{{$tc('Description')}}: {{file.description}}</v-row>
+                                        <v-row v-if="file.num_records">{{$tc('Number of Records')}}: {{file.num_records}}</v-row>
                                     </v-col>
                                 </v-row>
                             </span>

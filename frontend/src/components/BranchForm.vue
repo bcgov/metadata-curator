@@ -11,13 +11,15 @@
 
         <v-row v-else dense>
             <v-col cols="12">
-                <v-tabs v-model="tab">
+                <v-tabs v-model="tab" @change="changeTab">
                     <v-tab key="version">{{$tc('Version')}}</v-tab>
-                    <v-tab v-if="dataset && !creating" key="dataset" @click="dialog ? closeOrBack() : true">{{$tc('Dataset')}}</v-tab>
+                    <v-tab v-if="dataset && !creating" key="dataset">{{$tc('Dataset')}}</v-tab>
                     <v-tab key="schema" v-if="!creating">{{$tc('Schema')}}</v-tab>
                     <v-tab key="compare" v-if="!creating && inferredSchema">{{$tc('Compare')}}</v-tab>
+                    <v-tab key="revisions" v-if="revisionsLoading === false && revisions.length>0">{{$tc('Revisions', 2)}}</v-tab>
+                    <v-tab key="schemaRevisions" v-if="schemaRevisionsLoading === false && schemaRevisions.length>0">{{$tc('Schema Revisions', 2)}}</v-tab>
                 </v-tabs>
-                <v-tabs-items v-model="tab" class="fullWidth">
+                <v-tabs-items v-model="tabItem" class="fullWidth">
                     <v-tab-item key="version">
                         <v-card outlined>
                             <v-card-text>
@@ -270,7 +272,7 @@
 
                     <v-tab-item key="dataset">
                         <span v-if="branch && branch.repo_id && branch.repo_id._id">
-                            <DatasetForm :hideEditions="true" :idOverride="branch.repo_id._id"></DatasetForm>
+                            <DatasetForm v-if="!dialog" :hideEditions="true" :idOverride="branch.repo_id._id"></DatasetForm>
                             <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
                         </span>
                     </v-tab-item>
@@ -283,7 +285,78 @@
                         <Comparison :left-side-text="JSON.stringify(inferredSchema)" :right-side-text="JSON.stringify(schema)" :diff-json="true"></Comparison>
                         <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
                     </v-tab-item>
+
+                    <v-tab-item key="revisions" v-if="revisionsLoading === false && revisions.length>0">
+                        <Revisions :revisions="revisions"></Revisions>
+                    </v-tab-item>
+
+                    <v-tab-item key="schemaRevisions" v-if="schemaRevisionsLoading === false && schemaRevisions.length>0">
+                        <Revisions :revisions="schemaRevisions"></Revisions>
+                    </v-tab-item>
                 </v-tabs-items>
+            </v-col>
+        </v-row>
+
+        <v-row>
+            <v-col cols=12 v-if="!creating">
+                <v-dialog
+                    v-model="exportDia">
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                            color="primary"
+                            v-bind="attrs"
+                            v-on="on">
+                                Export
+                        </v-btn>
+                    </template>
+
+                    <v-card>
+                        <v-card-title class="text-h5 grey lighten-2">
+                            Export Fields
+                        </v-card-title>
+
+                        <v-card-text>
+                            <v-container>
+                                <v-row v-if="false">
+                                    <v-col cols=12>
+                                        <Select
+                                            :editing="true"
+                                            @edited=" (newValue) => { exportType = newValue }"
+                                            helpPrefix="export"
+                                            name="exportType"
+                                            :items="exportTypes">
+                                        </Select>
+                                    </v-col>
+                                </v-row>
+                                <v-row>
+                                    <v-col cols=6 v-for="(checked, key) in exportFields" :key="'export-field-'+key">
+                                        <SimpleCheckbox
+                                            :label="$tc(key)"
+                                            :placeholder="$tc(key)"
+                                            :name="key"
+                                            :editing="true"
+                                            :checked="checked"
+                                            helpPrefix="export"
+                                            @edited="(newValue) => { exportFields[key] = newValue }"
+                                        ></SimpleCheckbox>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </v-card-text>
+
+                        <v-divider></v-divider>
+
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn
+                                color="success"
+                                text
+                                @click="goExport">
+                                Export
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                    </v-dialog>
             </v-col>
         </v-row>
 
@@ -306,6 +379,7 @@ import MetadataForm from './MetadataForm';
 import Comments from './Comments';
 import Comparison from './Comparison';
 import DatasetForm from './DatasetForm';
+import Revisions from './Revisions';
 
 import Vue from 'vue';
 import SimpleCheckbox from './SimpleCheckbox';
@@ -323,6 +397,7 @@ export default {
         Comparison,
         DataUploadSelect,
         DatasetForm,
+        Revisions,
     },
     props: {
         dialog: {
@@ -344,7 +419,8 @@ export default {
             alert: false,
             alertType: "success",
             alertText: "",
-            tab: 'version',
+            tab: 0,
+            tabItem: 0,
             reIndex: 0,
             loading: true,
             location: window.location,
@@ -352,6 +428,13 @@ export default {
             forceCommentVal: "",
             providerGroup: null,
             selectableGroups: [],
+            exportDia: false,
+            exportType: 'JSON',
+            exportTypes: ['JSON'],
+            exportFields: {},
+            DATASET_PREFIX: 'dataset',
+            RESOURCE_PREFIX: 'schema.resources',
+            FIELD_PREFIX: 'schema.resources.fields',
         }
     },
     methods: {
@@ -372,6 +455,112 @@ export default {
             editBranch: 'repos/editBranch',
             clearBranch: 'repos/clearBranch',
         }),
+
+        changeTab(){
+            if (this.tab === 1 && this.dialog){
+                this.$nextTick(() => {
+                    this.tab = this.tabItem;
+                })
+                this.closeOrBack();
+            }else{
+                this.tabItem = this.tab;
+            }
+            return false;
+        },
+
+        setExportFields(){
+            let keys = Object.keys(this.branch);
+            this.exportFields = {all: true};
+            for (let i=0; i<keys.length; i++){
+                if (keys[i] === "repo_id"){
+                    let datasetKeys = Object.keys(this.branch.repo_id);
+                    for (let j=0; j<datasetKeys.length; j++){
+                        this.exportFields[this.DATASET_PREFIX+'.'+datasetKeys[j]] = true;
+                    }
+                }else{
+                    this.exportFields[keys[i]] = true;
+                }
+            }
+
+            if (this.schema && this.schema.resources && this.schema.resources[0]){
+                this.exportFields[this.RESOURCE_PREFIX] = true
+                let sKeys = Object.keys(this.schema.resources[0]);
+                for (let i=0; i<sKeys.length; i++){
+                    this.exportFields[this.RESOURCE_PREFIX+'.'+sKeys[i]] = true;   
+                }
+
+                if (this.schema.resources[0].schema && this.schema.resources[0].schema.fields && this.schema.resources[0].schema.fields[0]){
+                    
+                    let fKeys = Object.keys(this.schema.resources[0].schema.fields[0]);
+                    for (let i=0; i<fKeys.length; i++){
+                        this.exportFields[this.FIELD_PREFIX+'.'+fKeys[i]] = true;
+                    }
+                }
+            }
+        },
+
+        goExport(){
+            let exportFieldKeys = Object.keys(this.exportFields);
+            let json = {};
+            if (this.exportFields['all']){
+                json = JSON.parse(JSON.stringify(this.schema));
+            }
+
+            for (let i=0; i<exportFieldKeys.length; i++){
+                let k = exportFieldKeys[i];
+                if (k !== 'all'){
+                    if (k.indexOf('.') === -1){
+                        if (this.exportFields['all'] || this.exportFields[k]){
+                            json[k] = this.branch[k];
+                        }
+                    }else if(k.indexOf(this.DATASET_PREFIX) === 0){
+                        if (this.exportFields['all'] || this.exportFields[k]){
+                            let datasetK=k.substring(this.DATASET_PREFIX.length+1);
+                            json[k] = this.branch.repo_id[datasetK];
+                        }
+                    }else if ( (k.indexOf(this.FIELD_PREFIX) === 0) || (k.indexOf(this.RESOURCE_PREFIX) === 0) ){
+                        //only need to do this if not doing all as it's caught above for all
+                        if (!this.exportFields['all'] || this.exportFields[k]){
+                            let isField = (k.indexOf(this.FIELD_PREFIX) === 0) ;
+                            let fieldK=k.substring(this.FIELD_PREFIX.length+1);
+                            let resourceK=k.substring(this.RESOURCE_PREFIX.length+1);
+                            for (let j=0; j<this.schema.resources.length; j++){
+                                if (!json.schema){
+                                    json.schema = {}
+                                }
+                                if (!json.schema.resources){
+                                    json.schema.resources = [];
+                                }
+                                if (!json.schema.resources[j]){
+                                    json.schema.resources[j] = {};
+                                }
+                                if (!json.schema.resources[j].schema){
+                                    json.schema.resources[j].schema = {}
+                                }
+                                if (!isField){
+                                    json.schema.resources[j].schema[resourceK] = this.schema.resources[j].schema[resourceK];
+                                }else{
+                                    if (!json.schema.resources[j].schema.fields){
+                                        json.schema.resources[j].schema.fields = []
+                                    }
+
+                                    for (let k=0; k<this.schema.resources.field.length; k++){
+                                        if (!json.schema.resources[j].schema.fields[k]){
+                                            json.schema.resources[j].schema.fields[k] = {}
+                                        }
+                                        json.schema.resources[j].schema.fields[k][fieldK] = this.schema.resources[j].schema.fields[k][fieldK];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            let download = require('downloadjs');
+            download(JSON.stringify(json, null, 4), "export.json", "application/json");
+
+        },
 
         setComment(e){
             this.forceCommentVal = "";
@@ -434,7 +623,6 @@ export default {
 
         async load(){
             this.loading = true;
-            // console.log("dataUpload id: " + this.$route.params.id);
             
             //this.branchId = (this.branchId) ? this.branchId : this.$route.params.id;
             this.id = (this.branchId) ? this.branchId : this.$route.params.id;
@@ -512,6 +700,10 @@ export default {
             schema: state => state.schemaImport.tableSchema,
             inferredSchema: state => state.schemaImport.inferredSchema,
             variableClassifications: state => state.variableClassifications.items,
+            revisions: state => state.repos.branchRevisions,
+            revisionsLoading: state => state.repos.branchRevisionsLoading,
+            schemaRevisions: state => state.schemaImport.revisions,
+            schemaRevisionsLoading: state => state.schemaImport.revisionsLoading,
         }),
         canEdit: function(){
             if (this.branch.approved){
@@ -519,11 +711,19 @@ export default {
             }
             return true;
         }
+
     },
     watch: {
         branchId: async function(){
             await this.load();
+        },
+        branch: function(){
+            this.setExportFields()
+        },
+        schema: function(){
+            this.setExportFields()
         }
+        
     },
     
     created() {

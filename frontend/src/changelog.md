@@ -2,6 +2,35 @@
 
 <br />
 
+## Version 1.3.0
+February 22, 2022
+ - Closing edition dialog with dataset tab resets the tab to the first one
+ - Added number of records to data summary page
+ - Added revisions to datasets, editions and schemas
+ - Fixed an issue where file info wasn't saving on uploads
+ - All form views have colons after each field label
+ - Fixed issue preventing data approvers/admins from copying editions
+ - Fixed another issue with comparison related to when a good match doesn't exist
+ - Added ministry or organization to dataset page
+ - Added create from this to create data upload based on dataset/version/schema combo
+ - Added export option to edition
+ - Added ability to filter by multiple variable classifications (matching any of the selected will show)
+ - Changed published verison page to show name instead of guid for branch
+ - Removed data upload id published version page
+ - Added ability to filter datasets by ministry / organization
+
+<br />
+
+## Table Of Contents
+- [Version 1.3.0 (February 22 2022)](#version-130)
+- [Version 1.2.6 (February 14 2022)](#version-126)
+- [Version 1.2.5 (February 9 2022)](#version-125)
+- [Version 1.2.4 (February 7 2022)](#version-124)
+- [Version 1.2.3 (February 1 2022)](#version-123)
+- [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
 ## Version 1.2.6
 February 14, 2022
  - Changed how all labels are displayed to support tooltips working when no information is in a field
@@ -16,16 +45,6 @@ February 14, 2022
 - Replaced "Enumeration Constraint" with "Field values"
 - Closing edition dialog with dataset tab resets the tab to the first one
 - Fixed issue with leaving schema page on upload and going back not showing results
-
-
-<br />
-
-## Table Of Contents
-- [Version 1.2.6 (February 14 2022)](#version-126)
-- [Version 1.2.5 (February 9 2022)](#version-125)
-- [Version 1.2.4 (February 7 2022)](#version-124)
-- [Version 1.2.3 (February 1 2022)](#version-123)
-- [Version 1.2.2 (January 27 2022)](#version-122)
 
 <br />
 

@@ -172,6 +172,7 @@ export default {
         },
 
         calcJsonDiff: function(left, right){
+            //console.log("JSON DIFF", left, right);
             let b = {};
             let l = left;
             let hasDiff = false;
@@ -270,10 +271,22 @@ export default {
                         for (let i=0; i<l.length; i++){
                             
                             if (compareAgainst[i] === -1){
-                                b[i] = {removed: true};
+                                if (typeof(b) === 'undefined'){
+                                    b = {};
+                                }
+                                if (typeof(b[i]) === 'undefined'){
+                                    b[i] = {};
+                                }
                                 if (notComparedAgainst.length > 0){
-                                    b[i].comparedAgainst = notComparedAgainst[0]
+                                    
+                                    let innerDiff = this.calcJsonDiff(l[i], r[notComparedAgainst[0]]);
+                                    b[i] = innerDiff;
+                                    b[i].comparedAgainst = notComparedAgainst[0];
+                                    //b[i].diff = true;
                                     notComparedAgainst = notComparedAgainst.slice(1);
+                                    
+                                }else{
+                                    b[i].removed = true;
                                 }
                                 hasDiff = true;
                             }else{
@@ -465,6 +478,7 @@ export default {
         leftResources: function(){
             let r = this.getResources(this.leftWorkingVal);
             let rightResources = this.getResources(this.workingVal);
+            console.log("LEFT RESOURCES", r, rightResources);
             let hi = r.length-1;
             
             if (r.length >= rightResources.length){
@@ -537,6 +551,7 @@ export default {
             let movedToEnd = 0;
             
             let leftResources = this.getResources(this.leftWorkingVal);
+            console.log("RIGHT RESOURCES", leftResources, r);
             if (r.length > leftResources.length){
                 let newR = [];
                 for (let i=0; i<r.length; i++){
@@ -594,6 +609,7 @@ export default {
                     newR[i] = JSON.parse(JSON.stringify(r[i]));
                     if (r[i] && r[i].schema && r[i].schema.fields){
                         for (let j=0; j<r[i].schema.fields.length; j++){
+                            let resourceMoveToEnd = 0;
                             let bd = false;
                             try{
                                 bd = rDiff.resources[i].schema.fields[j];
@@ -602,17 +618,23 @@ export default {
                             }
 
                             if (bd && (bd.comparedAgainst || bd.comparedAgainst === 0) ){
-                                let ind = j-movedToEnd;
-                                ind = ind<0 ? 0 : ind;
+                                let ind = j-resourceMoveToEnd;
+                                //ind = ind<0 ? 0 : ind;
                                 newF[ind] = r[i].schema.fields[parseInt(bd.comparedAgainst)];
                                 changed = (changed || (parseInt(bd.comparedAgainst) !== j));
+                                if (r[i].schema.fields[j].name === 'f21'){
+                                    console.log("RIGHT FIELD f21", r[i].schema.fields[j], bd, j, resourceMoveToEnd);
+                                }
+                                if (r[i].schema.fields[j].name === 'f22'){
+                                    console.log("RIGHT FIELD f22", r[i].schema.fields[j], bd, j, resourceMoveToEnd);
+                                }
                             }else if ( bd && (bd.removed || bd.added) ){
                                 newF[hiF] = r[i].schema.fields[j];
-                                movedToEnd++;
+                                resourceMoveToEnd++;
                                 hiF--;
                                 changed = (changed || (movedToEnd>=this.previouslyMovedtoEnd));
                             }else{
-                                let ind = j-movedToEnd;
+                                let ind = j-resourceMoveToEnd;
                                 ind = ind<0 ? 0 : ind;
                                 newF[ind] = r[i].schema.fields[j];
                             }
@@ -626,7 +648,6 @@ export default {
                     
                 }
                 if (changed){
-
                     this.updateWorkingText('right', {resources: newR});
                     this.calcDiff();
                     if (movedToEnd == this.previouslyMovedtoEnd){

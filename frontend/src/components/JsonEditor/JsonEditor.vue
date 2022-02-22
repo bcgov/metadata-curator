@@ -603,6 +603,13 @@ export default{
         },
 
         filter: function(key, val){
+            if (Array.isArray(val)){
+                if (val.length === 0){
+                    delete this.filters[key];
+                }else{
+                    this.filters[key] = val;
+                }
+            }
             if (val === ""){
                 delete this.filters[key];
             }else{
@@ -620,8 +627,14 @@ export default{
             let fKeys = Object.keys(this.filters);
             for (let i=0; i<fKeys.length; i++){
                 let filterFieldName = fKeys[i];
-                if (!filterFieldName || !field[filterFieldName] || (field[filterFieldName] !== this.filters[filterFieldName]) ){
-                    return true;
+                if (Array.isArray(this.filters[filterFieldName])){
+                    if (!filterFieldName || !field[filterFieldName] || (this.filters[filterFieldName].indexOf(field[filterFieldName]) === -1)){
+                        return true;
+                    }
+                }else{
+                    if (!filterFieldName || !field[filterFieldName] || (field[filterFieldName] !== this.filters[filterFieldName]) ){
+                        return true;
+                    }
                 }
             }
             return false;

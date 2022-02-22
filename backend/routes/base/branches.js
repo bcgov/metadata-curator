@@ -53,33 +53,60 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
             user.groups = JSON.parse(JSON.stringify(originalGroups));
             user.jwt = originalJWT;
         }
+
+        let revision = new db.RevisionSchema();
+        revision.old_content = {}
+        revision.source_id = id;
+        revision.updater = user.id;
+        revision.type = "branch";
+        revision.revision_number = 0;
+        revision.create_date = new Date();
         
         const repoBranchSchema = new db.RepoBranchSchema;
         repoBranchSchema._id = id;
+        revision.revise('_id', '', repoBranchSchema._id);
         repoBranchSchema.topic_id = topic._id;
+        revision.revise('topic_id', '', repoBranchSchema.topic_id);
         repoBranchSchema.repo_id = repoId;
+        revision.revise('repo_id', '', repoBranchSchema.repo_id);
         repoBranchSchema.type = type;
+        revision.revise('type', '', repoBranchSchema.type);
         repoBranchSchema.name = name;
+        revision.revise('name', '', repoBranchSchema.name);
         repoBranchSchema.description = description;
+        revision.revise('description', '', repoBranchSchema.description);
         repoBranchSchema.data_upload_id = upload_id;
+        revision.revise('data_upload_id', '', repoBranchSchema.data_upload_id);
         repoBranchSchema.create_date = new Date();
+        revision.revise('create_date', '', repoBranchSchema.create_date);
         
         repoBranchSchema.collectionMethod = fields.collectionMethod;
+        revision.revise('collectionMethod', '', repoBranchSchema.collectionMethod);
         
 
         repoBranchSchema.availability = fields.availability;
+        revision.revise('availability', '', repoBranchSchema.availability);
         repoBranchSchema.variable_classification = fields.variable_classification;
+        revision.revise('variable_classification', '', repoBranchSchema.variable_classification);
         repoBranchSchema.notes = fields.notes;
+        revision.revise('notes', '', repoBranchSchema.notes);
         repoBranchSchema.citation = fields.citation;
+        revision.revise('citation', '', repoBranchSchema.citation);
         repoBranchSchema.short_title = fields.short_title;
+        revision.revise('short_title', '', repoBranchSchema.short_title);
 
         if ( (user.isApprover) || (user.isAdmin) ){
             repoBranchSchema.published = typeof(fields.published) !== 'undefined' ? fields.published : false;
+            revision.revise('published', '', repoBranchSchema.published);
             repoBranchSchema.faq = fields.faq;
+            revision.revise('faq', '', repoBranchSchema.faq);
             repoBranchSchema.approved = typeof(fields.approved) !== 'undefined' ? fields.approved : false;
+            revision.revise('approved', '', repoBranchSchema.approved);
         }
     
-        return await repoBranchSchema.save();
+        let r = await repoBranchSchema.save();
+        await revision.save();
+        return r;
     }
     
     const getBranches = async function(user, data_upload_id){
@@ -127,59 +154,83 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
             throw new Error('approved');
         }
 
+        let existingRevisions = await db.RevisionSchema.find({source_id: mongoose.Types.ObjectId(branchId), type: 'branch'});
+        let revision = new db.RevisionSchema();
+        revision.old_content = JSON.parse(JSON.stringify(repoBranchSchema));
+        revision.source_id = mongoose.Types.ObjectId(branchId);
+        revision.updater = user.id;
+        revision.type = "branch";
+        revision.revision_number = (existingRevisions && existingRevisions.length) ? existingRevisions.length : 0;
+        revision.create_date = new Date();
+
         if (type){
+            revision.revise('type', repoBranchSchema.type, type);
             repoBranchSchema.type = type;
         }
         
         if (name){
+            revision.revise('name', repoBranchSchema.name, name);
             repoBranchSchema.name = name;
         }
     
         if (description){
+            revision.revise('description', repoBranchSchema.description, description);
             repoBranchSchema.description = description;
         }
         
         if (upload_id){
+            revision.revise('data_upload_id', repoBranchSchema.data_upload_id, upload_id);
             repoBranchSchema.data_upload_id = upload_id;
         }
 
         if (fields.availability){
+            revision.revise('availability', repoBranchSchema.availability, fields.availability);
             repoBranchSchema.availability = fields.availability;
         }
 
         if (fields.variable_classification){
+            revision.revise('variable_classification', repoBranchSchema.variable_classification, fields.variable_classification);
             repoBranchSchema.variable_classification = fields.variable_classification;
         }
 
         if (fields.notes){
+            revision.revise('notes', repoBranchSchema.notes, fields.notes);
             repoBranchSchema.notes = fields.notes;
         }
 
         if (fields.citation){
+            revision.revise('citation', repoBranchSchema.citation, fields.citation);
             repoBranchSchema.citation = fields.citation;
         }
 
         if (fields.collectionMethod){
+            revision.revise('collectionMethod', repoBranchSchema.collectionMethod, fields.collectionMethod);
             repoBranchSchema.collectionMethod = fields.collectionMethod;
         }
 
         if (fields.short_title){
+            revision.revise('short_title', repoBranchSchema.short_title, fields.short_title);
             repoBranchSchema.short_title = fields.short_title;
         }
 
         if ( ( (user.isApprover) || (user.isAdmin) ) && (typeof(fields.published) !== 'undefined') ){
+            revision.revise('published', repoBranchSchema.published, fields.published);
             repoBranchSchema.published = fields.published;
         }
 
         if ( ( (user.isApprover) || (user.isAdmin) ) && (typeof(fields.approved) !== 'undefined') ){
+            revision.revise('approved', repoBranchSchema.approved, fields.approved);
             repoBranchSchema.approved = fields.approved;
         }
 
         if ( ( (user.isApprover) || (user.isAdmin) ) && (typeof(fields.faq) !== 'undefined') ){
+            revision.revise('faq', repoBranchSchema.faq, fields.faq);
             repoBranchSchema.faq = fields.faq;
         }
         
-        return await repoBranchSchema.save();
+        let r = await repoBranchSchema.save();
+        await revision.save();
+        return r;
     }
     
     const getBranchById = async (id, user) => {
@@ -211,6 +262,7 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
     const listBranches = async (user, repoId) => {
         const topicResponse = await forumClient.getTopics(user, {});
         let topics = topicResponse.data.filter(item => item.parent_id);
+        let author_groups = {};
         
         const branchIds = topics.map( (item) => {
             let id = item.name;
@@ -220,6 +272,8 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
             
             id = id.substring(0,id.length-6);
             let oid = mongoose.Types.ObjectId(id);
+            
+            author_groups[item._id] = item.author_groups;
             return oid;
     
         }).filter( (item) => { 
@@ -228,7 +282,14 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
 
         let id = mongoose.Types.ObjectId(repoId);
         try {
-            return await db.RepoBranchSchema.find({_id: {$in: branchIds}, repo_id: id}).sort({ "create_date": -1});
+            let r = await db.RepoBranchSchema.find({_id: {$in: branchIds}, repo_id: id}).sort({ "create_date": -1});
+            if (user.isAdmin || user.isApprover){
+                for (let i=0; i<r.length; i++){
+                    r[i] = JSON.parse(JSON.stringify(r[i]));
+                    r[i].author_groups = author_groups[r[i].topic_id];
+                }
+            }
+            return r;
         } catch (e) {
             log.error(e);
             throw new Error(e.message)
@@ -294,6 +355,15 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
            res.status(200).json(branch);
         }catch(e){
             res.status(500).json(e);
+        }
+    });
+
+    router.get('/:branchId/revisions', async function(req, res, next){
+        try{
+            let revs = await db.RevisionSchema.find({source_id: mongoose.Types.ObjectId(req.params.branchId), type: 'branch'});
+            return res.json({revisions: revs});
+        }catch(ex){
+            res.status(500).json({error: ex});
         }
     });
 
@@ -386,6 +456,7 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
                 id: branch._id.toString()
             });
         }catch(ex){
+            console.log("X", ex);
             res.status(400).json({e: ex});
         }
     });

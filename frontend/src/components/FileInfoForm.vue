@@ -24,7 +24,7 @@
                                 :value="(title[index]) ? title[index] : ''"
                                 helpPrefix="upload"
                                 :idName="'fileinfo-'+ index + '-title'"
-                                @edited="(newValue) => { ( title[index] = newValue) && updateFormSubmission }"
+                                @blur="(newValue) => { editFileInfoIndex('title', index, newValue.target.value) }"
                             ></TextInput>
                         </v-col>
                     </v-row>
@@ -54,7 +54,7 @@
                                 helpPrefix="upload"
                                 :idName="'fileinfo-'+ index + '-start'"
                                 :value="(start[index]) ? start[index] : ''"
-                                @edited="(newValue) => { (start[index] = newValue) && updateFormSubmission() }">
+                                @edited="(newValue) => { (start[index] = newValue) && updateFormSubmission }">
                             </DateInput>
                         </v-col>
                     </v-row>
@@ -70,7 +70,7 @@
                                 helpPrefix="upload"
                                 :value="(end[index]) ? end[index] : ''"
                                 :idName="'fileinfo-'+ index + '-end'"
-                                @edited="(newValue) => { (end[index] = newValue) && updateFormSubmission() }">
+                                @edited="(newValue) => { (end[index] = newValue) && updateFormSubmission }">
                             </DateInput>
                         </v-col>
                     </v-row>
@@ -85,7 +85,7 @@
                                 :value="(description && description[index]) ? description[index] : ''"
                                 helpPrefix="upload"
                                 :idName="'fileinfo-'+ index + '-desc'"
-                                @edited="(newValue) => { (description[index] = newValue) && updateFormSubmission }"
+                                @blur="(newValue) => { editFileInfoIndex('description', index, newValue.target.value) }"
                             ></TextArea>
                         </v-col>
                     </v-row>
@@ -100,7 +100,7 @@
                                 :value="(num_records[index]) ? num_records[index] : ''"
                                 helpPrefix="upload"
                                 :idName="'fileinfo-'+ index + '-num_records'"
-                                @edited="(newValue) => { ( num_records[index] = newValue) && updateFormSubmission }"
+                                @blur="(newValue) => { editFileInfoIndex('num_records', index, newValue.target.value) }"
                             ></TextInput>
                         </v-col>
                     </v-row>
@@ -132,6 +132,10 @@
             visible: {
                 type: Boolean,
                 default: false,
+            },
+            modifyStoreNow: {
+                type: Boolean,
+                default: false,
             }
         },
         
@@ -142,13 +146,17 @@
                 getUploadFormSubmission: 'uploadForm/getUploadFormSubmission',
             }),
 
+            editFileInfoIndex(key, index, newValue){
+                this[key][index] = newValue;
+                this.$emit('update', this.start, this.end, this.title, this.type, this.description, this.num_records);
+            },
+
             async editFileType(index, newValue){
-                console.log('file type event', newValue);
                 this.type[index] = newValue;
                 await this.updateFormSubmission();
             },
 
-            async updateFormSubmission(){
+            async triggerStoreUpload(){
                 let f = JSON.parse(JSON.stringify(this.formSubmission));
 
                 for (let i=0; i<f.files.length; i++){
@@ -160,10 +168,32 @@
                     f.files[i].num_records = this.num_records[i];
                 }
                 await this.modifyStoreUpload(f);
+            },
+
+            async updateFormSubmission(modifyStore){
+                if (typeof(modifyStore) === "undefined"){
+                    modifyStore = true;
+                }
+
+                let f = JSON.parse(JSON.stringify(this.formSubmission));
+
+                for (let i=0; i<f.files.length; i++){
+                    f.files[i].start_date = this.start[i];
+                    f.files[i].end_date = this.end[i];
+                    f.files[i].title = this.title[i];
+                    f.files[i].type = this.type[i];
+                    f.files[i].description = this.description[i];
+                    f.files[i].num_records = this.num_records[i];
+                }
+
+                if (modifyStore){
+                    await this.modifyStoreUpload(f);
+                }
+                
                 this.spanKey++;
             },
 
-            buildFiles(){
+            async buildFiles(){
                 if ( (typeof(this.formSubmission.files) !== "undefined") && (this.formSubmission.files.length > 0) ){
                     let usingADefault = false;
                     for (let i=0; i<this.formSubmission.files.length; i++){
@@ -184,6 +214,7 @@
                             let type = (this.formSubmission.files[i].type) ? this.formSubmission.files[i].type : "Other"
                             let start = (this.formSubmission.files[i].start_date) ? this.formSubmission.files[i].start_date : "";
                             let end = (this.formSubmission.files[i].end_date) ? this.formSubmission.files[i].end_date :  "";
+                            let num_records = (this.formSubmission.files[i].num_records) ? this.formSubmission.files[i].num_records :  "";
 
                             // if (start){
                             //     let formST = start.indexOf("T");
@@ -244,7 +275,7 @@
                             this.title[i] = fileName;
                             this.type[i] = type;
                             this.description[i] = this.formSubmission.files[i].description;
-                            this.num_records[i] = null;
+                            this.num_records[i] = num_records
                         }
                     }
                     if (usingADefault){
@@ -287,6 +318,12 @@
             this.buildFiles();
         },
         watch: {
+
+            modifyStoreNow: async function(){
+                if (this.modifyStoreNow){
+                    await this.triggerStoreUpload();
+                }
+            },
 
             // eslint-disable-next-line no-unused-vars
             uploadStore: function (newVal, oldVal) {
