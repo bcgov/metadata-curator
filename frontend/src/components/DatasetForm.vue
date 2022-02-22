@@ -320,7 +320,14 @@ export default {
                 return;
             }
             
-            let schemaExists = await this.getDataPackage({id: branch._id});
+            let schemaExists;
+            try{
+                await this.getDataPackage({id: branch._id});
+                schemaExists = true;
+            }catch(ex){
+                schemaExists = false;
+            }
+            
             if (!schemaExists){
                 this.alertType = "error";
                 this.alertText = "This "+this.$tc('Version', 1)+" has no schema, cannot copy without schema";

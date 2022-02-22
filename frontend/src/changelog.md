@@ -2,6 +2,25 @@
 
 <br />
 
+## Version 1.3.1
+February 23, 2022
+ - Fixed ability to export
+ - Edition page won't allow to proceed if any fields are missing
+ - Prevented copy from working when the edition doesn't have a schema
+
+<br />
+
+## Table Of Contents
+- [Version 1.3.1 (February 23 2022)](#version-131)
+- [Version 1.3.0 (February 22 2022)](#version-130)
+- [Version 1.2.6 (February 14 2022)](#version-126)
+- [Version 1.2.5 (February 9 2022)](#version-125)
+- [Version 1.2.4 (February 7 2022)](#version-124)
+- [Version 1.2.3 (February 1 2022)](#version-123)
+- [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
 ## Version 1.3.0
 February 22, 2022
  - Closing edition dialog with dataset tab resets the tab to the first one
@@ -18,16 +37,6 @@ February 22, 2022
  - Changed published verison page to show name instead of guid for branch
  - Removed data upload id published version page
  - Added ability to filter datasets by ministry / organization
-
-<br />
-
-## Table Of Contents
-- [Version 1.3.0 (February 22 2022)](#version-130)
-- [Version 1.2.6 (February 14 2022)](#version-126)
-- [Version 1.2.5 (February 9 2022)](#version-125)
-- [Version 1.2.4 (February 7 2022)](#version-124)
-- [Version 1.2.3 (February 1 2022)](#version-123)
-- [Version 1.2.2 (January 27 2022)](#version-122)
 
 <br />
 
