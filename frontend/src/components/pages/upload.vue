@@ -198,7 +198,7 @@
     import JsonEditor from '../JsonEditor/JsonEditor';
     const backend = new Backend();
     const { Schema } = require('tableschema')
-    const TEST_ACCOUNT = "letti"
+    const TEST_ACCOUNT = "provider_1"
 
     export default {
         components:{
