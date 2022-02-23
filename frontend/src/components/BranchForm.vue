@@ -45,217 +45,220 @@
                                     </v-col>
                                 </v-row>
 
-                                <v-row v-if="creating && (user.isApprover || user.isAdmin)">
-                                    <v-col cols=12>
-                                        <Select
-                                            :label="$tc('Select Data Provider Group')"
-                                            name="providerGroup"
-                                            :editing="true"
-                                            :value="(branch) ? branch.providerGroup : ''"
-                                            :items="selectableGroups"
-                                            validation-rules="required"
-                                            helpPrefix="dataset"
-                                            @edited="(newValue) => { updateValues('providerGroup', newValue) }"
-                                        ></Select>
-                                    </v-col>
-                                    <v-col cols=12>
-                                        <span>{{$tc('NOTE: you will be unable to change this after initial creation')}}</span>
-                                    </v-col>
-                                </v-row>
 
-                                <v-row>
-                                    <v-col cols=12>
-                                        <TextInput
-                                            :label="$tc('Name')"
-                                            :placeholder="$tc('Default')"
-                                            name="name"
-                                            :editing="editing"
-                                            validation-rules="required"
-                                            helpPrefix="edition"
-                                            :value="(branch) ? branch.name : ''"
-                                            @edited="(newValue) => { updateValues('name', newValue) }"
-                                        ></TextInput>
-                                    </v-col>
-                                </v-row>
+                                <ValidationObserver ref="observer" v-slot="{ validate }" slim>
+                                    <v-row v-if="creating && (user.isApprover || user.isAdmin)">
+                                        <v-col cols=12>
+                                            <Select
+                                                :label="$tc('Select Data Provider Group')"
+                                                name="providerGroup"
+                                                :editing="true"
+                                                :value="(branch) ? branch.providerGroup : ''"
+                                                :items="selectableGroups"
+                                                validation-rules="required"
+                                                helpPrefix="dataset"
+                                                @edited="(newValue) => { updateValues('providerGroup', newValue) }"
+                                            ></Select>
+                                        </v-col>
+                                        <v-col cols=12>
+                                            <span>{{$tc('NOTE: you will be unable to change this after initial creation')}}</span>
+                                        </v-col>
+                                    </v-row>
 
-                                <v-row>
-                                    <v-col cols=12>
-                                        <TextInput
-                                            :label="$tc('Short Title')"
-                                            :placeholder="$tc('Short Title')"
-                                            name="short_title"
-                                            :editing="editing"
-                                            helpPrefix="edition"
-                                            :value="(branch) ? branch.short_title : ''"
-                                            @edited="(newValue) => { updateValues('short_title', newValue) }"
-                                        ></TextInput>
-                                    </v-col>
-                                </v-row>
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <TextInput
+                                                :label="$tc('Name')"
+                                                :placeholder="$tc('Default')"
+                                                name="name"
+                                                :editing="editing"
+                                                validation-rules="required"
+                                                helpPrefix="edition"
+                                                :value="(branch) ? branch.name : ''"
+                                                @edited="(newValue) => { updateValues('name', newValue) }"
+                                            ></TextInput>
+                                        </v-col>
+                                    </v-row>
 
-                                <v-row>
-                                    <v-col cols=12>
-                                        <Select
-                                            :label="$tc('Type')"
-                                            name="type"
-                                            :editing="editing"
-                                            validation-rules="required"
-                                            :value="(branch) ? branch.type : ''"
-                                            :items="types"
-                                            helpPrefix="edition"
-                                            @edited="(newValue) => { updateValues('type', newValue) }"
-                                        ></Select>
-                                    </v-col>
-                                </v-row>
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <TextInput
+                                                :label="$tc('Short Title')"
+                                                :placeholder="$tc('Short Title')"
+                                                name="short_title"
+                                                :editing="editing"
+                                                helpPrefix="edition"
+                                                :value="(branch) ? branch.short_title : ''"
+                                                @edited="(newValue) => { updateValues('short_title', newValue) }"
+                                            ></TextInput>
+                                        </v-col>
+                                    </v-row>
 
-                                <v-row>
-                                    <v-col cols=12>
-                                        <TextArea
-                                            :label="$tc('Description')"
-                                            :placeholder="$tc('Description')"
-                                            name="description"
-                                            validation-rules="required"
-                                            :editing="editing"
-                                            :value="(branch) ? branch.description : ''"
-                                            helpPrefix="edition"
-                                            @edited="(newValue) => { updateValues('description', newValue) }"
-                                        ></TextArea>
-                                    </v-col>
-                                </v-row>
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <Select
+                                                :label="$tc('Type')"
+                                                name="type"
+                                                :editing="editing"
+                                                validation-rules="required"
+                                                :value="(branch) ? branch.type : ''"
+                                                :items="types"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('type', newValue) }"
+                                            ></Select>
+                                        </v-col>
+                                    </v-row>
 
-                                <v-row>
-                                    <v-col cols=12>
-                                        <DataUploadSelect
-                                            :label="$tc('Data Upload')"
-                                            name="upload_id"
-                                            :editing="editing"
-                                            :value="(branch) ? branch.data_upload_id : ''"
-                                            :items="dataUploads"
-                                            item-text="name"
-                                            item-value="_id"
-                                            helpPrefix="edition"
-                                            @edited="(newValue) => { updateValues('upload_id', newValue) }"
-                                        ></DataUploadSelect>
-                                    </v-col>
-                                </v-row>
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <TextArea
+                                                :label="$tc('Description')"
+                                                :placeholder="$tc('Description')"
+                                                name="description"
+                                                validation-rules="required"
+                                                :editing="editing"
+                                                :value="(branch) ? branch.description : ''"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('description', newValue) }"
+                                            ></TextArea>
+                                        </v-col>
+                                    </v-row>
 
-                                <v-row>
-                                    <v-col cols=12>
-                                        <TextInput
-                                            :label="$tc('Collection Method')"
-                                            :placeholder="$tc('Collection Method')"
-                                            name="collectionMethod"
-                                            :editing="editing"
-                                            :value="(branch) ? branch.collectionMethod : ''"
-                                            helpPrefix="edition"
-                                            @edited="(newValue) => { updateValues('collectionMethod', newValue) }"
-                                        ></TextInput>
-                                    </v-col>
-                                </v-row>
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <DataUploadSelect
+                                                :label="$tc('Data Upload')"
+                                                name="upload_id"
+                                                :editing="editing"
+                                                :value="(branch) ? branch.data_upload_id : ''"
+                                                :items="dataUploads"
+                                                item-text="name"
+                                                item-value="_id"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('upload_id', newValue) }"
+                                            ></DataUploadSelect>
+                                        </v-col>
+                                    </v-row>
 
-                                <v-row>
-                                    <v-col cols=12>
-                                        <TextInput
-                                            :label="$tc('Availability')"
-                                            :placeholder="$tc('Availability')"
-                                            name="availability"
-                                            :editing="editing"
-                                            :value="(branch) ? branch.availability : ''"
-                                            helpPrefix="edition"
-                                            @edited="(newValue) => { updateValues('availability', newValue) }"
-                                        ></TextInput>
-                                    </v-col>
-                                </v-row>
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <TextInput
+                                                :label="$tc('Collection Method')"
+                                                :placeholder="$tc('Collection Method')"
+                                                name="collectionMethod"
+                                                :editing="editing"
+                                                :value="(branch) ? branch.collectionMethod : ''"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('collectionMethod', newValue) }"
+                                            ></TextInput>
+                                        </v-col>
+                                    </v-row>
 
-                                <v-row>
-                                    <v-col cols=12>
-                                        <Select
-                                            :items="variableClassifications"
-                                            :label="$tc('Variable Classification')"
-                                            :placeholder="$tc('Variable Classification')"
-                                            itemText="name"
-                                            itemValue="_id"
-                                            name="variable_classification"
-                                            :editing="editing"
-                                            :value="(branch) ? branch.variable_classification : ''"
-                                            helpPrefix="edition"
-                                            @edited="(newValue) => { updateValues('variable_classification', newValue) }"
-                                        >
-                                        </Select>
-                                    </v-col>
-                                </v-row>
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <TextInput
+                                                :label="$tc('Availability')"
+                                                :placeholder="$tc('Availability')"
+                                                name="availability"
+                                                :editing="editing"
+                                                :value="(branch) ? branch.availability : ''"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('availability', newValue) }"
+                                            ></TextInput>
+                                        </v-col>
+                                    </v-row>
 
-                                <v-row>
-                                    <v-col cols=12>
-                                        <TextArea
-                                            :label="$tc('Notes')"
-                                            :placeholder="$tc('Notes')"
-                                            name="notes"
-                                            :editing="editing"
-                                            :value="(branch) ? branch.notes : ''"
-                                            helpPrefix="edition"
-                                            @edited="(newValue) => { updateValues('notes', newValue) }"
-                                        ></TextArea>
-                                    </v-col>
-                                </v-row>
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <Select
+                                                :items="variableClassifications"
+                                                :label="$tc('Variable Classification')"
+                                                :placeholder="$tc('Variable Classification')"
+                                                itemText="name"
+                                                itemValue="_id"
+                                                name="variable_classification"
+                                                :editing="editing"
+                                                :value="(branch) ? branch.variable_classification : ''"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('variable_classification', newValue) }"
+                                            >
+                                            </Select>
+                                        </v-col>
+                                    </v-row>
 
-                                <v-row>
-                                    <v-col cols=12>
-                                        <TextInput
-                                            :label="$tc('Citation')"
-                                            :placeholder="$tc('Citation')"
-                                            name="citation"
-                                            :editing="editing"
-                                            :value="(branch) ? branch.citation : ''"
-                                            helpPrefix="edition"
-                                            @edited="(newValue) => { updateValues('citation', newValue) }"
-                                        ></TextInput>
-                                    </v-col>
-                                </v-row>
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <TextArea
+                                                :label="$tc('Notes')"
+                                                :placeholder="$tc('Notes')"
+                                                name="notes"
+                                                :editing="editing"
+                                                :value="(branch) ? branch.notes : ''"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('notes', newValue) }"
+                                            ></TextArea>
+                                        </v-col>
+                                    </v-row>
 
-                                <v-row>
-                                    <v-col cols=12>
-                                        <Markdown
-                                            name="faq"
-                                            :value="(branch) ? branch.faq : ''"
-                                            :label="$tc('FAQ')"
-                                            :editing="editing"
-                                            :placeholder="$tc('FAQ')"
-                                            helpPrefix="edition"
-                                            @edited="(newValue) => { updateValues('faq', newValue) }"
-                                        ></Markdown>
-                                    </v-col>
-                                </v-row>
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <TextInput
+                                                :label="$tc('Citation')"
+                                                :placeholder="$tc('Citation')"
+                                                name="citation"
+                                                :editing="editing"
+                                                :value="(branch) ? branch.citation : ''"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('citation', newValue) }"
+                                            ></TextInput>
+                                        </v-col>
+                                    </v-row>
 
-                                <v-row>
-                                    <v-col cols=12>
-                                        <SimpleCheckbox
-                                            :label="$tc('Published')"
-                                            :placeholder="$tc('Published')"
-                                            name="published"
-                                            :editing="editing"
-                                            :disabled="!editing || (!user.isApprover && !user.isAdmin) || (branch && branch.approved)"
-                                            :checked="(branch) ? branch.published : false"
-                                            helpPrefix="edition"
-                                            @edited="(newValue) => { updateValues('published', newValue) }"
-                                        ></SimpleCheckbox>
-                                        <router-link v-if="branch.published && location" :to="{ name: 'published_version', params: { id: id }}">{{location.protocol + "//" + location.host + $router.resolve({name: 'published_version', params: { id: id } }).href }}</router-link>
-                                    </v-col>
-                                </v-row>
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <Markdown
+                                                name="faq"
+                                                :value="(branch) ? branch.faq : ''"
+                                                :label="$tc('FAQ')"
+                                                :editing="editing"
+                                                :placeholder="$tc('FAQ')"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('faq', newValue) }"
+                                            ></Markdown>
+                                        </v-col>
+                                    </v-row>
 
-                                <v-row>
-                                    <v-col cols=12>
-                                        <SimpleCheckbox
-                                            :label="$tc('Approved')"
-                                            :placeholder="$tc('Approved')"
-                                            name="approved"
-                                            :editing="editing"
-                                            :disabled="!editing || (!user.isApprover && !user.isAdmin)"
-                                            :checked="(branch) ? branch.approved : ''"
-                                            helpPrefix="edition"
-                                            @edited="(newValue) => { updateValues('approved', newValue) }"
-                                        ></SimpleCheckbox>
-                                    </v-col>
-                                </v-row>
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <SimpleCheckbox
+                                                :label="$tc('Published')"
+                                                :placeholder="$tc('Published')"
+                                                name="published"
+                                                :editing="editing"
+                                                :disabled="!editing || (!user.isApprover && !user.isAdmin) || (branch && branch.approved)"
+                                                :checked="(branch) ? branch.published : false"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('published', newValue) }"
+                                            ></SimpleCheckbox>
+                                            <router-link v-if="branch.published && location" :to="{ name: 'published_version', params: { id: id }}">{{location.protocol + "//" + location.host + $router.resolve({name: 'published_version', params: { id: id } }).href }}</router-link>
+                                        </v-col>
+                                    </v-row>
+
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <SimpleCheckbox
+                                                :label="$tc('Approved')"
+                                                :placeholder="$tc('Approved')"
+                                                name="approved"
+                                                :editing="editing"
+                                                :disabled="!editing || (!user.isApprover && !user.isAdmin)"
+                                                :checked="(branch) ? branch.approved : ''"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('approved', newValue) }"
+                                            ></SimpleCheckbox>
+                                        </v-col>
+                                    </v-row>
+                                </ValidationObserver>
 
 
                             </v-card-text>
@@ -380,6 +383,7 @@ import Comments from './Comments';
 import Comparison from './Comparison';
 import DatasetForm from './DatasetForm';
 import Revisions from './Revisions';
+import { ValidationObserver } from "vee-validate";
 
 import Vue from 'vue';
 import SimpleCheckbox from './SimpleCheckbox';
@@ -398,6 +402,7 @@ export default {
         DataUploadSelect,
         DatasetForm,
         Revisions,
+        ValidationObserver,
     },
     props: {
         dialog: {
@@ -544,9 +549,9 @@ export default {
                                         json.schema.resources[j].schema.fields = []
                                     }
 
-                                    for (let k=0; k<this.schema.resources.field.length; k++){
+                                    for (let k=0; k<this.schema.resources[j].schema.fields.length; k++){
                                         if (!json.schema.resources[j].schema.fields[k]){
-                                            json.schema.resources[j].schema.fields[k] = {}
+                                            json.schema.resources[j].schema.fields[k] = {};
                                         }
                                         json.schema.resources[j].schema.fields[k][fieldK] = this.schema.resources[j].schema.fields[k][fieldK];
                                     }
@@ -646,8 +651,17 @@ export default {
             this.loading = false;
         },
 
-        save(){
+        async save(){
+            const isValid = await this.$refs.observer.validate();
+            if (!isValid){
+                this.alertType = "error";
+                this.alertText = "Validation failed, please fix errors before continuing";
+                this.alert = true;
+                return;
+            }
+
             if (this.creating){
+                
                 this.saveBranch().then( (data) => {
                     this.alertType = "success"
                     this.alertText = this.$tc("Sucessfully created ") + this.$tc("version", 1);
