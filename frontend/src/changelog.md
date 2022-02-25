@@ -2,15 +2,24 @@
 
 <br />
 
-## Version 1.3.1
-February 23, 2022
- - Fixed ability to export
- - Edition page won't allow to proceed if any fields are missing
- - Prevented copy from working when the edition doesn't have a schema
+## Version 1.3.2
+February 25, 2022
+ - Changed Variable Classification export to be _index_name and _index_id
+ - Changed label on Edition to be Variable Classification Index for clarity
+ - Made name a unique field on variable classifications
+ - Fixed error handling when saving variable classifications
+ - Published Edition page shows variable classification index name instead of guid if it can get it, if it can't it is hidden
+ - Added check and uncheck all buttons to export
+ - Fixed header always being grey in export dialog
+ - Added 9 new fields to edition level
+ - Changed bindings on create new upload from this
+ - New Upload from this now sets field on edition level and preemptively saves the upload (this is all required)
+
 
 <br />
 
 ## Table Of Contents
+- [Version 1.3.2 (February 25 2022)](#version-132)
 - [Version 1.3.1 (February 23 2022)](#version-131)
 - [Version 1.3.0 (February 22 2022)](#version-130)
 - [Version 1.2.6 (February 14 2022)](#version-126)
@@ -18,6 +27,14 @@ February 23, 2022
 - [Version 1.2.4 (February 7 2022)](#version-124)
 - [Version 1.2.3 (February 1 2022)](#version-123)
 - [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
+## Version 1.3.1
+February 23, 2022
+ - Fixed ability to export
+ - Edition page won't allow to proceed if any fields are missing
+ - Prevented copy from working when the edition doesn't have a schema
 
 <br />
 

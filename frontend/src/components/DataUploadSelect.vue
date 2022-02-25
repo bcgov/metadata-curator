@@ -19,9 +19,12 @@
                     <span>&nbsp;{{$t('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))}}</span>
                 </v-tooltip>
             </span>
-            <h2 v-if="large"><router-link :to="{ name: 'upload_view', params: {id: this.val} }">{{displayVal}}</router-link></h2>
-            <span v-else><router-link :to="{ name: 'upload_view', params: {id: this.val} }">{{displayVal}}</router-link></span>
-            <span v-if="!this.val || this.val === ''"><v-btn color="success" @click="createUpload">Create Upload from this</v-btn></span>
+            <span v-if="!val || val === ''"><v-btn color="success" @click="createUpload">Create Upload from this</v-btn></span>
+            <span v-else>
+                <h2 v-if="large"><router-link :to="{ name: 'upload_view', params: {id: val} }">{{displayVal}}</router-link></h2>
+                <span v-else><router-link :to="{ name: 'upload_view', params: {id: val} }">{{displayVal}}</router-link></span>
+            </span>
+            
         </span>
 
         <span v-else>
@@ -69,7 +72,9 @@
 <script>
 
     import ValidationRules from "../mixins/ValidationRules";
-    import { mapState, mapMutations } from 'vuex';
+    import { mapActions, mapState, mapMutations } from 'vuex';
+    import { Backend } from '../services/backend';
+    const backend = new Backend();
 
     export default {
         mixins: [ValidationRules],
@@ -165,7 +170,10 @@
                 repo: state => state.repos.repo,
                 branch: state => state.repos.branch,
                 schema: state => state.schemaImport.tableSchema,
+                formName: state => state.uploadForm.formName,
+                user: state => state.user.user,
             }),
+
             displayLabel: function () {
                 if (this.validationRules.toLowerCase().indexOf("required") >= 0) {
                     return this.label + ' *';
@@ -195,14 +203,22 @@
         methods: {
             ...mapMutations({    
                 setFormSubmission: 'uploadForm/setFormSubmission',
+                editBranch: 'repos/editBranch',
             }),
+            ...mapActions({
+                getDefaultUploadForm: 'uploadForm/getDefaultUploadForm',
+                createInitialUpload: 'upload/createInitialUpload',
+                updateBranch: 'repos/updateBranch',
+            }),
+
             rowClicked: function(item){
                 this.$emit('edited', item[this.itemValue]);
                 this.val = item[this.itemValue];
                 this.dialog = false;
             },
-            createUpload: function(){
 
+            createUpload: async function(){
+                await this.getDefaultUploadForm();
                 let dateStart = null;
                 let dateEnd = null;
 
@@ -221,32 +237,66 @@
 
                     }
                 }
+
+                let ministry_organization = (this.repo.ministry_organization) ? this.repo.ministry_organization : "";
+                ministry_organization = (this.branch.repo_id && this.branch.repo_id.ministry_organization) ? this.branch.repo_id.ministry_organization : ministry_organization;
+
+                if (!ministry_organization){
+                    this.$emit('error', "Ministry/Organization is required");
+                    return;
+                }
+
+                let datasetName = (this.repo.name) ? this.repo.name : "";
+                datasetName = (this.branch.repo_id && this.branch.repo_id.name) ? this.branch.repo_id.name : datasetName;
                 
                 let data = {
-                    "ministryOrganization": (this.repo.ministry_organization) ? this.repo.ministry_organization : "",
-                    "datasetName": (this.repo.name) ? this.repo.name : '',
+                    "ministryOrganization": ministry_organization,
+                    "datasetName": datasetName,
                     "uploadDescription": (this.branch.description) ? this.branch.description : '',
                     "daterangestart": dateStart,
                     "dateRangeEnd": dateEnd,
                     // "sourceSystem":"source",
-                    // "specificInstructionsAppendLink":"instruction",
+                    // "specificInstructionsAppendLink": (this.branch.instructions) ? this.branch.instructions : '',
                     // "sensitiveFields":"sensitive",
-                    // "inclusions":"inclusions",
-                    // "exclusions":"exclusions",
-                    // "qualityAccurancyInfo":"qualit",
-                    // "dataChangesOverTime":"data",
-                    // "importantAdditionalInfo":"import",
-                    "references": (this.branch.citation) ? this.branch.citation : '',
+                    // "inclusions": (this.branch.inclusions) ? this.branch.inclusions : '',
+                    // "exclusions": (this.branch.exclusions) ? this.branch.exclusions : '',
+                    // "qualityAccurancyInfo": (this.branch.quality) ? this.branch.quality : '',
+                    // "dataChangesOverTime": (this.branch.delta_over_time) ? this.branch.delta_over_time : '',
+                    // "importantAdditionalInfo": (this.branch.additional_info) ? this.branch.additional_info : '',
+                    "references": (this.branch.references) ? this.branch.references : '',
                     "createdUpdatedDate": new Date(),
-                    // "keywordsDescribingData":"keywords",
-                    // "moreInfoUrl":"link",
+                    "keywordsDescribingData": (this.branch.keywords) ? this.branch.keywords : '',
+                    // "moreInfoUrl": (this.branch.more_information) ? this.branch.more_information : '',,
                     "numOfUploadFiles": numFiles
                 }
 
-
                 let form = {data: data};
                 this.setFormSubmission(form);
-                this.$router.push({name: "upload"});
+                
+                try{
+                    let data = await backend.postFormSubmission(this.formName, form.data);
+                    const initialUpload = {
+                        name: form.data.datasetName,
+                        description: form.data.uploadDescription,
+                        uploader: this.user.email,
+                        upload_submission_id: data._id,
+                        form_name: this.formName,
+                        provider_group: this.branch.author_groups[0],
+                    }
+                    
+                    let d = await this.createInitialUpload(initialUpload);
+
+                    if (!d || !d._id){
+                        this.$emit('error', "Error creating upload, "+d);
+                    }
+
+                    this.editBranch({name: 'data_upload_id', value: d._id});
+                    await this.updateBranch();
+                    this.$router.push({name: "upload_view", params: {id: d._id}});
+                }catch(e){
+                    this.$emit('error', e);
+                }
+
 
             }
         }

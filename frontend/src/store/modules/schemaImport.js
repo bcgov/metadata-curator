@@ -72,7 +72,9 @@ const actions = {
         commit('setDataPackageSchema', {schema: null});
         let s = await backend.getTableSchema(id);
         commit('setDataPackageSchema', {schema: s});
-        dispatch('getRevisions', {id: s._id});
+        if (s && s._id){
+            dispatch('getRevisions', {id: s._id});
+        }
         return s;
     },
 
@@ -81,7 +83,9 @@ const actions = {
         let s = await backend.getTableSchema(id, true);
         if (s && s.length > 0){
             commit('setDataPackageSchema', {schema: s[0]});
-            dispatch('getRevisions', {id: s[0]._id});
+            if (s && s[0] && s[0]._id){
+                dispatch('getRevisions', {id: s[0]._id});
+            }
         }
         return s;
     },

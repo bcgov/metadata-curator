@@ -42,6 +42,14 @@ var revisionSchema = new Schema({
 });
 
 revisionSchema.methods.revise = function(fieldName, previousValue, newValue){
+    if (typeof(previousValue) === 'undefined'){
+        previousValue = ""
+    }
+
+    if (typeof(newValue) === 'undefined'){
+        newValue = ""
+    }
+
     if (typeof(previousValue) === 'object'){
         previousValue = JSON.stringify(previousValue);
     }
@@ -69,6 +77,13 @@ revisionSchema.methods.revise = function(fieldName, previousValue, newValue){
             this.changes = {};
         }
         this.changes[fieldName] = newValue;
+        console.log("Revision, ", fieldName, newValue, previousValue, this);
+    }
+    if (!this.changes){
+        this.changes = {};
+    }
+    if (!this.change_summary){
+        this.change_summary = '';
     }
 }
 

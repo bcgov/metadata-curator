@@ -72,7 +72,45 @@ var repoBranchSchema = new Schema({
     faq: {
         type: String,
         required: false,
+    },
+
+    instructions:{
+        type: String,
+        required: false,
+    },
+    inclusions:{
+        type: String,
+        required: false,
+    },
+    exclusions:{
+        type: String,
+        required: false,
+    },
+    quality:{
+        type: String,
+        required: false,
+    },
+    delta_over_time:{
+        type: String,
+        required: false,
+    },
+    additional_info:{
+        type: String,
+        required: false,
+    },
+    references:{
+        type: String,
+        required: false,
+    },
+    keywords:{
+        type: String,
+        required: false,
+    },
+    more_information:{
+        type: String,
+        required: false,
     }
+
 });
 
 

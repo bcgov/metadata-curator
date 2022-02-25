@@ -136,6 +136,7 @@
                                                 item-value="_id"
                                                 helpPrefix="edition"
                                                 @edited="(newValue) => { updateValues('upload_id', newValue) }"
+                                                @error="(message) => { (alert = true) && (alertType = 'error') && (alertText = message) }"
                                             ></DataUploadSelect>
                                         </v-col>
                                     </v-row>
@@ -172,8 +173,8 @@
                                         <v-col cols=12>
                                             <Select
                                                 :items="variableClassifications"
-                                                :label="$tc('Variable Classification')"
-                                                :placeholder="$tc('Variable Classification')"
+                                                :label="$tc('Variable Classification Index')"
+                                                :placeholder="$tc('Variable Classification Index')"
                                                 itemText="name"
                                                 itemValue="_id"
                                                 name="variable_classification"
@@ -210,6 +211,132 @@
                                                 :value="(branch) ? branch.citation : ''"
                                                 helpPrefix="edition"
                                                 @edited="(newValue) => { updateValues('citation', newValue) }"
+                                            ></TextInput>
+                                        </v-col>
+                                    </v-row>
+
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <TextInput
+                                                :label="$tc('Specific Instructions for appending or linking')"
+                                                :placeholder="$tc('Specific Instructions for appending or linking')"
+                                                name="instructions"
+                                                :editing="editing"
+                                                :value="(branch) ? branch.instructions : ''"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('instructions', newValue) }"
+                                            ></TextInput>
+                                        </v-col>
+                                    </v-row>
+
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <TextInput
+                                                :label="$tc('Inclusions')"
+                                                :placeholder="$tc('Inclusions')"
+                                                name="inclusions"
+                                                :editing="editing"
+                                                :value="(branch) ? branch.inclusions : ''"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('inclusions', newValue) }"
+                                            ></TextInput>
+                                        </v-col>
+                                    </v-row>
+
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <TextInput
+                                                :label="$tc('Exclusions')"
+                                                :placeholder="$tc('Exclusions')"
+                                                name="exclusions"
+                                                :editing="editing"
+                                                :value="(branch) ? branch.exclusions : ''"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('exclusions', newValue) }"
+                                            ></TextInput>
+                                        </v-col>
+                                    </v-row>
+
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <TextInput
+                                                :label="$tc('Quality / Accuracy of Information')"
+                                                :placeholder="$tc('Quality / Accuracy of Information')"
+                                                name="quality"
+                                                :editing="editing"
+                                                :value="(branch) ? branch.quality : ''"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('quality', newValue) }"
+                                            ></TextInput>
+                                        </v-col>
+                                    </v-row>
+
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <TextInput
+                                                :label="$tc('Data changes over time')"
+                                                :placeholder="$tc('Data changes over time')"
+                                                name="delta_over_time"
+                                                :editing="editing"
+                                                :value="(branch) ? branch.delta_over_time : ''"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('delta_over_time', newValue) }"
+                                            ></TextInput>
+                                        </v-col>
+                                    </v-row>
+
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <TextArea
+                                                :label="$tc('Important Additional Information')"
+                                                :placeholder="$tc('Important Additional Information')"
+                                                name="additional_info"
+                                                :editing="editing"
+                                                :value="(branch) ? branch.additional_info : ''"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('additional_info', newValue) }"
+                                            ></TextArea>
+                                        </v-col>
+                                    </v-row>
+
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <TextInput
+                                                :label="$tc('References / Research that uses data')"
+                                                :placeholder="$tc('References / Research that uses data')"
+                                                name="references"
+                                                :editing="editing"
+                                                :value="(branch) ? branch.references : ''"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('references', newValue) }"
+                                            ></TextInput>
+                                        </v-col>
+                                    </v-row>
+
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <TextInput
+                                                :label="$tc('Keywords')"
+                                                :placeholder="$tc('Keywords')"
+                                                name="keywords"
+                                                :editing="editing"
+                                                :value="(branch) ? branch.keywords : ''"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('keywords', newValue) }"
+                                            ></TextInput>
+                                        </v-col>
+                                    </v-row>
+
+                                    <v-row>
+                                        <v-col cols=12>
+                                            <TextInput
+                                                :label="$tc('Hyperlink to more information')"
+                                                :placeholder="$tc('Hyperlink to more information')"
+                                                name="more_information"
+                                                :editing="editing"
+                                                :value="(branch) ? branch.more_information : ''"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('more_information', newValue) }"
                                             ></TextInput>
                                         </v-col>
                                     </v-row>
@@ -314,7 +441,7 @@
                     </template>
 
                     <v-card>
-                        <v-card-title class="text-h5 grey lighten-2">
+                        <v-card-title class="text-h5">
                             Export Fields
                         </v-card-title>
 
@@ -331,15 +458,28 @@
                                         </Select>
                                     </v-col>
                                 </v-row>
+
+                                <v-row>
+                                    <v-col cols=4>
+                                        <v-btn @click="exportCheckAll">Check All</v-btn>
+                                    </v-col>
+                                    <v-col cols=4>
+                                        <v-btn @click="exportUncheckAll">Uncheck All</v-btn>
+                                    </v-col>
+                                    <v-col cols=4>
+                                    </v-col>
+                                </v-row>
+                                
                                 <v-row>
                                     <v-col cols=6 v-for="(checked, key) in exportFields" :key="'export-field-'+key">
                                         <SimpleCheckbox
-                                            :label="$tc(key)"
-                                            :placeholder="$tc(key)"
+                                            :label="key"
+                                            :placeholder="key"
                                             :name="key"
                                             :editing="true"
                                             :checked="checked"
                                             helpPrefix="export"
+                                            :disabled="key!=='all' && exportFields['all'] === true"
                                             @edited="(newValue) => { exportFields[key] = newValue }"
                                         ></SimpleCheckbox>
                                     </v-col>
@@ -461,6 +601,21 @@ export default {
             clearBranch: 'repos/clearBranch',
         }),
 
+        exportFieldsSetAll(value){
+            let keys = Object.keys(this.exportFields);
+            for (let i=0; i<keys.length; i++){
+                this.exportFields[keys[i]] = value;
+            }
+        },
+
+        exportCheckAll(){
+            this.exportFieldsSetAll(true);
+        },
+
+        exportUncheckAll(){
+            this.exportFieldsSetAll(false);
+        },
+
         changeTab(){
             if (this.tab === 1 && this.dialog){
                 this.$nextTick(() => {
@@ -482,6 +637,9 @@ export default {
                     for (let j=0; j<datasetKeys.length; j++){
                         this.exportFields[this.DATASET_PREFIX+'.'+datasetKeys[j]] = true;
                     }
+                }else if (keys[i] === 'variable_classification'){
+                    keys[i] = "variable_classification_index";
+                    this.exportFields[keys[i]] = true;
                 }else{
                     this.exportFields[keys[i]] = true;
                 }
@@ -516,7 +674,12 @@ export default {
                 if (k !== 'all'){
                     if (k.indexOf('.') === -1){
                         if (this.exportFields['all'] || this.exportFields[k]){
-                            json[k] = this.branch[k];
+                            if (this.exportFields[k] === "variable_classification_index"){
+                                json[k+"_id"] = this.branch[k];
+                                json[k+"_name"] = this.variableClassification.name;
+                            }else{
+                                json[k] = this.branch[k];
+                            }
                         }
                     }else if(k.indexOf(this.DATASET_PREFIX) === 0){
                         if (this.exportFields['all'] || this.exportFields[k]){
@@ -525,35 +688,32 @@ export default {
                         }
                     }else if ( (k.indexOf(this.FIELD_PREFIX) === 0) || (k.indexOf(this.RESOURCE_PREFIX) === 0) ){
                         //only need to do this if not doing all as it's caught above for all
-                        if (!this.exportFields['all'] || this.exportFields[k]){
+                        if (!this.exportFields['all'] && this.exportFields[k]){
                             let isField = (k.indexOf(this.FIELD_PREFIX) === 0) ;
                             let fieldK=k.substring(this.FIELD_PREFIX.length+1);
                             let resourceK=k.substring(this.RESOURCE_PREFIX.length+1);
                             for (let j=0; j<this.schema.resources.length; j++){
-                                if (!json.schema){
-                                    json.schema = {}
+                                if (!json.resources){
+                                    json.resources = [];
                                 }
-                                if (!json.schema.resources){
-                                    json.schema.resources = [];
+                                if (!json.resources[j]){
+                                    json.resources[j] = {};
                                 }
-                                if (!json.schema.resources[j]){
-                                    json.schema.resources[j] = {};
-                                }
-                                if (!json.schema.resources[j].schema){
-                                    json.schema.resources[j].schema = {}
+                                if (!json.resources[j].schema){
+                                    json.resources[j].schema = {}
                                 }
                                 if (!isField){
-                                    json.schema.resources[j].schema[resourceK] = this.schema.resources[j].schema[resourceK];
+                                    json.resources[j].schema[resourceK] = this.schema.resources[j].schema[resourceK];
                                 }else{
-                                    if (!json.schema.resources[j].schema.fields){
-                                        json.schema.resources[j].schema.fields = []
+                                    if (!json.resources[j].schema.fields){
+                                        json.resources[j].schema.fields = []
                                     }
 
                                     for (let k=0; k<this.schema.resources[j].schema.fields.length; k++){
-                                        if (!json.schema.resources[j].schema.fields[k]){
-                                            json.schema.resources[j].schema.fields[k] = {};
+                                        if (!json.resources[j].schema.fields[k]){
+                                            json.resources[j].schema.fields[k] = {};
                                         }
-                                        json.schema.resources[j].schema.fields[k][fieldK] = this.schema.resources[j].schema.fields[k][fieldK];
+                                        json.resources[j].schema.fields[k][fieldK] = this.schema.resources[j].schema.fields[k][fieldK];
                                     }
                                 }
                             }
@@ -714,6 +874,7 @@ export default {
             schema: state => state.schemaImport.tableSchema,
             inferredSchema: state => state.schemaImport.inferredSchema,
             variableClassifications: state => state.variableClassifications.items,
+            variableClassification: state => state.variableClassifications.wipItem,
             revisions: state => state.repos.branchRevisions,
             revisionsLoading: state => state.repos.branchRevisionsLoading,
             schemaRevisions: state => state.schemaImport.revisions,

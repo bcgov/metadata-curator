@@ -42,6 +42,11 @@ var buildDynamic = function(db, router, auth, forumClient){
             let error = [];
             if (!f.name){
                 error.push("Name is required");
+            }else{
+                let existing = await db.VariableClassification.find({name: f.name});
+                if (existing.length > 0){
+                    error.push("Name must be unique");
+                }
             }
             
             let varClass = new db.VariableClassification;
@@ -116,6 +121,20 @@ var buildDynamic = function(db, router, auth, forumClient){
             }
             
             let varClass = {};
+
+            if (f.name !== varClass.name){
+                let existing = await db.VariableClassification.find({name: f.name});
+                
+                console.log("UPDATING VAR CLASS", mongoose.Types.ObjectId(req.params.varClassId), existing[0]._id, (existing[0]._id != req.params.varClassId) );
+                
+                if (existing.length > 1){
+                    error.push("Name must be unique");
+                }else if ( (existing.length === 1) && (existing[0]._id != req.params.varClassId) ){
+                    error.push("Name must be unique");
+                }
+                console.log("UPDATING, errors", error, error.length);
+            }
+
             if (f.name){
                 varClass.name = f.name;
             }
