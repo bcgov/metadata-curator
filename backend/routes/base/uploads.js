@@ -8,6 +8,10 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
     const config = require('config');
 
     const createDataUpload = async (user, upload) => {
+        console.log("CDU", user.groups);
+        let originalGroups = JSON.parse(JSON.stringify(user.groups));
+        console.log("OG", originalGroups);
+        let originalJWT = user.jwt;
         try {
             const dataUploadSchema = new db.DataUploadSchema;
             const id = mongoose.Types.ObjectId();
@@ -19,9 +23,6 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             if (!user.groups.some( (el) => el === config.get('requiredRoleToCreateRequest'))){
                 throw new Error("Not permitted to create an upload");
             }
-
-            let originalGroups = JSON.parse(JSON.stringify(user.groups));
-            let originalJWT = user.jwt;
 
             if (( (user.isApprover) || (user.isAdmin) ) && !upload.provider_group){
                 throw new Error("Data Approvers must provide a data provider group");
@@ -295,6 +296,7 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             const dataUpload = await createDataUpload(req.user, req.body);
             return res.status(201).json(dataUpload);
         }catch(e){
+            console.log("ERROR post upload", e);
             return res.status(400).json({error: e});
         }
     });

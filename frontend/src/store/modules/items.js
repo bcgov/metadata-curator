@@ -52,22 +52,30 @@ var build = function(getFn, newFn, updateFn, deleteFn, getSingle){
             }
         },
 
-        newItem({commit}, {item}){
-            backend[newFn](item).then((data) => {
+        async newItem({commit}, {item}){
+            try{
+                let data = backend[newFn](item);
                 let newItems = state.items.slice();
                 if (data.item){
                     newItems.push(data.item);
                 }else{
                     newItems.push(item);
                 }
+                commit('setError', {error: ""});
                 commit('setItems', {items: newItems});
-            }).catch((e) => {
-                commit('setError', {error: "Error Creating: " + e.message});
-            });
+            }catch(e){
+                if (e && e.response && e.response.data){
+                    commit('setError', {error: "Error creating: " + e.response.data});
+                }else{
+                    commit('setError', {error: "Error creating: " + e.message});
+                }
+            }
         },
 
-        updateItem({commit}, {id, item}){
-            backend[updateFn](id, item).then(() => {
+        async updateItem({commit}, {id, item}){
+            try{
+                await backend[updateFn](id, item);
+                
                 let newItems = state.items.slice();
                 for (var i=0; i<newItems.length; i++){
                     if (newItems[i]._id === id){
@@ -75,10 +83,15 @@ var build = function(getFn, newFn, updateFn, deleteFn, getSingle){
                         break;
                     }
                 }
+                commit('setError', {error: ""});
                 commit('setItems', {items: newItems});
-            }).catch((e) => {
-                commit('setError', {error: "Error updating: " + e.message});
-            });
+            }catch(e){
+                if (e && e.response && e.response.data){
+                    commit('setError', {error: "Error updating: " + e.response.data});
+                }else{
+                    commit('setError', {error: "Error updating: " + e.message});
+                }
+            }
         },
     }
 
@@ -138,7 +151,9 @@ var build = function(getFn, newFn, updateFn, deleteFn, getSingle){
                         newItems.push(state.items[i]);
                     }
                 }
+                commit('setError', {error: ""});
                 commit('setItems', {items: newItems});
+                
             }).catch((e) => {
                 commit('setError', {error: "Error updating: " + e.message});
             });

@@ -9,7 +9,7 @@
         >
         </v-checkbox>
         <span class="higher">
-            {{$tc(label)}}
+            {{displayLabel}}
             <v-tooltip right v-model="showTooltip" v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
                 <template v-slot:activator="{}">
                     <v-icon color="label_colour" 
@@ -77,6 +77,9 @@
                 }
                 return marked(t);
             },
+            displayLabel: function(){
+                return this.$te(this.label) ? this.$tc(this.label) : this.label;
+            }
         },
         mounted() {
             // console.log(`mounted - checked: ${this.checked}, color: ${this.color}`);

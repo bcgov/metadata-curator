@@ -160,7 +160,10 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         // do a transformation to make it compatible with the frictionlessdata schema
         newRecord.resources = transformResourcesToFrictionless(newRecord.resources);
 
-        await revision.save();
+        //if change_summary is set there is at least one change
+        if (revision.change_summary){
+            await revision.save();
+        }
 
         return newRecord;
     }

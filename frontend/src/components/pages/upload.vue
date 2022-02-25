@@ -415,7 +415,7 @@
                       
                     const initialUpload = {
                         name: submission.data.datasetName,
-                        description: submission.datauploadDescription,
+                        description: submission.data.uploadDescription,
                         uploader: this.user.email,
                         upload_submission_id: data._id,
                         form_name: this.formName,
@@ -467,7 +467,7 @@
                     if (this.user.isApprover || this.user.isAdmin){
                         this.step = (this.enabledPhase >= 2) ? this.steps.step2EditionForm : this.steps.step3FileSelection;
                     }else{
-                        if ( (this.enabledPhase >= 2) && (this.selectedVersion === "-1") && (this.user._json.preferred_username !== TEST_ACCOUNT) ){
+                        if ( (this.enabledPhase >= 2) && (this.selectedVersion == "-1") && (this.user._json.preferred_username !== TEST_ACCOUNT) ){
                             this.errorAlert = true;
                             this.errorText = "You are not allowed to proceed until this upload has been assigned an "+this.$tc('version',1);
                             return false;
@@ -784,7 +784,7 @@
             },
 
             selectedVersion: async function(){
-                if (this.selectedVersion != -1){
+                if (this.selectedVersion != "-1"){
                     await this.getSchemaFromVersion({id: this.selectedVersion});
                     let selectedV = this.versions.filter(obj => {
                         return obj._id === this.selectedVersion;

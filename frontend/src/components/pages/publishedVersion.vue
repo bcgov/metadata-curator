@@ -58,8 +58,8 @@
                                 </v-row>
 
                                 <v-row>
-                                    <v-col cols=12 v-if="branch && branch.variable_classification">
-                                        Variable Classification: {{branch.variable_classification}}
+                                    <v-col cols=12 v-if="variableClassification && variableClassification.name">
+                                        {{$tc('Variable Classification Index')}}: {{variableClassification.name}}
                                     </v-col>
                                 </v-row>
 
@@ -133,11 +133,15 @@ export default {
             getBranchById: 'repos/getBranchById',
             getRepos: 'repos/getAllRepos',
             getSchema: 'schemaImport/getTableSchema',
+            getVariableClassification: 'variableClassifications/getItem',
         }),
 
         async loadSections() {
             await this.getBranchById({id: this.id});
             await this.getSchema({id: this.id});
+            if (this.branch.variable_classification){
+                await this.getVariableClassification({field: '_id', value: this.branch.variable_classification});
+            }
             this.reIndex++;
         },
 
@@ -155,6 +159,7 @@ export default {
             dataUploads: state => state.dataUploads.dataUploads,
             dataset: state => state.repos.repo,
             schema: state => state.schemaImport.tableSchema,
+            variableClassification: state => state.variableClassifications.wipItem,
         }),
     },
     

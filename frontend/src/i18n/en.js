@@ -234,6 +234,19 @@ export default {
         "Revisions": "Revisions",
         "Revised By": "Revised By",
         "Schema Revisions": "Schema Revisions",
+        "Variable Classification Index": "Variable Classification Index",
+        "Field values": "Field values",
+
+        "Specific Instructions for appending or linking": "Specific Instructions for appending or linking",
+        "Inclusions": "Inclusions",
+        "Exclusions": "Exclusions",
+        "Quality / Accuracy of Information": "Quality / Accuracy of Information",
+        "Data changes over time": "Data changes over time",
+        "Important Additional Information": "Important Additional Information",
+        "References / Research that uses data": "References / Research that uses data",
+        "Keywords": "Keywords",
+        "Hyperlink to more information": "Hyperlink to more information",
+        "Ministry / Organization": "Ministry / Organization",
 
 
         "help.dataset.name": "The name of the dataset",

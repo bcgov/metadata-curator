@@ -11,7 +11,7 @@ var possibleValues = new Schema({
 })
 
 var variableClassificationSchema = new Schema({
-    name: {type: String, required: true},
+    name: {type: String, required: true, unique: true},
     values: {type: [possibleValues]},
     create_date: {type: Date, required: true, default: Date.now},
     created_by: {type: String, required: true},

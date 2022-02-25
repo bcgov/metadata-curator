@@ -33,7 +33,7 @@
         </span>
 
         <span v-else>
-            <ValidationProvider ref="provider" :rules="validationRules" v-slot="{ errors }" :name="label ? $tc(label) : $tc(name)">
+            <ValidationProvider ref="provider" :rules="validationRules" v-slot="{ errors }" :name="label ? ($te(label) ? $tc(label) : label) : ($te(name) ? $tc(name) : name)">
                 <v-menu
                     v-model="menuOpen"
                     :close-on-content-click="false"
@@ -44,7 +44,7 @@
                 >
                     <template v-slot:activator="{ on, attrs }">
                         <v-text-field
-                            :placeholder="$tc(placeholder)"
+                            :placeholder="placeholder"
                             v-model="val"
                             :label="displayLabel"
                             prepend-icon="mdi-calendar"
@@ -182,9 +182,9 @@
         computed: {
             displayLabel: function(){
                 if (this.validationRules.toLowerCase().indexOf("required") >= 0) {
-                    return this.$tc(this.label) + ' *';
+                    return this.$te(this.label) ? (this.$tc(this.label) + ' *') : this.label + ' *';
                 }
-                return this.$tc(this.label);
+                return this.$te(this.label) ? this.$tc(this.label) : this.label;
             }
         },
         watch: {

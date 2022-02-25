@@ -103,6 +103,33 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
             repoBranchSchema.approved = typeof(fields.approved) !== 'undefined' ? fields.approved : false;
             revision.revise('approved', '', repoBranchSchema.approved);
         }
+
+        repoBranchSchema.instructions = typeof(fields.instructions) !== 'undefined' ? fields.instructions : "";
+        revision.revise('instructions', '', repoBranchSchema.instructions);
+
+        repoBranchSchema.inclusions = typeof(fields.inclusions) !== 'undefined' ? fields.inclusions : "";
+        revision.revise('inclusions', '', repoBranchSchema.inclusions);
+
+        repoBranchSchema.exclusions = typeof(fields.exclusions) !== 'undefined' ? fields.exclusions : "";
+        revision.revise('exclusions', '', repoBranchSchema.exclusions);
+
+        repoBranchSchema.quality = typeof(fields.quality) !== 'undefined' ? fields.quality : "";
+        revision.revise('quality', '', repoBranchSchema.quality);
+
+        repoBranchSchema.delta_over_time = typeof(fields.delta_over_time) !== 'undefined' ? fields.delta_over_time : "";
+        revision.revise('delta_over_time', '', repoBranchSchema.delta_over_time);
+
+        repoBranchSchema.additional_info = typeof(fields.additional_info) !== 'undefined' ? fields.additional_info : "";
+        revision.revise('additional_info', '', repoBranchSchema.additional_info);
+
+        repoBranchSchema.references = typeof(fields.references) !== 'undefined' ? fields.references : "";
+        revision.revise('references', '', repoBranchSchema.references);
+
+        repoBranchSchema.keywords = typeof(fields.keywords) !== 'undefined' ? fields.keywords : "";
+        revision.revise('keywords', '', repoBranchSchema.keywords);
+
+        repoBranchSchema.more_information = typeof(fields.more_information) !== 'undefined' ? fields.more_information : "";
+        revision.revise('more_information', '', repoBranchSchema.more_information);
     
         let r = await repoBranchSchema.save();
         await revision.save();
@@ -144,7 +171,7 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
     }
     
     const updateBranch = async function(branchId, type, name, description, upload_id, fields, user) {
-        const repoBranchSchema = await getBranchById(branchId, user);
+        let repoBranchSchema = await getBranchById(branchId, user);
         const topicResponse = await forumClient.getTopics(user, (repoBranchSchema.topic_id+"branch"));
         if (!topicResponse || topicResponse.length < 1){
             throw new Error('404');
@@ -181,6 +208,9 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         if (upload_id){
             revision.revise('data_upload_id', repoBranchSchema.data_upload_id, upload_id);
             repoBranchSchema.data_upload_id = upload_id;
+        }else if (fields.data_upload_id){
+            revision.revise('data_upload_id', repoBranchSchema.data_upload_id, fields.data_upload_id);
+            repoBranchSchema.data_upload_id = fields.data_upload_id;
         }
 
         if (fields.availability){
@@ -227,18 +257,67 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
             revision.revise('faq', repoBranchSchema.faq, fields.faq);
             repoBranchSchema.faq = fields.faq;
         }
+
+        if (fields.instructions){
+            revision.revise('instructions', repoBranchSchema.instructions, fields.instructions);
+            repoBranchSchema.instructions = fields.instructions;
+        }
+
+        if (fields.inclusions){
+            revision.revise('inclusions', repoBranchSchema.inclusions, fields.inclusions);
+            repoBranchSchema.inclusions = fields.inclusions;
+        }
+
+        if (fields.exclusions){
+            revision.revise('exclusions', repoBranchSchema.exclusions, fields.exclusions);
+            repoBranchSchema.exclusions = fields.exclusions;
+        }
+
+        if (fields.quality){
+            revision.revise('quality', repoBranchSchema.quality, fields.quality);
+            repoBranchSchema.quality = fields.quality;
+        }
+
+        if (fields.delta_over_time){
+            revision.revise('delta_over_time', repoBranchSchema.delta_over_time, fields.delta_over_time);
+            repoBranchSchema.delta_over_time = fields.delta_over_time;
+        }
+
+        if (fields.additional_info){
+            revision.revise('additional_info', repoBranchSchema.additional_info, fields.additional_info);
+            repoBranchSchema.additional_info = fields.additional_info;
+        }
+
+        if (fields.references){
+            revision.revise('references', repoBranchSchema.references, fields.references);
+            repoBranchSchema.references = fields.references;
+        }
+
+        if (fields.keywords){
+            revision.revise('keywords', repoBranchSchema.keywords, fields.keywords);
+            repoBranchSchema.keywords = fields.keywords;
+        }
+
+        if (fields.more_information){
+            revision.revise('more_information', repoBranchSchema.more_information, fields.more_information);
+            repoBranchSchema.more_information = fields.more_information;
+        }
         
-        let r = await repoBranchSchema.save();
-        await revision.save();
-        return r;
+        //if change_summary is set there is at least one change
+        if (revision.change_summary){
+            await db.RepoBranchSchema.updateOne({_id: mongoose.Types.ObjectId(branchId)}, repoBranchSchema)
+            await revision.save();
+        }
+        return repoBranchSchema;
     }
     
     const getBranchById = async (id, user) => {
         try {
             let res = await db.RepoBranchSchema.findOne({_id: id});
+            let topicResponse = null;;
             if (user){
-                const topicResponse = await forumClient.getTopics(user, res.topic_id+"branch");
-                if (!topicResponse || topicResponse.length < 1){
+                topicResponse = await forumClient.getTopics(user, {name: res._id+"branch"});
+                if (!topicResponse || !topicResponse.data || topicResponse.data.length < 1){
                     throw new Error('404');
                 }
             }else{
@@ -247,6 +326,10 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
                 }
             }
             res = await db.RepoBranchSchema.findOne({_id: id}).populate('repo_id');
+            if (user.isApprover || user.isAdmin){
+                res = JSON.parse(JSON.stringify(res));
+                res.author_groups = topicResponse.data[0].author_groups;
+            }
             return res;
         } catch (e) {
             log.error(e);

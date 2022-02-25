@@ -32,7 +32,7 @@
         </span>
 
         <span v-else>
-            <ValidationProvider :rules="validationRules" v-slot="{ errors }" :name="label ? $tc(label) : $tc(name)">
+            <ValidationProvider :rules="validationRules" v-slot="{ errors }" :name="label ? ($te(label) ? $tc(label) : label) : ($te(name) ? $tc(name) : name)">
                 <v-select
                     :name="name"
                     v-model="val"

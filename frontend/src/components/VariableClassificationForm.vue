@@ -226,6 +226,13 @@ export default {
         save(){
             if (this.creating){
                 this.saveVariableClassification({item: this.variableClassification}).then( async() => {
+                        if (this.variableClassificationError !== ""){
+                            this.alertType = "error"
+                            this.alertText = this.variableClassificationError;
+                            this.alert = true;
+                            window.scrollTo(0,0);
+                            return;
+                        }
                         this.alertType = "success"
                         this.alertText = this.$tc("Sucessfully created variable classification");
                         this.alert = true;
@@ -241,6 +248,13 @@ export default {
                     });
             }else{
                 this.updateVariableClassification({id: this.id, item: this.variableClassification}).then( async() => {
+                        if (this.variableClassificationError !== ""){
+                            this.alertType = "error"
+                            this.alertText = this.variableClassificationError;
+                            this.alert = true;
+                            window.scrollTo(0,0);
+                            return;
+                        }
                         this.alertType = "success"
                         this.alertText = this.$tc("Sucessfully updated variable classification");
                         this.alert = true;
@@ -262,6 +276,7 @@ export default {
         ...mapState({
             user: state => state.user.user,
             variableClassification: state => state.variableClassifications.wipItem,
+            variableClassificationError: state => state.variableClassifications.error,
         }),
     },
     created() {
