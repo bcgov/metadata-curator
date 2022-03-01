@@ -18,6 +18,7 @@
                     :state-type-parent="jsonState"
                     :focus-prop="jsonFocus"
                     @focus="setJsonFocus"
+                    @filter="(k, v) => { filter(k, v) }"
                     
                     :comment-id="branchId"
                     @commentRefs="(e) => $emit('commentRefs', e)"
@@ -69,11 +70,28 @@ import JsonEditor from './JsonEditor/JsonEditor';
                 loading: false,
                 jsonState: 0,
                 jsonFocus: "",
+                filters: {},
             }
         },
         methods: {
             updateJsonState: function(state){
                 this.jsonState = state;
+            },
+
+            filter: function(key, val){
+                if (Array.isArray(val)){
+                    if (val.length === 0){
+                        delete this.filters[key];
+                    }else{
+                        this.filters[key] = val;
+                    }
+                }
+                if (val === ""){
+                    delete this.filters[key];
+                }else{
+                    this.filters[key] = val;
+                }
+                this.$emit('filter', key, val);
             },
 
             setJsonFocus: function(f){

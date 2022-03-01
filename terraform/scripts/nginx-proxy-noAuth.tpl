@@ -24,9 +24,9 @@ server {
     proxy_http_version      1.1;
     proxy_set_header         Upgrade $http_upgrade;
     proxy_set_header         Connection $connection_upgrade;
-    proxy_read_timeout 7200;
-    proxy_connect_timeout 7200;
-    proxy_send_timeout 7200;
+    proxy_read_timeout 14400;
+    proxy_connect_timeout 14400;
+    proxy_send_timeout 14400;
 
     proxy_pass http://mc_minio:9000;
   }
@@ -55,9 +55,19 @@ server {
     proxy_request_buffering  off;
     proxy_buffering          off;
     proxy_http_version       1.1;
-    proxy_read_timeout 7200;
-    proxy_connect_timeout 7200;
-    proxy_send_timeout 7200;
+    proxy_read_timeout 14400;
+    proxy_connect_timeout 14400;
+    proxy_send_timeout 14400;
+
+    if ($request_method = DELETE)
+    {
+        return 405;
+    }
+
+    if ($request_method = GET)
+    {
+        return 405;
+    }
 
     # Add X-Forwarded-* headers
     proxy_set_header X-Forwarded-Host $host;

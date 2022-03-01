@@ -34,6 +34,7 @@
                                 :branchId="branchId" 
                                 :editing="editing" 
                                 @edited="updatedObj" 
+                                @filter="(k, v) => { filter(k,v) }"
                                 @editedHighlight="editedHighlight" 
                                 :schema=" (viewSchemaType === 'Provided') ? schema : inferredSchema">
                             </SchemaView>
@@ -131,6 +132,7 @@ export default {
             schemaObj: null,
             viewSchemaType: "Provided",
             skipClose: false,
+            filters: {},
         }
     },
     methods: {
@@ -153,6 +155,22 @@ export default {
             resetSchemaImportState: 'schemaImport/resetState',
             setDataPackageSchema: "schemaImport/setDataPackageSchema",
         }),
+
+        filter: function(key, val){
+            if (Array.isArray(val)){
+                if (val.length === 0){
+                    delete this.filters[key];
+                }else{
+                    this.filters[key] = val;
+                }
+            }
+            if (val === ""){
+                delete this.filters[key];
+            }else{
+                this.filters[key] = val;
+            }
+            this.$emit('filter', key, val);
+        },
 
         async loadSections() {
             this.loading = true;

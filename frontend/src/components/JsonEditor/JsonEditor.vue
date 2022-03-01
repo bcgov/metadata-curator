@@ -617,6 +617,7 @@ export default{
             }
             this.reindexKey++;
             this.redrawIndex++;
+            this.$emit('filter', key, val);
         },
 
         filtered: function(field){
