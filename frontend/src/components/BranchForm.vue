@@ -666,7 +666,11 @@ export default {
             let exportFieldKeys = Object.keys(this.exportFields);
             let json = {};
             if (this.exportFields['all']){
-                json = JSON.parse(JSON.stringify(this.schema));
+                if ( (typeof(this.schema) !== 'undefined') && (this.schema) ){
+                    json = JSON.parse(JSON.stringify(this.schema));
+                }else{
+                    json = {};
+                }
             }
 
             for (let i=0; i<exportFieldKeys.length; i++){
@@ -674,7 +678,7 @@ export default {
                 if (k !== 'all'){
                     if (k.indexOf('.') === -1){
                         if (this.exportFields['all'] || this.exportFields[k]){
-                            if (this.exportFields[k] === "variable_classification_index"){
+                            if (k === "variable_classification_index"){
                                 json[k+"_id"] = this.branch[k];
                                 json[k+"_name"] = this.variableClassification.name;
                             }else{

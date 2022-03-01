@@ -2,6 +2,30 @@
 
 <br />
 
+## Version 1.3.3
+March 1, 2022
+ - Updated terraform scripts to be even more lenient with connection timeouts for large files
+ - Fixed variable_classification_index not exporting
+ - Upgrades to storage api
+ - Fix issue regarding export all when the edition does not have a schema
+ - Increased blue "primary" contrast in dark mode
+
+
+<br />
+
+## Table Of Contents
+- [Version 1.3.3 (March 4 2022)](#version-133)
+- [Version 1.3.2 (February 25 2022)](#version-132)
+- [Version 1.3.1 (February 23 2022)](#version-131)
+- [Version 1.3.0 (February 22 2022)](#version-130)
+- [Version 1.2.6 (February 14 2022)](#version-126)
+- [Version 1.2.5 (February 9 2022)](#version-125)
+- [Version 1.2.4 (February 7 2022)](#version-124)
+- [Version 1.2.3 (February 1 2022)](#version-123)
+- [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
 ## Version 1.3.2
 February 25, 2022
  - Changed Variable Classification export to be _index_name and _index_id
@@ -15,18 +39,6 @@ February 25, 2022
  - Changed bindings on create new upload from this
  - New Upload from this now sets field on edition level and preemptively saves the upload (this is all required)
 
-
-<br />
-
-## Table Of Contents
-- [Version 1.3.2 (February 25 2022)](#version-132)
-- [Version 1.3.1 (February 23 2022)](#version-131)
-- [Version 1.3.0 (February 22 2022)](#version-130)
-- [Version 1.2.6 (February 14 2022)](#version-126)
-- [Version 1.2.5 (February 9 2022)](#version-125)
-- [Version 1.2.4 (February 7 2022)](#version-124)
-- [Version 1.2.3 (February 1 2022)](#version-123)
-- [Version 1.2.2 (January 27 2022)](#version-122)
 
 <br />
 

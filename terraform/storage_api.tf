@@ -26,8 +26,8 @@ resource "docker_container" "minio" {
   env = [
     "MINIO_ACCESS_KEY=${random_id.accessKey.hex}",
     "MINIO_SECRET_KEY=${random_string.secretKey.result}",
-    "MINIO_API_REQUESTS_DEADLINE=30m",
-    "MINIO_API_REQUESTS_MAX=200"
+    "MINIO_API_REQUESTS_DEADLINE=60m",
+    "MINIO_API_REQUESTS_MAX=500"
   ]
   healthcheck {
     test         = ["CMD", "curl", "-f", "http://localhost:9000/minio/health/ready"]
