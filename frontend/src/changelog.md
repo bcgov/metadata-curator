@@ -9,6 +9,7 @@ March 1, 2022
  - Upgrades to storage api
  - Fix issue regarding export all when the edition does not have a schema
  - Increased blue "primary" contrast in dark mode
+ - Schema filter now persists through export
 
 
 <br />

@@ -580,6 +580,7 @@ export default {
             DATASET_PREFIX: 'dataset',
             RESOURCE_PREFIX: 'schema.resources',
             FIELD_PREFIX: 'schema.resources.fields',
+            filters: {},
         }
     },
     methods: {
@@ -605,6 +606,21 @@ export default {
             let keys = Object.keys(this.exportFields);
             for (let i=0; i<keys.length; i++){
                 this.exportFields[keys[i]] = value;
+            }
+        },
+
+        filter: function(key, val){
+            if (Array.isArray(val)){
+                if (val.length === 0){
+                    delete this.filters[key];
+                }else{
+                    this.filters[key] = val;
+                }
+            }
+            if (val === ""){
+                delete this.filters[key];
+            }else{
+                this.filters[key] = val;
             }
         },
 
@@ -664,9 +680,10 @@ export default {
 
         goExport(){
             let exportFieldKeys = Object.keys(this.exportFields);
+            let filterKeys = Object.keys(this.filters);
             let json = {};
             if (this.exportFields['all']){
-                if ( (typeof(this.schema) !== 'undefined') && (this.schema) ){
+                if ( (typeof(this.schema) !== 'undefined') && (this.schema) ){                    
                     json = JSON.parse(JSON.stringify(this.schema));
                 }else{
                     json = {};
@@ -679,7 +696,7 @@ export default {
                     if (k.indexOf('.') === -1){
                         if (this.exportFields['all'] || this.exportFields[k]){
                             if (k === "variable_classification_index"){
-                                json[k+"_id"] = this.branch[k];
+                                json[k+"_id"] = this.branch.variable_classification;
                                 json[k+"_name"] = this.variableClassification.name;
                             }else{
                                 json[k] = this.branch[k];
@@ -724,6 +741,24 @@ export default {
                         }
                     }
                 }
+            }
+
+            if ( (filterKeys.length > 0) && (this.schema && this.schema.resources) ){
+                this.schema.resources.schema.fields.filter( (field) => {
+                    for (let i=0; i<filterKeys.length; i++){
+                        let filterFieldName = filterKeys[i];
+                        if (Array.isArray(this.filters[filterFieldName])){
+                            if (!filterFieldName || !field[filterFieldName] || (this.filters[filterFieldName].indexOf(field[filterFieldName]) === -1)){
+                                return false;
+                            }
+                        }else{
+                            if (!filterFieldName || !field[filterFieldName] || (field[filterFieldName] !== this.filters[filterFieldName]) ){
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                });
             }
             
             let download = require('downloadjs');
