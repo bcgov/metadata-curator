@@ -19,7 +19,7 @@
                     <span>&nbsp;{{$t('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))}}</span>
                 </v-tooltip>
             </span>
-            <span v-if="!val || val === ''"><v-btn color="success" @click="createUpload">Create Upload from this</v-btn></span>
+            <span v-if="!val || val === ''"><v-btn v-if="user.isApprover || user.isAdmin" color="success" @click="createUpload">Create Upload from this</v-btn></span>
             <span v-else>
                 <h2 v-if="large"><router-link :to="{ name: 'upload_view', params: {id: val} }">{{displayVal}}</router-link></h2>
                 <span v-else><router-link :to="{ name: 'upload_view', params: {id: val} }">{{displayVal}}</router-link></span>

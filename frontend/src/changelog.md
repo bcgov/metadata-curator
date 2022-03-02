@@ -11,6 +11,7 @@ March 2, 2022
  - Fixed incorrect link when upload is submitted on dataset/uploads tab
  - Fixed issue with exporting filtered fields
  - Fixed issue with updating data upload from the edition page
+ - Prevent data providers from attaching upload to edition via edition page/api
 
 <br />
 
