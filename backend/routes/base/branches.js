@@ -75,8 +75,7 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         revision.revise('name', '', repoBranchSchema.name);
         repoBranchSchema.description = description;
         revision.revise('description', '', repoBranchSchema.description);
-        repoBranchSchema.data_upload_id = upload_id;
-        revision.revise('data_upload_id', '', repoBranchSchema.data_upload_id);
+        
         repoBranchSchema.create_date = new Date();
         revision.revise('create_date', '', repoBranchSchema.create_date);
         
@@ -96,6 +95,8 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         revision.revise('short_title', '', repoBranchSchema.short_title);
 
         if ( (user.isApprover) || (user.isAdmin) ){
+            repoBranchSchema.data_upload_id = upload_id;
+            revision.revise('data_upload_id', '', repoBranchSchema.data_upload_id);  
             repoBranchSchema.published = typeof(fields.published) !== 'undefined' ? fields.published : false;
             revision.revise('published', '', repoBranchSchema.published);
             repoBranchSchema.faq = fields.faq;
@@ -205,12 +206,14 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
             repoBranchSchema.description = description;
         }
         
-        if (upload_id){
-            revision.revise('data_upload_id', repoBranchSchema.data_upload_id, upload_id);
-            repoBranchSchema.data_upload_id = upload_id;
-        }else if (fields.data_upload_id){
-            revision.revise('data_upload_id', repoBranchSchema.data_upload_id, fields.data_upload_id);
-            repoBranchSchema.data_upload_id = fields.data_upload_id;
+        if (user.isAdmin || user.isApprover){
+            if (upload_id){
+                revision.revise('data_upload_id', repoBranchSchema.data_upload_id, upload_id);
+                repoBranchSchema.data_upload_id = upload_id;
+            }else if (fields.data_upload_id){
+                revision.revise('data_upload_id', repoBranchSchema.data_upload_id, fields.data_upload_id);
+                repoBranchSchema.data_upload_id = fields.data_upload_id;
+            }
         }
 
         if (fields.availability){

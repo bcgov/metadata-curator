@@ -19,7 +19,7 @@
                     <span>&nbsp;{{$t('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))}}</span>
                 </v-tooltip>
             </span>
-            <span v-if="!val || val === ''"><v-btn color="success" @click="createUpload">Create Upload from this</v-btn></span>
+            <span v-if="!val || val === ''"><v-btn v-if="user.isApprover || user.isAdmin" color="success" @click="createUpload">Create Upload from this</v-btn></span>
             <span v-else>
                 <h2 v-if="large"><router-link :to="{ name: 'upload_view', params: {id: val} }">{{displayVal}}</router-link></h2>
                 <span v-else><router-link :to="{ name: 'upload_view', params: {id: val} }">{{displayVal}}</router-link></span>
@@ -245,6 +245,21 @@
                     this.$emit('error', "Ministry/Organization is required");
                     return;
                 }
+
+                if (!this.branch.keywords){
+                    this.$emit('error', "Keywords are required");
+                    return;
+                }
+
+                // if (!dateStart){
+                //     this.$emit('error', "Start date cannot be deduced please set at least one resource temporal start");
+                //     return;
+                // }
+
+                // if (!dateEnd){
+                //     this.$emit('error', "Start date cannot be deduced please set at least one resource temporal start");
+                //     return;
+                // }
 
                 let datasetName = (this.repo.name) ? this.repo.name : "";
                 datasetName = (this.branch.repo_id && this.branch.repo_id.name) ? this.branch.repo_id.name : datasetName;

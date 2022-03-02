@@ -25,7 +25,7 @@
                     <span>
                         <v-row class="mt-3" v-for="dataUpload in uploads" :key="'uploadRow-'+dataUpload._id">
                             <v-col cols=4>{{$tc('Version')}}: {{versionDrop[dataUpload.versionIndex].text}}</v-col>
-                            <v-col cols=4>{{$tc('Uploads')}}: <a :href="(dataUpload.status === 'submitted' ? '/dataUploads/' : '/uploads/') + dataUpload._id">{{dataUpload.name}}</a></v-col>
+                            <v-col cols=4>{{$tc('Uploads')}}: <a :href="(dataUpload.status === 'submitted' ? '/dataUpload/' : '/uploads/') + dataUpload._id">{{dataUpload.name}}</a></v-col>
                         </v-row>
                     </span>
                 </v-tab-item>
