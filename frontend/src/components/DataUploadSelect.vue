@@ -246,6 +246,21 @@
                     return;
                 }
 
+                if (!this.branch.keywords){
+                    this.$emit('error', "Keywords are required");
+                    return;
+                }
+
+                // if (!dateStart){
+                //     this.$emit('error', "Start date cannot be deduced please set at least one resource temporal start");
+                //     return;
+                // }
+
+                // if (!dateEnd){
+                //     this.$emit('error', "Start date cannot be deduced please set at least one resource temporal start");
+                //     return;
+                // }
+
                 let datasetName = (this.repo.name) ? this.repo.name : "";
                 datasetName = (this.branch.repo_id && this.branch.repo_id.name) ? this.branch.repo_id.name : datasetName;
                 

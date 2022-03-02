@@ -2,6 +2,32 @@
 
 <br />
 
+## Version 1.3.4
+March 2, 2022
+ - Fixed issue with updating a dataset
+ - File form alerts user if 0 number of files was provided on the initial submission
+ - Fixed issues with create upload from this
+   - Fail more gracefully if keywords aren't set (it's required on the default upload form)
+ - Fixed incorrect link when upload is submitted on dataset/uploads tab
+ - Fixed issue with exporting filtered fields
+ - Fixed issue with updating data upload from the edition page
+
+<br />
+
+## Table Of Contents
+- [Version 1.3.4 (March 2 2022)](#version-134)
+- [Version 1.3.3 (March 1 2022)](#version-133)
+- [Version 1.3.2 (February 25 2022)](#version-132)
+- [Version 1.3.1 (February 23 2022)](#version-131)
+- [Version 1.3.0 (February 22 2022)](#version-130)
+- [Version 1.2.6 (February 14 2022)](#version-126)
+- [Version 1.2.5 (February 9 2022)](#version-125)
+- [Version 1.2.4 (February 7 2022)](#version-124)
+- [Version 1.2.3 (February 1 2022)](#version-123)
+- [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
 ## Version 1.3.3
 March 1, 2022
  - Updated terraform scripts to be even more lenient with connection timeouts for large files
@@ -11,19 +37,6 @@ March 1, 2022
  - Increased blue "primary" contrast in dark mode
  - Schema filter now persists through export
 
-
-<br />
-
-## Table Of Contents
-- [Version 1.3.3 (March 4 2022)](#version-133)
-- [Version 1.3.2 (February 25 2022)](#version-132)
-- [Version 1.3.1 (February 23 2022)](#version-131)
-- [Version 1.3.0 (February 22 2022)](#version-130)
-- [Version 1.2.6 (February 14 2022)](#version-126)
-- [Version 1.2.5 (February 9 2022)](#version-125)
-- [Version 1.2.4 (February 7 2022)](#version-124)
-- [Version 1.2.3 (February 1 2022)](#version-123)
-- [Version 1.2.2 (January 27 2022)](#version-122)
 
 <br />
 

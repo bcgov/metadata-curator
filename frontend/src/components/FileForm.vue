@@ -4,7 +4,12 @@
             <v-row>
                 <v-col cols=12>
                     <v-alert
-                        v-if="(submission && submission.data && submission.data.numOfUploadFiles && (submission.data.numOfUploadFiles !== files.length))"
+                        v-if="(submission && submission.data && submission.data.numOfUploadFiles && (submission.data.numOfUploadFiles === 0))"
+                        type="error">
+                            {{$tc('You can\'t provide 0 files and still upload')}}
+                    </v-alert>
+                    <v-alert
+                        v-else-if="(submission && submission.data && submission.data.numOfUploadFiles && (submission.data.numOfUploadFiles !== files.length))"
                         type="error">
                             {{$tc('You said you were providing')}} {{submission.data.numOfUploadFiles}} {{$tc('files but have currently provided', submission.data.numOfUploadFiles)}} {{files.length}}    
                     </v-alert>

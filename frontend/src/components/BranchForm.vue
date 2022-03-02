@@ -135,7 +135,7 @@
                                                 item-text="name"
                                                 item-value="_id"
                                                 helpPrefix="edition"
-                                                @edited="(newValue) => { updateValues('upload_id', newValue) }"
+                                                @edited="(newValue) => { updateValues('upload_id', newValue) &&  updateValues('data_upload_id', newValue)}"
                                                 @error="(message) => { (alert = true) && (alertType = 'error') && (alertText = message) }"
                                             ></DataUploadSelect>
                                         </v-col>
@@ -408,7 +408,13 @@
                     </v-tab-item>
 
                     <v-tab-item key="schema" v-if="!creating">
-                        <MetadataForm @setComment="(e) => { setComment(e) }" :branch-approved="(branch && branch.approved) ? branch.approved : false" @commentRefs="(e) => updateCommentRefs(e)" :branchId="id" @close="closeOrBack" :dialog="dialog"></MetadataForm>
+                        <MetadataForm 
+                            @setComment="(e) => { setComment(e) }" 
+                            :branch-approved="(branch && branch.approved) ? branch.approved : false" 
+                            @commentRefs="(e) => updateCommentRefs(e)" :branchId="id" 
+                            @close="closeOrBack" 
+                            @filter="filter" 
+                            :dialog="dialog"></MetadataForm>
                     </v-tab-item>
 
                     <v-tab-item key="compare" v-if="!creating && inferredSchema">
@@ -743,22 +749,26 @@ export default {
                 }
             }
 
-            if ( (filterKeys.length > 0) && (this.schema && this.schema.resources) ){
-                this.schema.resources.schema.fields.filter( (field) => {
-                    for (let i=0; i<filterKeys.length; i++){
-                        let filterFieldName = filterKeys[i];
-                        if (Array.isArray(this.filters[filterFieldName])){
-                            if (!filterFieldName || !field[filterFieldName] || (this.filters[filterFieldName].indexOf(field[filterFieldName]) === -1)){
-                                return false;
+            if ( (filterKeys.length > 0) && (json.resources) ){
+                for (let j=0; j<json.resources.length; j++){
+                    if ( (json.resources[j].schema) && (json.resources[j].schema.fields) ){
+                        json.resources[j].schema.fields = json.resources[j].schema.fields.filter( (field) => {
+                            for (let i=0; i<filterKeys.length; i++){
+                                let filterFieldName = filterKeys[i];
+                                if (Array.isArray(this.filters[filterFieldName])){
+                                    if (!filterFieldName || !field[filterFieldName] || (this.filters[filterFieldName].indexOf(field[filterFieldName]) === -1)){
+                                        return false;
+                                    }
+                                }else{
+                                    if (!filterFieldName || !field[filterFieldName] || (field[filterFieldName] !== this.filters[filterFieldName]) ){
+                                        return false;
+                                    }
+                                }
                             }
-                        }else{
-                            if (!filterFieldName || !field[filterFieldName] || (field[filterFieldName] !== this.filters[filterFieldName]) ){
-                                return false;
-                            }
-                        }
+                            return true;
+                        });
                     }
-                    return true;
-                });
+                }
             }
             
             let download = require('downloadjs');

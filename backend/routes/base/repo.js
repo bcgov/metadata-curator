@@ -226,9 +226,10 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             record.ministry_organization = fields.ministry_organization
         }
     
+        let r = {};
         //if change_summary is set there is at least one change
         if (revision.change_summary){
-            let r = await record.save();
+            r = await record.save();
             await revision.save();
         }
         return r;
