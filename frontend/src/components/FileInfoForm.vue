@@ -54,7 +54,7 @@
                                 helpPrefix="upload"
                                 :idName="'fileinfo-'+ index + '-start'"
                                 :value="(start[index]) ? start[index] : ''"
-                                @edited="(newValue) => { (start[index] = newValue) && updateFormSubmission }">
+                                @edited="(newValue) => { editFileInfoIndex('start', index, newValue) }">
                             </DateInput>
                         </v-col>
                     </v-row>
@@ -70,7 +70,7 @@
                                 helpPrefix="upload"
                                 :value="(end[index]) ? end[index] : ''"
                                 :idName="'fileinfo-'+ index + '-end'"
-                                @edited="(newValue) => { (end[index] = newValue) && updateFormSubmission }">
+                                @edited="(newValue) => { editFileInfoIndex('end', index, newValue) }">
                             </DateInput>
                         </v-col>
                     </v-row>
@@ -143,7 +143,6 @@
 
             ...mapActions({
                 modifyStoreUpload: 'upload/modifyStoreUpload',
-                getUploadFormSubmission: 'uploadForm/getUploadFormSubmission',
             }),
 
             editFileInfoIndex(key, index, newValue){
@@ -200,15 +199,6 @@
 
                         //if its 1 it's only sig
                         if ( (typeof(this.handles[this.formSubmission.files[i].sig]) !== "undefined") && (typeof(this.handles[this.formSubmission.files[i].sig].name) !== "undefined") ){
-                            // let formStart = (this.formioSubmission && this.formioSubmission.daterangestart) ? this.formioSubmission.daterangestart : false;
-                            // if (!formStart){
-                            //     formStart = (this.formioSubmission && this.formioSubmission.dateRangeStart) ? this.formioSubmission.dateRangeStart : ""
-                            // }
-
-                            // let formEnd = (this.formioSubmission && this.formioSubmission.daterangeend) ? this.formioSubmission.daterangeend : false;
-                            // if (!formEnd){
-                            //     formEnd = (this.formioSubmission && this.formioSubmission.dateRangeEnd) ? this.formioSubmission.dateRangeEnd : ""
-                            // }
                             
                             let fileName = (this.formSubmission.files[i].title) ? this.formSubmission.files[i].title : ((this.files[i] && this.files[i].name) ? this.files[i].name : '');
                             let type = (this.formSubmission.files[i].type) ? this.formSubmission.files[i].type : "Other"
@@ -292,7 +282,6 @@
             return {
                 uploadId: null,
                 formSubmission: {},
-                formioSubmission: {},
                 spanKey: 0,
                 files: [],
                 description: [],
@@ -309,7 +298,6 @@
         computed: {
             ...mapState({
                 uploadStore: state => state.upload.upload,
-                submission: state => state.uploadForm.submission,
                 handles: state => state.file.fileHandles
             }),
         },
@@ -329,26 +317,9 @@
             uploadStore: function (newVal, oldVal) {
                 // eslint-disable-next-line no-undef
                 if(newVal) {
-                    // console.log("update  submission");
                     this.formSubmission = {...newVal};
                 }
-                //this.getUploadFormSubmission(this.formSubmission.form_name, this.formSubmission.upload_submission_id);
                 if (JSON.stringify(newVal) !== JSON.stringify(oldVal)){
-                    this.buildFiles();
-                }
-            },
-
-            submission: function (newVal, oldVal) {
-                
-                if( (newVal) && (newVal !== oldVal)) {
-                    if (typeof(newVal) === "string"){
-                        try{
-                            newVal = JSON.parse(newVal);
-                        }catch(ex){
-                            oldVal = newVal;
-                        }
-                    }
-                    this.formioSubmission = newVal.data;
                     this.buildFiles();
                 }
             },

@@ -5,7 +5,7 @@ const state = {
     newUploadCreated: false,
     createUploadInProgress: false,
     upload: null,
-    error: null
+    error: false
 };
 
 const getters = {
@@ -17,6 +17,7 @@ const actions = {
     async createInitialUpload({ commit }, upload) {
         try {
             commit('setCreateUploadInProgress', true);
+            commit('setError', {error: false});
             const data = await backend.postDataUpload(upload);
             commit('setUpload', data);
             commit('setCreateUploadInProgress', false);
@@ -27,12 +28,9 @@ const actions = {
             return e;
         }
     },
-    async getUpload({ commit, dispatch }, id) {
+    async getUpload({ commit }, id) {
         try {
             const data = await backend.getDataUpload(id);
-            if (data.topic_id){
-                dispatch('uploadForm/getUploadFormSubmission', {formName: data.form_name, submissionId: data.upload_submission_id}, {root: true});
-            }
             commit('setUpload', data);
         } catch(e) {
             commit('setError', {error: e.response.data.error});
@@ -54,6 +52,7 @@ const actions = {
 
     async updateUpload({ commit }, upload) {
         try {
+            commit('setError', {error: false});
             const data = await backend.putDataUpload(upload);
             commit('setUpload', data);
             return data;
@@ -77,7 +76,7 @@ const mutations = {
         state.upload = null;
     },
     setError(state, { error }) {
-        state.error = Object.assign({}, error);
+        state.error = error
     },
     clearError(state) {
         state.error = null;

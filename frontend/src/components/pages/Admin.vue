@@ -95,36 +95,6 @@
                     </v-tab-item>
 
                     <v-tab>
-                        {{$tc('Formio')}}
-                    </v-tab>
-                    <v-tab-item>
-                        <DataTable
-                            :title="$tc('Form', 2)"
-                            :headers="formioHeaders"
-                            storeName="forms"
-                            :showDelete="true"
-                            :formComponent="formsSubComponent"
-                            dialogSize="100%"
-                        ></DataTable>
-                    </v-tab-item>
-
-                    <v-tab>
-                        {{$tc('Formio')}} {{$tc('Submissions', 2)}}
-                    </v-tab>
-                    <v-tab-item>
-                        <DataTable
-                            :title="$tc('Formio') + ' ' + $tc('Submissions', 2)"
-                            filterRequired="Form Name"
-                            :headers="submissionHeaders"
-                            storeName="submissions"
-                            :showDelete="true"
-                            :showNew="false"
-                            :showEdit="false"
-                            :formComponent="permissionSubComponent"
-                        ></DataTable>
-                    </v-tab-item>
-
-                    <v-tab>
                         {{$tc('Config')}}
                     </v-tab>
                     <v-tab-item>
@@ -150,7 +120,6 @@ import { mapState } from 'vuex';
 
 import DataTable from '../admin/datatable'
 import PermissionForm from '../admin/permissionForm'
-import FormsSubForm from '../admin/formsForm'
 import TopicsSubForm from '../admin/topicsForm'
 import ConfigSubForm from '../admin/configForm'
 
@@ -429,51 +398,6 @@ export default {
                         sortable: false 
                     }
                 ],
-
-            formsSubComponent: FormsSubForm,
-
-            formioHeaders: [
-                // {
-                //     text: "_id",
-                //     sortable: false,
-                //     value: "_id"
-                // },
-                {
-                    text: this.$tc('Name'),
-                    sortable: true,
-                    value: 'name',
-                },
-                {
-                    text: this.$tc('Path', 1),
-                    sortable: false,
-                    value: 'path',
-                },
-                { 
-                    text: this.$tc('Title'), 
-                    value: 'title' 
-                },
-                { 
-                    text: this.$tc('Type'), 
-                    value: 'type' 
-                },
-                { 
-                    text: this.$tc('Machine') + ' ' + this.$tc('Name'), 
-                    value: 'machine_name' 
-                },
-                { 
-                    text: this.$tc('Created'), 
-                    value: 'created' 
-                },
-                { 
-                    text: this.$tc('Modified'), 
-                    value: 'modified' 
-                },
-                { 
-                    text: this.$tc('Action', 2), 
-                    value: 'actions', 
-                    sortable: false 
-                }
-            ],
 
             configSubComponent: ConfigSubForm,
             configHeaders: [

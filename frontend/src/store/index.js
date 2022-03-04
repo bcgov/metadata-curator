@@ -11,7 +11,6 @@ import dataUploadRevisions from "./modules/dataUploadRevisions";
 import dataUploadComments from "./modules/dataUploadComments";
 import dataUploadDetail from "./modules/dataUploadDetail";
 import upload from "./modules/createUpload/upload";
-import uploadForm from "./modules/createUpload/uploadForm";
 import repos from "./modules/repos";
 import version from "./modules/version";
 
@@ -47,7 +46,6 @@ export default new Vuex.Store({
     adminDUploads,
     submissions,
     upload,
-    uploadForm,
     repos,
     version,
     config,

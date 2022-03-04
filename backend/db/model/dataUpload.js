@@ -24,6 +24,37 @@ var dataUploadSchema = new Schema({
     opened_by_approver: {type: Boolean, required: true},
     approver_has_commented: {type: Boolean, required: true},
     upload_submission_id: {type: Schema.Types.ObjectId},
+    old_submission: {type: Schema.Types.Mixed},
+    ministry_organization: {
+        type: String,
+        required: true,
+    },
+    num_files: {
+        type: Number,
+        required: true,
+    },
+    data_create_date: {
+        type: Date,
+        required: true,
+    },
+    source: {
+        type: String,
+        required: false,
+    },
+    information: {
+        type: String,
+        required: false,
+    },
+    date_range_start: {
+        type: Date,
+        required: false,
+    },
+    date_range_end: {
+        type: Date,
+        required: false,
+    },
+    
+
     upload_date: {type: Date, required: false},
     status: {
         type: String,

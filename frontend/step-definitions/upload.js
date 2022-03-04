@@ -7,29 +7,30 @@ const { captureRejectionSymbol } = require('events');
 const path = helpers.confGet('screenshotPath');
 
 const data1 = {
-    ministryOrganization: {
-        selector: 'input[name="data[ministryOrganization]"]',
+    ministry_organization: {
+        selector: 'input[name="ministry_organization"]',
+        selector2: '#ministry_organization-value',
         value: "Metadata Curator",
     },
-    datasetName: {
-        selector: 'input[name="data[datasetName]"]',
+    name: {
+        selector: 'input[name="name"]',
+        selector2: '#name-value',
         value: "my dataset",
     },
-    uploadDescription: {
-        selector: 'textarea[name="data[uploadDescription]"]',
+    description: {
+        selector: 'textarea[name="description"]',
+        selector2: '#description-value',
         value: "description of the dataset",
     },
-    numOfUploadFiles: {
-        selector: 'input[name="data[numOfUploadFiles]"]',
+    num_files: {
+        selector: 'input[name="num_files"]',
+        selector2: '#num_files-value',
         value: "1",
     },
-    createdUpdatedDate: {
-        selector: 'input[type="hidden"][name="data[createdUpdatedDate]"] + input[type="text"]',
-        value: "2021-Jun-17",
-    },
-    keywordsDescribingData: {
-        selector: 'textarea[name="data[keywordsDescribingData]"]',
-        value: "Keyword1, Keyword2, Automated Test",
+    data_created_date: {
+        selector: 'input[name="data_create_date"]',
+        selector2: '#data_create_date-value',
+        value: "2",
     }
 }
 
@@ -53,9 +54,9 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
     
     await client.pause(1000);
     await client.click('#newDatasetButton');
-    await client.pause(3000);
+    await client.pause(5000);
     await client.click('#newVersionButton');
-    await client.pause(3000);
+    await client.pause(5000);
     await client.saveScreenshot("./"+path+"/preNext2.png");
     await client.click('#next-2');
     await client.pause(300);
@@ -132,19 +133,16 @@ When(/^Data provider chooses to see the details of the upload$/, async () => {
 });
 
 Then(/^Data provider should see information on the characteristics of the data upload$/, async() => {
-    await client.assert.containsText('#uploadDetail-name', data1.datasetName.value);
+    await client.assert.containsText('#uploadDetail-name', data1.name.value);
     await client.pause(5000);
     await client.click('#uploadDetail-showInfo');
-    await client.waitForElementVisible('input[name="data[ministryOrganization]"]', 10000)
-    await client.pause(200);
+    await client.waitForElementVisible('#ministry_organization-value', 10000)
+    await client.pause(2500);
 
     var success = true;
+
     for (var property in data1){
-        if (data1[property].selector.indexOf('textarea') !== -1){
-            success = (success && await client.assert.containsText(data1[property].selector, data1[property].value));
-        }else{
-            success = (success && await client.assert.value(data1[property].selector, data1[property].value));
-        }
+        success = (success && await client.assert.containsText(data1[property].selector2, data1[property].value));
     }
 
     return success;

@@ -23,9 +23,6 @@ export default {
 </script>
 
 <style scoped>
-    /deep/ .formio-errors .error {
-        color: white !important;
-    }
 
     .v-tab.v-tab{
         color: white;
@@ -44,10 +41,6 @@ export default {
 
 .container--fluid{
     max-width: 100% !important;
-}
-
-.theme--dark.v-card, .theme--dark.v-card .v-card__subtitle, .theme--dark.v-card>.v-card__text .formio-component{
-  color: #495057;
 }
 
 </style>

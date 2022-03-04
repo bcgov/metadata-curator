@@ -668,9 +668,6 @@ export default {
 </script>
 
 <style scoped>
-    .theme--dark.v-card, .theme--dark.v-card .v-card__subtitle, .theme--dark.v-card>.v-card__text .formio-component{
-        color: var(--v-text-base);
-    }
 
     .defText{
         color: var(--v-text-base);

@@ -194,9 +194,7 @@
     import Comparison from '../Comparison';
     import Select from '../Select';
 
-    import { Backend } from '../../services/backend';
     import JsonEditor from '../JsonEditor/JsonEditor';
-    const backend = new Backend();
     const { Schema } = require('tableschema')
     const TEST_ACCOUNT = "provider_1"
 
@@ -213,11 +211,11 @@
         async created() {
             this.loading = true;
             this.$store.commit('file/clearContent');
+            this.modifyStoreUpload({});
             await this.getAllRepos();
             if(this.$route.params.id && this.$route.params.id != 'new') { 
                 this.uploadId = this.$route.params.id; 
             }else{
-                //this.resetFormState();
                 //this.resetState();
             }
             if (this.enabledPhase < 2){
@@ -248,7 +246,6 @@
                     return;
                 }
 
-                await this.getUploadFormSubmission({formName: this.upload.form_name, submissionId: this.upload.upload_submission_id});
                 if (this.enabledPhase >= 2){
                     await this.getSchema({id: this.uploadId});
                     await this.getAllRepos();
@@ -300,14 +297,12 @@
                 getBranchesByUpload: "repos/getBranchesByUpload",
                 saveBranch: 'repos/saveBranch',
                 updateBranch: 'repos/updateBranch',
-                getUploadFormSubmission: 'uploadForm/getUploadFormSubmission',
                 getVariableClassifications: 'variableClassifications/getItems',
                 getVariableClassification: 'variableClassifications/getItem',
                 modifyStoreUpload: 'upload/modifyStoreUpload',
             }),
             ...mapMutations({
                 resetState: 'upload/resetState',
-                resetFormState: 'uploadForm/resetState',
                 setDataPackageSchema: 'schemaImport/setDataPackageSchema',
                 setTableSchema: 'schemaImport/setTableSchema',
                 setTableSchemaId: "schemaImport/setTableSchemaId",
@@ -320,7 +315,7 @@
             }),
 
             step2Changed(numFiles){
-                let requiredFileNum = (this.submission && this.submission.data && this.submission.data.numOfUploadFiles) ? this.submission.data.numOfUploadFiles : 0;
+                let requiredFileNum = (this.upload && this.upload.num_files) ? this.upload.num_files : 0;
                 this.validStep3 = numFiles == requiredFileNum;
             },
 
@@ -377,93 +372,37 @@
                 this.jsonRedraw++;
             },
 
-            async triggerUploadFormSubmit() {
-                try{
-                    await this.$refs.uploadForm.submitForm();
-                    if (!this.$refs.uploadForm.validateForm()){
-                        this.errorText = "Missing required fields";
-                        this.errorAlert = true;
-                        return {error: "Missing required fields"}
-                    }
-                    let submission = await this.$refs.uploadForm.getSubmission()
-                    let data = await backend.postFormSubmission(this.formName, submission.data);
-                    return data;
-                }catch(ex){
-                    this.errorText = "Submission Error - " + ex;
-                    this.errorAlert = true
-                    return {error: ex};
-                }
-            },
             async stepSaveUploadForm(transitionNextStepAfterSave) {
-              if ( (this.user.isApprover || this.user.isAdmin) && ( (this.providerGroup === null) || (this.providerGroup === '') ) && (!this.uploadId) ){
+                if ( (this.user.isApprover || this.user.isAdmin) && ( (this.providerGroup === null) || (this.providerGroup === '') ) && (!this.uploadId) ){
                   this.errorAlert = true;
                   this.errorText = "As a data approver you must select a data provider group you are creating for";
                   return false;
-              }
+                }
 
-              if(this.$refs.uploadForm.validateForm()) {
-                  if((!this.uploadId ) && !this.createUploadInProgress) {
-                      let data;
-                      try{
-                          data = await this.triggerUploadFormSubmit();
-                      }catch(e){
-                          this.errorAlert = true;
-                          this.errorText = e;
-                          transitionNextStepAfterSave = false;
-                      }
-                      const submission = this.$refs.uploadForm.getSubmission();
-                      
-                    const initialUpload = {
-                        name: submission.data.datasetName,
-                        description: submission.data.uploadDescription,
-                        uploader: this.user.email,
-                        upload_submission_id: data._id,
-                        form_name: this.formName,
-                        provider_group: this.providerGroup,
-                    }
-                    try{
-                        let d = await this.createInitialUpload(initialUpload);
-                        this.uploadId = d._id;
-                        if (typeof(this.uploadId) === "undefined"){
-                            this.errorAlert = true;
-                            this.errorText = "Error saving your work has not been saved, please try logging in again";
-                            transitionNextStepAfterSave = false;
-                        }else{
-                            await this.getUploadFormSubmission({formName: this.upload.form_name, submissionId: this.upload.upload_submission_id});
-                            this.$router.push('/upload/'+d._id);
-                        }
-                    }catch(e){
-                        this.errorAlert = true;
-                        this.errorText = e;
-                        transitionNextStepAfterSave = false;
-                    }
-                      
-                  }else{
-                      // console.log("update existing upload submission");
-                      try{
-                          await this.triggerUploadFormSubmit();
-                          const submission = this.$refs.uploadForm.getSubmission();
-                          
-                          let changed = false;
-                          let tmpUp = JSON.parse(JSON.stringify(this.upload));
-                          if (this.upload.name !== submission.data.datasetName){
-                              changed = true;
-                              tmpUp.name = submission.data.datasetName
-                          }
-                          if (this.upload.description !== submission.datauploadDescription){
-                              changed = true;
-                              tmpUp.description = submission.datauploadDescription
-                          }
-                          if (changed){
-                              await this.updateUpload(tmpUp);
-                          }
-                      }catch(e){
-                          this.errorAlert = true;
-                          this.errorText = e;
-                          transitionNextStepAfterSave = false;
-                      }
-                  }
-                  if(transitionNextStepAfterSave) { 
+                let modifiedUpload = JSON.parse(JSON.stringify(this.upload));
+                if (!modifiedUpload){
+                    modifiedUpload = {};
+                }
+                modifiedUpload.provider_group = this.providerGroup;
+                await this.modifyStoreUpload(modifiedUpload);
+                
+                if (!this.upload || !this.upload._id){
+                    let u = await this.createInitialUpload(this.upload);
+                    await this.$router.push({name: 'upload_view', params: {id: u._id}});
+                }else{
+                    await this.updateUpload(this.upload);
+                }
+                
+                if ( (this.uploadError) && (this.uploadError !== null) ){
+                    transitionNextStepAfterSave = false;
+                    this.errorAlert = true;
+                    this.errorText = this.uploadError;
+                    return false;
+                }
+
+                this.errorAlert = false;
+
+                if(transitionNextStepAfterSave) { 
                     if (this.user.isApprover || this.user.isAdmin){
                         this.step = (this.enabledPhase >= 2) ? this.steps.step2EditionForm : this.steps.step3FileSelection;
                     }else{
@@ -478,13 +417,7 @@
                             this.step = this.steps.step3FileSelection; 
                         }
                     }
-                  }
-
-                      
-              }else{
-                //still trigger submit so form displays all validation errors on UI
-                this.triggerUploadFormSubmit();
-              }
+                }
             },
 
             async stepSaveFileForm(transitionNextStepAfterSave) {
@@ -635,10 +568,8 @@
 
                 this.clearBranch();
                 this.editBranch({name: 'name', value: this.upload.name});
-                let desc = ((this.submission) && (this.submission.data) && (this.submission.data.description)) ? this.submission.data.description : this.upload.name;
-                if ((desc === this.upload.name) && (this.submission.data.uploadDescription)){
-                    desc = this.submission.data.uploadDescription;
-                }
+                let desc = ( (this.upload) && (this.upload.description)) ? this.upload.description : this.upload.name;
+                
                 this.editBranch({name: 'description', value: desc});
                 this.editBranch({name: 'type', value: 'standard'});
                 this.editBranch({name: 'data_upload_id', value: this.uploadId});
@@ -712,13 +643,12 @@
             ...mapState({
                 user: state => state.user.user,
                 upload: state => state.upload.upload,
+                uploadError: state => state.upload.error,
                 createUploadInProgress: state => state.upload.createUploadInProgress,
                 newUploadCreated: state => state.upload.newUploadCreated,
-                formName: state => state.uploadForm.formName,
                 schemaState: state => state.schemaImport.dataPackageSchema,
                 datasets: state => state.repos.allRepos,
                 versions: state => state.repos.branches,
-                submission: state => state.uploadForm.submission,
                 inferContent: state => state.file.content,
                 variableClassifications: state => state.variableClassifications.items,
                 variableClassification: state => state.variableClassifications.wipItem,
@@ -842,9 +772,6 @@
                     }
                 }
             },
-        },
-        beforeDestroy() {
-            this.resetFormState();
         },
 
     }
