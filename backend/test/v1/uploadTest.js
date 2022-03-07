@@ -134,7 +134,10 @@ describe("Upload Routes", function() {
             var decoded = jwtLib.decode(jwt);
 
             var body = {
-                name: "test upload"
+                name: "test upload",
+                ministry_organization: "Test org",
+                num_files: 1,
+                data_create_date: new Date()
             }
 
             chai.request(server)

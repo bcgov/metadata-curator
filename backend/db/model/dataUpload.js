@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 var dataUploadSchema = new Schema({
     name: {type: String, required: true},
-    form_name: {type: String, required: true, default: "uploadForm"},
+    form_name: {type: String, required: false, default: "uploadForm"},
     description: {type: String},
     create_date: {type: Date, required: true},
     uploader: {type: String, required: true},
