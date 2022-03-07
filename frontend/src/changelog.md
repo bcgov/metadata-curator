@@ -5,6 +5,7 @@
 ## Version 1.3.5
 March 8, 2022
  - Removed formio
+ - Fixed issue preventing selection of variable classification index when creating an edition initially
 
 <br />
 

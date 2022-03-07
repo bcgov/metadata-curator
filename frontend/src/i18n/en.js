@@ -256,6 +256,8 @@ export default {
         "Total number of files you intend to upload": "Total number of files you intend to upload",
         "High level description of the dataset, metadata, and/or documentation being uploaded": "High level description of the dataset, metadata, and/or documentation being uploaded",
         "This field can only contain numbers (0-9)": "This field can only contain numbers (0-9)",
+        "Select Data Provider Group": "Select Data Provider Group",
+        "NOTE: you will be unable to change this after initial creation": "NOTE: you will be unable to change this after initial creation",
 
         "help.dataset.name": "The name of the dataset",
         "help.dataset.description": "A description of the dataset",

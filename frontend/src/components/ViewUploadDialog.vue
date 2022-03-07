@@ -143,6 +143,23 @@
                                 </v-col>
                             </v-row>
                         </v-col>
+
+                        <v-row v-if="upload && upload.old_submission && upload.old_submission.data && Object.keys(upload.old_submission.data).length>0">
+                            <v-col cols=12>
+                                <h3>Deprecated fields</h3>
+                            </v-col>
+                            <span v-for="(field, key) in upload.old_submission.data" :key="'oldUploadFields-'+key" :style=" (deprecatedKeys.indexOf(key) === -1 && field) ? 'width: 50%;' : ''">
+                                <v-col cols=6 v-if="deprecatedKeys.indexOf(key) === -1 && field">
+                                    <TextInput
+                                        :label="$tc(key)"
+                                        :name="key"
+                                        :editing="false"
+                                        :value="field"
+                                        helpPrefix="upload"
+                                    ></TextInput>
+                                </v-col>
+                            </span>
+                        </v-row>
                         
                     </v-row>
                 </v-container>
@@ -187,6 +204,7 @@
             },
             formSubmission: {},
             spanKey: 0,
+            deprecatedKeys: ['ministryOrganization', "datasetName", "uploadDescription", 'numOfUploadFiles', 'createdUpdatedDate', 'sourceSystem', 'importantAdditionalInfo', 'daterangestart', 'dateRangeEnd']
         }),
         methods: {
             ...mapActions({
