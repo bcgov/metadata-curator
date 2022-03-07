@@ -505,12 +505,12 @@
             async stepSaveFileInfoForm(transitionNextStepAfterSave) {
                 let f = JSON.parse(JSON.stringify(this.upload));
                 for (let i=0; i<f.files.length; i++){
-                    f.files[i].start_date = this.fileInfo.start[i];
-                    f.files[i].end_date = this.fileInfo.end[i];
-                    f.files[i].title = this.fileInfo.title[i];
-                    f.files[i].type = this.fileInfo.type[i];
-                    f.files[i].description = this.fileInfo.description[i];
-                    f.files[i].num_records = this.fileInfo.num_records[i];
+                    f.files[i].start_date = (this.fileInfo && this.fileInfo.start && this.fileInfo.start[i]) ? this.fileInfo.start[i] : '';
+                    f.files[i].end_date = (this.fileInfo && this.fileInfo.end && this.fileInfo.end[i]) ? this.fileInfo.end[i] : '';
+                    f.files[i].title = (this.fileInfo && this.fileInfo.title && this.fileInfo.title[i]) ? this.fileInfo.title[i] : '';
+                    f.files[i].type = (this.fileInfo && this.fileInfo.type && this.fileInfo.type[i]) ? this.fileInfo.type[i] : '';
+                    f.files[i].description = (this.fileInfo && this.fileInfo.description && this.fileInfo.description[i]) ? this.fileInfo.description[i] : '';
+                    f.files[i].num_records = (this.fileInfo && this.fileInfo.num_records && this.fileInfo.num_records[i]) ? this.fileInfo.num_records[i] : '';
                 }
                 await this.modifyStoreUpload(f);
 
