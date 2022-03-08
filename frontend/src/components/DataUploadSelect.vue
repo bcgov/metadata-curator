@@ -169,6 +169,7 @@
                 branch: state => state.repos.branch,
                 schema: state => state.schemaImport.tableSchema,
                 user: state => state.user.user,
+                uploadError: 'upload/error',
             }),
 
             displayLabel: function () {
@@ -200,7 +201,6 @@
         methods: {
             ...mapMutations({    
                 editBranch: 'repos/editBranch',
-                uploadError: 'upload/error',
             }),
             ...mapActions({
                 createInitialUpload: 'upload/createInitialUpload',
@@ -285,8 +285,8 @@
 
                     this.editBranch({name: 'data_upload_id', value: d._id});
                     await this.updateBranch();
-                    if (this.error){
-                        this.$emit('error', this.error);
+                    if (this.uploadError){
+                        this.$emit('error', this.uploadError);
                     }else{
                         this.$router.push({name: "upload_view", params: {id: d._id}});
                     }
