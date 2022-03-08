@@ -8,6 +8,7 @@ March 8, 2022
  - Fixed issue preventing selection of variable classification index when creating an edition initially
  - Fixed error preventing create edition from this working
  - Added none to the edition filter list to find editions without uploads
+ - Fixed issue making the wrong version be selected with create edition from this
 
 <br />
 

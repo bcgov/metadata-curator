@@ -696,14 +696,24 @@
             selectedDataset: async function(){
                 if ( (this.selectedDataset != '-1') && (this.selectedDataset != '') ){
                     await this.getBranches({repoId: this.selectedDataset});
-                    if (this.versions.length > 0){
-                        await this.getSchemaFromVersion({id: this.versions[0]._id});
-                        if (this.versions[0].variable_classification){
-                            this.getVariableClassification({field: '_id', value: this.versions[0].variable_classification});
+                    let valid = false;
+                    for (let i=0; i<this.versions.length; i++){
+                        if (this.versions[i]._id === this.selectedVersion){
+                            valid = true;
+                            break;
                         }
-                        this.selectedVersion = this.versions[0]._id;
-                    }else{
-                        this.selectedVersion = "-1";
+                    }
+
+                    if (!valid){
+                        if (this.versions.length>0){
+                            await this.getSchemaFromVersion({id: this.versions[0]._id});
+                            if (this.versions[0].variable_classification){
+                                this.getVariableClassification({field: '_id', value: this.versions[0].variable_classification});
+                            }
+                            this.selectedVersion = this.versions[0]._id;
+                        }else{
+                            this.selectedVersion = "-1";
+                        }
                     }
 
                 }else{
