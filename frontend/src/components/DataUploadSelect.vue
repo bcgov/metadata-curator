@@ -281,12 +281,14 @@
 
                     if (!d || !d._id){
                         this.$emit('error', "Error creating upload, "+d);
+                        return;
                     }
 
                     this.editBranch({name: 'data_upload_id', value: d._id});
                     await this.updateBranch();
                     if (this.uploadError){
                         this.$emit('error', this.uploadError);
+                        return;
                     }else{
                         this.$router.push({name: "upload_view", params: {id: d._id}});
                     }
