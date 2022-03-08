@@ -295,8 +295,8 @@ export class Backend {
 
     getBranches(filterObj){
         let url = `/api/v1/repobranches`;
-        if ((filterObj) && (filterObj.upload_id)){
-            url += "?data_upload_id=" + filterObj.upload_id
+        if ((filterObj) && ( (filterObj.upload_id) || (filterObj.upload_id === '') )){
+            url += "?data_upload_id=" + ( (filterObj.upload_id) ? filterObj.upload_id : 'null');
         }
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }

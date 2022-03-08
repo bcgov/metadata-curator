@@ -6,6 +6,8 @@
 March 8, 2022
  - Removed formio
  - Fixed issue preventing selection of variable classification index when creating an edition initially
+ - Fixed error preventing create edition from this working
+ - Added none to the edition filter list to find editions without uploads
 
 <br />
 

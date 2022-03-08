@@ -200,6 +200,7 @@
         methods: {
             ...mapMutations({    
                 editBranch: 'repos/editBranch',
+                uploadError: 'upload/error',
             }),
             ...mapActions({
                 createInitialUpload: 'upload/createInitialUpload',
@@ -240,10 +241,10 @@
                     return;
                 }
 
-                if (!this.branch.keywords){
-                    this.$emit('error', "Keywords are required");
-                    return;
-                }
+                // if (!this.branch.keywords){
+                //     this.$emit('error', "Keywords are required");
+                //     return;
+                // }
 
                 // if (!dateStart){
                 //     this.$emit('error', "Start date cannot be deduced please set at least one resource temporal start");
@@ -264,10 +265,10 @@
                     "description": (this.branch.description) ? this.branch.description : '',
                     "date_range_start": dateStart,
                     "date_range_end": dateEnd,
-                    "importantAdditionalInfo": (this.branch.additional_info) ? this.branch.additional_info : '',
-                    "createdUpdatedDate": new Date(),
-                    "keywordsDescribingData": (this.branch.keywords) ? this.branch.keywords : '',
-                    "numOfUploadFiles": numFiles
+                    "information": (this.branch.additional_info) ? this.branch.additional_info : '',
+                    "data_create_date": new Date(),
+                    // "keywordsDescribingData": (this.branch.keywords) ? this.branch.keywords : '',
+                    "num_files": numFiles
                 }
                 
                 try{
@@ -284,7 +285,11 @@
 
                     this.editBranch({name: 'data_upload_id', value: d._id});
                     await this.updateBranch();
-                    this.$router.push({name: "upload_view", params: {id: d._id}});
+                    if (this.error){
+                        this.$emit('error', this.error);
+                    }else{
+                        this.$router.push({name: "upload_view", params: {id: d._id}});
+                    }
                 }catch(e){
                     this.$emit('error', e);
                 }

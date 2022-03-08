@@ -91,6 +91,7 @@ export default {
         dataUploadsWithAll: function(){
             var u = this.dataUploads.slice();
             u.unshift({name: "All", _id: -1});
+            u.unshift({name: "None", _id: ''});
             return u;
         },
         

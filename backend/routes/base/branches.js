@@ -141,7 +141,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         var q = {};
 
         if (typeof(data_upload_id) !== "undefined"){
-            q.data_upload_id = mongoose.Types.ObjectId(data_upload_id);
+            q.data_upload_id = (data_upload_id === 'null') ? null : mongoose.Types.ObjectId(data_upload_id);
         }
         
         let topics = [];
