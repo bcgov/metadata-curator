@@ -126,6 +126,21 @@
 
                                     <v-row>
                                         <v-col cols=12>
+                                            <TextInput
+                                                :label="$tc('Keywords')"
+                                                :placeholder="$tc('Keywords')"
+                                                name="keywords"
+                                                validation-rules="required"
+                                                :editing="editing"
+                                                :value="(branch) ? branch.keywords : ''"
+                                                helpPrefix="edition"
+                                                @edited="(newValue) => { updateValues('keywords', newValue) }"
+                                            ></TextInput>
+                                        </v-col>
+                                    </v-row>
+
+                                    <v-row>
+                                        <v-col cols=12>
                                             <DataUploadSelect
                                                 :label="$tc('Data Upload')"
                                                 name="upload_id"
@@ -309,20 +324,6 @@
                                                 :value="(branch) ? branch.references : ''"
                                                 helpPrefix="edition"
                                                 @edited="(newValue) => { updateValues('references', newValue) }"
-                                            ></TextInput>
-                                        </v-col>
-                                    </v-row>
-
-                                    <v-row>
-                                        <v-col cols=12>
-                                            <TextInput
-                                                :label="$tc('Keywords')"
-                                                :placeholder="$tc('Keywords')"
-                                                name="keywords"
-                                                :editing="editing"
-                                                :value="(branch) ? branch.keywords : ''"
-                                                helpPrefix="edition"
-                                                @edited="(newValue) => { updateValues('keywords', newValue) }"
                                             ></TextInput>
                                         </v-col>
                                     </v-row>
@@ -606,6 +607,8 @@ export default {
         ...mapMutations({    
             editBranch: 'repos/editBranch',
             clearBranch: 'repos/clearBranch',
+            clearTableSchema: 'schemaImport/clearTableSchema',
+            clearDataPackageSchema: 'schemaImport/clearDataPackageSchema',
         }),
 
         exportFieldsSetAll(value){
@@ -952,11 +955,17 @@ export default {
     },
     
     created() {
+        this.clearBranch();
+        this.clearTableSchema();
+        this.clearDataPackageSchema();
+
         this.load()
     },
 
     beforeDestroy(){
         this.clearBranch();
+        this.clearTableSchema();
+        this.clearDataPackageSchema();
     }
 }
 </script>
