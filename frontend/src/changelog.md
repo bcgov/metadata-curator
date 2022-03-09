@@ -11,6 +11,7 @@ March 10, 2022
  - Added drag icon to fields in json editor basic mode when editing
  - Changed translation for schema to "File & Field Level"
  - Added dataset filter to Edition list page
+ - Made number of records a required via ui field
 
 <br />
 
