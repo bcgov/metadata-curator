@@ -169,6 +169,13 @@
                                         :key="'field-'+key+'-'+fKey+'-'+reindexKey" 
                                         :class="'pa-0 relativePos' + ( (field && field.highlight && !editing) ? ' fieldHighlight': '') + (!filtered(field) ? ' field' : '')">
                                         <v-container fluid v-if="!filtered(field)"> 
+                                            <v-row v-if="editing">
+                                                <v-col cols=10>
+                                                </v-col>
+                                                <v-col cols=2>
+                                                    <v-icon>mdi-drag</v-icon>
+                                                </v-col>
+                                            </v-row>
                                             <v-row>
                                                 <v-col cols=7>
                                                     <v-row no-gutters>

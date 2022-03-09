@@ -1,78 +1,131 @@
 <template>
     <v-container>
-        <h1 class="display-1 font-weight-thin ml-3 my-3">{{$tc('Versions', 2)}}</h1>
+        <v-row v-if="isUpdating">
+            {{$tc('Loading')}}...
+            <v-progress-circular
+                indeterminate
+                color="primary"
+            ></v-progress-circular>
+        </v-row>
+        <v-row v-else>
+            <h1 class="display-1 font-weight-thin ml-3 my-3">{{$tc('Versions', 2)}}</h1>
 
-        <v-container fluid class="ml-1 pb-0 mb-1">
-            <v-row>
-                <v-col cols=10>
-                    <p>{{$tc('Uploads')}}:</p>
-                    <v-select v-model="filterBy" :items="dataUploadsWithAll" item-text="name" item-value="_id" class="ml-2"></v-select>
-                </v-col>
-            </v-row>
-        </v-container>
+            <v-container fluid class="ml-1 pb-0 mb-1">
+                <v-row>
+                    <v-col cols=12>
+                        <h3>
+                            {{$tc('Filter by')}}
+                        </h3>
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col cols=12>
+                        <Select
+                            :label="$tc('Uploads', 2)"
+                            placeholder=""
+                            name="uploadFilter"
+                            :items="dataUploadsWithAll"
+                            itemText="name"
+                            itemValue="_id"
 
-        <v-list three-line>
-            <template v-for="(item, index) in branchDisplayItems">
-                <v-divider
-                    v-if="item.divider"
-                    :key="index"
-                    :inset="item.inset"
-                ></v-divider>
+                            :editing="true"
+                            :value="filterBy"
+                            helpPrefix="versionList"
+                            @edited="(newValue) => { filterBy = newValue }"
+                        ></Select>
+                    </v-col>
+                
+                    <v-col cols=12>
+                        <Select
+                            :label="$tc('Dataset', 2)"
+                            placeholder=""
+                            name="datasetFilter"
+                            :items="reposWithAll"
+                            itemText="name"
+                            itemValue="_id"
 
-                <v-list-item
-                    v-else
-                    :key="item.id"
-                    @click="routeToBranch(item.id)"
-                >
-                    <v-list-item-content>
-                        <v-list-item-title v-html="item.title"></v-list-item-title>
-                        <v-list-item-subtitle>
-                            {{item.subtitle}}
-                        </v-list-item-subtitle>
+                            :editing="true"
+                            :value="datasetFilter"
+                            helpPrefix="versionList"
+                            @edited="(newValue) => { datasetFilter = newValue }"
+                        ></Select>
+                    </v-col>
+                </v-row>
+            </v-container>
 
-                    </v-list-item-content>
+            <v-col cols=12 v-if="branchDisplayItems.length <= 0">
+                {{$tc("No")}} {{$tc("Version", 2)}} {{$tc("found")}}
+            </v-col>
+            <v-col cols=12 v-else>
+                <v-list three-line>
+                    <template v-for="(item, index) in branchDisplayItems">
+                        <v-divider
+                            v-if="item.divider"
+                            :key="index"
+                            :inset="item.inset"
+                        ></v-divider>
+
+                        <v-list-item
+                            v-else
+                            :key="item.id"
+                            @click="routeToBranch(item.id)"
+                        >
+                            <v-list-item-content>
+                                <v-list-item-title v-html="item.title"></v-list-item-title>
+                                <v-list-item-subtitle>
+                                    {{item.subtitle}}
+                                </v-list-item-subtitle>
+
+                            </v-list-item-content>
 
 
-                </v-list-item>
-            </template>
-        </v-list>
+                        </v-list-item>
+                    </template>
+                </v-list>
+            </v-col>
+        </v-row>
     </v-container>
 </template>
 
 <script>
 
 import {mapActions, mapState, mapMutations} from "vuex";
+import Select from './Select';
 
 export default {
+    components:{
+        Select
+    },
     async created() {
         this.filterBy = this.selectedFilterBy;
 
     },
     data() {
         return {
-            message: '',
             filterBy: -1,
             isUpdating: false,
+            datasetFilter: -1,
         }
     },
     async mounted(){
         await this.getDataUploads("team");
         this.loadBranches();
+        await this.getRepos({filterBy: false});
     },
     methods: {
         ...mapActions({
             getBranchesByUpload: 'repos/getBranchesByUpload',
             getDataUploads: 'dataUploads/getDataUploads',
+            getRepos: 'repos/getRepos',
             
         }),
         ...mapMutations({
             setSelectedFilterBy: 'repos/setSelectedFilterBy',
         }),
         async loadBranches() {
-            this.message = 'Retrieving Versions...';
-            
+            this.isUpdating = true;
             await this.getBranchesByUpload({uploadId: this.filterBy});
-            this.message = '';
+            this.isUpdating = false;
         },
 
         routeToBranch(id) {
@@ -94,6 +147,12 @@ export default {
             u.unshift({name: "None", _id: ''});
             return u;
         },
+
+        reposWithAll: function(){
+            var u = this.repos.slice();
+            u.unshift({name: "All", _id: -1});
+            return u;
+        },
         
         branchDisplayItems: function(){
             let items = [];
@@ -103,19 +162,20 @@ export default {
                     subtitle: branch.description,
                     id: branch._id,
                 };
-                items.push(item);
-                if(index <= this.branches.length - 1) {
-                    items.push({ divider: true, inset: true });
+                if ( (this.datasetFilter === -1) || (branch.repo_id == this.datasetFilter) ){
+                    items.push(item);
+                    if(index <= this.branches.length - 1) {
+                        items.push({ divider: true, inset: true });
+                    }
                 }
             });
             return items;
         },
     },
     watch: {
-        // eslint-disable-next-line no-unused-vars
-        filterBy: async function (newVal, oldVal) {
+        filterBy: async function (newVal) {
             await this.setSelectedFilterBy(newVal);
-            this.loadBranches(); 
+            await this.loadBranches(); 
         },
     },
 };

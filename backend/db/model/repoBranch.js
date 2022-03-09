@@ -104,7 +104,7 @@ var repoBranchSchema = new Schema({
     },
     keywords:{
         type: String,
-        required: false,
+        required: true,
     },
     more_information:{
         type: String,

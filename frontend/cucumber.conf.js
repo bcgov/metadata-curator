@@ -2,7 +2,7 @@ const { setDefaultTimeout, AfterAll, BeforeAll } = require('@cucumber/cucumber')
 const { createSession, closeSession, startWebDriver, stopWebDriver } = require('nightwatch-api');
 const config = require('./step-definitions/config.json');
 
-setDefaultTimeout(200000);
+setDefaultTimeout(300000);
 
 BeforeAll(async () => {
   let browser = config.browser

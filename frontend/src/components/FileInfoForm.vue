@@ -99,6 +99,7 @@
                                 :editing="true"
                                 :value="(num_records[index]) ? num_records[index] : ''"
                                 helpPrefix="upload"
+                                validation-rules="required"
                                 :idName="'fileinfo-'+ index + '-num_records'"
                                 @blur="(newValue) => { editFileInfoIndex('num_records', index, newValue.target.value) }"
                             ></TextInput>
@@ -239,6 +240,8 @@
                                 usingADefault = true;
                             }
 
+                            this.files[i] = this.handles[this.formSubmission.files[i].sig]
+
                             if (!this.formSubmission.files[i].type){
                                 if ( (this.files[i]) && (this.files[i].type) ){
                                     switch(this.files[i].type) {
@@ -258,8 +261,6 @@
                                 }
                             }
                             
-
-                            this.files[i] = this.handles[this.formSubmission.files[i].sig]
                             this.start[i] = start;
                             this.end[i] = end;
                             this.title[i] = fileName;

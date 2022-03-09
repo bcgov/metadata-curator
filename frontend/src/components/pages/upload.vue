@@ -74,7 +74,7 @@
                                 <UploadForm ref="uploadForm"></UploadForm>
                             </v-card>
                             <v-btn text v-if="(user.isApprover || user.isAdmin) && !uploadId" @click="step = steps.step0PreCreate" id="back-1">{{$tc('Back')}}</v-btn>
-                            <v-btn text @click="stepSaveUploadForm(true)" id="next-1">{{$tc('Next')}}</v-btn>
+                            <v-btn text color="primary" @click="stepSaveUploadForm(true)" id="next-1">{{$tc('Save & Next')}}</v-btn>
                         </v-stepper-content>
 
                         <v-stepper-content :step="steps.step2EditionForm" v-if="enabledPhase >= 2 && (user.isApprover || user.isAdmin || (user._json.preferred_username === TEST_ACCOUNT))">
@@ -96,20 +96,27 @@
                                 <v-row>
                                     <v-col cols=9>
                                         <v-select 
-                                            v-model="selectedVersion" 
+                                            v-model="selectedVersion"
+                                            :disabled="versionListLoading" 
                                             :items="versionList"  
                                             item-text="name"
                                             item-value="_id"
                                             :label="$tc('Versions')">
                                         </v-select>
                                     </v-col>
-                                    <v-col cols=3>
+                                    <v-col cols=3 v-if="!versionListLoading">
                                         <v-btn v-if="allowCreateVersion" color="success" :disabled="!selectedDataset || selectedDataset === '-1'" id="newVersionButton" @click="createVersion">{{$tc('New')}} {{$tc('Versions')}}</v-btn>
+                                    </v-col>
+                                    <v-col cols=3 v-else>
+                                        <v-progress-circular
+                                            indeterminate
+                                            color="primary"
+                                        ></v-progress-circular>
                                     </v-col>
                                 </v-row>
                             </v-card>
                             <v-btn text @click="step=steps.step1UploadForm" id="back-2">{{$tc('Back')}}</v-btn>
-                            <v-btn text @click="stepSaveEditionForm(true)" id="next-2">{{$tc('Next')}}</v-btn>
+                            <v-btn text color="primary" @click="stepSaveEditionForm(true)" id="next-2">{{$tc('Save & Next')}}</v-btn>
                         </v-stepper-content>
 
                         <v-stepper-content :step="steps.step3FileSelection">
@@ -117,8 +124,8 @@
                                 <FileForm v-if="step === steps.step3FileSelection" ref="fileForm" @changed="step2Changed"></FileForm>
                             </v-card>
                             
-                            <v-btn text @click="step=(enabledPhase >= 2 && (user.isAdmin || user.isApprover)) ? steps.step2EditionForm : steps.steps.step1UploadForm" id="back-3">{{$tc('Back')}}</v-btn>
-                            <v-btn color="primary" :disabled="!validStep3" @click="stepSaveFileForm(true)" id="next-3">{{$tc('Next')}}</v-btn>
+                            <v-btn text @click="step=((enabledPhase >= 2 && (user.isAdmin || user.isApprover)) ? steps.step2EditionForm : steps.step1UploadForm)" id="back-3">{{$tc('Back')}}</v-btn>
+                            <v-btn :disabled="!validStep3" @click="stepSaveFileForm(true)" id="next-3">{{$tc('Next')}}</v-btn>
                             
                         </v-stepper-content>
 
@@ -131,7 +138,7 @@
                                     :modifyStoreNow="fileInfoModify"></FileInfoForm>
                             </v-card>
                             <v-btn text @click="step=steps.step3FileSelection" id="back-4">{{$tc('Back')}}</v-btn>
-                            <v-btn color="primary" @click="stepSaveFileInfoForm(true)" id="next-4">{{$tc('Next')}}</v-btn>
+                            <v-btn @click="stepSaveFileInfoForm(true)" id="next-4">{{$tc('Next')}}</v-btn>
                             
                         </v-stepper-content>
 
@@ -152,7 +159,7 @@
                                 <v-row v-else>
                                     <v-col cols=12>
                                         <v-btn text @click="step=steps.step4FileLevelForm" id="back-5-2">{{$tc('Back')}}</v-btn>
-                                        <v-btn color="primary" @click="stepSaveSchemaForm(true)" id="next-5-2">{{$tc('Next')}}</v-btn>
+                                        <v-btn @click="stepSaveSchemaForm(true)" id="next-5-2">{{$tc('Next')}}</v-btn>
                                     </v-col>
                                     <v-col cols=12>
                                         <Comparison :key="'comparisonObj-'+jsonRedraw" :left-side-text="JSON.stringify(inferredSchema)" :right-side-text="JSON.stringify(schema)" :diff-json="true"></Comparison>
@@ -161,7 +168,7 @@
                             </v-card>
                             
                             <v-btn text @click="step=steps.step4FileLevelForm" id="back-5">{{$tc('Back')}}</v-btn>
-                            <v-btn color="primary" @click="stepSaveSchemaForm(true)" id="next-5">{{$tc('Next')}}</v-btn>
+                            <v-btn @click="stepSaveSchemaForm(true)" id="next-5">{{$tc('Next')}}</v-btn>
                             
                         </v-stepper-content>
 
@@ -636,7 +643,8 @@
                 warningText: '',
                 fileInfoModify: false,
                 TEST_ACCOUNT: TEST_ACCOUNT,
-                fileInfo: {}
+                fileInfo: {},
+                versionListLoading: false,
             }
         },
         computed: {
@@ -695,7 +703,9 @@
 
             selectedDataset: async function(){
                 if ( (this.selectedDataset != '-1') && (this.selectedDataset != '') ){
+                    this.versionListLoading = true;
                     await this.getBranches({repoId: this.selectedDataset});
+                    this.versionListLoading = false;
                     let valid = false;
                     for (let i=0; i<this.versions.length; i++){
                         if (this.versions[i]._id === this.selectedVersion){
