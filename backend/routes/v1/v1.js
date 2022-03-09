@@ -6,10 +6,6 @@ let forumRouter = express.Router();
 let forumBridge = require('./forumApi/bridge');
 forumRouter = forumBridge(forumRouter);
 
-let formioRouter = express.Router();
-let formioBridge = require('./formio/bridge');
-formioRouter = formioBridge(formioRouter);
-
 let db = require('../../db/db');
 
 let auth = require('../../modules/auth');
@@ -28,7 +24,6 @@ module.exports = (router, cache) => {
     });
 
     router.use('/forum', auth.requireLoggedIn, forumRouter);
-    router.use('/formio', auth.requireLoggedIn, formioRouter);
 
     router.use('/token', function(req, res){
         if (req.user && req.user.jwt && req.user.refreshToken) {
@@ -40,7 +35,6 @@ module.exports = (router, cache) => {
 
     var forumClient = require('./clients/forum_client');
     var formioClient = require('./clients/formio_client');
-    var revisionService = require('./services/revisionService');
     var notify = require('./notify/notify')(db);
 
     var configRoutes = require('../base/config');
@@ -60,7 +54,7 @@ module.exports = (router, cache) => {
     var dataUploadRoutes = require('../base/uploads');
     var uRouter = new Router();
     uRouter = dataUploadRoutes.buildStatic(db, uRouter);
-    uRouter = dataUploadRoutes.buildDynamic(db, uRouter, auth, forumClient, notify, revisionService);
+    uRouter = dataUploadRoutes.buildDynamic(db, uRouter, auth, forumClient, notify, formioClient);
     router.use('/datauploads', auth.requireLoggedIn, uRouter);
 
     var dataProviderRoutes = require('../base/providers');
@@ -78,7 +72,7 @@ module.exports = (router, cache) => {
     var repoBranchesRoutes = require('../base/branches');
     var branchRouter = new Router();
     branchRouter = repoBranchesRoutes.buildStatic(db, branchRouter);
-    branchRouter = repoBranchesRoutes.buildDynamic(db, branchRouter, auth, forumClient, revisionService, cache);
+    branchRouter = repoBranchesRoutes.buildDynamic(db, branchRouter, auth, forumClient, cache);
     router.use('/repobranches', branchRouter);
 
     var tableSchemasRoutes = require('../base/tableSchema');

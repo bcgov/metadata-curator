@@ -2,15 +2,13 @@ var buildStatic = function(db, router){
     return router;
 }
 
-var buildDynamic = function(db, router, auth, forumClient, notify, revisionService){
+var buildDynamic = function(db, router, auth, forumClient, notify, formioClient){
     const log = require('npmlog');
     const mongoose = require('mongoose');
     const config = require('config');
 
     const createDataUpload = async (user, upload) => {
-        console.log("CDU", user.groups);
         let originalGroups = JSON.parse(JSON.stringify(user.groups));
-        console.log("OG", originalGroups);
         let originalJWT = user.jwt;
         try {
             const dataUploadSchema = new db.DataUploadSchema;
@@ -50,8 +48,32 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             dataUploadSchema.opened_by_approver = false;
             dataUploadSchema.approver_has_commented = false;
 
-            if (upload.upload_submission_id){
-                dataUploadSchema.upload_submission_id = upload.upload_submission_id ? upload.upload_submission_id : null;
+            if (typeof(upload.ministry_organization) !== "undefined"){
+                dataUploadSchema.ministry_organization = upload.ministry_organization;
+            }
+    
+            if (typeof(upload.num_files) !== "undefined"){
+                dataUploadSchema.num_files = upload.num_files;
+            }
+    
+            if (typeof(upload.data_create_date) !== "undefined"){
+                dataUploadSchema.data_create_date = upload.data_create_date;
+            }
+    
+            if (typeof(upload.source) !== "undefined"){
+                dataUploadSchema.source = upload.source;
+            }
+    
+            if (typeof(upload.information !== "undefined")){
+                dataUploadSchema.information = upload.information;
+            }
+    
+            if (typeof(upload.date_range_start) !== "undefined"){
+                dataUploadSchema.date_range_start = upload.date_range_start;
+            }
+    
+            if (typeof(upload.date_range_end) !== "undefined"){
+                dataUploadSchema.date_range_end = upload.date_range_end;
             }
 
             if ( (user.isApprover) || (user.isAdmin) ){
@@ -126,8 +148,36 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             dataUpload.approver_has_commented = updatedData.approver_has_commented;
         }
 
-        if (updatedData.upload_submission_id){
-            dataUpload.upload_submission_id = updatedData.upload_submission_id ? updatedData.upload_submission_id : null;
+        if (updatedData.approver_has_commented){
+            dataUpload.approver_has_commented = updatedData.approver_has_commented;
+        }
+
+        if (typeof(updatedData.ministry_organization) !== "undefined"){
+            dataUpload.ministry_organization = updatedData.ministry_organization;
+        }
+
+        if (typeof(updatedData.num_files) !== "undefined"){
+            dataUpload.num_files = updatedData.num_files;
+        }
+
+        if (typeof(updatedData.data_create_date) !== "undefined"){
+            dataUpload.data_create_date = updatedData.data_create_date;
+        }
+
+        if (typeof(updatedData.source) !== "undefined"){
+            dataUpload.source = updatedData.source;
+        }
+
+        if (typeof(updatedData.information !== "undefined")){
+            dataUpload.information = updatedData.information;
+        }
+
+        if (typeof(updatedData.date_range_start) !== "undefined"){
+            dataUpload.date_range_start = updatedData.date_range_start;
+        }
+
+        if (typeof(updatedData.date_range_end) !== "undefined"){
+            dataUpload.date_range_end = updatedData.date_range_end;
         }
         
         try{
@@ -146,7 +196,6 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
                 if (configs && configs.value){
                     const url = `${configs.value}`;
                     const axios = require('axios');
-                    console.log("Calling hook", url, dataUpload);
                     axios.post(url, dataUpload).catch( (err) => log.error("Error calling hook", err)).then( () => {
                         log.debug("Called uploadHook", url);
                     });
@@ -160,7 +209,7 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             return await dataUpload.save();
         }catch(ex){
             log.error(ex);
-            throw new Error(e.message);
+            throw new Error(ex.message);
         }
         
     }
@@ -227,7 +276,72 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
         try {
             const response = await forumClient.getTopic(user, id);
             if(!response.data || response.data.length === 0) { throw new Error("User not authorized to retrieve this data upload."); }
-            return await db.DataUploadSchema.findOne({_id: id});
+            let r = await db.DataUploadSchema.findOne({_id: id});
+            if (r.upload_submission_id){
+                if (formioClient){
+                    let formName = r.form_name ? r.form_name : "uploadForm";
+                    if ( (!r.ministry_organization) || ( (!r.num_files) && (r.num_files !== 0) ) || (!r.data_create_date) ){
+                        let formModded = await new Promise((resolve, reject) => {
+                            formioClient.getSubmission(formName, r.upload_submission_id, async function(e,formRes){
+                                if (typeof(formRes) === 'string'){
+                                    formRes = JSON.parse(formRes);
+                                }
+
+                                if (e || !formRes || !formRes.data){
+                                    return reject(r);
+                                }
+        
+                                let changed = (r.old_submission && (JSON.stringify(r.old_submission) === JSON.stringify(formRes)));
+                                r.old_submission = formRes;
+                                if ((!r.ministry_organization) && (formRes.data.ministryOrganization)){
+                                    r.ministry_organization = formRes.data.ministryOrganization;
+                                    changed = true;
+                                }
+        
+                                if ( (!r.num_files) &&  ( (formRes.data.numOfUploadFiles) || (formRes.data.numOfUploadFiles === 0) )){
+                                    r.num_files = formRes.data.numOfUploadFiles;
+                                    changed = true;
+                                }
+        
+                                if ((!r.data_create_date) && (formRes.data.createdUpdatedDate)){
+                                    r.data_create_date = formRes.data.createdUpdatedDate;
+                                    changed = true;
+                                }
+        
+                                if ((!r.source) && (formRes.data.sourceSystem)){
+                                    r.source = formRes.data.sourceSystem;
+                                    changed = true;
+                                }
+        
+                                if ((!r.information) && (formRes.data.importantAdditionalInfo)){
+                                    r.information = formRes.data.importantAdditionalInfo;
+                                    changed = true;
+                                }
+        
+                                if ((!r.date_range_start) && (formRes.data.daterangestart)){
+                                    r.date_range_start = formRes.data.daterangestart;
+                                    changed = true;
+                                }
+        
+                                if ((!r.date_range_end) && (formRes.data.dateRangeEnd)){
+                                    r.date_range_end = formRes.data.dateRangeEnd;
+                                    changed = true;
+                                }
+                                
+                                if (changed){
+                                    await r.save();
+                                }
+                                
+                                resolve(r);
+                            });
+                        })
+                        return formModded;
+                    }
+                    
+                }
+
+            }
+            return r;
         } catch (e) {
             log.error(e);
             throw new Error(e.message)
@@ -296,8 +410,7 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             const dataUpload = await createDataUpload(req.user, req.body);
             return res.status(201).json(dataUpload);
         }catch(e){
-            console.log("ERROR post upload", e);
-            return res.status(400).json({error: e});
+            return res.status(400).json({error: e.message});
         }
     });
 
@@ -317,7 +430,7 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             const dataUpload = await updateDataUpload(req.user, req.params.dataUploadId, req.body);
             return res.status(200).json(dataUpload);
         }catch(e){
-            return res.status(500).json({error: e});
+            return res.status(500).json({error: e.message});
         }
     });
 
@@ -336,15 +449,6 @@ var buildDynamic = function(db, router, auth, forumClient, notify, revisionServi
             return res.status(201).json({
                 message: 'Comment saved successfully.'
             });
-        }catch(ex){
-            res.status(500).json({error: ex});
-        }
-    });
-
-    router.get('/:dataUploadId/revisions', async function(req, res, next){
-        try{
-            const result = await revisionService.listRevisionsByDataUpload(req.params.dataUploadId);
-            return res.json(result);
         }catch(ex){
             res.status(500).json({error: ex});
         }

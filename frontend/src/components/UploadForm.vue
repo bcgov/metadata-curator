@@ -1,174 +1,187 @@
 <template>
     <v-container>
-        <formio
-            v-if="formDef"
-            ref="formioObj"
-            :form="formDef"
-            v-bind:options="formOptions"
-            :submission="formSubmission"
-            v-on:submit="onSubmit"
-            v-on:render="renderDone"
-            :key="'formio'+rerenderKey"
-        >
-        </formio>
+        <v-row>
+            <v-col cols=6>
+                <TextInput
+                    :label="$tc('Ministry / Organization')"
+                    placeholder="Ministry or organization the data upload is coming from"
+                    name="ministry_organization"
+                    :editing="true"
+                    :value="upload && upload.ministry_organization ? upload.ministry_organization : ''"
+                    validation-rules="required"
+                    helpPrefix="upload"
+                    
+                    @blur="(event) => { updateUpload('ministry_organization', event) }"
+                ></TextInput>
+            </v-col>
+            <v-col cols=6>
+                <TextInput
+                    :label="$tc('Source System')"
+                    placeholder="System of origin of the data being uploaded"
+                    name="source"
+                    :editing="true"
+                    :value="upload && upload.source ? upload.source : ''"
+                    helpPrefix="upload"
+                    
+                    @blur="(event) => { updateUpload('source', event) }"
+                ></TextInput>
+            </v-col>
 
-<!--        <button @click="validateForm">validate</button>-->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-        <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css'>
-        <link rel='stylesheet' href='https://unpkg.com/formiojs@4.10.0/dist/formio.full.min.css'>
+
+            <v-col cols=6>
+                <TextInput
+                    :label="$tc('Human Friendly Name')"
+                    placeholder="Human friendly name(s) of the dataset, metadata and/or document"
+                    name="name"
+                    :editing="true"
+                    :value="upload && upload.name ? upload.name : ''"
+                    validation-rules="required"
+                    helpPrefix="upload"
+                    
+                    @blur="(event) => { updateUpload('name', event) }"
+                ></TextInput>
+            </v-col>
+            <v-col cols=6>
+                <TextArea
+                    :label="$tc('Important Additional Information')"
+                    placeholder="Information relevant for a researcher planning research strategy (e.g., the data files are sorted by date of discharge rather than the date of admission). Purpose of the data (e.g., why it was collected and how?). This may also be provided as separate document files (e.g. PDF)"
+                    name="information"
+                    :editing="true"
+                    :value="upload && upload.information ? upload.information : ''"
+                    helpPrefix="upload"
+                    
+                    @blur="(event) => { updateUpload('information', event) }"
+                ></TextArea>
+            </v-col>
+        
+
+            <v-col cols=6>
+                <TextArea
+                    :label="$tc('Description')"
+                    placeholder="High level description of the dataset, metadata, and/or documentation being uploaded"
+                    name="description"
+                    :editing="true"
+                    :value="upload && upload.description ? upload.description : ''"
+                    helpPrefix="upload"
+                    validation-rules="required"
+                    @blur="(event) => { updateUpload('description', event) }"
+                ></TextArea>
+            </v-col>
+            <v-col cols=6>
+                <DateInput
+                    :label="$tc('Date Range Start')"
+                    placeholder="Date range over which the data being uploaded spans"
+                    name="date_range_start"
+                    :editing="true"
+                    helpPrefix="upload"
+                    :value="upload && upload.date_range_start ? upload.date_range_start : ''"
+                    @edited="(newValue) => { updateUploadE('date_range_start', newValue) }">
+                </DateInput>
+            </v-col>
+
+            <v-col cols=6>
+                <TextInput
+                    :label="$tc('Number of files to be uploaded')"
+                    placeholder="Total number of files you intend to upload"
+                    name="num_files"
+                    :editing="true"
+                    :value="upload && upload.num_files ? upload.num_files : ''"
+                    helpPrefix="upload"
+                    validation-rules="required|numeric"
+                    @blur="(event) => { updateUpload('num_files', event) }"
+                ></TextInput>
+            </v-col>
+            <v-col cols=6>
+                <DateInput
+                    :label="$tc('Date Range End')"
+                    placeholder="Date range over which the data being uploaded spans"
+                    name="date_range_end"
+                    :editing="true"
+                    helpPrefix="upload"
+                    :value="upload && upload.date_range_end ? upload.date_range_end : ''"
+                    @edited="(newValue) => { updateUploadE('date_range_end', newValue) }">
+                </DateInput>
+            </v-col>
+
+            <v-col cols=6>
+                <DateInput
+                    :label="$tc('Date data was created or updated')"
+                    placeholder="Date the data was extracted from the source system"
+                    name="data_create_date"
+                    :editing="true"
+                    helpPrefix="upload"
+                    validation-rules="required"
+                    :value="upload && upload.data_create_date ? upload.data_create_date : ''"
+                    @edited="(newValue) => { updateUploadE('data_create_date', newValue) }">
+                </DateInput>
+            </v-col>
+        </v-row>
+
+        <v-row v-if="upload && upload.old_submission && upload.old_submission.data && Object.keys(upload.old_submission.data).length>0">
+            <v-col cols=12>
+                <h3>Deprecated fields</h3>
+            </v-col>
+            <span v-for="(field, key) in upload.old_submission.data" :key="'oldUploadFields-'+key" :style=" (deprecatedKeys.indexOf(key) === -1 && field) ? 'width: 50%;' : ''">
+                <v-col cols=6 v-if="deprecatedKeys.indexOf(key) === -1 && field">
+                    <TextInput
+                        :label="$tc(key)"
+                        :name="key"
+                        :editing="false"
+                        :value="field"
+                        helpPrefix="upload"
+                    ></TextInput>
+                </v-col>
+            </span>
+        </v-row>
     </v-container>
 </template>
 
 <script>
-    import { Form } from 'vue-formio';
-    //import { Form, Templates } from 'vue-formio';
-    import Vue from 'vue';
-    import {mapActions, mapMutations, mapState} from "vuex";
+    import { mapActions, mapState} from "vuex";
+    import TextInput from './TextInput';
+    import TextArea from './TextArea';
+    import DateInput from './DateInput';
 
     export default {
         name: 'UploadForm',
         components:{
-            formio: Form
+            TextInput,
+            TextArea,
+            DateInput,
         },
         props: {
         },
-        async created() {
-            this.formSubmission = {...this.submission};
-
-            if(this.upload) {
-                this.uploadId = this.upload;
-                //this.getUploadFormSubmission({formName: this.upload.form_name, submissionId: this.upload.upload_submission_id});
-                await this.getUploadForm(this.upload.form_name);
-            }else{
-                //await this.resetState();
-                await this.getDefaultUploadForm();
-            }
+        mounted() {
             
         },
-        mounted() {
-            // let self = this;
-            // Templates.current = {
-            //     'input-datetime': {
-            //         form: function(ctx){
-            //             console.log(ctx);
-            //             self.contexts[ctx.input.attr.name] = ctx;
-            //             return '<div id="'+ctx.input.attr.name+'"></div>';
-            //         }
-            //     }
-            // }
-
+        data() {
+            return {
+                deprecatedKeys: ['ministryOrganization', "datasetName", "uploadDescription", 'numOfUploadFiles', 'createdUpdatedDate', 'sourceSystem', 'importantAdditionalInfo', 'daterangestart', 'dateRangeEnd']
+            }
         },
         methods: {
             ...mapActions({
-                getUploadForm: 'uploadForm/getUploadForm',
-                getDefaultUploadForm: 'uploadForm/getDefaultUploadForm',
-                getUploadFormSubmission: 'uploadForm/getUploadFormSubmission',
-                createUploadFormSubmission: 'uploadForm/createUploadFormSubmission',
-                updateUploadFormSubmission: 'uploadForm/updateUploadFormSubmission',
-            }),
-            ...mapMutations({
-                resetState: 'uploadForm/resetState',
-                clearUploadForm: 'uploadForm/clearUploadForm',
+                modifyStoreUpload: 'upload/modifyStoreUpload',
             }),
 
-            renderDone(){
-                let keys = Object.keys(this.contexts);
-                let dpicker = Vue.component('VDatePicker');
-                for (let i=0; i<keys.length; i++){
-                    let ele = new dpicker();
-                    ele.$vuetify = this.$vuetify;
-                    ele.$mount();
-                    document.getElementById(keys[i]).appendChild(ele.$el);
-                    ele.$forceUpdate();
-                }
+            updateUpload: async function(key, event){
+                let value = event.target.value;
+                this.updateUploadE(key, value);
+            },
+
+            updateUploadE: async function(key, value){
+                let newUp = this.upload ? JSON.parse(JSON.stringify(this.upload)) : {};
+                newUp[key] = value;
                 
-            },
+                await this.modifyStoreUpload(newUp);
+            }
 
-            async onSubmit(submission) {
-                // console.log("onSubmit submission: ", submission);
-                // console.log(`submission._id: ${submission._id}, newSubmissionCreated: ${this.newSubmissionCreated},
-                //             this.createSubmissionInProgress: ${this.createSubmissionInProgress}`);
-                if(!submission._id && !this.createSubmissionInProgress) {
-                    // console.log("create new submission");
-                    await this.createUploadFormSubmission(submission.data);
-                }
-                else {
-                    // console.log("update existing upload submission");
-                    await this.updateUploadFormSubmission({formName: this.upload.form_name, submission: this.formSubmission});
-                }
-                // this.$refs.formioObj.formio.emit('submitDone', submission);
-            },
-            submitForm() {
-                // console.log("this.$refs.formioObj.formio: ", this.$refs.formioObj.formio);
-                this.$refs.formioObj.formio.submit();
-            },
-            validateForm() {
-                return this.$refs.formioObj.formio.checkValidity();
-            },
-            getSubmission() {
-                return this.formSubmission;
-            }
         },
-        data () {
-            return {
-                uploadId: null,
-                formOptions: {},
-                formDef: {},
-                formSubmission: {},
-                contexts: {},
-                rerenderKey: 0
-            }
-        },
+        
         computed: {
             ...mapState({
-                uploadForm: state => state.uploadForm.formDef,
-                submission: state => state.uploadForm.submission,
-                createSubmissionInProgress: state => state.uploadForm.createSubmissionInProgress,
                 upload: state => state.upload.upload,
             }),
-        },
-        watch: {
-            // eslint-disable-next-line no-unused-vars
-            uploadForm: function (newVal, oldVal) {
-                // console.log('uploadForm prop changed: ', newVal, ' | was: ', oldVal);
-                this.formDef = JSON.parse(JSON.stringify(newVal));
-            },
-            // // eslint-disable-next-line no-unused-vars
-            upload: async function (newVal, oldVal) {
-                // console.log('uploadForm prop changed: ', newVal, ' | was: ', oldVal);
-                if(newVal && !oldVal) {
-                    this.uploadId = newVal._id;
-                    // console.log("assigned upload id: " + this.uploadId);
-                }
-
-                if(this.upload) {
-                    this.uploadId = this.upload;
-                    //this.getUploadFormSubmission({formName: this.upload.form_name, submissionId: this.upload.upload_submission_id});
-                    await this.getUploadForm(this.upload.form_name);
-                }else{
-                    await this.getDefaultUploadForm();
-                }
-
-                //this.getUploadFormSubmission({formName: this.upload.form_name, submissionId: this.upload.upload_submission_id});
-            },
-            // eslint-disable-next-line no-unused-vars
-            submission: function (newVal, oldVal) {
-                if(newVal) {
-                    try{
-                        newVal = JSON.parse(newVal);
-                    // eslint-disable-next-line
-                    }catch(ex){
-                    }
-                    Vue.set(this, 'formSubmission', {...newVal});
-                    this.rerenderKey++;
-                }
-
-            },
-        },
-        beforeDestroy() {
-            // console.log("uploadform reset state");
-            this.resetState();
-            this.clearUploadForm();
         },
     }
 </script>

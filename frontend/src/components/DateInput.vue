@@ -23,10 +23,10 @@
             </span>
 
             <span>
-                <h2 v-if="large" class="inline">
+                <h2 v-if="large" class="inline" :id="name+'-value'">
                     {{val}}
                 </h2>
-                <span v-else>
+                <span v-else :id="name+'-value'">
                     {{val}}
                 </span>
             </span>

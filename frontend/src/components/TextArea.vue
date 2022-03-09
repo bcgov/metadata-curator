@@ -14,7 +14,7 @@
                     <span v-html="displayTooltip"></span>
                 </v-tooltip>
             </span>
-            <span>{{val}}</span>
+            <span :id="name+'-value'">{{val}}</span>
         </span>
 
         <span v-else>

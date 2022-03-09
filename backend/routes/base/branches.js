@@ -2,7 +2,7 @@ var buildStatic = function(db, router){
     return router;
 }
 
-var buildDynamic = function(db, router, auth, forumClient, revisionService, cache){
+var buildDynamic = function(db, router, auth, forumClient, cache){
 
     let mongoose = require('mongoose');
 
@@ -141,7 +141,7 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         var q = {};
 
         if (typeof(data_upload_id) !== "undefined"){
-            q.data_upload_id = mongoose.Types.ObjectId(data_upload_id);
+            q.data_upload_id = (data_upload_id === 'null') ? null : mongoose.Types.ObjectId(data_upload_id);
         }
         
         let topics = [];
@@ -587,74 +587,6 @@ var buildDynamic = function(db, router, auth, forumClient, revisionService, cach
         
         return res.status(400).json({error: "Cant add comments to a branch that doesn't exist"});
         
-    });
-
-    router.post('/:branchId/revisions', auth.requireLoggedIn,  async function(req, res, next) {
-        //version check
-        if (!util.phaseCheck(cache, requiredPhase, db)){
-            return res.status(404).send(util.phaseText('POST', ('repobranches/'+req.params.branchId+"/revisions")));
-        }
-        try{
-            let f = {...req.body};
-            const branchId = req.params.branchId;
-            const branch = await getBranchById(branchId, req.user);
-            const rev = await revisionService.createRevisionWithDataPackage(branch, f.change_summary, f.updater, f.descriptor)
-        
-            res.status(201).json({
-                id: rev._id.toString()
-            });
-        }catch(ex){
-            res.status(500).json({error: ex});
-        }
-    });
-
-    router.get('/:branchId/revisions', async function(req, res, next) {
-        //version check
-        if (!util.phaseCheck(cache, requiredPhase, db)){
-            return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.branchId+"/revisions")));
-        }
-        try{
-            const branchId = req.params.branchId;
-            await getBranchById(branchId, req.user);
-            const revisions = await revisionService.listRevisionsByBranch(branchId);
-            res.status(200).json(revisions);
-        }catch(ex){
-            res.status(500).json({error: ex});
-        }
-    });
-
-    router.put('/:branchId/revisions/:revId', auth.requireLoggedIn,  async function(req, res, next) {
-        //version check
-        if (!util.phaseCheck(cache, requiredPhase, db)){
-            return res.status(404).send(util.phaseText('PUT', ('repobranches/'+req.params.branchId+"/revisions/"+req.params.revId)));
-        }
-        try{
-            let f = {...req.body};
-            const branchId = req.params.branchId;
-            const revId = req.params.revId;
-            await getBranchById(branchId, req.user);
-            const rev = await revisionService.updateRevision(revId, f.changeSummary, f.updater)
-        
-            res.status(200).json(rev);
-        }catch(ex){
-            res.status(500).json({error: ex});
-        }
-    });
-
-    router.delete('/:branchId/revisions/:revId', auth.requireLoggedIn,  async function(req, res, next) {
-        //version check
-        if (!util.phaseCheck(cache, requiredPhase, db)){
-            return res.status(404).send(util.phaseText('DELETE', ('repobranches/'+req.params.branchId+"/revisions/"+req.params.revId)));
-        }
-        try{
-            const branchId = req.params.branchId;
-            const revId = req.params.revId;
-            await getBranchById(branchId, req.user);
-            await revisionService.deleteRevision(revId)
-            res.status(204).send();
-        }catch(ex){
-            res.status(500).json({error: ex});
-        }
     });
 
     return router;

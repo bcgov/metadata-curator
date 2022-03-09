@@ -138,7 +138,6 @@ export default {
             getDataProviders: 'dataUploads/getDataProviders',
         }),
         ...mapMutations({
-            resetState: 'uploadForm/resetState',
             setSelectedDataProviders: 'dataUploads/setSelectedDataProviders',
             setSelectedFilterBy: 'dataUploads/setSelectedFilterBy',
         }),

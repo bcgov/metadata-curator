@@ -187,52 +187,6 @@ export class Backend {
         return axios.delete(url, {}, {withCredentials: true}).then(response => response.data)
     }
 
-    getForms(){
-        const url = `/api/v1/formio/forms`;
-        return axios.get(url, {withCredentials: true}).then( (response) => {
-            let data = response.data;
-            // for (let i=0; i<data.length; i++){
-            //     response.data[i]._id = response.data[i].name
-            // }
-            return data;
-        })
-    }
-
-    putForm(id, editedForm){
-        const url = `/api/v1/formio/form/${id}`;
-        return axios.put(url, editedForm, {withCredentials: true}).then(response => response.data)
-    }
-
-    newForm(newForm){
-        const url = `/api/v1/formio/form`;
-        return axios.post(url, newForm, {withCredentials: true}).then(response => response.data)
-    }
-
-    deleteForm(id){
-        const url = `/api/v1/formio/form/${id}`;
-        return axios.delete(url, {}, {withCredentials: true}).then(response => response.data)
-    }
-
-    getForm(formName) {
-        const url = `/api/v1/formio/form/${formName}`;
-        return axios.get(url, {withCredentials: true}).then(response => response.data)
-    }
-
-    getFormSubmission(formName, submissionId) {
-        const url = `/api/v1/formio/form/${formName}/submission/${submissionId}`;
-        return axios.get(url,{withCredentials: true}).then(response => response.data)
-    }
-
-    postFormSubmission(formName, submission) {
-        const url = `/api/v1/formio/form/${formName}/submission`;
-        return axios.post(url, submission,{withCredentials: true}).then(response => response.data)
-    }
-
-    putFormSubmission(formName, submissionId, submission) {
-        const url = `/api/v1/formio/form/${formName}/submission/${submissionId}`;
-        return axios.put(url, submission,{withCredentials: true}).then(response => response.data)
-    }
-
     getDataProviders(){
         let url = '/api/v1/dataproviders';
         return axios.get(url, {withCredentials: true}).then(response => response.data)
@@ -293,16 +247,6 @@ export class Backend {
         return axios.delete(url, {}, {withCredentials: true}).then(response => response.data)
     }
 
-    getFormSubmissions(formName) {
-        const url = `/api/v1/formio/submission/${formName}`;
-        return axios.get(url,{withCredentials: true}).then(response => response.data)
-    }
-
-    deleteFormSubmission(id, formName) {
-        const url = `/api/v1/formio/form/${formName}/submission/${id}`;
-        return axios.delete(url,{withCredentials: true}).then(response => response.data)
-    }
-
     getRepos(query){
         if (typeof(query) === "undefined"){
             query = {filterBy: false};
@@ -351,8 +295,8 @@ export class Backend {
 
     getBranches(filterObj){
         let url = `/api/v1/repobranches`;
-        if ((filterObj) && (filterObj.upload_id)){
-            url += "?data_upload_id=" + filterObj.upload_id
+        if ((filterObj) && ( (filterObj.upload_id) || (filterObj.upload_id === '') )){
+            url += "?data_upload_id=" + ( (filterObj.upload_id) ? filterObj.upload_id : 'null');
         }
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }

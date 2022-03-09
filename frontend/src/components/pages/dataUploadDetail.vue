@@ -102,8 +102,6 @@ export default {
             getRepos: 'repos/getRepos',
             getRepo: 'repos/getRepo',
             saveDataset: 'repos/saveRepo',
-            getUploadFormSubmission: 'uploadForm/getUploadFormSubmission',
-            getUploadForm: 'uploadForm/getUploadForm',
             getBranchesByUpload: "repos/getBranchesByUpload",
             getBranch: 'repos/getBranch',
         }),
@@ -120,8 +118,6 @@ export default {
             // this.getRevisions(this.dataUploadId);
             
             await this.getDataUpload(this.dataUploadId);
-            await this.getUploadForm(this.dataUpload.form_name);
-            this.getUploadFormSubmission({formName: this.dataUpload.form_name, submissionId: this.dataUpload.upload_submission_id});
             
             if(this.user.isApprover && !this.dataUpload.opened_by_approver) {
                 const data = {...this.dataUpload, opened_by_approver: true};
@@ -189,8 +185,6 @@ export default {
             user: state => state.user.user,
             dataUpload: state => state.dataUploadDetail.dataUpload,
             repos: state => state.repos.repos,
-            uploadForm: state => state.uploadForm.formDef,
-            submission: state => state.uploadForm.submission,
             schemaState: state => state.schemaImport.dataPackageSchema,
             allDatasets: state => state.repos.allRepos,
             branch: state => state.repos.branch,

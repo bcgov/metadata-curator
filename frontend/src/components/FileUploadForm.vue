@@ -47,7 +47,6 @@
 
             ...mapActions({
                 modifyStoreUpload: 'upload/modifyStoreUpload',
-                updateUploadFormSubmission: 'uploadForm/updateUploadFormSubmission',
             }),
 
             async uploadFinished(id){
@@ -79,7 +78,6 @@
             startUploads(){
                 if (this.readyToUpload){
                     // await this.updateFormSubmission(false, true);
-                    // await this.updateUploadFormSubmission(this.formSubmission);
                     this.readyToUpload = false;
                     this.uploading = true;
                     Vue.set(this.startUpload, 0, true);

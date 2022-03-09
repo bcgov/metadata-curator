@@ -73,8 +73,6 @@
 
     import ValidationRules from "../mixins/ValidationRules";
     import { mapActions, mapState, mapMutations } from 'vuex';
-    import { Backend } from '../services/backend';
-    const backend = new Backend();
 
     export default {
         mixins: [ValidationRules],
@@ -170,8 +168,8 @@
                 repo: state => state.repos.repo,
                 branch: state => state.repos.branch,
                 schema: state => state.schemaImport.tableSchema,
-                formName: state => state.uploadForm.formName,
                 user: state => state.user.user,
+                uploadError: 'upload/error',
             }),
 
             displayLabel: function () {
@@ -202,11 +200,9 @@
         },
         methods: {
             ...mapMutations({    
-                setFormSubmission: 'uploadForm/setFormSubmission',
                 editBranch: 'repos/editBranch',
             }),
             ...mapActions({
-                getDefaultUploadForm: 'uploadForm/getDefaultUploadForm',
                 createInitialUpload: 'upload/createInitialUpload',
                 updateBranch: 'repos/updateBranch',
             }),
@@ -218,7 +214,6 @@
             },
 
             createUpload: async function(){
-                await this.getDefaultUploadForm();
                 let dateStart = null;
                 let dateEnd = null;
 
@@ -246,10 +241,10 @@
                     return;
                 }
 
-                if (!this.branch.keywords){
-                    this.$emit('error', "Keywords are required");
-                    return;
-                }
+                // if (!this.branch.keywords){
+                //     this.$emit('error', "Keywords are required");
+                //     return;
+                // }
 
                 // if (!dateStart){
                 //     this.$emit('error', "Start date cannot be deduced please set at least one resource temporal start");
@@ -265,49 +260,38 @@
                 datasetName = (this.branch.repo_id && this.branch.repo_id.name) ? this.branch.repo_id.name : datasetName;
                 
                 let data = {
-                    "ministryOrganization": ministry_organization,
-                    "datasetName": datasetName,
-                    "uploadDescription": (this.branch.description) ? this.branch.description : '',
-                    "daterangestart": dateStart,
-                    "dateRangeEnd": dateEnd,
-                    // "sourceSystem":"source",
-                    // "specificInstructionsAppendLink": (this.branch.instructions) ? this.branch.instructions : '',
-                    // "sensitiveFields":"sensitive",
-                    // "inclusions": (this.branch.inclusions) ? this.branch.inclusions : '',
-                    // "exclusions": (this.branch.exclusions) ? this.branch.exclusions : '',
-                    // "qualityAccurancyInfo": (this.branch.quality) ? this.branch.quality : '',
-                    // "dataChangesOverTime": (this.branch.delta_over_time) ? this.branch.delta_over_time : '',
-                    // "importantAdditionalInfo": (this.branch.additional_info) ? this.branch.additional_info : '',
-                    "references": (this.branch.references) ? this.branch.references : '',
-                    "createdUpdatedDate": new Date(),
-                    "keywordsDescribingData": (this.branch.keywords) ? this.branch.keywords : '',
-                    // "moreInfoUrl": (this.branch.more_information) ? this.branch.more_information : '',,
-                    "numOfUploadFiles": numFiles
+                    "ministry_organization": ministry_organization,
+                    "name": datasetName,
+                    "description": (this.branch.description) ? this.branch.description : '',
+                    "date_range_start": dateStart,
+                    "date_range_end": dateEnd,
+                    "information": (this.branch.additional_info) ? this.branch.additional_info : '',
+                    "data_create_date": new Date(),
+                    // "keywordsDescribingData": (this.branch.keywords) ? this.branch.keywords : '',
+                    "num_files": numFiles
                 }
-
-                let form = {data: data};
-                this.setFormSubmission(form);
                 
                 try{
-                    let data = await backend.postFormSubmission(this.formName, form.data);
-                    const initialUpload = {
-                        name: form.data.datasetName,
-                        description: form.data.uploadDescription,
-                        uploader: this.user.email,
-                        upload_submission_id: data._id,
-                        form_name: this.formName,
-                        provider_group: this.branch.author_groups[0],
-                    }
                     
-                    let d = await this.createInitialUpload(initialUpload);
+                    data.uploader = this.user.email;
+                    data.provider_group = this.branch.author_groups[0];
+                    
+                    
+                    let d = await this.createInitialUpload(data);
 
                     if (!d || !d._id){
                         this.$emit('error', "Error creating upload, "+d);
+                        return;
                     }
 
                     this.editBranch({name: 'data_upload_id', value: d._id});
                     await this.updateBranch();
-                    this.$router.push({name: "upload_view", params: {id: d._id}});
+                    if (this.uploadError){
+                        this.$emit('error', this.uploadError);
+                        return;
+                    }else{
+                        this.$router.push({name: "upload_view", params: {id: d._id}});
+                    }
                 }catch(e){
                     this.$emit('error', e);
                 }

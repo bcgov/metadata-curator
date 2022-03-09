@@ -4,14 +4,14 @@
             <v-row>
                 <v-col cols=12>
                     <v-alert
-                        v-if="(submission && submission.data && submission.data.numOfUploadFiles && (submission.data.numOfUploadFiles === 0))"
+                        v-if="(formSubmission && (formSubmission.num_files === 0))"
                         type="error">
                             {{$tc('You can\'t provide 0 files and still upload')}}
                     </v-alert>
                     <v-alert
-                        v-else-if="(submission && submission.data && submission.data.numOfUploadFiles && (submission.data.numOfUploadFiles !== files.length))"
+                        v-else-if="(formSubmission && formSubmission.num_files && (formSubmission.num_files !== files.length))"
                         type="error">
-                            {{$tc('You said you were providing')}} {{submission.data.numOfUploadFiles}} {{$tc('files but have currently provided', submission.data.numOfUploadFiles)}} {{files.length}}    
+                            {{$tc('You said you were providing')}} {{formSubmission.num_files}} {{$tc('files but have currently provided', formSubmission.num_files)}} {{files.length}}    
                     </v-alert>
                 </v-col>
             </v-row>
@@ -78,13 +78,6 @@
             ...mapActions({
                 modifyStoreUpload: 'upload/modifyStoreUpload',
             }),
-
-            // addFile(){
-            //     this.files[this.fileReaders.length]={};
-            //     this.fileReaders[this.fileReaders.length]={key: 'val'}; 
-            //     this.spanKey++;
-            //     this.updateFormSubmission();
-            // },
             
             removeFile(index){
                 delete this.fileReaders.splice(index, 1);
@@ -164,7 +157,6 @@
             ...mapState({
                 uploadStore: state => state.upload.upload,
                 handles: state => state.file.fileHandles,
-                submission: state => state.uploadForm.submission,
             }),
         },
         watch: {
@@ -173,7 +165,6 @@
             uploadStore: function (newVal, oldVal) {
                 // eslint-disable-next-line no-undef
                 if(newVal) {
-                    // console.log("update  submission");
                     this.formSubmission = {...newVal};
                 }
                 this.buildFiles();

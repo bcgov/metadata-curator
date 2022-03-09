@@ -2,20 +2,18 @@
 
 <br />
 
-## Version 1.3.4
-March 2, 2022
- - Fixed issue with updating a dataset
- - File form alerts user if 0 number of files was provided on the initial submission
- - Fixed issues with create upload from this
-   - Fail more gracefully if keywords aren't set (it's required on the default upload form)
- - Fixed incorrect link when upload is submitted on dataset/uploads tab
- - Fixed issue with exporting filtered fields
- - Fixed issue with updating data upload from the edition page
- - Prevent data providers from attaching upload to edition via edition page/api
+## Version 1.3.5
+March 8, 2022
+ - Removed formio
+ - Fixed issue preventing selection of variable classification index when creating an edition initially
+ - Fixed error preventing create edition from this working
+ - Added none to the edition filter list to find editions without uploads
+ - Fixed issue making the wrong version be selected with create edition from this
 
 <br />
 
 ## Table Of Contents
+- [Version 1.3.5 (March 8 2022)](#version-135)
 - [Version 1.3.4 (March 2 2022)](#version-134)
 - [Version 1.3.3 (March 1 2022)](#version-133)
 - [Version 1.3.2 (February 25 2022)](#version-132)
@@ -26,6 +24,19 @@ March 2, 2022
 - [Version 1.2.4 (February 7 2022)](#version-124)
 - [Version 1.2.3 (February 1 2022)](#version-123)
 - [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
+## Version 1.3.4
+March 2, 2022
+ - Fixed issue with updating a dataset
+ - File form alerts user if 0 number of files was provided on the initial submission
+ - Fixed issues with create upload from this
+   - Fail more gracefully if keywords aren't set (it's required on the default upload form)
+ - Fixed incorrect link when upload is submitted on dataset/uploads tab
+ - Fixed issue with exporting filtered fields
+ - Fixed issue with updating data upload from the edition page
+ - Prevent data providers from attaching upload to edition via edition page/api
 
 <br />
 

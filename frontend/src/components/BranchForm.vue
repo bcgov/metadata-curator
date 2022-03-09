@@ -854,6 +854,7 @@ export default {
                         this.selectableGroups.splice(index, 1);
                     }
                 }
+                await this.getVariableClassifications({});
             }else{
                 this.loadSections();
             }
