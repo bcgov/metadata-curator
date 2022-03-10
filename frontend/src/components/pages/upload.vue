@@ -530,6 +530,11 @@
                             this.errorText = "All start and end dates are required"
                             valid = false;
                         }
+                        if ( (this.upload.files[i].type === "Data") && (!this.upload.files[i].num_records) && (this.upload.files[i].num_records !== 0) ){
+                            this.errorAlert = true;
+                            this.errorText = "Number of Records is required for data file types"
+                            valid = false;
+                        }
                     }
                 }
                 if (valid){

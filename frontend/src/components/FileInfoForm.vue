@@ -154,6 +154,7 @@
             async editFileType(index, newValue){
                 this.type[index] = newValue;
                 await this.updateFormSubmission();
+                this.$emit('update', this.start, this.end, this.title, this.type, this.description, this.num_records);
             },
 
             async triggerStoreUpload(){
@@ -205,7 +206,7 @@
                             let type = (this.formSubmission.files[i].type) ? this.formSubmission.files[i].type : "Other"
                             let start = (this.formSubmission.files[i].start_date) ? this.formSubmission.files[i].start_date : "";
                             let end = (this.formSubmission.files[i].end_date) ? this.formSubmission.files[i].end_date :  "";
-                            let num_records = (this.formSubmission.files[i].num_records) ? this.formSubmission.files[i].num_records :  "";
+                            let num_records = ( (this.formSubmission.files[i].num_records) || (this.formSubmission.files[i].num_records === 0) ) ? this.formSubmission.files[i].num_records :  "";
 
                             // if (start){
                             //     let formST = start.indexOf("T");
