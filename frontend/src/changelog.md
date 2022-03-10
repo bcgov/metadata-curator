@@ -2,21 +2,16 @@
 
 <br />
 
-## Version 1.3.6
+## Version 1.3.7
 March 10, 2022
- - Fixed issue preventing data providers from going back from file select form
- - Upload wizard changed to say "Save & Next" when it actually saves and to use primary color on those buttons
- - Darkened success green in dark and light themes for visibility
- - Fixed logic for File Info form around the default type selected
- - Added drag icon to fields in json editor basic mode when editing
- - Changed translation for schema to "File & Field Level"
- - Added dataset filter to Edition list page
- - Made number of records a required via ui field
+ - Fixed enforcing number of records to be set
+ - Fixed error where if type was the last thing set on file info it wasn't saved
 
 <br />
 
 ## Table Of Contents
-- [Version 1.3.6 (March 10 2022)](#version-135)
+- [Version 1.3.7 (March 10 2022)](#version-137)
+- [Version 1.3.6 (March 10 2022)](#version-136)
 - [Version 1.3.5 (March 8 2022)](#version-135)
 - [Version 1.3.4 (March 2 2022)](#version-134)
 - [Version 1.3.3 (March 1 2022)](#version-133)
@@ -28,6 +23,19 @@ March 10, 2022
 - [Version 1.2.4 (February 7 2022)](#version-124)
 - [Version 1.2.3 (February 1 2022)](#version-123)
 - [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
+## Version 1.3.6
+March 10, 2022
+ - Fixed issue preventing data providers from going back from file select form
+ - Upload wizard changed to say "Save & Next" when it actually saves and to use primary color on those buttons
+ - Darkened success green in dark and light themes for visibility
+ - Fixed logic for File Info form around the default type selected
+ - Added drag icon to fields in json editor basic mode when editing
+ - Changed translation for schema to "File & Field Level"
+ - Added dataset filter to Edition list page
+ - Made number of records a required via ui field
 
 <br />
 

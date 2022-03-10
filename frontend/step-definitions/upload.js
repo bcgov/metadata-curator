@@ -88,6 +88,8 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
     await client.pause(500);
     await client.click('#fileinfo-0-title');
 
+    await client.setValue('#fileinfo-0-num_records', 5);
+
     await client.saveScreenshot("./"+path+"/preNext3.png");
     await client.click('#next-4');
     await client.saveScreenshot("./"+path+"/postNext3.png").pause(1);
