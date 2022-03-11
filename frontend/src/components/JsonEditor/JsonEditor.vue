@@ -636,6 +636,9 @@ export default{
             for (let i=0; i<fKeys.length; i++){
                 let filterFieldName = fKeys[i];
                 if (Array.isArray(this.filters[filterFieldName])){
+                    if (this.filters[filterFieldName].length === 0){
+                        return false;
+                    }
                     if (!filterFieldName || !field[filterFieldName] || (this.filters[filterFieldName].indexOf(field[filterFieldName]) === -1)){
                         return true;
                     }

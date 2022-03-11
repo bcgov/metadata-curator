@@ -78,7 +78,8 @@ export default {
         "Key": "Keys | Key | Keys",
         "Value": "Values | Value | Values",
         "Form": "Forms | Form | Forms",
-        "Schema": "File & Field Level | File & Field Level | File & Field Level",
+        "Schema": "Files & Fields | Files & Fields | Files & Fields",
+        "Schema Revisions": "File & Field Revisions",
         "Loading": "Loading",
         "Select Existing Dataset": "Select Existing Datasets | Select Existing Dataset | Select Existing Datasets",
         "Data Upload Summary": "Data Upload Summary",
@@ -185,6 +186,8 @@ export default {
         "Compare": "Compare",
         "metadata": "metadata",
         "Only found in": "Only found in",
+        "Submissions": "Submissions",
+        "Revision": "Revision",
 
         "Allow Publish": "Allow Publish",
         "Gov DAR": "Gov DAR",

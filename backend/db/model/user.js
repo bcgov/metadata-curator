@@ -8,6 +8,6 @@ var userSchema = new Schema({
     lastLogin: {type: Date, required: true},
 });
 
-var model = mongoose.model('user', userSchema, 'user');
+var model = mongoose.model('mc_user', userSchema, 'mc_user');
 
 module.exports = model;

@@ -26,14 +26,14 @@
                     :label="$tc('Highlight')"
                     placeholder=""
                     name="highlight"
-                    :items="[ { value: true, label: 'Yes' }, { value: false, label: 'No' }]"
+                    :items="[ { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }]"
                     itemText="label"
                     itemValue="value"
                     :large="false"
                     :multiple="true"
                     :editing="true"
                     helpPrefix="filter"
-                    @edited="(newValue) => { $emit('filter', 'highlight', newValue) }"
+                    @edited="(newValue) => { $emit('filter', 'highlight', (newValue === 'true')) }"
                 ></Select>
             </v-col>
         </v-row>
