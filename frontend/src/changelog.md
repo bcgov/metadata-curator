@@ -8,7 +8,8 @@ March 15, 2022
  - Fully removed formio 
  - Added highlight filter to edition file & field info page
  - Changed Schema label to files & fields
- - 
+ - Early support for a phase 3 feature
+ - Fields are collapsed in view mode initially after expanding a file
 
 <br />
 
