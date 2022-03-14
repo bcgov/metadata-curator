@@ -943,7 +943,17 @@ export default {
     },
     watch: {
         branchId: async function(){
-            await this.load();
+            if (this.branchId){
+                await this.load();
+            }else{
+                if (this.branchId === 'create'){
+                    this.creating = true;
+                    this.editing = true;
+                }
+                await this.clearBranch();
+                await this.clearTableSchema();
+                await this.clearDataPackageSchema();
+            }
         },
         branch: function(){
             this.setExportFields()

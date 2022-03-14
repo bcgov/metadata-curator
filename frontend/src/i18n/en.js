@@ -264,6 +264,7 @@ export default {
         "Select Data Provider Group": "Select Data Provider Group",
         "NOTE: you will be unable to change this after initial creation": "NOTE: you will be unable to change this after initial creation",
         "found": "found",
+        "Save & Next": "Save & Next",
 
         "help.dataset.name": "The name of the dataset",
         "help.dataset.description": "A description of the dataset",

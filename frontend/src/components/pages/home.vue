@@ -52,11 +52,13 @@ export default {
             user: state => state.user.user,
         }),
         noUpdates: function(){
-            let keys = Object.keys(this.user.activity);
             let noUpdates = true;
-            for (let i=0; i<keys.length; i++){
-                if (this.user.activity[keys[i]].length > 0){
-                    noUpdates = false;
+            if (this.user && this.user.activity){
+                let keys = Object.keys(this.user.activity);
+                for (let i=0; i<keys.length; i++){
+                    if (this.user.activity[keys[i]].length > 0){
+                        noUpdates = false;
+                    }
                 }
             }
             return noUpdates;

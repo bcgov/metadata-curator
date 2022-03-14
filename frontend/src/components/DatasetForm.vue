@@ -285,6 +285,9 @@ export default {
             editDataset: 'repos/editRepo',
             clearDataset: 'repos/clearRepo',
             editBranch: 'repos/editBranch',
+            clearBranch: 'repos/clearBranch',
+            clearTableSchema: 'schemaImport/clearTableSchema',
+            clearDataPackageSchema: 'schemaImport/clearDataPackageSchema',
         }),
 
         async loadSections() {
@@ -306,7 +309,11 @@ export default {
             this.editDataset({name: name, value: value});
         },
 
-        addVersion(){
+        async addVersion(){
+            await this.clearBranch();
+            await this.clearTableSchema();
+            await this.clearDataPackageSchema();
+            this.branch = "";
             this.branch = "create";
             this.branchDia = true;
         },
@@ -372,8 +379,9 @@ export default {
         },
 
         editVersion(id){
-            this.branch = id;
-            this.branchDia = true;
+            // this.branch = id;
+            // this.branchDia = true;
+            this.$router.push({name: "version_form", params: {id: id}})
         },
 
         save(){

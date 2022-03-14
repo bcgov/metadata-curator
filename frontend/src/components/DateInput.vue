@@ -35,8 +35,7 @@
         <span v-else>
             <ValidationProvider ref="provider" :rules="validationRules" v-slot="{ errors }" :name="label ? ($te(label) ? $tc(label) : label) : ($te(name) ? $tc(name) : name)">
                 <v-menu
-                    v-model="menuOpen"
-                    :close-on-content-click="false"
+                    :close-on-content-click="true"
                     :nudge-right="40"
                     transition="scale-transition"
                     offset-y
@@ -70,7 +69,7 @@
                             </template>
                         </v-text-field>
                     </template>
-                    <v-date-picker v-model="val" @input="menuOpen = false" @change="$emit('edited', val)"></v-date-picker>
+                    <v-date-picker v-model="val" @change="$emit('edited', val)"></v-date-picker>
                 </v-menu>
             </ValidationProvider>
         </span>
@@ -165,7 +164,6 @@
 
             return {
                 val: v,
-                menuOpen: false,
             }
         },
         methods: {
