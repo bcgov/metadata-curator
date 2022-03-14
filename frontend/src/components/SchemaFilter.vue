@@ -33,7 +33,7 @@
                     :multiple="true"
                     :editing="true"
                     helpPrefix="filter"
-                    @edited="(newValue) => { $emit('filter', 'highlight', (newValue === 'true')) }"
+                    @edited="(newValue) => { highlightFilter(newValue) }"
                 ></Select>
             </v-col>
         </v-row>
@@ -74,6 +74,20 @@ import Select from './Select';
                 return rv;
             },
 
+        },
+
+        methods: {
+            highlightFilter(newValue){
+                let v = [];
+                if (Array.isArray(newValue)){
+                    for (let i=0; i<newValue.length; i++){
+                        v[i] = (newValue[i] === 'true');
+                    }
+                }else{
+                    v = ( (newValue === 'true') ? true : (newValue === 'false') ? false : '' );
+                }
+                this.$emit('filter', 'highlight', v);
+            }
         },
         
         mounted(){

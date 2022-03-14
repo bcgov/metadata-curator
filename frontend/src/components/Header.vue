@@ -107,13 +107,13 @@ export default {
         tabs: function(){
             let t = [];
             if (this.user){
-                if (this.enabledPhase === 1){
+                if (this.enabledPhase >= 1){
                     t = [
                         { id: 2, name: "Uploads", route: `/uploads`, icon: 'mdi-cloud-upload', disabled: false},
                     ];
                 }
 
-                if (this.enabledPhase === 2){
+                if (this.enabledPhase >= 2){
                     t = [
                         { id: 1, name: "Home", route: `/`, icon: 'mdi-home', disabled: false},
                         { id: 2, name: "Uploads", route: `/uploads`, icon: 'mdi-cloud-upload', disabled: false},

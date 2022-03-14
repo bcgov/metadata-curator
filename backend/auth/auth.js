@@ -195,6 +195,7 @@ var strategy = new OidcStrategy(config.get('oidc'), async function(issuer, sub, 
       try{
         var u = await db.User.findOne({email: profile.email});
         profile.lastLogin = u.lastLogin;
+        profile.bcdcSet = u.bcdc_apiKey && u.bcdc_accessKey;
         profile = await buildActivity(profile);
       }catch(ex){
         console.log("No previous user info", ex);

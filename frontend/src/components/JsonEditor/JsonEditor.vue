@@ -639,7 +639,7 @@ export default{
                     if (this.filters[filterFieldName].length === 0){
                         return false;
                     }
-                    if (!filterFieldName || !field[filterFieldName] || (this.filters[filterFieldName].indexOf(field[filterFieldName]) === -1)){
+                    if (!filterFieldName || (!field[filterFieldName] && field[filterFieldName] !== 0 && field[filterFieldName] !== false) || (this.filters[filterFieldName].indexOf(field[filterFieldName]) === -1)){
                         return true;
                     }
                 }else{
@@ -936,7 +936,7 @@ export default{
                 this.expandedBasicResource[i] = false;
                 if (this.workingVal.resources[i] && this.workingVal.resources[i].schema && this.workingVal.resources[i].schema.fields){
                     for (let j=0; j<this.workingVal.resources[i].schema.fields.length; j++){
-                        this.expandedBasic[i][j] = true;
+                        this.expandedBasic[i][j] = false;
                         if (typeof(this.workingVal.resources[i].schema.fields[j].constraints) === 'undefined'){
                             this.workingVal.resources[i].schema.fields[j].constraints = {};
                         }

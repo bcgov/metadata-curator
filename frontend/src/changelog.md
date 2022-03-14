@@ -6,6 +6,9 @@
 March 15, 2022
  - Fixed about page crashing server
  - Fully removed formio 
+ - Added highlight filter to edition file & field info page
+ - Changed Schema label to files & fields
+ - 
 
 <br />
 
