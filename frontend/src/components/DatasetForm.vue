@@ -19,15 +19,18 @@
                 transition="dialog-bottom-transition">
                     <v-card>
                         <v-card-text>
-                            <BranchForm :dialog="true" @close="closeBranchDia()" :branchId="branch"></BranchForm>
+                            <!--BranchForm :dialog="true" @close="closeBranchDia()" :branchId="branch"></BranchForm-->
                         </v-card-text>
                     </v-card>
             </v-dialog>
             <v-col cols="12">
                 <v-card outlined>
                     <v-card-text>
-                        <v-row>
-                            <h1 class="display-1 font-weight-thin ml-3 my-3">{{creating ? $tc("New") + " " + $tc("Datasets") : $tc("Datasets") + " " + dataset.name}}</h1>
+                        <v-row v-if="creating">
+                            <h1 class="display-1 font-weight-thin ml-3 my-3">{{$tc("New") + " " + $tc("Datasets")}}</h1>
+                        </v-row>
+                        <v-row v-else>
+                             <h1><a :href="'/datasets/'+id">{{$tc("Datasets") + " " + dataset.name}}</a></h1>
                         </v-row>
 
                         <v-row v-if="!creating">
@@ -232,7 +235,7 @@
 <script>
 import {mapActions, mapMutations, mapState} from "vuex";
 import TextInput from './TextInput';
-import BranchForm from './BranchForm';
+//import BranchForm from './BranchForm';
 import SimpleCheckbox from './SimpleCheckbox';
 import Select from './Select';
 import { Backend } from '../services/backend';
@@ -241,7 +244,7 @@ const backend = new Backend();
 export default {
     components:{
         TextInput,
-        BranchForm,
+        // BranchForm,
         SimpleCheckbox,
         Select
     },
@@ -382,10 +385,14 @@ export default {
 
         },
 
-        editVersion(id){
+        async editVersion(id){
             // this.branch = id;
             // this.branchDia = true;
-            this.$router.push({name: "version_form", params: {id: id}})
+            let reload = (this.$route.name === 'version_form');
+            await this.$router.push({name: "version_form", params: {id: id}})
+            if (reload){
+                window.location.reload();
+            }
         },
 
         save(){
