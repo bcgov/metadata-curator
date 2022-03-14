@@ -201,7 +201,7 @@
                                 <h2>{{$tc('Versions', 2)}}</h2>
                             </v-col>
                             <v-col cols=9>
-                                <v-btn color="primary" @click="addVersion">{{$tc('Add')}} {{$tc('Version')}}</v-btn>
+                                <v-btn v-if="allowAddEdition" color="primary" @click="addVersion">{{$tc('Add')}} {{$tc('Version')}}</v-btn>
                             </v-col>
 
                             <v-col cols=12 v-for="(branch, i) in branches" :key="'branch-'+i">
@@ -210,7 +210,7 @@
                                     - {{branch.type.charAt(0).toUpperCase() + branch.type.slice(1)}} 
                                     - {{$tc('Created')}} {{branch.create_date | formatDate}} 
                                 </span>
-                                <v-btn color="success" @click="copyVersion(branch)">{{$tc('Create')}} {{$tc('Version')}} {{$tc('from this')}}</v-btn>
+                                <v-btn color="success" v-if="allowAddEdition" @click="copyVersion(branch)">{{$tc('Create')}} {{$tc('Version')}} {{$tc('from this')}}</v-btn>
                             </v-col>
                         </v-row>
 
@@ -255,6 +255,10 @@ export default {
             required: false,
             default: false,
         },
+        allowAddEdition: {
+            required: false,
+            default: true,
+        }
     },
 
     data () {

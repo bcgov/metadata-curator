@@ -403,7 +403,7 @@
 
                     <v-tab-item key="dataset">
                         <span v-if="branch && branch.repo_id && branch.repo_id._id">
-                            <DatasetForm v-if="!dialog" :hideEditions="dialog" :idOverride="branch.repo_id._id"></DatasetForm>
+                            <DatasetForm v-if="!dialog" :hideEditions="dialog" :allowAddEdition="false" :idOverride="branch.repo_id._id"></DatasetForm>
                             <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
                         </span>
                     </v-tab-item>
