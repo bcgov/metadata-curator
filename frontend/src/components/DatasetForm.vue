@@ -219,11 +219,11 @@
 
                     </v-card-text>
                 </v-card>
-                <v-card-actions v-if="editing && !hideEditions">
+                <v-card-actions v-if="editing && !hideEditions && allowAddEdition">
                     <v-btn @click="routeToHome()" class="mt-1">{{$tc('Cancel')}}</v-btn>
                     <v-btn @click="save" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
                 </v-card-actions>
-                <v-card-actions v-else-if="!editing && !hideEditions">
+                <v-card-actions v-else-if="!editing && !hideEditions && allowAddEdition">
                     <v-btn @click="routeToHome()" class="mt-1">{{$tc('Back')}}</v-btn>
                     <v-btn @click="editing=!editing" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                 </v-card-actions>
