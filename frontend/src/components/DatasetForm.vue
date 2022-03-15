@@ -323,8 +323,10 @@ export default {
             await this.clearTableSchema();
             await this.clearDataPackageSchema();
             this.branch = "";
-            this.branch = "create";
-            this.branchDia = true;
+            this.$nextTick(() => {
+                this.branch = "create";
+                this.branchDia = true;
+            });
             //this.$router.push({name: 'version_form', params: { id: "create" }});
         },
 
