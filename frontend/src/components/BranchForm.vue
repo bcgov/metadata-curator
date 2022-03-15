@@ -537,6 +537,8 @@ import SimpleCheckbox from './SimpleCheckbox';
 import DataUploadSelect from './DataUploadSelect';
 
 export default {
+    name: "BranchForm",
+
     components:{
         TextInput,
         Select,
@@ -879,11 +881,11 @@ export default {
                     this.alertType = "success"
                     this.alertText = this.$tc("Sucessfully created ") + this.$tc("version", 1);
                     this.alert = true;
-                    //this.closeOrBack();
                     this.editing = false;
                     window.scrollTo(0,0);
                     this.creating = false;
                     this.id=data.id;
+                    this.closeOrBack();
                     
 
                 }).catch( err => {

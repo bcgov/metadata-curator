@@ -19,7 +19,7 @@
                 transition="dialog-bottom-transition">
                     <v-card>
                         <v-card-text>
-                            <!--BranchForm :dialog="true" @close="closeBranchDia()" :branchId="branch"></BranchForm-->
+                            <BranchForm :dialog="true" @close="closeBranchDia()" :branchId="branch"></BranchForm>
                         </v-card-text>
                     </v-card>
             </v-dialog>
@@ -235,16 +235,18 @@
 <script>
 import {mapActions, mapMutations, mapState} from "vuex";
 import TextInput from './TextInput';
-//import BranchForm from './BranchForm';
+import BranchForm from './BranchForm';
 import SimpleCheckbox from './SimpleCheckbox';
 import Select from './Select';
 import { Backend } from '../services/backend';
 const backend = new Backend();
 
 export default {
+    name: "DatasetForm",
+
     components:{
         TextInput,
-        // BranchForm,
+        BranchForm,
         SimpleCheckbox,
         Select
     },
@@ -323,6 +325,7 @@ export default {
             this.branch = "";
             this.branch = "create";
             this.branchDia = true;
+            //this.$router.push({name: 'version_form', params: { id: "create" }});
         },
 
         async copyVersion(branch){
