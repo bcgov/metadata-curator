@@ -478,7 +478,7 @@ export default {
         leftResources: function(){
             let r = this.getResources(this.leftWorkingVal);
             let rightResources = this.getResources(this.workingVal);
-            console.log("LEFT RESOURCES", r, rightResources);
+            // console.log("LEFT RESOURCES", r, rightResources);
             let hi = r.length-1;
             
             if (r.length >= rightResources.length){
@@ -551,7 +551,7 @@ export default {
             let movedToEnd = 0;
             
             let leftResources = this.getResources(this.leftWorkingVal);
-            console.log("RIGHT RESOURCES", leftResources, r);
+            // console.log("RIGHT RESOURCES", leftResources, r);
             if (r.length > leftResources.length){
                 let newR = [];
                 for (let i=0; i<r.length; i++){
@@ -622,12 +622,6 @@ export default {
                                 //ind = ind<0 ? 0 : ind;
                                 newF[ind] = r[i].schema.fields[parseInt(bd.comparedAgainst)];
                                 changed = (changed || (parseInt(bd.comparedAgainst) !== j));
-                                if (r[i].schema.fields[j].name === 'f21'){
-                                    console.log("RIGHT FIELD f21", r[i].schema.fields[j], bd, j, resourceMoveToEnd);
-                                }
-                                if (r[i].schema.fields[j].name === 'f22'){
-                                    console.log("RIGHT FIELD f22", r[i].schema.fields[j], bd, j, resourceMoveToEnd);
-                                }
                             }else if ( bd && (bd.removed || bd.added) ){
                                 newF[hiF] = r[i].schema.fields[j];
                                 resourceMoveToEnd++;

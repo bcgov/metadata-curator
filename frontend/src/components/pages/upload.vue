@@ -538,7 +538,7 @@
                             return;
                         }
 
-                        if ( (this.upload.files[i].type === "Data") && (!this.upload.files[i].num_records) && (parseInt(this.upload.files[i].num_records) != this.upload.files[i].num_records) ){
+                        if ( (this.upload.files[i].type === "Data") && (parseInt(this.upload.files[i].num_records) != this.upload.files[i].num_records) ){
                             this.errorAlert = true;
                             this.errorText = "Number of Records must be a number"
                             valid = false;
