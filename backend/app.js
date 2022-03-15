@@ -64,8 +64,13 @@ app.get("/api/version", async function(req, res){
   if (req.query.type){
     if (req.query.type.toLowerCase() === "forum"){
       const forumClient = require('./clients/forum_client');
-      let v = await forumClient.getVersion();
-      return res.json(v.data);
+      try{
+        let v = await forumClient.getVersion();
+        return res.json(v.data);
+      }catch(e){
+        console.log(e);
+        return res.json({"v":"3.1.3","hash":"","version":"3.1.3","name":"Forum API"})
+      }
 
     }else if (req.query.type.toLowerCase() === "formio"){
       // const formioClient = require('./clients/formio_client');
@@ -81,28 +86,33 @@ app.get("/api/version", async function(req, res){
       let baseUrl = tusUrl.substring(0, tusUrl.lastIndexOf("/"))
 
       const url = `${baseUrl}`;
-      let r = await axios.get(url);
-      let resp = r.data;
+      try{
+        let r = await axios.get(url);
+        let resp = r.data;
 
-      let vTag = 'Version = ';
-      let start = resp.indexOf(vTag);
-      let end = resp.indexOf("\n", start);
-      let num = vTag.length;
-      let v = resp.substring(start+num, end)
+        let vTag = 'Version = ';
+        let start = resp.indexOf(vTag);
+        let end = resp.indexOf("\n", start);
+        let num = vTag.length;
+        let v = resp.substring(start+num, end)
 
-      let cTag = 'GitCommit = ';
-      start = resp.indexOf(cTag);
-      end = resp.indexOf("\n", start);
-      num = cTag.length;
-      let c = resp.substring(start+num, end)
+        let cTag = 'GitCommit = ';
+        start = resp.indexOf(cTag);
+        end = resp.indexOf("\n", start);
+        num = cTag.length;
+        let c = resp.substring(start+num, end)
 
-      let bTag = 'BuildDate = ';
-      start = resp.indexOf(bTag);
-      end = resp.indexOf("\n", start);
-      num = bTag.length;
-      let b = resp.substring(start+num, end)
+        let bTag = 'BuildDate = ';
+        start = resp.indexOf(bTag);
+        end = resp.indexOf("\n", start);
+        num = bTag.length;
+        let b = resp.substring(start+num, end)
 
-      return res.json({v: v, hash: c, built: b, name: 'tusd'});
+        return res.json({v: v, hash: c, built: b, name: 'tusd'});
+      }catch(e){
+        console.log("Error getting tusd information using default from docker image");
+        return res.json({v: '0.11.0', hash: 'b1a657049e9d11d05886bb328174c7b6741eaf4f', build: 'Fri Mar 15 21:14:24 UTC 2019', name: 'tusd'});
+      }
     }
   }
 

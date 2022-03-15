@@ -99,7 +99,7 @@
                                 :editing="true"
                                 :value="(num_records[index]) ? num_records[index] : ''"
                                 helpPrefix="upload"
-                                validation-rules="required"
+                                validation-rules="required|numeric"
                                 :idName="'fileinfo-'+ index + '-num_records'"
                                 @blur="(newValue) => { editFileInfoIndex('num_records', index, newValue.target.value) }"
                             ></TextInput>
@@ -249,6 +249,9 @@
                                         case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
                                             type = 'Data';
                                             break;
+                                        case 'application/vnd.ms-excel':
+                                            type = 'Data';
+                                            break
                                         case 'text/plain':
                                             type = 'Data';
                                             break;

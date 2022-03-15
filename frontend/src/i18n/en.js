@@ -78,7 +78,8 @@ export default {
         "Key": "Keys | Key | Keys",
         "Value": "Values | Value | Values",
         "Form": "Forms | Form | Forms",
-        "Schema": "File & Field Level | File & Field Level | File & Field Level",
+        "Schema": "Files & Fields | Files & Fields | Files & Fields",
+        "Schema Revisions": "File & Field Revisions",
         "Loading": "Loading",
         "Select Existing Dataset": "Select Existing Datasets | Select Existing Dataset | Select Existing Datasets",
         "Data Upload Summary": "Data Upload Summary",
@@ -185,6 +186,8 @@ export default {
         "Compare": "Compare",
         "metadata": "metadata",
         "Only found in": "Only found in",
+        "Submissions": "Submissions",
+        "Revision": "Revision",
 
         "Allow Publish": "Allow Publish",
         "Gov DAR": "Gov DAR",
@@ -261,6 +264,7 @@ export default {
         "Select Data Provider Group": "Select Data Provider Group",
         "NOTE: you will be unable to change this after initial creation": "NOTE: you will be unable to change this after initial creation",
         "found": "found",
+        "Save & Next": "Save & Next",
 
         "help.dataset.name": "The name of the dataset",
         "help.dataset.description": "A description of the dataset",
@@ -291,5 +295,7 @@ export default {
         "help.schema.shortName": "A shorter name for the field; userful if name is very long",
         "help.schema.format": "Format for the field type. e.g., string formats: default (any valid string), email, uri, uuid; date formats:  default (which assumes YYYY-MM-DD), %d/%m/%y; time formats: default (which assumes YYYY-MM-DDThh:mm:ssZ).  For a full list of format options see https://specs.frictionlessdata.io/table-schema/#types-and-formats",
         
+        "user.bcdc_accessKey": "This is your passphrase that will be required in metadata curator to use your api key",
+        "user.bcdc_apiKey": "This is your api key available from the data catalogue in your user profile listed as api key",
     }
 }

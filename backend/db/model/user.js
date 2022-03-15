@@ -6,8 +6,10 @@ var userSchema = new Schema({
     name: {type: String, required: false},
     groups: {type: [String], required: true, default: []},
     lastLogin: {type: Date, required: true},
+    bcdc_apiKey: {type: String, required: false},
+    bcdc_accessKey: {type: String, required: false},
 });
 
-var model = mongoose.model('user', userSchema, 'user');
+var model = mongoose.model('mc_user', userSchema, 'mc_user');
 
 module.exports = model;

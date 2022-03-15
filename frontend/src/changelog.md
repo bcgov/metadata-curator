@@ -2,14 +2,23 @@
 
 <br />
 
-## Version 1.3.7
-March 10, 2022
- - Fixed enforcing number of records to be set
- - Fixed error where if type was the last thing set on file info it wasn't saved
+## Version 1.4.0
+March 15, 2022
+ - Fixed about page crashing server
+ - Fully removed formio 
+ - Added highlight filter to edition file & field info page
+ - Changed Schema label to files & fields
+ - Redesigned user page, feature BCDC fields if phase 3 is enabled
+ - Fields are collapsed in view mode initially after expanding a file
+ - Fixed error with required date fields reporting an error erroneously sometimes
+ - Fixed error that made the home page occasionally appear blank
+ - Changed dataset page to link to edition page instead of be a pop up
+ - Forced file info number of records to be a number
 
 <br />
 
 ## Table Of Contents
+- [Version 1.4.0 (March 15 2022)](#version-140)
 - [Version 1.3.7 (March 10 2022)](#version-137)
 - [Version 1.3.6 (March 10 2022)](#version-136)
 - [Version 1.3.5 (March 8 2022)](#version-135)
@@ -23,6 +32,13 @@ March 10, 2022
 - [Version 1.2.4 (February 7 2022)](#version-124)
 - [Version 1.2.3 (February 1 2022)](#version-123)
 - [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
+## Version 1.3.7
+March 10, 2022
+ - Fixed enforcing number of records to be set
+ - Fixed error where if type was the last thing set on file info it wasn't saved
 
 <br />
 

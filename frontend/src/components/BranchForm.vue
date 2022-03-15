@@ -403,7 +403,7 @@
 
                     <v-tab-item key="dataset">
                         <span v-if="branch && branch.repo_id && branch.repo_id._id">
-                            <DatasetForm v-if="!dialog" :hideEditions="true" :idOverride="branch.repo_id._id"></DatasetForm>
+                            <DatasetForm v-if="!dialog" :hideEditions="dialog" :allowAddEdition="false" :idOverride="branch.repo_id._id"></DatasetForm>
                             <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
                         </span>
                     </v-tab-item>
@@ -537,6 +537,8 @@ import SimpleCheckbox from './SimpleCheckbox';
 import DataUploadSelect from './DataUploadSelect';
 
 export default {
+    name: "BranchForm",
+
     components:{
         TextInput,
         Select,
@@ -879,11 +881,11 @@ export default {
                     this.alertType = "success"
                     this.alertText = this.$tc("Sucessfully created ") + this.$tc("version", 1);
                     this.alert = true;
-                    //this.closeOrBack();
                     this.editing = false;
                     window.scrollTo(0,0);
                     this.creating = false;
                     this.id=data.id;
+                    this.closeOrBack();
                     
 
                 }).catch( err => {
@@ -943,7 +945,17 @@ export default {
     },
     watch: {
         branchId: async function(){
-            await this.load();
+            if (this.branchId){
+                await this.load();
+            }else{
+                if (this.branchId === 'create'){
+                    this.creating = true;
+                    this.editing = true;
+                }
+                await this.clearBranch();
+                await this.clearTableSchema();
+                await this.clearDataPackageSchema();
+            }
         },
         branch: function(){
             this.setExportFields()

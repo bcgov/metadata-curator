@@ -26,8 +26,11 @@
             <v-col cols="12">
                 <v-card outlined>
                     <v-card-text>
-                        <v-row>
-                            <h1 class="display-1 font-weight-thin ml-3 my-3">{{creating ? $tc("New") + " " + $tc("Datasets") : $tc("Datasets") + " " + dataset.name}}</h1>
+                        <v-row v-if="creating">
+                            <h1 class="display-1 font-weight-thin ml-3 my-3">{{$tc("New") + " " + $tc("Datasets")}}</h1>
+                        </v-row>
+                        <v-row v-else>
+                             <h1><a :href="'/datasets/'+id">{{$tc("Datasets") + " " + dataset.name}}</a></h1>
                         </v-row>
 
                         <v-row v-if="!creating">
@@ -201,7 +204,7 @@
                                 <h2>{{$tc('Versions', 2)}}</h2>
                             </v-col>
                             <v-col cols=9>
-                                <v-btn color="primary" @click="addVersion">{{$tc('Add')}} {{$tc('Version')}}</v-btn>
+                                <v-btn v-if="allowAddEdition" color="primary" @click="addVersion">{{$tc('Add')}} {{$tc('Version')}}</v-btn>
                             </v-col>
 
                             <v-col cols=12 v-for="(branch, i) in branches" :key="'branch-'+i">
@@ -210,17 +213,17 @@
                                     - {{branch.type.charAt(0).toUpperCase() + branch.type.slice(1)}} 
                                     - {{$tc('Created')}} {{branch.create_date | formatDate}} 
                                 </span>
-                                <v-btn color="success" @click="copyVersion(branch)">{{$tc('Create')}} {{$tc('Version')}} {{$tc('from this')}}</v-btn>
+                                <v-btn color="success" v-if="allowAddEdition" @click="copyVersion(branch)">{{$tc('Create')}} {{$tc('Version')}} {{$tc('from this')}}</v-btn>
                             </v-col>
                         </v-row>
 
                     </v-card-text>
                 </v-card>
-                <v-card-actions v-if="editing && !hideEditions">
+                <v-card-actions v-if="editing && !hideEditions && allowAddEdition">
                     <v-btn @click="routeToHome()" class="mt-1">{{$tc('Cancel')}}</v-btn>
                     <v-btn @click="save" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
                 </v-card-actions>
-                <v-card-actions v-else-if="!editing && !hideEditions">
+                <v-card-actions v-else-if="!editing && !hideEditions && allowAddEdition">
                     <v-btn @click="routeToHome()" class="mt-1">{{$tc('Back')}}</v-btn>
                     <v-btn @click="editing=!editing" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                 </v-card-actions>
@@ -239,6 +242,8 @@ import { Backend } from '../services/backend';
 const backend = new Backend();
 
 export default {
+    name: "DatasetForm",
+
     components:{
         TextInput,
         BranchForm,
@@ -255,6 +260,10 @@ export default {
             required: false,
             default: false,
         },
+        allowAddEdition: {
+            required: false,
+            default: true,
+        }
     },
 
     data () {
@@ -285,6 +294,9 @@ export default {
             editDataset: 'repos/editRepo',
             clearDataset: 'repos/clearRepo',
             editBranch: 'repos/editBranch',
+            clearBranch: 'repos/clearBranch',
+            clearTableSchema: 'schemaImport/clearTableSchema',
+            clearDataPackageSchema: 'schemaImport/clearDataPackageSchema',
         }),
 
         async loadSections() {
@@ -306,9 +318,14 @@ export default {
             this.editDataset({name: name, value: value});
         },
 
-        addVersion(){
+        async addVersion(){
+            await this.clearBranch();
+            await this.clearTableSchema();
+            await this.clearDataPackageSchema();
+            this.branch = "";
             this.branch = "create";
             this.branchDia = true;
+            //this.$router.push({name: 'version_form', params: { id: "create" }});
         },
 
         async copyVersion(branch){
@@ -371,9 +388,14 @@ export default {
 
         },
 
-        editVersion(id){
-            this.branch = id;
-            this.branchDia = true;
+        async editVersion(id){
+            // this.branch = id;
+            // this.branchDia = true;
+            let reload = (this.$route.name === 'version_form');
+            await this.$router.push({name: "version_form", params: {id: id}})
+            if (reload){
+                window.location.reload();
+            }
         },
 
         save(){

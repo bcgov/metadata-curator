@@ -104,7 +104,7 @@ export default {
         return {
             filterBy: -1,
             isUpdating: false,
-            datasetFilter: -1,
+            datasetFilter: "-1",
         }
     },
     async mounted(){
@@ -162,7 +162,7 @@ export default {
                     subtitle: branch.description,
                     id: branch._id,
                 };
-                if ( (this.datasetFilter === -1) || (branch.repo_id == this.datasetFilter) ){
+                if ( (this.datasetFilter === "-1") || (branch.repo_id == this.datasetFilter) ){
                     items.push(item);
                     if(index <= this.branches.length - 1) {
                         items.push({ divider: true, inset: true });

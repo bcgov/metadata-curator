@@ -1,5 +1,6 @@
 import { Backend } from '../../services/backend';
 const authServ = new Backend();
+
 import Vue from 'vue';
 
 const state = {
@@ -26,6 +27,15 @@ const actions = {
         commit('setLoggedIn', {loggedIn: false});
         commit('setUserPermissions', {userPermissions: {}});
         commit('setIsApprover', {isApprover: false});
+    },
+
+    async setBCDCUserInfo({state}, bcdcUserInfo){
+        try{
+            const data = await authServ.putUserBCDC(state.user.email, bcdcUserInfo);
+            return data;
+        }catch(e){
+            return e
+        }
     },
 
     async getCurrentUser({ commit, state }) {

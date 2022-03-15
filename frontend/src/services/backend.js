@@ -405,4 +405,9 @@ export class Backend {
         return axios.delete(url, {}, {withCredentials: true}).then(response => response.data)
     }
 
+    putUserBCDC(email, bcdcUserInfo){
+        const url = `/api/v1/user/${email}`;
+        return axios.put(url, bcdcUserInfo, {withCredentials: true}).then(response => response.data)
+    }
+
 }

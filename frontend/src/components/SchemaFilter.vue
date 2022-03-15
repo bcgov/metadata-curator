@@ -1,17 +1,14 @@
 <template>
-    <v-container>
+    <v-container class="bordered">
         <v-row>
             <v-col cols=12>
-                {{$tc('Filter by')}}
+                <h3>{{$tc('Filter by')}}</h3>
             </v-col>
         </v-row>
         <v-row>
-            <v-col cols=4>
-                {{$tc('Var Class')}}:
-            </v-col>
-            <v-col cols=8>
+            <v-col cols=6>
                 <Select
-                    label=""
+                    :label="$tc('Var Class')"
                     placeholder=""
                     name="var_class"
                     :items="variableClassificationValues"
@@ -22,6 +19,21 @@
                     :editing="true"
                     helpPrefix="filter"
                     @edited="(newValue) => { $emit('filter', 'var_class', newValue) }"
+                ></Select>
+            </v-col>
+            <v-col cols=6>
+                <Select
+                    :label="$tc('Highlight')"
+                    placeholder=""
+                    name="highlight"
+                    :items="[ { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }]"
+                    itemText="label"
+                    itemValue="value"
+                    :large="false"
+                    :multiple="true"
+                    :editing="true"
+                    helpPrefix="filter"
+                    @edited="(newValue) => { highlightFilter(newValue) }"
                 ></Select>
             </v-col>
         </v-row>
@@ -63,6 +75,20 @@ import Select from './Select';
             },
 
         },
+
+        methods: {
+            highlightFilter(newValue){
+                let v = [];
+                if (Array.isArray(newValue)){
+                    for (let i=0; i<newValue.length; i++){
+                        v[i] = (newValue[i] === 'true');
+                    }
+                }else{
+                    v = ( (newValue === 'true') ? true : (newValue === 'false') ? false : '' );
+                }
+                this.$emit('filter', 'highlight', v);
+            }
+        },
         
         mounted(){
             
@@ -72,5 +98,9 @@ import Select from './Select';
 </script>
 
 <style scoped>
+
+.bordered{
+    border: 1px solid;
+}
 
 </style>
