@@ -854,7 +854,7 @@ export default {
                     this.editing = false;
                     await this.load();
                 }
-            }else if (this.creating){
+            }else if ((this.creating) || (!this.editing)){
                 this.$router.push({ name: 'versions' });
             }else if (this.editing){
                 this.editing = false;

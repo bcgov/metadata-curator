@@ -77,6 +77,10 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             throw new Error("Not permitted to create an repo");
         }
 
+        if (!fields.ministry_organization){
+            throw new Error("Ministry / Organization is required");
+        }
+
         let originalGroups = JSON.parse(JSON.stringify(user.groups));
         let originalJWT = user.jwt;
 
@@ -219,6 +223,10 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         if (fields.data_collection_type){
             revision.revise('data_collection_type', record.data_collection_type, fields.data_collection_type);
             record.data_collection_type = fields.data_collection_type;
+        }
+
+        if ( (!fields.ministry_organization) && (!record.ministry_organization) ){
+            throw new Error("Ministry / Organization is required");
         }
 
         if (fields.ministry_organization){

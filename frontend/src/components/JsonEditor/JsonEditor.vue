@@ -332,20 +332,20 @@
                                                             ></TextInput>
                                                         </v-col>
 
-                                                        <v-col cols=12 v-if="((field && field.comments) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
+                                                        <v-col cols=12 v-if="((field && field.notes) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
                                                             <TextInput
-                                                                :label="$tc('Comments', 2)"
+                                                                :label="$tc('Notes', 2)"
                                                                 placeholder=""
-                                                                name="comments"
-                                                                :refName="'basicField-' + key + '-' + fKey + '-comments'"
-                                                                :idName="'basicField-' + key + '-' + fKey + '-comments'"
+                                                                name="notes"
+                                                                :refName="'basicField-' + key + '-' + fKey + '-notes'"
+                                                                :idName="'basicField-' + key + '-' + fKey + '-notes'"
 
                                                                 :editing="editing"
-                                                                :value="field.comments"
+                                                                :value="field.notes"
                                                                 helpPrefix="schema"
                                                                 :focusField="focusProp"
                                                                 @focus="onFocusBasic"
-                                                                @blur="(event) => { updateResource(key, fKey, 'comments', event) }"
+                                                                @blur="(event) => { updateResource(key, fKey, 'notes', event) }"
                                                             ></TextInput>
                                                         </v-col>
 
