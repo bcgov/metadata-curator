@@ -39,11 +39,12 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
 
     const addDataPackage = async function(descriptor, user) {
         await validateDataPackage(descriptor);
+        let revision = new db.RevisionSchema();
         
         if (descriptor.inferred){
             let preInferred = await db.DataPackageSchema.findOne({inferred: true, version: descriptor.version});
             if (preInferred){
-                let dataPackageSchema = await buildDataPackageSchema(descriptor, true);
+                let dataPackageSchema = await buildDataPackageSchema(descriptor, true, revision);
                 let d = await db.DataPackageSchema.updateOne({_id: preInferred._id}, dataPackageSchema);
                 if (!d._id){
                     dataPackageSchema._id = preInferred._id;
@@ -54,7 +55,7 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
             }
         }
 
-        let revision = new db.RevisionSchema();
+        
         revision.old_content = {};
         revision.updater = user.id;
         revision.type = "tabular_data_package";
