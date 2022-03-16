@@ -62,7 +62,7 @@ const actions = {
     },
 
     getInferredSchema: async function({commit}, {id: id}){
-        commit('setTableSchemaId', {id: -1});
+        commit('setInferredSchema', {schema: null});
         let s = await backend.getTableSchema(id, false, true);
         commit('setInferredSchema', {schema: s});
         return s;

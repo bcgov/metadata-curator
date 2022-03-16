@@ -296,7 +296,7 @@ export default {
         "help.schema.shortName": "A shorter name for the field; userful if name is very long",
         "help.schema.format": "Format for the field type. e.g., string formats: default (any valid string), email, uri, uuid; date formats:  default (which assumes YYYY-MM-DD), %d/%m/%y; time formats: default (which assumes YYYY-MM-DDThh:mm:ssZ).  For a full list of format options see https://specs.frictionlessdata.io/table-schema/#types-and-formats",
         
-        "user.bcdc_accessKey": "This is your passphrase that will be required in metadata curator to use your api key",
-        "user.bcdc_apiKey": "This is your api key available from the data catalogue in your user profile listed as api key",
+        "help.user.bcdc_accessKey": "This is your passphrase that will be required in metadata curator to use your api key",
+        "help.user.bcdc_apiKey": "This is your api key available from the data catalogue in your user profile listed as api key",
     }
 }
