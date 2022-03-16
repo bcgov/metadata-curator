@@ -358,8 +358,15 @@ export default {
 
                 let hasDiff = false;
                 
-                let lK = new Set(Object.keys(l));
-                let rK = new Set(Object.keys(r));
+                let lK = new Set()
+                if ( l !== null ){
+                    lK = new Set(Object.keys(l));
+                }
+                
+                let rK = new Set();
+                if ( r !== null ){
+                    rK = new Set(Object.keys(r));
+                }
 
                 let intersection = new Set([...lK].filter(x => rK.has(x)));
                 let lDisjointed = new Set([...lK].filter(x => (!rK.has(x))));

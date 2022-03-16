@@ -455,7 +455,7 @@
                 }
 
                 try{
-                    this.editBranch({name: 'data_upload_id', value: this.uploadId});
+                    await this.editBranch({name: 'data_upload_id', value: this.uploadId});
                     await this.updateBranch();
                 }catch(e){
                     transitionNextStepAfterSave = false;
@@ -766,44 +766,38 @@
             // eslint-disable-next-line no-unused-vars
             upload: async function (newVal, oldVal) {
                 if(newVal && !oldVal) {
-                    if(this.upload.upload_submission_id) {
+                    
                         
-                        if (this.enabledPhase >= 2){
-                            await this.getSchema({id: this.uploadId});
-                            await this.getAllRepos();
-                            await this.getBranchesByUpload({uploadId: this.uploadId})
-                            if (this.schemaState && this.schemaState.version){
-                                this.selectedVersion = this.schemaState.version
-                                // this.getBranchesByUpload({uploadId: this.uploadId})
-                            }
-                        
-                            if (this.versions && this.versions[0] && this.versions[0].repo_id){
-                                this.selectedDataset = this.versions[0].repo_id;
-                                this.allowSelect = false;
-                                this.selectedVersion = this.versions[0]._id;
-                            }
-                        //     if ( (this.selectedDataset === '-1') || (this.selectedVersion === '-1') ){
-                        //         this.step = this.steps.step2EditionForm;
-                        //     }else{
-                        //         this.step = this.steps.step3FileSelection;
-                        //     }
-                        // }else{
-                        //     this.step = this.steps.step3FileSelection;
+                    if (this.enabledPhase >= 2){
+                        await this.getSchema({id: this.uploadId});
+                        await this.getAllRepos();
+                        await this.getBranchesByUpload({uploadId: this.uploadId})
+                        if (this.schemaState && this.schemaState.version){
+                            this.selectedVersion = this.schemaState.version
                         }
-                        
-                        if (this.upload && this.upload.files && this.upload.files.length >= 1){
-                            let allGood = true;
-                            for (let i=0; i<this.upload.files.length; i++){
-                                if ( (!this.upload.files[i].id) || (this.upload.files[i].id === "") || (this.upload.files[i].id.toLowerCase() === "not yet uploaded") ){
-                                    allGood = false;
-                                }
+                    
+                        if (this.versions && this.versions[0] && this.versions[0].repo_id){
+                            this.selectedDataset = this.versions[0].repo_id;
+                            this.allowSelect = false;
+                            this.selectedVersion = this.versions[0]._id;
+                        }
+
+                    }
+                    
+                    if (this.upload && this.upload.files && this.upload.files.length >= 1){
+                        let allGood = true;
+                        for (let i=0; i<this.upload.files.length; i++){
+                            if ( (!this.upload.files[i].id) || (this.upload.files[i].id === "") || (this.upload.files[i].id.toLowerCase() === "not yet uploaded") ){
+                                allGood = false;
                             }
-                            if (allGood){
-                                //this.step = this.steps.step7UploadSummary;
-                                this.$router.push({ name: 'data-upload-detail', id: this.uploadId });
-                            }
+                        }
+                        if (allGood){
+                            //this.step = this.steps.step7UploadSummary;
+                            this.$router.push({ name: 'data-upload-detail', id: this.uploadId });
                         }
                     }
+                    this.loading = false;
+                    
                 }
             },
         },

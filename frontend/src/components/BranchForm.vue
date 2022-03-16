@@ -528,7 +528,6 @@ import Markdown from './Markdown';
 import MetadataForm from './MetadataForm';
 import Comments from './Comments';
 import Comparison from './Comparison';
-import DatasetForm from './DatasetForm';
 import Revisions from './Revisions';
 import { ValidationObserver } from "vee-validate";
 
@@ -549,7 +548,7 @@ export default {
         Comments,
         Comparison,
         DataUploadSelect,
-        DatasetForm,
+        DatasetForm: () => import('./DatasetForm'),
         Revisions,
         ValidationObserver,
     },
