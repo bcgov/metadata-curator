@@ -81,6 +81,7 @@
                                     :large="true"
                                     :editing="editing"
                                     :value="(dataset) ? dataset.ministry_organization : ''"
+                                    validation-rules="required"
                                     helpPrefix="dataset"
                                     @edited="(newValue) => { updateValues('ministry_organization', newValue) }"
                                 ></TextInput>
@@ -349,7 +350,7 @@ export default {
             
             if (!schemaExists){
                 this.alertType = "error";
-                this.alertText = "This "+this.$tc('Version', 1)+" has no schema, cannot copy without schema";
+                this.alertText = "Only "+this.$tc('Version', 2)+" with "+this.$tc("Schema", 2)+" specified may be copied";
                 this.alert = true;
                 window.scrollTo(0,0);
                 return;
