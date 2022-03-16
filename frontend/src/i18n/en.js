@@ -265,6 +265,7 @@ export default {
         "NOTE: you will be unable to change this after initial creation": "NOTE: you will be unable to change this after initial creation",
         "found": "found",
         "Save & Next": "Save & Next",
+        "Access Key": "Access Key",
 
         "help.dataset.name": "The name of the dataset",
         "help.dataset.description": "A description of the dataset",

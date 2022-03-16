@@ -439,12 +439,41 @@
                 <v-dialog
                     v-model="exportDia">
                     <template v-slot:activator="{ on, attrs }">
-                        <v-btn
-                            color="primary"
-                            v-bind="attrs"
-                            v-on="on">
-                                Export
-                        </v-btn>
+                        <v-row>
+                            <v-col cols=3>
+                                <v-btn
+                                    color="primary"
+                                    v-bind="attrs"
+                                    v-on="on">
+                                        Export
+                                </v-btn>
+                            </v-col>
+
+                            <v-col cols=1>
+                            </v-col>
+
+                            <v-col cols=3 v-if="enabledPhase >= 3 && user && user.bcdcSet">
+                                    
+                                <v-btn
+                                    color="success"
+                                    @click="goPublishBCDC">
+                                        {{$tc('Push Draft to BCDC')}}
+                                </v-btn>
+                            </v-col>
+
+                            <v-col cols=5 v-if="enabledPhase >= 3  && user && user.bcdcSet">
+                                <TextInput
+                                    :label="$tc('Access Key',1)"
+                                    placeholder=""
+                                    name="bcdc_accessKey"
+                                    :editing="true"
+                                    value=""
+                                    helpPrefix="user"
+                                    :password="true"
+                                    @blur="(event) => { settableUserInfo.bcdc_accessKey = event.target.value }"
+                                ></TextInput>
+                            </v-col>
+                        </v-row>
                     </template>
 
                     <v-card>
@@ -536,6 +565,8 @@ import Vue from 'vue';
 import SimpleCheckbox from './SimpleCheckbox';
 import DataUploadSelect from './DataUploadSelect';
 
+import { Backend } from '../services/backend';
+
 export default {
     name: "BranchForm",
 
@@ -618,6 +649,11 @@ export default {
             for (let i=0; i<keys.length; i++){
                 this.exportFields[keys[i]] = value;
             }
+        },
+
+        goPublishBCDC(){
+            const backend = new Backend();
+            backend.pushToBCDC('623101c092e0b866adb8bebe', '12345');
         },
 
         filter: function(key, val){
@@ -820,8 +856,10 @@ export default {
                 }
             }else if (this.creating){
                 this.$router.push({ name: 'versions' });
-            }else{
+            }else if (this.editing){
                 this.editing = false;
+            }else{
+                this.$router.push({ name: 'versions' });
             }
         },
 
@@ -935,6 +973,11 @@ export default {
             schemaRevisions: state => state.schemaImport.revisions,
             schemaRevisionsLoading: state => state.schemaImport.revisionsLoading,
         }),
+        enabledPhase(){
+            let en = this.$store.state.config.items.find(item => item['key'] === 'enabledPhase');
+            return (en) ? parseInt(en.value) : 1;
+        },
+
         canEdit: function(){
             if (this.branch.approved){
                 return this.user.isAdmin; //|| this.user.isApprover;
