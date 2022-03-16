@@ -10,6 +10,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
 
     const util = require('./util');
     const requiredPhase = 2;
+    const bcdcPhase = 3;
 
     const addBranch = async function(repoId, type, name, description, upload_id, fields, user) {
         if (typeof(repoId) === "undefined"){
@@ -587,6 +588,63 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         
         return res.status(400).json({error: "Cant add comments to a branch that doesn't exist"});
         
+    });
+
+    router.post('/:branchId/bcdc', auth.requireLoggedIn, auth.isApprover, async function(req, res, next){
+        const config = require('config');
+        try{
+            console.log("ex", res);
+            //version check
+            if (!util.phaseCheck(cache, bcdcPhase, db)){
+                return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.repoId+"/bcdc")));
+            }
+            if (req.params.branchId === 'create'){
+                return res.status(400).json({error: "The branch must be saved previously"});
+            }
+            if (!config.has('bcdc')){
+                return res.status(400).json({error: "Metadata Curator is not hooked up to a catalogue"});
+            }
+
+            let body = req.body;
+            if (!body.accessKey){
+                return res.status(400).json({error: "You must enter your access key to use your api key"});
+            }
+
+            let existing = await db.User.findOne({email: req.user.email});
+            
+
+            if (!existing){
+                return res.status(400).json({error: "Sorry we can't find your user record"});
+            }
+
+            if ( (existing.bcdc_apiKey) && (!existing.bcdc_accessKey) ){
+                return res.status(400).json({error: "You have not configured your account to use the bcdc, enter your api and access key on your profile page"});
+            }
+
+            var md5 = require('md5'); 
+            let hashedKey = md5(body.accessKey);
+            if (hashedKey !== existing.bcdc_accessKey){
+                return res.status(403).json({error: "Your access key did not match your account"});
+            }
+
+
+            var CryptoJS = require("crypto-js");
+            // Decrypt
+            let apiKey  = CryptoJS.AES.decrypt(existing.bcdc_apiKey, body.accessKey).toString();
+
+            const axios = require('axios');
+            let url = config.get('bcdc');
+            url += url[url.length-1] === "/" ? '' : "/";
+            url += "api/3/action/package_list";
+
+            let ckanRes = await axios.get(url, {headers: {'Authorization': apiKey}});
+
+            return res.status(200).json(ckanRes.data);
+            
+        }catch(e){
+            console.log("bcdc e", e);
+            res.status(500).json(e);
+        }
     });
 
     return router;

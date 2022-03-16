@@ -410,4 +410,9 @@ export class Backend {
         return axios.put(url, bcdcUserInfo, {withCredentials: true}).then(response => response.data)
     }
 
+    pushToBCDC(branchId, accessKey){
+        const url = `/api/v1/repobranches/${branchId}/bcdc`;
+        return axios.post(url, {accessKey: accessKey}, {withCredentials: true}).then(response => response.data)
+    }
+
 }

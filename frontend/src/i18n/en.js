@@ -267,6 +267,7 @@ export default {
         "Save & Next": "Save & Next",
         "Number of Records": "Number of Records",
         "2022": "2022",
+        "Access Key": "Access Key",
 
         "help.dataset.name": "The name of the dataset",
         "help.dataset.description": "A description of the dataset",

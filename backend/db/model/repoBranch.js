@@ -109,6 +109,10 @@ var repoBranchSchema = new Schema({
     more_information:{
         type: String,
         required: false,
+    },
+    bcdc_record: {
+        type: String,
+        required: false,
     }
 
 });

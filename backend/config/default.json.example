@@ -73,5 +73,6 @@
         "password": "CHANGEME"
   },
 
-  "userIdField": "email"
+  "userIdField": "email",
+  "bcdc": "http://bcdcUrl"
 }

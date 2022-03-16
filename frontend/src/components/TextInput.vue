@@ -46,12 +46,15 @@
                     :placeholder="$tc(placeholder)"
                     :name="name"
                     v-model="val"
+                    :append-icon="( !password ? '' : (plainText ? 'mdi-eye' : 'mdi-eye-off') )"
+                    :type="password && !plainText ? 'password' : 'text'"
                     :error-messages="errors.length > 0 ? [errors[0]] : []"
                     :outlined="outlined"
                     :ref="refName ? refName : 'txtField'"
                     :id="idName ? idName : ''"
                     @focus="$emit('focus', $event)"
                     @blur="$emit('blur', $event)"
+                    @click:append="plainText = !plainText"
                 >
                     <template v-slot:prepend>
                         {{displayLabel}}&nbsp;
@@ -139,6 +142,11 @@
                 type: String,
                 required: false,
                 default: "",
+            },
+            password: {
+                type: Boolean,
+                required: false,
+                default: true,
             }
             
         },
@@ -147,6 +155,7 @@
                 val: Array.isArray(this.value) ? this.value.join(",") : this.value,
                 showTooltip: false,
                 closeOnLeave: true,
+                plainText: false,
             }
         },
         methods: {
