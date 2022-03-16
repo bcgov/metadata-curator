@@ -542,8 +542,8 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
                 id: branch._id.toString()
             });
         }catch(ex){
-            console.log("X", ex);
-            res.status(400).json({e: ex});
+            console.error(ex);
+            res.status(400).json({e: ex.message});
         }
     });
 

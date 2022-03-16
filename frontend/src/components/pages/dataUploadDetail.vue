@@ -124,9 +124,9 @@ export default {
                 this.updateDataUpload(data);
             }
             if (this.enabledPhase >= 2){
-                await this.getSchema({id: this.dataUpload._id});
-                await this.getRepos({filterBy: {upload_id: this.dataUpload._id}});
-                await this.getBranchesByUpload({uploadId: this.dataUpload._id})
+                await this.getSchema({id: this.dataUploadId});
+                await this.getRepos({filterBy: {upload_id: this.dataUploadId}});
+                await this.getBranchesByUpload({uploadId: this.dataUploadId})
 
                 this.selectedDataset = '-1';
                 this.selectedVersion = '-1';

@@ -267,6 +267,10 @@ export default {
                         value: 'upload_submission_id' 
                     },
                     { 
+                        text: this.$tc('Old Submission'),
+                        value: 'old_submission' 
+                    },
+                    { 
                         text: this.$tc('Uploader'), 
                         value: 'uploader' 
                     },

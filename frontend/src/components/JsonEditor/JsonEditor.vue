@@ -169,20 +169,16 @@
                                         :key="'field-'+key+'-'+fKey+'-'+reindexKey" 
                                         :class="'pa-0 relativePos' + ( (field && field.highlight && !editing) ? ' fieldHighlight': '') + (!filtered(field) ? ' field' : '')">
                                         <v-container fluid v-if="!filtered(field)"> 
-                                            <v-row v-if="editing">
-                                                <v-col cols=10>
-                                                </v-col>
-                                                <v-col cols=2>
-                                                    <v-icon>mdi-drag</v-icon>
-                                                </v-col>
-                                            </v-row>
                                             <v-row>
                                                 <v-col cols=7>
                                                     <v-row no-gutters>
                                                         <v-col cols=3>
                                                             <v-btn x-small @click="toggleExpandedBasic(key, fKey)"><v-icon>{{expandedBasic[key][fKey] ? 'mdi-minus' : 'mdi-plus'}}</v-icon></v-btn>
                                                         </v-col>
-                                                        <v-col cols=9></v-col>
+                                                        <v-col cols=6></v-col>
+                                                        <v-col cols=3>
+                                                            <v-icon>mdi-drag</v-icon>
+                                                        </v-col>
                                                         <v-col cols=12 v-if="(field && field.name) || editing" class="py-1">
                                                             <TextInput
                                                                 :label="$tc('Name')"
@@ -336,20 +332,20 @@
                                                             ></TextInput>
                                                         </v-col>
 
-                                                        <v-col cols=12 v-if="((field && field.comments) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
+                                                        <v-col cols=12 v-if="((field && field.notes) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
                                                             <TextInput
-                                                                :label="$tc('Comments', 2)"
+                                                                :label="$tc('Notes', 2)"
                                                                 placeholder=""
-                                                                name="comments"
-                                                                :refName="'basicField-' + key + '-' + fKey + '-comments'"
-                                                                :idName="'basicField-' + key + '-' + fKey + '-comments'"
+                                                                name="notes"
+                                                                :refName="'basicField-' + key + '-' + fKey + '-notes'"
+                                                                :idName="'basicField-' + key + '-' + fKey + '-notes'"
 
                                                                 :editing="editing"
-                                                                :value="field.comments"
+                                                                :value="field.notes"
                                                                 helpPrefix="schema"
                                                                 :focusField="focusProp"
                                                                 @focus="onFocusBasic"
-                                                                @blur="(event) => { updateResource(key, fKey, 'comments', event) }"
+                                                                @blur="(event) => { updateResource(key, fKey, 'notes', event) }"
                                                             ></TextInput>
                                                         </v-col>
 
