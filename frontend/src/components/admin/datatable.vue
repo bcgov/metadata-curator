@@ -47,6 +47,9 @@
                 <template v-slot:item.data="{ item }">
                     {{JSON.stringify(item.data)}}
                 </template>
+                <template v-slot:item.old_submission="{ item }">
+                    {{JSON.stringify(item.data)}}
+                </template>
                 <template v-slot:item.actions="{ item }">
                     <v-icon
                         v-if="showEdit"
