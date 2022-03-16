@@ -3,7 +3,7 @@
 <br />
 
 ## Version 1.4.0
-March 15, 2022
+March 16, 2022
  - Fixed about page crashing server
  - Fully removed formio 
  - Added highlight filter to edition file & field info page
@@ -14,11 +14,18 @@ March 15, 2022
  - Fixed error that made the home page occasionally appear blank
  - Changed dataset page to link to edition page instead of be a pop up
  - Forced file info number of records to be a number
+ - Fixed issue saving inferred metadata
+ - Added old_submission to admin tab for data uploads
+ - Fixed back button on edition page to take you to edition list
+ - Made Ministry/Organization a required dataset field
+ - Renamed comments at files & fields level to notes
+ - Changed error text for trying to copy an edition without file & field info
+ - Fixed previous version being opened when opening a version after just creating a new version
 
 <br />
 
 ## Table Of Contents
-- [Version 1.4.0 (March 15 2022)](#version-140)
+- [Version 1.4.0 (March 16 2022)](#version-140)
 - [Version 1.3.7 (March 10 2022)](#version-137)
 - [Version 1.3.6 (March 10 2022)](#version-136)
 - [Version 1.3.5 (March 8 2022)](#version-135)
