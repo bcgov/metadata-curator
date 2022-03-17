@@ -127,6 +127,11 @@ export default {
             required: false,
             default: "Edition Metadata"
         },
+        resetChangeRight: {
+            type: Boolean,
+            required: false,
+            default: false,
+        }
     },
     data(){
         return {
@@ -142,12 +147,17 @@ export default {
             workingLeftSideText: this.leftSideText ? this.leftSideText : "",
             workingRightSideText: this.rightSideText ? this.rightSideText : "",
             previouslyMovedtoEnd: 0,
-            calcRightSide: true,
-            calcLeftSide: true,
+            changeRight: true,
 
         }
     },
     watch: {
+        resetChangeRight(){
+            if (this.resetChangeRight){
+                this.changeRight = true;
+            }
+        },
+
         leftSideText(){
             this.workingLeftSideText = this.leftSideText;
             this.calcDiff();
@@ -160,12 +170,8 @@ export default {
     },
     methods: {
 
-        setCalcSide(left, value){
-            if (left){
-                this.calcLeftSide = value;
-            }else{
-                this.calcRightSide = value;
-            }
+        setChangeRight: function(value){
+            this.changeRight = value;
         },
 
         setMovedToEnd: function(movedToEnd){
@@ -494,12 +500,8 @@ export default {
 
         leftResources: function(){
             let r = this.getResources(this.leftWorkingVal);
-            if (!this.calcLeftSide){
-                return r;
-            }
-            this.setCalcSide(true, false);
             let rightResources = this.getResources(this.workingVal);
-            // console.log("LEFT RESOURCES", r, rightResources);
+            
             let hi = r.length-1;
             
             if (r.length >= rightResources.length){
@@ -527,6 +529,10 @@ export default {
                                 newF[j] = JSON.parse(JSON.stringify(r[i].schema.fields[j]));
                             }
                         }
+                        
+                        newF = newF.filter((el) => {
+                            return el !== null && typeof el !== 'undefined';
+                        });
                         r[i].schema.fields = JSON.parse(JSON.stringify(newF));
                     }
                     
@@ -548,10 +554,8 @@ export default {
                 this.updateWorkingText('left', {resources: newR});
                 this.calcDiff();
                 
-                this.setCalcSide(true, true);
                 return newR;
             }
-            this.setCalcSide(true, true);
             return r;
         },
 
@@ -570,16 +574,12 @@ export default {
         rightResources: function(){
             let r = this.getResources(this.workingVal);
 
-            if (!this.calcRightSide){
-                return r;
-            }
-            this.setCalcSide(false, false);
             let rDiff = this.rightSideResourceDiff;
             let hi = r.length-1;
             let movedToEnd = 0;
             
             let leftResources = this.getResources(this.leftWorkingVal);
-            // console.log("RIGHT RESOURCES", leftResources, r);
+            
             if (r.length > leftResources.length){
                 let newR = [];
                 for (let i=0; i<r.length; i++){
@@ -629,13 +629,13 @@ export default {
                 
                 return newR;
             }else{
-                let changed = false;
                 let newR = [];
                 for (let i=0; i<r.length; i++){
                     let newF = [];
-                    let hiF = (r[i] && r[i].schema && r[i].schema.fields && r[i].schema.fields.length) ? r[i].schema.fields.length-1 : 0;
+                    //let hiF = (r[i] && r[i].schema && r[i].schema.fields && r[i].schema.fields.length) ? r[i].schema.fields.length-1 : 0;
                     newR[i] = JSON.parse(JSON.stringify(r[i]));
                     if (r[i] && r[i].schema && r[i].schema.fields){
+                        //let keysToUse = Object.keys(r[i].schema.fields);
                         for (let j=0; j<r[i].schema.fields.length; j++){
                             let resourceMoveToEnd = 0;
                             let bd = false;
@@ -645,16 +645,20 @@ export default {
                             }catch(ex){
                             }
 
+                            //basic diff, has compared against
                             if (bd && (bd.comparedAgainst || bd.comparedAgainst === 0) ){
                                 let ind = j-resourceMoveToEnd;
                                 //ind = ind<0 ? 0 : ind;
-                                newF[ind] = r[i].schema.fields[parseInt(bd.comparedAgainst)];
-                                changed = (changed || (parseInt(bd.comparedAgainst) !== j));
-                            }else if ( bd && (bd.removed || bd.added) ){
-                                newF[hiF] = r[i].schema.fields[j];
-                                resourceMoveToEnd++;
-                                hiF--;
-                                changed = (changed || (movedToEnd>=this.previouslyMovedtoEnd));
+                                let compareAgainstInt = parseInt(bd.comparedAgainst)
+                                newF[ind] = r[i].schema.fields[compareAgainstInt];
+
+                            //}else if ( bd && (bd.removed || bd.added) ){
+                                // newF[hiF] = r[i].schema.fields[j];
+                                // resourceMoveToEnd++;
+                                // hiF--;
+                                //let ind = j-resourceMoveToEnd;
+                                //ind = ind<0 ? 0 : ind;
+                                //newF[ind] = r[i].schema.fields[j];
                             }else{
                                 let ind = j-resourceMoveToEnd;
                                 ind = ind<0 ? 0 : ind;
@@ -669,20 +673,22 @@ export default {
                     
                     
                 }
-                if (changed){
+                
+                if (this.changeRight){
+                    this.setChangeRight(false);
                     this.updateWorkingText('right', {resources: newR});
                     this.calcDiff();
                     if (movedToEnd == this.previouslyMovedtoEnd){
                         movedToEnd++;
                     }
-                    this.setMovedToEnd(movedToEnd)
-                    this.setCalcSide(false, true);
+                    this.setMovedToEnd(movedToEnd);
+                    //this.setChangeRight(true);
                     return newR;
                 }
                 
             }
             
-            this.setCalcSide(false, true);
+            //this.setChangeRight(true);
             return r;
         },
     },

@@ -4,21 +4,6 @@
                     {{$tc('Loading')}}...
                 </v-row>
                 <v-row v-else dense>
-                    <v-dialog 
-                       v-model="schemaDialog"
-                        fullscreen
-                        hide-overlay
-                        transition="dialog-bottom-transition">
-                            <v-card>
-                                <v-card-title>{{$tc('Version')}} {{$tc("Information")}}</v-card-title>
-                                <v-card-text>
-                                    <BranchForm :dialog="true" @close="schemaDialog = false" :branchId="selectedVersion"></BranchForm>
-                                </v-card-text>
-                                <v-card-actions>
-                                    
-                                </v-card-actions>
-                            </v-card>
-                    </v-dialog>
                     <v-col cols="12">
                         <v-card outlined>
                             <v-card-text>
@@ -32,14 +17,14 @@
                                 <v-row class="ml-3 fixedHeight">
                                     {{$tc('Uploads', 1)}} {{$tc('Date')}}: {{uploadDate}}
                                 </v-row>
-                                <v-row class="mb-3 fixedHeight">
-                                    <v-btn color="orange" id="uploadDetail-showInfo" text @click="showViewDialog()">{{$tc('Uploads')}} &amp; {{$tc('File Info')}}</v-btn>
-                                </v-row>
-                                <v-row class="mb-3 fixedHeight" v-if="this.selectedVersion !== '-1'">
-                                    <v-btn color="orange" id="uploadDetail-showSchema" text @click="showSchemaDialog()">{{$tc('Version')}} {{$tc('Info')}}</v-btn>
+                                <v-row class="mb-3 ml-3 fixedHeight" v-if="this.selectedVersion !== '-1'">
+                                    {{$tc('Version')}}: <router-link :to="{name: 'version_form', params: {id: selectedVersion}}">{{branch.name}}</router-link>
                                 </v-row>
                                 <v-row class="ml-3 fixedHeight">
                                     <v-checkbox class="mt-0 pt-0" :disabled="true" :label="$tc('Approver has viewed (since last update)')" v-model="dataUpload.opened_by_approver"></v-checkbox>
+                                </v-row>
+                                <v-row class="mb-3 ml-3">
+                                    <ViewUploadForm :uploadId="dataUploadId"/>
                                 </v-row>
                                 <!-- <v-row v-if="enabledPhase >= 2">
                                     <v-btn v-if="!inDataset" @click="createDataset" color="primary" class="mr-2">{{$tc('Create')}} {{$tc('Datasets')}}</v-btn>
@@ -61,9 +46,6 @@
                     </v-col>
                 </v-row>
                 <v-btn @click="routeToHome()" class="mt-1">{{$tc('Back')}}</v-btn>
-                <ViewDialog :dialog="viewDialog"
-                                  :uploadId="dataUploadId"
-                                  @close-button-clicked="onViewClosedClick"/>
             </v-container>
 <!--    </div>-->
 </template>
@@ -72,22 +54,18 @@
 import {mapActions, mapMutations, mapState} from "vuex";
 // import MetadataRevisions from "../MetadataRevisions";
 import Comments from "../Comments";
-import ViewDialog from "../ViewUploadDialog";
-import BranchForm from '../BranchForm';
+import ViewUploadForm from "../ViewUploadForm";
 
 export default {
     components:{
         // MetadataRevisions,
         Comments,
-        ViewDialog,
-        BranchForm
+        ViewUploadForm
     },
    
     data () {
         return {
             dataUploadId: null,
-            viewDialog: false,
-            schemaDialog: false,
             selectedDataset: "-1",
             selectedVersion: "-1",
         }
@@ -161,18 +139,6 @@ export default {
             this.clearDataUpload();
         },
 
-        showViewDialog() {
-            this.viewDialog = true;
-        },
-
-        showSchemaDialog(){
-            this.schemaDialog = true;
-        },
-        
-        onViewClosedClick(){
-            this.viewDialog = false;
-        },
-
         async createDataset(){
             this.clearDataset();
             this.editDataset({name: 'name', value: this.dataUpload.name});
@@ -225,16 +191,6 @@ export default {
         overflow-y: auto;
     }
 
-    .card-outter {
-        position: relative;
-        padding-bottom: 15px;
-    }
-    .card-actions {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-    }
-    
     .fixedHeight{
         height: 36px;
         line-height: 36px;
