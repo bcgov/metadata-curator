@@ -203,7 +203,7 @@ export default {
                 }else{
                     await this.loadSections();
                 }
-            }else if (this.creating){
+            }else if ( (this.creating) || (!this.editing) ){
                 this.$router.push({ name: 'versions' });
             }
             this.editing = false;

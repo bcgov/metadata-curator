@@ -142,6 +142,8 @@ export default {
             workingLeftSideText: this.leftSideText ? this.leftSideText : "",
             workingRightSideText: this.rightSideText ? this.rightSideText : "",
             previouslyMovedtoEnd: 0,
+            calcRightSide: true,
+            calcLeftSide: true,
 
         }
     },
@@ -484,6 +486,10 @@ export default {
 
         leftResources: function(){
             let r = this.getResources(this.leftWorkingVal);
+            if (!this.calcLeftSide){
+                return r;
+            }
+            this.calcLeftSide = false;
             let rightResources = this.getResources(this.workingVal);
             // console.log("LEFT RESOURCES", r, rightResources);
             let hi = r.length-1;
@@ -534,8 +540,10 @@ export default {
                 this.updateWorkingText('left', {resources: newR});
                 this.calcDiff();
                 
+                this.calcLeftSide = true;
                 return newR;
             }
+            this.calcLeftSide = true;
             return r;
         },
 
@@ -553,6 +561,11 @@ export default {
 
         rightResources: function(){
             let r = this.getResources(this.workingVal);
+
+            if (!this.calcRightSide){
+                return r;
+            }
+            this.calcRightSide = false;
             let rDiff = this.rightSideResourceDiff;
             let hi = r.length-1;
             let movedToEnd = 0;
@@ -655,12 +668,13 @@ export default {
                         movedToEnd++;
                     }
                     this.setMovedToEnd(movedToEnd)
+                    this.calcRightSide = true;
                     return newR;
                 }
                 
             }
             
-
+            this.calcRightSide = true;
             return r;
         },
     },
