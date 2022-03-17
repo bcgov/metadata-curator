@@ -343,7 +343,7 @@ export default {
             let schemaExists;
             try{
                 await this.getDataPackage({id: branch._id});
-                schemaExists = true;
+                schemaExists = (dataPackageSchema && (typeof(dataPackageSchema) === 'object') && (Object.keys(dataPackageSchema).length > 0));
             }catch(ex){
                 schemaExists = false;
             }
@@ -439,6 +439,7 @@ export default {
             user: state => state.user.user,
             dataset: state => state.repos.repo,
             branches: state => state.repos.branches,
+            dataPackageSchema: state => state.schemaImport.dataPackageSchema,
         }),
     },
     async created() {

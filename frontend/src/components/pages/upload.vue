@@ -355,6 +355,9 @@
                         }
                         let headers = rows.shift();
                         rows.unshift(headers);
+                        if (rows.length > 1){
+                            rows.pop(); //remove last element in case its a partial row
+                        }
                         let s = await Schema.load({});
                         s.infer(rows, headers);
                         this.inferredSchema.resources.push({
