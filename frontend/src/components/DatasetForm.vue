@@ -343,7 +343,7 @@ export default {
             let schemaExists;
             try{
                 await this.getDataPackage({id: branch._id});
-                schemaExists = (dataPackageSchema && (typeof(dataPackageSchema) === 'object') && (Object.keys(dataPackageSchema).length > 0));
+                schemaExists = (this.dataPackageSchema && (typeof(this.dataPackageSchema) === 'object') && (Object.keys(this.dataPackageSchema).length > 0));
             }catch(ex){
                 schemaExists = false;
             }
