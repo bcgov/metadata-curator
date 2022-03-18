@@ -253,6 +253,10 @@
                     return;
                 }
 
+                if (this.upload.status === "submitted"){
+                    this.$router.push({ name: 'data-upload-detail', id: this.uploadId });
+                }
+
                 if (this.enabledPhase >= 2){
                     await this.getSchema({id: this.uploadId});
                     await this.getAllRepos();
