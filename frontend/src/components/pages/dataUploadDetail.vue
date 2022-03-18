@@ -17,8 +17,8 @@
                                 <v-row class="ml-3 fixedHeight">
                                     {{$tc('Uploads', 1)}} {{$tc('Date')}}: {{uploadDate}}
                                 </v-row>
-                                <v-row class="mb-3 ml-3 fixedHeight" v-if="this.selectedVersion !== '-1'">
-                                    {{$tc('Version')}}: <router-link :to="{name: 'version_form', params: {id: selectedVersion}}">{{branch.name}}</router-link>
+                                <v-row class="mb-3 ml-3 fixedHeight" v-if="selectedVersion !== '-1'">
+                                    {{$tc('Version')}}: <router-link :to="{name: 'version_form', params: {id: selectedVersion}}">{{versions && versions[0] ? versions[0].name : selectedVersion}}</router-link>
                                 </v-row>
                                 <v-row class="ml-3 fixedHeight">
                                     <v-checkbox class="mt-0 pt-0" :disabled="true" :label="$tc('Approver has viewed (since last update)')" v-model="dataUpload.opened_by_approver"></v-checkbox>

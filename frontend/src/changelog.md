@@ -8,6 +8,7 @@ March 18, 2022
  - Fixed back button on edition schema form
  - Fixed comparison when file provided has less columns then expected
  - Removed popups from completed upload page
+ - Fixed upload page not going to view page on a submitted upload
 
 <br />
 
