@@ -429,7 +429,7 @@ export default {
                     if (self.readFile === true){
                         // console.log("watch filename: " + self.file.name);
 
-                        if (self.offset === 0){
+                        if ((self.offset === 0) || (self.offset === self.chunkSize)){
                             let finger = self.getFinger;
                             self.$store.commit('file/setFileName', { fileName: self.file.name});
                             self.$store.commit('file/addFileHandleIfNotPresent', { handle: self.file, fileSig: finger});

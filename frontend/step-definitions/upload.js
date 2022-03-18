@@ -130,14 +130,14 @@ When(/^Data provider chooses to see the details of the upload$/, async () => {
     await client.waitForElementVisible(('#upload-'+id), 5000);
     await client.saveScreenshot("./"+path+"/checkingForUpload2.png");
     await client.waitForElementVisible('#upload-'+id+' i.mdi-checkbox-marked-circle', 1000);
-    await client.pause(25000);
+    await client.pause(5000);
     return client.click('#upload-'+id);
 });
 
 Then(/^Data provider should see information on the characteristics of the data upload$/, async() => {
     await client.assert.containsText('#uploadDetail-name', data1.name.value);
     await client.pause(5000);
-    await client.click('#uploadDetail-showInfo');
+    //await client.click('#uploadDetail-showInfo');
     await client.waitForElementVisible('#ministry_organization-value', 10000)
     await client.pause(2500);
 

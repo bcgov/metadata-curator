@@ -158,16 +158,16 @@
                                 </v-row>
                                 <v-row v-else>
                                     <v-col cols=12>
-                                        <v-btn text @click="step=steps.step4FileLevelForm" id="back-5-2">{{$tc('Back')}}</v-btn>
+                                        <v-btn text @click="leaveSchemaForm" id="back-5-2">{{$tc('Back')}}</v-btn>
                                         <v-btn @click="stepSaveSchemaForm(true)" id="next-5-2">{{$tc('Next')}}</v-btn>
                                     </v-col>
                                     <v-col cols=12>
-                                        <Comparison :key="'comparisonObj-'+jsonRedraw" :left-side-text="JSON.stringify(inferredSchema)" :right-side-text="JSON.stringify(schema)" :diff-json="true"></Comparison>
+                                        <Comparison :resetChangeRight="resetChangeRight" :key="'comparisonObj-'+jsonRedraw" :left-side-text="JSON.stringify(inferredSchema)" :right-side-text="JSON.stringify(schema)" :diff-json="true"></Comparison>
                                     </v-col>
                                 </v-row>
                             </v-card>
                             
-                            <v-btn text @click="step=steps.step4FileLevelForm" id="back-5">{{$tc('Back')}}</v-btn>
+                            <v-btn text @click="leaveSchemaForm" id="back-5">{{$tc('Back')}}</v-btn>
                             <v-btn @click="stepSaveSchemaForm(true)" id="next-5">{{$tc('Next')}}</v-btn>
                             
                         </v-stepper-content>
@@ -253,6 +253,10 @@
                     return;
                 }
 
+                if (this.upload.status === "submitted"){
+                    this.$router.push({ name: 'data-upload-detail', id: this.uploadId });
+                }
+
                 if (this.enabledPhase >= 2){
                     await this.getSchema({id: this.uploadId});
                     await this.getAllRepos();
@@ -321,6 +325,15 @@
                 clearContent: 'file/clearContent',
             }),
 
+            leaveSchemaForm(){
+                this.resetChangeRight = true;
+                this.step=this.steps.step4FileLevelForm;
+                this.$nextTick(() => {
+                    this.resetChangeRight = false;
+                });
+
+            },
+
             step2Changed(numFiles){
                 let requiredFileNum = (this.upload && this.upload.num_files) ? this.upload.num_files : 0;
                 this.validStep3 = numFiles == requiredFileNum;
@@ -355,6 +368,9 @@
                         }
                         let headers = rows.shift();
                         rows.unshift(headers);
+                        if (rows.length > 1){
+                            rows.pop(); //remove last element in case its a partial row
+                        }
                         let s = await Schema.load({});
                         s.infer(rows, headers);
                         this.inferredSchema.resources.push({
@@ -659,6 +675,7 @@
                 TEST_ACCOUNT: TEST_ACCOUNT,
                 fileInfo: {},
                 versionListLoading: false,
+                resetChangeRight: false,
             }
         },
         computed: {
