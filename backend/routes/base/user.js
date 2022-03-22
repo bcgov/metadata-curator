@@ -32,7 +32,7 @@ var buildDynamic = function(db, router, auth, cache){
                 
                 // Decrypt
                 //var bytes  = CryptoJS.AES.decrypt(ciphertext, 'secret key 123');
-                var ciphertext = CryptoJS.AES.encrypt(req.body.bcdc_apiKey, req.body.bcdc_accessKey).toString();
+                var ciphertext = CryptoJS.AES.encrypt(req.body.bcdc_apiKey, req.body.bcdc_accessKey.toString());
                 existing.bcdc_apiKey = ciphertext;
 
                 var md5 = require('md5'); 

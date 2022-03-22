@@ -2,17 +2,14 @@
 
 <br />
 
-## Version 1.4.1
+## Version 1.4.2
 March 18, 2022
- - Fixed some error messages on dataset form
- - Fixed back button on edition schema form
- - Fixed comparison when file provided has less columns then expected
- - Removed popups from completed upload page
- - Fixed upload page not going to view page on a submitted upload
+ - BC Data Catalogue record creation
 
 <br />
 
 ## Table Of Contents
+- [Version 1.4.2 (March 18 2022)](#version-142)
 - [Version 1.4.1 (March 18 2022)](#version-141)
 - [Version 1.4.0 (March 16 2022)](#version-140)
 - [Version 1.3.7 (March 10 2022)](#version-137)
@@ -28,6 +25,16 @@ March 18, 2022
 - [Version 1.2.4 (February 7 2022)](#version-124)
 - [Version 1.2.3 (February 1 2022)](#version-123)
 - [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
+## Version 1.4.1
+March 18, 2022
+ - Fixed some error messages on dataset form
+ - Fixed back button on edition schema form
+ - Fixed comparison when file provided has less columns then expected
+ - Removed popups from completed upload page
+ - Fixed upload page not going to view page on a submitted upload
 
 <br />
 

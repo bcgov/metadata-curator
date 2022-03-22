@@ -270,6 +270,8 @@ export default {
         "Access Key": "Access Key",
         "Number of Records": "Number of Records",
         "2022": "2022",
+        "Access Key": "Access Key",
+        "Push Draft to BCDC": "Push Draft to BCDC",
 
         "help.dataset.name": "The name of the dataset",
         "help.dataset.description": "A description of the dataset",
