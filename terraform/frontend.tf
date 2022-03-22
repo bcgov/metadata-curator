@@ -96,6 +96,7 @@ EOF
     email = "\"email\": { \"enabled\":${var.email.enabled}, \"service\": \"${var.email.service}\", \"secure\": ${var.email.secure}, \"port\": ${var.email.port}, \"user\": \"${var.email.user}\", \"pass\": \"${var.email.pass}\", \"from\": \"${var.email.from}\", \"subject\": \"${var.email.subject}\"}"
     adminGroup = "\"adminGroup\": \"${var.adminGroup}\""
     userIdField = "\"userIdField\": \"${var.userIdField}\""
+    bcdc = "\"bcdc\": \"${var.bcdc}\""
   }
   depends_on = [data.null_data_source.oidcConfig]
 }
@@ -123,7 +124,8 @@ data "null_data_source" "configValues" {
   ${data.null_data_source.feIndConfig.outputs["alwaysNotifyList"]},
   ${data.null_data_source.feIndConfig.outputs["email"]},
   ${data.null_data_source.feIndConfig.outputs["adminGroup"]},
-  ${data.null_data_source.feIndConfig.outputs["userIdField"]}
+  ${data.null_data_source.feIndConfig.outputs["userIdField"]},
+  ${data.null_data_source.feIndConfig.outputs["bcdc"]}
 
 }
 EOF

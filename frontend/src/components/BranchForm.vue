@@ -10,6 +10,14 @@
         </span>
 
         <v-row v-else dense>
+            <v-col cols=12>
+                <v-alert
+                    :type="alertType"
+                    dismissible
+                    v-model="alert">
+                        {{alertText}}
+                </v-alert>
+            </v-col>
             <v-col cols="12">
                 <v-tabs v-model="tab" @change="changeTab">
                     <v-tab key="version">{{$tc('Version')}}</v-tab>
@@ -23,12 +31,6 @@
                     <v-tab-item key="version">
                         <v-card outlined>
                             <v-card-text>
-                                <v-alert
-                                    :type="alertType"
-                                    dismissible
-                                    v-model="alert">
-                                        {{alertText}}
-                                </v-alert>
                                 <v-row>
                                     <h1 class="display-1 font-weight-thin ml-3 my-3">{{creating ? $tc("New") + " " + $tc("Version") : $tc("Version") + " " +  ((branch && branch.name) ? branch.name : id)}}</h1>
                                 </v-row>
@@ -386,6 +388,12 @@
                                             ></SimpleCheckbox>
                                         </v-col>
                                     </v-row>
+
+                                    <v-row v-if="enabledPhase >= 3 && branch && branch.bcdc_record">
+                                        <v-col cols=12>
+                                            Catalogue: <a :href="branch.bcdc_record">{{branch.bcdc_record}}</a>
+                                        </v-col>
+                                    </v-row>
                                 </ValidationObserver>
 
 
@@ -439,7 +447,7 @@
                 <v-dialog
                     v-model="exportDia">
                     <template v-slot:activator="{ on, attrs }">
-                        <v-row>
+                        <v-row v-if="!loading && branch">
                             <v-col cols=3>
                                 <v-btn
                                     color="primary"
@@ -456,8 +464,13 @@
                                     
                                 <v-btn
                                     color="success"
+                                    :disabled="disablePublish"
                                     @click="goPublishBCDC">
-                                        {{$tc('Push Draft to BCDC')}}
+                                        {{!disablePublish ? $tc('Push Draft to BCDC') : $tc('Please wait...') }}
+                                        <v-progress-circular
+                                            indeterminate
+                                            v-if="disablePublish"
+                                        ></v-progress-circular>
                                 </v-btn>
                             </v-col>
 
@@ -465,12 +478,12 @@
                                 <TextInput
                                     :label="$tc('Access Key',1)"
                                     placeholder=""
-                                    name="bcdc_accessKey"
+                                    name="accessKey"
                                     :editing="true"
-                                    value=""
+                                    :value="accessKey"
                                     helpPrefix="user"
                                     :password="true"
-                                    @blur="(event) => { settableUserInfo.bcdc_accessKey = event.target.value }"
+                                    @blur="(event) => { accessKey = event.target.value }"
                                 ></TextInput>
                             </v-col>
                         </v-row>
@@ -620,6 +633,8 @@ export default {
             RESOURCE_PREFIX: 'schema.resources',
             FIELD_PREFIX: 'schema.resources.fields',
             filters: {},
+            accessKey: '',
+            disablePublish: false,
         }
     },
     methods: {
@@ -650,9 +665,27 @@ export default {
             }
         },
 
-        goPublishBCDC(){
+        async goPublishBCDC(){
+            this.disablePublish = true;
             const backend = new Backend();
-            backend.pushToBCDC('623101c092e0b866adb8bebe', '12345');
+            try{
+                let catR = await backend.pushToBCDC(this.id, this.accessKey);
+                console.log(catR);
+                this.alertType = "success";
+                let alertText = "Record: " + catR.url;
+                if (catR.resourceErrors){
+                    for (let i=0; i<catR.resourceErrors.length; i++){
+                        alertText += "\n" + catR.resourceErrors[i];
+                    }
+                }
+                this.alertText = alertText;
+            }catch(ex){
+                this.alertType = "error";
+                this.alertText = "Error: " + ex.response.data.error +"\n"+ex.response.data.ex;
+            }
+            this.alert = true;
+            this.disablePublish = false;
+            window.scrollTo(0,0);
         },
 
         filter: function(key, val){
