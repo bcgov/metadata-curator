@@ -2,6 +2,34 @@
 
 <br />
 
+## Version 1.4.1
+March 18, 2022
+ - Fixed some error messages on dataset form
+ - Fixed back button on edition schema form
+ - Fixed comparison when file provided has less columns then expected
+ - Removed popups from completed upload page
+
+<br />
+
+## Table Of Contents
+- [Version 1.4.1 (March 18 2022)](#version-141)
+- [Version 1.4.0 (March 16 2022)](#version-140)
+- [Version 1.3.7 (March 10 2022)](#version-137)
+- [Version 1.3.6 (March 10 2022)](#version-136)
+- [Version 1.3.5 (March 8 2022)](#version-135)
+- [Version 1.3.4 (March 2 2022)](#version-134)
+- [Version 1.3.3 (March 1 2022)](#version-133)
+- [Version 1.3.2 (February 25 2022)](#version-132)
+- [Version 1.3.1 (February 23 2022)](#version-131)
+- [Version 1.3.0 (February 22 2022)](#version-130)
+- [Version 1.2.6 (February 14 2022)](#version-126)
+- [Version 1.2.5 (February 9 2022)](#version-125)
+- [Version 1.2.4 (February 7 2022)](#version-124)
+- [Version 1.2.3 (February 1 2022)](#version-123)
+- [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
 ## Version 1.4.0
 March 16, 2022
  - Fixed about page crashing server
@@ -21,24 +49,6 @@ March 16, 2022
  - Renamed comments at files & fields level to notes
  - Changed error text for trying to copy an edition without file & field info
  - Fixed previous version being opened when opening a version after just creating a new version
-
-<br />
-
-## Table Of Contents
-- [Version 1.4.0 (March 16 2022)](#version-140)
-- [Version 1.3.7 (March 10 2022)](#version-137)
-- [Version 1.3.6 (March 10 2022)](#version-136)
-- [Version 1.3.5 (March 8 2022)](#version-135)
-- [Version 1.3.4 (March 2 2022)](#version-134)
-- [Version 1.3.3 (March 1 2022)](#version-133)
-- [Version 1.3.2 (February 25 2022)](#version-132)
-- [Version 1.3.1 (February 23 2022)](#version-131)
-- [Version 1.3.0 (February 22 2022)](#version-130)
-- [Version 1.2.6 (February 14 2022)](#version-126)
-- [Version 1.2.5 (February 9 2022)](#version-125)
-- [Version 1.2.4 (February 7 2022)](#version-124)
-- [Version 1.2.3 (February 1 2022)](#version-123)
-- [Version 1.2.2 (January 27 2022)](#version-122)
 
 <br />
 
