@@ -40,7 +40,6 @@ jobs:
         run: npm ci
       - name: test
         run: |
-          npm install -g nyc
           cp config/default.json.example config/default.json
           npm test
 
