@@ -38,7 +38,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: test
         run: |
-          npm ci
+          npm install
           cp config/default.json.example config/default.json
           npm test
 
