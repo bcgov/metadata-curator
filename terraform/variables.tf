@@ -117,3 +117,7 @@ variable "authHost" {
 variable "authHostname" {
   type = string
 }
+
+variable "bcdc" {
+  type = string
+}
