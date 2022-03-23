@@ -36,10 +36,9 @@ jobs:
         working-directory: backend
     steps:
       - uses: actions/checkout@v2
-      - name: install dependencies
-        run: npm ci
       - name: test
         run: |
+          npm ci
           cp config/default.json.example config/default.json
           npm test
 
