@@ -43,6 +43,7 @@ var buildDynamic = function(db, router, auth, cache){
 
             delete existing.bcdc_apiKey;
             delete existing.bcdc_accessKey;
+            req.user.bcdcSet = req.body.bcdc_apiKey;
             
             res.status(200).json(existing);
         }catch(ex){

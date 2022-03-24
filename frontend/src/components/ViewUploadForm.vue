@@ -5,7 +5,7 @@
                 <span v-if="uploadStore">
                     <v-row v-for="(file, index) in uploadStore.files" :key="'fileReader'+index">
                         <v-col cols=12>
-                            <v-row v-if="file.name">{{file.name}}</v-row>
+                            <v-row v-if="file.name" class="bold">{{file.name}}</v-row>
                             <v-row v-if="file.title">{{$tc('Title')}}: {{file.title}}</v-row>
                             <v-row v-if="file.type">{{$tc('Type')}}: {{file.type}}</v-row>
                             <v-row v-if="file.size">{{$tc('Size')}}: {{file.size}}</v-row>
@@ -234,5 +234,7 @@
 </script>
 
 <style scoped>
-
+    .bold{
+        font-weight: bold;
+    }
 </style>

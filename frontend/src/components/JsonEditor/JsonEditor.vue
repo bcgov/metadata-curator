@@ -41,8 +41,12 @@
                             <v-col cols=3>
                                 <v-btn x-small @click="toggleExpandedBasicResource(key)"><v-icon>{{expandedBasicResource[key] ? 'mdi-minus' : 'mdi-plus'}}</v-icon></v-btn>
                             </v-col>
-                            <v-col cols=9>
+                            <v-col cols=3>
+                               Number of fields: {{(resource.schema && resource.schema.fields) ? resource.schema.fields.length : 0 }}
+                           </v-col>
+                            <v-col cols=6>
                             </v-col>
+                            
                             <v-col cols=12>
                                 <TextInput
                                     :label="$tc('Resource', 1) + ' ' + $tc('Name')"
@@ -60,7 +64,7 @@
                                     @blur="(event) => { updateResourceName(key, event) }"
                                 ></TextInput>
                             </v-col>
-                           
+
                         </v-row>
                         <span v-if="expandedBasicResource[key]">
                             <v-row v-if="(resource && resource.path) || editing" class="pb-2">
@@ -176,7 +180,7 @@
                                                             <v-btn x-small @click="toggleExpandedBasic(key, fKey)"><v-icon>{{expandedBasic[key][fKey] ? 'mdi-minus' : 'mdi-plus'}}</v-icon></v-btn>
                                                         </v-col>
                                                         <v-col cols=6></v-col>
-                                                        <v-col cols=3>
+                                                        <v-col cols=3 v-if="editing">
                                                             <v-icon>mdi-drag</v-icon>
                                                         </v-col>
                                                         <v-col cols=12 v-if="(field && field.name) || editing" class="py-1">
@@ -232,24 +236,20 @@
                                                         </v-col>
 
                                                         <v-col cols=12 v-if="((field && field.type) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
-                                                            <TextInput
+                                                            <Select
                                                                 :label="$tc('Type')"
                                                                 placeholder=""
                                                                 name="type"
-                                                                :refName="'basicField-' + key + '-' + fKey + '-type'"
-                                                                :idName="'basicField-' + key + '-' + fKey + '-type'"
-
+                                                                :items="fieldTypes"
                                                                 :editing="editing"
                                                                 :value="field.type"
                                                                 helpPrefix="schema"
-                                                                :focusField="focusProp"
-                                                                @focus="onFocusBasic"
-                                                                @blur="(event) => { updateResource(key, fKey, 'type', event) }"
-                                                            ></TextInput>
+                                                                @edited="(newValue) => { updateResource(key, fKey, 'type', newValue) }"
+                                                            ></Select>
                                                         </v-col>
 
                                                         <v-col cols=12 v-if="((field && field.description) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
-                                                            <TextInput
+                                                            <TextArea
                                                                 :label="$tc('Description')"
                                                                 placeholder=""
                                                                 name="description"
@@ -262,7 +262,7 @@
                                                                 :focusField="focusProp"
                                                                 @focus="onFocusBasic"
                                                                 @blur="(event) => { updateResource(key, fKey, 'description', event) }"
-                                                            ></TextInput>
+                                                            ></TextArea>
                                                         </v-col>
 
                                                         <v-col cols=12 v-if="((field && field.format) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
@@ -350,7 +350,7 @@
                                                         </v-col>
 
                                                         <v-col cols=12 v-if="((field && field.constraints && field.constraints.enum) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
-                                                            <TextInput
+                                                            <TextArea
                                                                 :label="$tc('Enum', 1)"
                                                                 placeholder=""
                                                                 name="enum"
@@ -363,7 +363,7 @@
                                                                 :focusField="focusProp"
                                                                 @focus="onFocusBasic"
                                                                 @blur="(event) => { updateResourceEnum(key, fKey, 'constraints', 'enum', event) }"
-                                                            ></TextInput>
+                                                            ></TextArea>
                                                         </v-col>
 
                                                         <v-col cols=12 v-if="expandedBasic[key][fKey]" class="pt-0 pb-1">
@@ -381,8 +381,10 @@
                                                         <v-col v-if="expandedBasic[key][fKey]" cols=12 class="pt-0 pb-1">
                                                         </v-col>
 
-                                                        <v-col v-if="expandedBasic[key][fKey]" cols=12 class="pt-0 pb-1">
-                                                            <v-btn v-if="editing" class="error" @click="removeField(key, fKey)"><v-icon>mdi-minus</v-icon></v-btn>
+                                                        <v-col v-if="expandedBasic[key][fKey]" cols=10 class="pt-0 pb-1">
+                                                        </v-col>
+                                                        <v-col v-if="expandedBasic[key][fKey]" cols=2 class="pt-0 pb-1">
+                                                            <v-btn v-if="editing" class="error" @click="removeField(key, fKey)"><v-icon>mdi-delete</v-icon></v-btn>
                                                         </v-col>
                                                     </v-row>
                                                 </v-col>
@@ -452,6 +454,7 @@ import TextInput from '../TextInput';
 // import SimpleCheckbox from '../SimpleCheckbox';
 import Select from '../Select';
 import DateInput from '../DateInput';
+import TextArea from '../TextArea';
 import Comments from '../Comments';
 import draggable from 'vuedraggable'
 import SchemaFilter from '../SchemaFilter.vue'
@@ -468,6 +471,7 @@ export default{
         // SimpleCheckbox,
         DateInput,
         SchemaFilter,
+        TextArea
     },
 
     props: {
@@ -649,11 +653,17 @@ export default{
 
         dragEnd: function(key, e){
 
-            var swap = this.workingVal.resources[key].schema.fields[e.newIndex];
-            this.workingVal.resources[key].schema.fields[e.newIndex] = this.workingVal.resources[key].schema.fields[e.oldIndex];
-            this.workingVal.resources[key].schema.fields[e.oldIndex] = swap;
+            let origElement = this.workingVal.resources[key].schema.fields[e.oldIndex];
 
-            swap = this.expandedBasic[key][e.newIndex];
+            // var swap = this.workingVal.resources[key].schema.fields[e.newIndex];
+            // this.workingVal.resources[key].schema.fields[e.newIndex] = this.workingVal.resources[key].schema.fields[e.oldIndex];
+            // this.workingVal.resources[key].schema.fields[e.oldIndex] = swap;
+
+            //remove the old index then insert at newIndex
+            this.workingVal.resources[key].schame.fields.splce(e.oldIndex, 1);
+            this.workingVal.resources[key].schema.fields.splice(e.newIndex, 0, origElement);
+
+            let swap = this.expandedBasic[key][e.newIndex];
             this.expandedBasic[key][e.newIndex] = this.expandedBasic[key][e.oldIndex];
             this.expandedBasic[key][e.oldIndex] = swap;
 
@@ -729,8 +739,8 @@ export default{
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.$emit('edited', this.workingVal);
-            this.reindexKey++;
-            this.$forceUpdate();
+            //this.reindexKey++;
+            //this.$forceUpdate();
         },
 
         updateResourcePath: function(key, event){
@@ -916,6 +926,23 @@ export default{
             focus: "",
             showType: {},
             stateType: this.stateTypeParent,
+            fieldTypes: [
+                'string', 
+                'number', 
+                'integer', 
+                'boolean', 
+                'object', 
+                'array', 
+                'date', 
+                'time', 
+                'datetime', 
+                'year', 
+                'yearmonth', 
+                'duration',
+                'geopoint',
+                'geojson',
+                'any'
+            ],
             redrawIndex: 0,
             expandedBasic: [],
             filters: {},

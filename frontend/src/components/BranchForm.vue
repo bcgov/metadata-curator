@@ -460,7 +460,7 @@
                             <v-col cols=1>
                             </v-col>
 
-                            <v-col cols=3 v-if="enabledPhase >= 3 && user && user.bcdcSet">
+                            <v-col cols=3 v-if="enabledPhase >= 3 && user && (user.isAdmin || user.isApprover) && user.bcdcSet">
                                     
                                 <v-btn
                                     color="success"
@@ -474,7 +474,7 @@
                                 </v-btn>
                             </v-col>
 
-                            <v-col cols=5 v-if="enabledPhase >= 3  && user && user.bcdcSet">
+                            <v-col cols=5 v-if="enabledPhase >= 3  && user && (user.isAdmin || user.isApprover) && user.bcdcSet">
                                 <TextInput
                                     :label="$tc('Access Key',1)"
                                     placeholder=""
@@ -741,7 +741,7 @@ export default {
             }
 
             if (this.schema && this.schema.resources && this.schema.resources[0]){
-                this.exportFields[this.RESOURCE_PREFIX] = true
+                //this.exportFields[this.RESOURCE_PREFIX] = true
                 let sKeys = Object.keys(this.schema.resources[0]);
                 for (let i=0; i<sKeys.length; i++){
                     this.exportFields[this.RESOURCE_PREFIX+'.'+sKeys[i]] = true;   
@@ -803,7 +803,7 @@ export default {
                                     json.resources[j].schema = {}
                                 }
                                 if (!isField){
-                                    json.resources[j].schema[resourceK] = this.schema.resources[j].schema[resourceK];
+                                    json.resources[j][resourceK] = this.schema.resources[j][resourceK];
                                 }else{
                                     if (!json.resources[j].schema.fields){
                                         json.resources[j].schema.fields = []
