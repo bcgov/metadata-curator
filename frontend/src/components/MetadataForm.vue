@@ -39,6 +39,11 @@
                                 :schema=" (viewSchemaType === 'Provided') ? schema : inferredSchema">
                             </SchemaView>
                         </v-row>
+                        <v-row v-else-if="loading" key="">
+                            <v-progress-circular
+                                indeterminate
+                            ></v-progress-circular>
+                        </v-row>
                         <v-row v-else>
                             <v-col cols=12>
                                 <v-btn color="primary" @click="createBasic">{{$tc('Create Without Import')}}</v-btn>

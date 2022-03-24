@@ -83,7 +83,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Short Title')"
                                                 :placeholder="$tc('Short Title')"
@@ -97,7 +97,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <Select
                                                 :label="$tc('Type')"
                                                 name="type"
@@ -112,7 +112,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <TextArea
                                                 :label="$tc('Description')"
                                                 :placeholder="$tc('Description')"
@@ -127,7 +127,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Keywords')"
                                                 :placeholder="$tc('Keywords')"
@@ -142,7 +142,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <DataUploadSelect
                                                 :label="$tc('Data Upload')"
                                                 name="upload_id"
@@ -159,7 +159,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Collection Method')"
                                                 :placeholder="$tc('Collection Method')"
@@ -173,7 +173,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Availability')"
                                                 :placeholder="$tc('Availability')"
@@ -187,7 +187,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <Select
                                                 :items="variableClassifications"
                                                 :label="$tc('Variable Classification Index')"
@@ -205,7 +205,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <TextArea
                                                 :label="$tc('Notes')"
                                                 :placeholder="$tc('Notes')"
@@ -219,7 +219,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Citation')"
                                                 :placeholder="$tc('Citation')"
@@ -233,7 +233,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Specific Instructions for appending or linking')"
                                                 :placeholder="$tc('Specific Instructions for appending or linking')"
@@ -247,7 +247,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Inclusions')"
                                                 :placeholder="$tc('Inclusions')"
@@ -261,7 +261,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Exclusions')"
                                                 :placeholder="$tc('Exclusions')"
@@ -275,7 +275,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Quality / Accuracy of Information')"
                                                 :placeholder="$tc('Quality / Accuracy of Information')"
@@ -289,7 +289,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Data changes over time')"
                                                 :placeholder="$tc('Data changes over time')"
@@ -303,7 +303,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <TextArea
                                                 :label="$tc('Important Additional Information')"
                                                 :placeholder="$tc('Important Additional Information')"
@@ -317,7 +317,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('References / Research that uses data')"
                                                 :placeholder="$tc('References / Research that uses data')"
@@ -331,7 +331,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Hyperlink to more information')"
                                                 :placeholder="$tc('Hyperlink to more information')"
@@ -345,7 +345,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <Markdown
                                                 name="faq"
                                                 :value="(branch) ? branch.faq : ''"
@@ -359,7 +359,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <SimpleCheckbox
                                                 :label="$tc('Published')"
                                                 :placeholder="$tc('Published')"
@@ -375,7 +375,7 @@
                                     </v-row>
 
                                     <v-row>
-                                        <v-col cols=12>
+                                        <v-col cols=6>
                                             <SimpleCheckbox
                                                 :label="$tc('Approved')"
                                                 :placeholder="$tc('Approved')"

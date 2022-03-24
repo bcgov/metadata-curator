@@ -89,7 +89,7 @@
                             </v-row>
                             <v-row v-if="(resource && resource.description) || editing" class="pb-2">
                                 <v-col cols=12>
-                                    <TextInput
+                                    <TextArea
                                         :label="$tc('Description (resource)')"
                                         placeholder=""
                                         name="description"
@@ -102,7 +102,7 @@
                                         :focusField="focusProp"
                                         @focus="onFocusBasic"
                                         @blur="(event) => { updateResourceBase(key, 'description', event) }"
-                                    ></TextInput>
+                                    ></TextArea>
                                 </v-col>
                             </v-row>
 
@@ -632,23 +632,27 @@ export default{
                 return false;
             }
 
+            const textFilters = ['name'];
+
             let fKeys = Object.keys(this.filters);
+            let rv = false
             for (let i=0; i<fKeys.length; i++){
                 let filterFieldName = fKeys[i];
                 if (Array.isArray(this.filters[filterFieldName])){
-                    if (this.filters[filterFieldName].length === 0){
-                        return false;
-                    }
                     if (!filterFieldName || (!field[filterFieldName] && field[filterFieldName] !== 0 && field[filterFieldName] !== false) || (this.filters[filterFieldName].indexOf(field[filterFieldName]) === -1)){
-                        return true;
+                        rv = true;
+                    }
+                }else if(textFilters.indexOf(filterFieldName) !== -1){
+                    if (!filterFieldName || !field[filterFieldName] || (field[filterFieldName].indexOf(this.filters[filterFieldName]) === -1) ){
+                        rv = true;
                     }
                 }else{
                     if (!filterFieldName || !field[filterFieldName] || (field[filterFieldName] !== this.filters[filterFieldName]) ){
-                        return true;
+                        rv = true;
                     }
                 }
             }
-            return false;
+            return rv;
         },
 
         dragEnd: function(key, e){
@@ -660,7 +664,7 @@ export default{
             // this.workingVal.resources[key].schema.fields[e.oldIndex] = swap;
 
             //remove the old index then insert at newIndex
-            this.workingVal.resources[key].schame.fields.splce(e.oldIndex, 1);
+            this.workingVal.resources[key].schema.fields.splice(e.oldIndex, 1);
             this.workingVal.resources[key].schema.fields.splice(e.newIndex, 0, origElement);
 
             let swap = this.expandedBasic[key][e.newIndex];
@@ -730,7 +734,10 @@ export default{
                 format: "",
             });
             
-            this.expandedBasic[key] = [];
+            
+            if (!this.expandedBasic[key]){
+                this.expandedBasic[key] = [];
+            }
             let key0 = Object.keys(this.workingVal.resources)[0];
             for (let i=0; i<this.workingVal.resources[key0].schema.fields.length; i++){
                 this.expandedBasic[key].push(true);

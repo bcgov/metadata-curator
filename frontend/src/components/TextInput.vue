@@ -54,6 +54,7 @@
                     :id="idName ? idName : ''"
                     @focus="$emit('focus', $event)"
                     @blur="$emit('blur', $event)"
+                    @keydown="$emit('keydown', $event)"
                     @click:append="plainText = !plainText"
                 >
                     <template v-slot:prepend>
