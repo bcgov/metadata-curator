@@ -3,24 +3,24 @@
         <v-checkbox
             v-model="checkbox"
             :color="clr"
-            class="inline"
             :disabled="disabled"
+            :class="'ma-0 mt-n3' + (large ? ' bolded' : ' normalText') + (editing ? ' editMode' : '')"
             @change="$emit('edited', checkbox)"
         >
+            <template v-slot:label>
+                {{displayLabel}}&nbsp;
+                <v-tooltip right v-model="showTooltip" v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
+                    <template v-slot:activator="{}">
+                        <v-icon color="label_colour" 
+                            @mouseenter="showTooltip = true"
+                            @mouseleave="closeOnLeave ? (showTooltip = false) : false">
+                            mdi-help-circle-outline
+                        </v-icon>
+                    </template>
+                    <span v-html="displayTooltip"></span>
+                </v-tooltip>
+            </template>
         </v-checkbox>
-        <span class="higher">
-            {{displayLabel}}
-            <v-tooltip right v-model="showTooltip" v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
-                <template v-slot:activator="{}">
-                    <v-icon color="label_colour" 
-                        @mouseenter="showTooltip = true"
-                        @mouseleave="closeOnLeave ? (showTooltip = false) : false">
-                        mdi-help-circle-outline
-                    </v-icon>
-                </template>
-                <span v-html="displayTooltip"></span>
-            </v-tooltip>
-        </span>
     </span>
 </template>
 
@@ -59,6 +59,16 @@
                 required: false,
                 default: '',
             },
+            large: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            editing: {
+                type: Boolean,
+                required: false,
+                default: true,
+            }
         },
         data() {
             return {
@@ -109,22 +119,26 @@
 </script>
 
 <style scoped>
-
-    .inline.v-input{
-        display: inline-block;
-    }
-
-    .higher{
-        line-height: 28px;
-        vertical-align: text-bottom;
-        font-size: 20px;
-        font-weight: bold;
-    }
-    
-
 </style>
 
 <style>
+
+    .v-card>.v-card__subtitle .v-input .v-label, .v-card>.v-card__text .v-input .v-label{
+        opacity: .7;
+    }
+
+    .v-card>.v-card__subtitle .v-input.editMode .v-label, .v-card>.v-card__text .v-input.editMode .v-label{
+        opacity: 1;
+        color: var(--v-text-base);
+    }
+
+    .v-input.normalText .v-label{
+        font-size: 14px;
+    }
+
+    .v-input.bolded .v-label{
+        font-weight: bold;
+    }
 
 </style>
 

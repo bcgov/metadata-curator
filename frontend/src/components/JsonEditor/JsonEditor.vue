@@ -728,10 +728,6 @@ export default{
             }
             this.workingVal.resources[key].schema.fields.push({
                 name: "",
-                type: "",
-                rdfType: "",
-                var_class: "",
-                format: "",
             });
             
             

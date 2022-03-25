@@ -3,9 +3,8 @@
 <br />
 
 ## Version 1.4.2
-March 30, 2022
+March 25, 2022
  - BC Data Catalogue record creation (Phase 3)
- - Upload Summary Form bolded file names
  - Field type in Files & Fields is now a select with the frictionless standard options
  - Prevented jump to top when adding a new field in the files & fields area
  - Changed drag functionality to reorder fields to be cascade instead of swap
@@ -14,11 +13,15 @@ March 30, 2022
  - Fixed exporting resource level fields
  - Strengthened ability of login to persist across server restarts
  - Showed a banner when the call to keep you logged in fails to do so
+ - Moved edition page to a 2 column layout
+ - Fixed some visual issues with checkboxes (being large, and wrong colour/size font)
+ - Cleaned up data upload summary form
+
 
 <br />
 
 ## Table Of Contents
-- [Version 1.4.2 (March 30 2022)](#version-142)
+- [Version 1.4.2 (March 25 2022)](#version-142)
 - [Version 1.4.1 (March 18 2022)](#version-141)
 - [Version 1.4.0 (March 16 2022)](#version-140)
 - [Version 1.3.7 (March 10 2022)](#version-137)

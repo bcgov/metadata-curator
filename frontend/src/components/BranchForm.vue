@@ -42,7 +42,7 @@
                                 </v-row>
 
                                 <v-row>
-                                    <v-col cols=12 v-if="branch && branch.repo_id && branch.repo_id.description">
+                                    <v-col cols=12 v-if="branch && branch.repo_id && (branch.repo_id.description || branch.repo_id.description === '')">
                                         Dataset Description: {{branch.repo_id.description}}
                                     </v-col>
                                 </v-row>
@@ -94,9 +94,7 @@
                                                 @edited="(newValue) => { updateValues('short_title', newValue) }"
                                             ></TextInput>
                                         </v-col>
-                                    </v-row>
-
-                                    <v-row>
+                                    
                                         <v-col cols=6>
                                             <Select
                                                 :label="$tc('Type')"
@@ -109,9 +107,7 @@
                                                 @edited="(newValue) => { updateValues('type', newValue) }"
                                             ></Select>
                                         </v-col>
-                                    </v-row>
-
-                                    <v-row>
+                                    
                                         <v-col cols=6>
                                             <TextArea
                                                 :label="$tc('Description')"
@@ -124,9 +120,7 @@
                                                 @edited="(newValue) => { updateValues('description', newValue) }"
                                             ></TextArea>
                                         </v-col>
-                                    </v-row>
-
-                                    <v-row>
+                                    
                                         <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Keywords')"
@@ -139,9 +133,7 @@
                                                 @edited="(newValue) => { updateValues('keywords', newValue) }"
                                             ></TextInput>
                                         </v-col>
-                                    </v-row>
-
-                                    <v-row>
+                                    
                                         <v-col cols=6>
                                             <DataUploadSelect
                                                 :label="$tc('Data Upload')"
@@ -156,9 +148,7 @@
                                                 @error="(message) => { (alert = true) && (alertType = 'error') && (alertText = message) }"
                                             ></DataUploadSelect>
                                         </v-col>
-                                    </v-row>
-
-                                    <v-row>
+                                    
                                         <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Collection Method')"
@@ -170,9 +160,7 @@
                                                 @edited="(newValue) => { updateValues('collectionMethod', newValue) }"
                                             ></TextInput>
                                         </v-col>
-                                    </v-row>
-
-                                    <v-row>
+                                    
                                         <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Availability')"
@@ -184,9 +172,7 @@
                                                 @edited="(newValue) => { updateValues('availability', newValue) }"
                                             ></TextInput>
                                         </v-col>
-                                    </v-row>
-
-                                    <v-row>
+                                    
                                         <v-col cols=6>
                                             <Select
                                                 :items="variableClassifications"
@@ -202,9 +188,7 @@
                                             >
                                             </Select>
                                         </v-col>
-                                    </v-row>
-
-                                    <v-row>
+                                    
                                         <v-col cols=6>
                                             <TextArea
                                                 :label="$tc('Notes')"
@@ -216,9 +200,7 @@
                                                 @edited="(newValue) => { updateValues('notes', newValue) }"
                                             ></TextArea>
                                         </v-col>
-                                    </v-row>
-
-                                    <v-row>
+                                    
                                         <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Citation')"
@@ -230,9 +212,7 @@
                                                 @edited="(newValue) => { updateValues('citation', newValue) }"
                                             ></TextInput>
                                         </v-col>
-                                    </v-row>
-
-                                    <v-row>
+                                    
                                         <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Specific Instructions for appending or linking')"
@@ -244,9 +224,7 @@
                                                 @edited="(newValue) => { updateValues('instructions', newValue) }"
                                             ></TextInput>
                                         </v-col>
-                                    </v-row>
-
-                                    <v-row>
+                                    
                                         <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Inclusions')"
@@ -258,9 +236,7 @@
                                                 @edited="(newValue) => { updateValues('inclusions', newValue) }"
                                             ></TextInput>
                                         </v-col>
-                                    </v-row>
-
-                                    <v-row>
+                                    
                                         <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Exclusions')"
@@ -272,9 +248,7 @@
                                                 @edited="(newValue) => { updateValues('exclusions', newValue) }"
                                             ></TextInput>
                                         </v-col>
-                                    </v-row>
-
-                                    <v-row>
+                                    
                                         <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Quality / Accuracy of Information')"
@@ -286,9 +260,7 @@
                                                 @edited="(newValue) => { updateValues('quality', newValue) }"
                                             ></TextInput>
                                         </v-col>
-                                    </v-row>
-
-                                    <v-row>
+                                    
                                         <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Data changes over time')"
@@ -300,9 +272,7 @@
                                                 @edited="(newValue) => { updateValues('delta_over_time', newValue) }"
                                             ></TextInput>
                                         </v-col>
-                                    </v-row>
-
-                                    <v-row>
+                                    
                                         <v-col cols=6>
                                             <TextArea
                                                 :label="$tc('Important Additional Information')"
@@ -314,9 +284,7 @@
                                                 @edited="(newValue) => { updateValues('additional_info', newValue) }"
                                             ></TextArea>
                                         </v-col>
-                                    </v-row>
-
-                                    <v-row>
+                                    
                                         <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('References / Research that uses data')"
@@ -328,9 +296,7 @@
                                                 @edited="(newValue) => { updateValues('references', newValue) }"
                                             ></TextInput>
                                         </v-col>
-                                    </v-row>
-
-                                    <v-row>
+                                    
                                         <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Hyperlink to more information')"
@@ -342,9 +308,7 @@
                                                 @edited="(newValue) => { updateValues('more_information', newValue) }"
                                             ></TextInput>
                                         </v-col>
-                                    </v-row>
-
-                                    <v-row>
+                                    
                                         <v-col cols=6>
                                             <Markdown
                                                 name="faq"
@@ -356,9 +320,10 @@
                                                 @edited="(newValue) => { updateValues('faq', newValue) }"
                                             ></Markdown>
                                         </v-col>
-                                    </v-row>
-
-                                    <v-row>
+                                        
+                                        <v-col cols=6>
+                                        </v-col>
+                                    
                                         <v-col cols=6>
                                             <SimpleCheckbox
                                                 :label="$tc('Published')"
@@ -372,9 +337,7 @@
                                             ></SimpleCheckbox>
                                             <router-link v-if="branch.published && location" :to="{ name: 'published_version', params: { id: id }}">{{location.protocol + "//" + location.host + $router.resolve({name: 'published_version', params: { id: id } }).href }}</router-link>
                                         </v-col>
-                                    </v-row>
-
-                                    <v-row>
+                                    
                                         <v-col cols=6>
                                             <SimpleCheckbox
                                                 :label="$tc('Approved')"

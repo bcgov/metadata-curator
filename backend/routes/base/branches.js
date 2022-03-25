@@ -669,8 +669,15 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             // let schemaResp = await axios.get(schemaUrl, axiosConfig);
 
             let ckanDataset = {};
+            if (!repo.name){
+                return res.status(400).json({error: "Dataset name is required for bcdc publishing"});
+            }
             ckanDataset.title = 'Metadata for ' + repo.name.trim();
             ckanDataset.name = ckanDataset.title.toLowerCase().replace(/ /g, "-");
+
+            if (!repo.ministry_organization){
+                return res.status(400).json({error: "Dataset Ministry / Organization is required for bcdc publishing"});
+            }
 
             //need guid for owner org
             let orgUrl = config.get('bcdc');
@@ -682,6 +689,10 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
                 return res.status(400).json({error: "Could not find organization for '"+repo.ministry_organization+"' in catalogue"});
             }
             ckanDataset.owner_org = ckanOrgRes.data.result.id;
+
+            if (!repo.description){
+                return res.status(400).json({error: "Dataset description is required for bcdc publishing"});
+            }
 
             ckanDataset.notes = repo.description;
             ckanDataset.license_id = 22; //Access Only
@@ -762,7 +773,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             let ckanRes = await axios.post(url, ckanDataset, axiosConfig);
 
             if (!ckanRes || !ckanRes.data || !ckanRes.data.result || !ckanRes.data.result.id){
-                return res.status(500).json({error: "Failed to create dataset", ex: JSON.stringify(ckanRes.data)});
+                return res.status(500).json({error: "Failed to create dataset", ex: JSON.stringify(ckanRes)});
             }
 
             let datasetId = ckanRes.data.result.id
