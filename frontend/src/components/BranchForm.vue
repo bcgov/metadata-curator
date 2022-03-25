@@ -320,7 +320,7 @@
                                                 @edited="(newValue) => { updateValues('faq', newValue) }"
                                             ></Markdown>
                                         </v-col>
-                                        
+
                                         <v-col cols=6>
                                         </v-col>
                                     
@@ -644,7 +644,8 @@ export default {
                 this.alertText = alertText;
             }catch(ex){
                 this.alertType = "error";
-                this.alertText = "Error: " + ex.response.data.error +"\n"+ex.response.data.ex;
+                this.alertText = "Error: " + ( (ex.response && ex.response.data && ex.response.data.error) ? ex.response.data.error : ex.message) +"\n";
+                this.alertText += (ex.response && ex.response.data && ex.response.data.ex) ? ex.response.data.ex : '';
             }
             this.alert = true;
             this.disablePublish = false;
