@@ -54,15 +54,18 @@ module.exports = (router) => {
 
     router.get('/token', auth.removeExpired, async function(req, res){
         if (req.user && req.user.jwt && req.user.refreshToken) {
-            res.json(req.user);
+            return res.json(req.user);
         }else if (req.headers.authorization){
-            await passport.authenticate('jwt')(req, res, function(){});
-            await auth.removeExpired(req, res, function(){});
-            if (req.user){
-                res.json(req.user);
-            }else{
-                res.json({error: "Not logged in"});
-            }
+            passport.authenticate('jwt', { session: true }, function(err, user, info){
+                if (!err && user){
+                    req.user = user;
+                    req.session.passport = {};
+                    req.session.passport.user = JSON.parse(JSON.stringify(user));
+                    res.json(req.user);
+                }else{
+                    res.json({error: "Not logged in"});
+                }
+            })(req, res, function(){});
         }else{
             req.user =  null;
             res.json({error: "Not logged in"});

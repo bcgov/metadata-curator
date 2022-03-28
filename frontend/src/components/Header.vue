@@ -1,5 +1,11 @@
 <template>
     <v-container fluid ma-0 pa-0>
+        <v-alert
+            type="error"
+            class="mb-0"
+            v-if="showError">
+            {{error}}
+        </v-alert>
         <v-app-bar>
             <v-toolbar-title class="font-weight-light">
                 <span>{{title}}</span>
@@ -68,7 +74,9 @@ export default {
         return {
             dark: this.useDark,
             activeTab: null,
-            stayLoggedIn: false
+            stayLoggedIn: false,
+            showError: false,
+            error: ""
         }
     },
 
@@ -161,7 +169,7 @@ export default {
     methods: {
         preserveToken: function(){
             let timeOut = 1000 * 60 // 1 minute
-            timeOut *= 5; // 5 minutes
+            // timeOut *= 5; // 5 minutes
 
             if (this.loggedIn){
                 if (!this.stayLoggedIn){
@@ -175,9 +183,17 @@ export default {
             }
         },
 
-        keepAlive: function(){
-            //no need to await as we don't really care about the token here
-            authServ.getToken(this.jwt);
+        keepAlive: async function(){
+            
+            let tok = await authServ.getToken(this.jwt);
+            if (!tok || tok.error){
+                this.showError = true;
+                this.error = "WARNING you are not signed in";
+            }else{
+                this.showError = false;
+                this.error = "";
+            }
+            
         },
     },
 

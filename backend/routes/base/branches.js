@@ -10,6 +10,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
 
     const util = require('./util');
     const requiredPhase = 2;
+    const bcdcPhase = 3;
 
     const addBranch = async function(repoId, type, name, description, upload_id, fields, user) {
         if (typeof(repoId) === "undefined"){
@@ -587,6 +588,292 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         
         return res.status(400).json({error: "Cant add comments to a branch that doesn't exist"});
         
+    });
+
+    router.post('/:branchId/bcdc', auth.requireLoggedIn, auth.isApprover, async function(req, res, next){
+        const config = require('config');
+        try{
+            //version check
+            if (!util.phaseCheck(cache, bcdcPhase, db)){
+                return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.repoId+"/bcdc")));
+            }
+            if (req.params.branchId === 'create'){
+                return res.status(400).json({error: "The branch must be saved previously"});
+            }
+            if (!config.has('bcdc')){
+                return res.status(400).json({error: "Metadata Curator is not hooked up to a catalogue"});
+            }
+
+            let body = req.body;
+            if (!body.accessKey){
+                return res.status(400).json({error: "You must enter your access key to use your api key"});
+            }
+
+            let existing = await db.User.findOne({email: req.user.email});
+            let branch = await db.RepoBranchSchema.findOne({_id: req.params.branchId});
+
+            if (!branch){
+                return res.status(400).json({error: "No such branch " + req.params.branchId});
+            }
+
+            let repo = await db.RepoSchema.findOne({_id: branch.repo_id});
+            
+            if (!repo){
+                return res.status(400).json({error: "Somehow branch does not have a repo"});
+            }
+
+            let providedSchema = await db.DataPackageSchema.findOne({version: branch._id, inferred: false});
+            
+            if (!providedSchema){
+                return res.status(400).json({error: "Somehow branch does not have a repo"});
+            }
+
+            // let inferredSchema = await db.DataPackageSchema.findOne({version: branch._id, inferred: true});
+
+            // if (!inferredSchema){
+            //     return res.status(400).json({error: "Sorry we can't find your user record"});
+            // }
+
+            let upload = await db.DataUploadSchema.findOne({_id: branch.data_upload_id});
+
+            if (!upload){
+                return res.status(400).json({error: "Sorry we can't find your upload"});
+            }
+
+            if ( (existing.bcdc_apiKey) && (!existing.bcdc_accessKey) ){
+                return res.status(400).json({error: "You have not configured your account to use the bcdc, enter your api and access key on your profile page"});
+            }
+
+            var md5 = require('md5'); 
+            let hashedKey = md5(body.accessKey);
+            if (hashedKey !== existing.bcdc_accessKey){
+                return res.status(403).json({error: "Your access key did not match your account"});
+            }
+
+
+            var CryptoJS = require("crypto-js");
+            // Decrypt
+            let apiKey  = CryptoJS.AES.decrypt(existing.bcdc_apiKey, body.accessKey.toString()).toString(CryptoJS.enc.Utf8);
+
+            const axios = require('axios');
+            const axiosConfig = {
+                headers: {'Authorization': apiKey},
+                
+                validateStatus: function(){ return true; }
+            }
+
+            //this is how to get the bcdc schema, it can technically change
+            // let schemaUrl = config.get('bcdc');
+            // schemaUrl += schemaUrl[schemaUrl.length-1] === "/" ? '' : "/";
+            // schemaUrl += "api/3/action/scheming_dataset_schema_show?type=bcdc_dataset"
+            // let schemaResp = await axios.get(schemaUrl, axiosConfig);
+
+            let ckanDataset = {};
+            if (!repo.name){
+                return res.status(400).json({error: "Dataset name is required for bcdc publishing"});
+            }
+            ckanDataset.title = 'Metadata for ' + repo.name.trim();
+            ckanDataset.name = ckanDataset.title.toLowerCase().replace(/ /g, "-");
+
+            if (!repo.ministry_organization){
+                return res.status(400).json({error: "Dataset Ministry / Organization is required for bcdc publishing"});
+            }
+
+            //need guid for owner org
+            let orgUrl = config.get('bcdc');
+            orgUrl += orgUrl[orgUrl.length-1] === "/" ? '' : "/";
+            orgUrl += "api/3/action/organization_show?id=" + repo.ministry_organization.replace(/ /g, "-").toLowerCase();
+            let ckanOrgRes = await axios.get(orgUrl, axiosConfig);
+
+            if (!ckanOrgRes || !ckanOrgRes.data || !ckanOrgRes.data.result || !ckanOrgRes.data.result.id){
+                return res.status(400).json({error: "Could not find organization for '"+repo.ministry_organization+"' in catalogue"});
+            }
+            ckanDataset.owner_org = ckanOrgRes.data.result.id;
+
+            if (!repo.description){
+                return res.status(400).json({error: "Dataset description is required for bcdc publishing"});
+            }
+
+            ckanDataset.notes = repo.description;
+            ckanDataset.license_id = 22; //Access Only
+            
+            let contacts = [{
+                name: "Data Innovation Program",
+                email: "data@gov.bc.ca",
+                org: "d8e38fa3-e522-4d65-9ae1-b1402dd342c3", // data-innovation-program-dip
+                //org: "49e9b9e2-9007-4827-b974-e506b529dafe", // data-innovation-program-dip
+                role: "distributor",
+                displayed: true,
+
+            }];
+
+            ckanDataset['contacts'] = JSON.stringify(contacts);
+
+            ckanDataset.purpose = "This record describes the fields (variables) in a collection of administrative data files ";
+            ckanDataset.purpose += "created for statistical analysis. Access to the data in this record is granted through the ";
+            ckanDataset.purpose += "Data Innovation Program. For more information about the program please visit "
+            ckanDataset.purpose += "[https://www2.gov.bc.ca/gov/content?id=2F6E3BF426034EDBA62F3F016EE2313D](https://www2.gov.bc.ca/gov/content?id=2F6E3BF426034EDBA62F3F016EE2313D)";
+
+            if (branch.quality){
+                ckanDataset.data_quality = branch.quality;
+            }
+
+            let files = providedSchema.resources;
+            
+            ckanDataset.lineage_statement = "The data was extracted from the ";
+            ckanDataset.lineage_statement += repo.ministry_organization;
+            ckanDataset.lineage_statement += " and provided to the Data Innovation Program for use and stewardship";
+            
+
+            if (branch.more_information){
+                let desc = branch.more_information
+                let pos = desc.lastIndexOf("/");
+                if ( (pos !== -1) && ((pos+1) < desc.length) ){
+                    desc = desc.substring(pos+1);
+                }
+                desc.replace(/-/g, " ");
+                desc[0] = desc[0].toUpperCase();
+                let more_info = [{
+                    description: desc,
+                    url: branch.more_information
+                }];
+                ckanDataset.more_info = JSON.stringify(more_info);
+            }
+
+            ckanDataset.security_class = "PROTECTED B";
+            ckanDataset.view_audience = "Named users";
+            ckanDataset.download_audience = "Not downloadable";
+            ckanDataset.metadata_visibility = "Public";
+            ckanDataset.tag_string = branch.keywords.replace(/, /g, ",");
+
+            ckanDataset.publish_state = "DRAFT";
+
+            ckanDataset.resource_status = "onGoing"; //???
+
+            let recordDates = [
+                {
+                    type: "Created",
+                    date: (new Date()).toISOString().split('T')[0]//upload.data_create_date.toISOString().split('T')[0]
+                }
+            ]
+            ckanDataset['dates'] = JSON.stringify(recordDates);
+
+            let origRecord = branch.bcdc_record;
+
+            if (origRecord){
+                ckanDataset.id = origRecord.substring(origRecord.lastIndexOf('/')+1);
+                ckanDataset.resources = [];
+            }
+
+            let url = config.get('bcdc');
+            url += url[url.length-1] === "/" ? '' : "/";
+            url += "api/3/action/"
+            url += origRecord ? "package_update" : "package_create";
+
+            let ckanRes = await axios.post(url, ckanDataset, axiosConfig);
+
+            if (!ckanRes || !ckanRes.data || !ckanRes.data.result || !ckanRes.data.result.id){
+                return res.status(500).json({error: "Failed to create dataset", ex: JSON.stringify(ckanRes)});
+            }
+
+            let datasetId = ckanRes.data.result.id
+
+            let recordUrl = config.get('bcdc');
+            recordUrl += recordUrl[recordUrl.length-1] === "/" ? '' : "/";
+            recordUrl += "dataset/"+datasetId;
+            branch.bcdc_record = recordUrl
+            try{
+                await branch.save();
+            }catch(e){
+                return res.status(500).json({error: "Failed to save branch with catalogue dataset id" + datasetId, ex: e.message});
+            }
+
+            
+            let errors = [];
+
+            for (let i=0; i<files.length; i++){
+                var FormData = require('form-data');
+                let ckanResource = new FormData();
+                let file = JSON.parse(JSON.stringify(files[i]));
+                ckanResource.append('name', file.name);
+                ckanResource.append('bcdc_type', "document");
+                if (file.description){
+                    ckanResource.append('description', file.description);
+                }
+                ckanResource.append('resource_update_cycle', "annually");
+                
+                let temporal_extent = {};
+                if (file.temporal_start){
+                    temporal_extent.beginning_date = file.temporal_start;
+                }
+                if (file.temporal_end){
+                    temporal_extent.end_date = file.temporal_end;
+                }
+
+                if (Object.keys(temporal_extent).length > 0){
+                    ckanResource.append('temporal_extent', JSON.stringify(temporal_extent));
+                }
+
+                ckanResource.append('isUrl', 'false');
+
+                const tableSchemaBlackList = ['notes', 'highlight'];
+                
+                if (file.tableSchema && file.tableSchema.fields){
+                    for (let j=0; j<file.tableSchema.fields.length; j++){
+                        for (let k=0; k<tableSchemaBlackList.length; k++){
+                            delete file.tableSchema.fields[j][tableSchemaBlackList[k]];
+                        }
+                    }
+                }
+                
+                
+                let jsonFileString = JSON.stringify(file.tableSchema);
+                let jsonFile = Buffer.from(jsonFileString, 'utf8');
+                ckanResource.append('upload', jsonFile, {
+                    filename: file.name+"-schema.json",
+                    contentType: 'application/json',
+                });
+
+                //ckanResource.append('format', "csv");
+                ckanResource.append('format', "json");
+
+                ckanResource.append('resource_storage_location', "catalogue data store");
+
+                ckanResource.append('json_table_schema', jsonFileString);
+                ckanResource.append('resource_type', "data");
+                ckanResource.append('resource_access_method', "direct access");
+                ckanResource.append('package_id', datasetId);
+
+                let url = config.get('bcdc');
+                url += url[url.length-1] === "/" ? '' : "/";
+                url += "api/3/action/"
+                url += /*origRecord ? "resource_update" : */"resource_create";
+                let options = {
+                    url: url,
+                    method: "POST",
+                    headers: {
+                        'Content-Type': ckanResource.getHeaders()['content-type'],
+                        'Authorization': apiKey
+                    },
+                    withCredentials: true,
+                    data: ckanResource.getBuffer(),
+                    validateStatus: function(){ return true; }
+                };
+                
+                let ckanResRes = await axios(options);
+
+                if (!ckanResRes || !ckanResRes.data || !ckanResRes.data.result || !ckanResRes.data.result.id){
+                    errors.push("Failed to create resource " + file.name + " " + JSON.stringify(ckanResRes.data.error));
+                }
+
+            }
+
+            return res.status(200).json({url: branch.bcdc_record, resourceErrors: errors});
+            
+        }catch(e){
+            console.log("bcdc e", e);
+            res.status(500).json(e);
+        }
     });
 
     return router;

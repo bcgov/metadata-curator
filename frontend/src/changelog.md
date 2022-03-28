@@ -2,17 +2,26 @@
 
 <br />
 
-## Version 1.4.1
-March 18, 2022
- - Fixed some error messages on dataset form
- - Fixed back button on edition schema form
- - Fixed comparison when file provided has less columns then expected
- - Removed popups from completed upload page
- - Fixed upload page not going to view page on a submitted upload
+## Version 1.4.2
+March 25, 2022
+ - BC Data Catalogue record creation (Phase 3)
+ - Field type in Files & Fields is now a select with the frictionless standard options
+ - Prevented jump to top when adding a new field in the files & fields area
+ - Changed drag functionality to reorder fields to be cascade instead of swap
+ - Added number of fields to the top of a resource as an informative label on files & fields
+ - Changed - icon to remove a field to be a trash can and to the far right
+ - Fixed exporting resource level fields
+ - Strengthened ability of login to persist across server restarts
+ - Showed a banner when the call to keep you logged in fails to do so
+ - Moved edition page to a 2 column layout
+ - Fixed some visual issues with checkboxes (being large, and wrong colour/size font)
+ - Cleaned up data upload summary form
+
 
 <br />
 
 ## Table Of Contents
+- [Version 1.4.2 (March 25 2022)](#version-142)
 - [Version 1.4.1 (March 18 2022)](#version-141)
 - [Version 1.4.0 (March 16 2022)](#version-140)
 - [Version 1.3.7 (March 10 2022)](#version-137)
@@ -28,6 +37,16 @@ March 18, 2022
 - [Version 1.2.4 (February 7 2022)](#version-124)
 - [Version 1.2.3 (February 1 2022)](#version-123)
 - [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
+## Version 1.4.1
+March 18, 2022
+ - Fixed some error messages on dataset form
+ - Fixed back button on edition schema form
+ - Fixed comparison when file provided has less columns then expected
+ - Removed popups from completed upload page
+ - Fixed upload page not going to view page on a submitted upload
 
 <br />
 

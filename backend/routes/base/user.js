@@ -17,13 +17,13 @@ var buildDynamic = function(db, router, auth, cache){
         try{
 
             if (req.params.email !== req.user.email){
-                res.status(403).json("Email is not yours, access denied");
+                res.status(403).json({error: "Email is not yours, access denied"});
             }
 
             let existing = await db.User.findOne({email: req.params.email});
 
             if ( ( (req.body.bcdc_apiKey) && (!req.body.bcdc_accessKey) ) || ( (!req.body.bcdc_apiKey) && (req.body.bcdc_accessKey) ) ){
-                res.status(400).json("To set either api key or access key both must be defined");
+                return res.status(400).json({error: "To set either api key or access key both must be defined"});
             }
 
             if (req.body.bcdc_apiKey){
@@ -32,7 +32,7 @@ var buildDynamic = function(db, router, auth, cache){
                 
                 // Decrypt
                 //var bytes  = CryptoJS.AES.decrypt(ciphertext, 'secret key 123');
-                var ciphertext = CryptoJS.AES.encrypt(req.body.bcdc_apiKey, req.body.bcdc_accessKey).toString();
+                var ciphertext = CryptoJS.AES.encrypt(req.body.bcdc_apiKey, req.body.bcdc_accessKey.toString());
                 existing.bcdc_apiKey = ciphertext;
 
                 var md5 = require('md5'); 
@@ -43,6 +43,7 @@ var buildDynamic = function(db, router, auth, cache){
 
             delete existing.bcdc_apiKey;
             delete existing.bcdc_accessKey;
+            req.user.bcdcSet = req.body.bcdc_apiKey;
             
             res.status(200).json(existing);
         }catch(ex){

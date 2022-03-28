@@ -36,6 +36,18 @@
                     @edited="(newValue) => { highlightFilter(newValue) }"
                 ></Select>
             </v-col>
+            <v-col cols=6>
+                <TextInput
+                    :label="$tc('Field Name')"
+                    placeholder=""
+                    name="fieldName"
+                    :large="false"
+                    :editing="true"
+                    helpPrefix="filter"
+                    @blur="(newValue) => { fieldNameFilter(newValue) }"
+                    @keydown="(event) => { fieldNameFilterOnEnter(event) }"
+                ></TextInput>
+            </v-col>
         </v-row>
     </v-container>
 </template>
@@ -44,10 +56,12 @@
 
 import { mapState } from 'vuex';
 import Select from './Select';
+import TextInput from './TextInput';
 
     export default {
         components:{
             Select,
+            TextInput
         },
         props: {
         },
@@ -86,7 +100,17 @@ import Select from './Select';
                 }else{
                     v = ( (newValue === 'true') ? true : (newValue === 'false') ? false : '' );
                 }
-                this.$emit('filter', 'highlight', v);
+                this.$emit('filter', 'highlight', newValue);
+            },
+
+            fieldNameFilter(newValue){
+                this.$emit('filter', 'name', newValue.target.value);
+            },
+
+            fieldNameFilterOnEnter(event){
+                if (event.key === 'Enter' || event.keyCode === 13) {
+                    this.fieldNameFilter(event);
+                }
             }
         },
         
