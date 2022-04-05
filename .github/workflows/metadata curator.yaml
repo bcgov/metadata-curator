@@ -164,7 +164,7 @@ jobs:
           docker ps
           docker logs mc_backend
           cd frontend
-          cp step-definitions/config.json.example step-definitions/config.json
+          cp tests/step-definitions/config.json.example tests/step-definitions/config.json
           sudo apt-get install xvfb openssl
           export NODE_ENV='development'
           
