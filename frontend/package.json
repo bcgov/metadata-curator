@@ -87,7 +87,7 @@
     "nightwatch": "^2.0.10",
     "prettier": "^2.5.1",
     "prism-react-renderer": "^0.1.7",
-    "prismjs": "^1.26.0",
+    "prismjs": "^1.27.0",
     "sass": "^1.46.0",
     "sass-loader": "^8.0.2",
     "selenium-server": "^3.141.59",
