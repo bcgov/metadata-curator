@@ -1,4 +1,3 @@
-const { client } = require('nightwatch-api');
 const { Given, Then, When } = require('@cucumber/cucumber');
 
 const helpers = require('./helpers');
@@ -34,9 +33,11 @@ const data1 = {
     }
 }
 
-Given(/^Data provider successfully uploads a data file$/, async () => {
-
+Given(/^Data provider successfully uploads a data file$/, async function(){
+    const client = this.browser;
+    
     await helpers.open(client);
+    
     await helpers.login(client, 'publisher');
     await client.saveScreenshot("./"+path+"/preNewUpload.png");
     client.click('#userMenu').pause(10)
@@ -52,18 +53,24 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
 
     await client.click('#next-1');
     
-    await client.pause(1000);
+    await client.pause(3000);
     await client.click('#newDatasetButton');
-    await client.pause(5000);
+    await client.pause(7500);
     await client.click('#newVersionButton');
-    await client.pause(5000);
+    await client.pause(7500);
     await client.saveScreenshot("./"+path+"/preNext2.png");
     await client.click('#next-2');
     await client.pause(300);
     await client.saveScreenshot("./"+path+"/postNext2.png");
+    await client.pause(3000);
     
     let f = require('path').resolve(__dirname + '/sample.csv');
+    let el = await client.findElements('#fileForm-reader input[type="file"]');
+    await client.executeScript("console.log(arguments[0], arguments[0].style); arguments[0].style['pointer-events']='auto'; arguments[0].style.width='1000px'; arguments[0].style.maxWidth='1000px'; arguments[0].style.opacity=1", el);
+    
+    await client.pause(500);
     await client.setValue('#fileForm-reader input[type="file"]', f);
+    await client.pause(500);
     await client.click('#next-3');
 
     let d = new Date();
@@ -112,7 +119,8 @@ Given(/^Data provider successfully uploads a data file$/, async () => {
     }
 });
 
-When(/^Data provider chooses to see the details of the upload$/, async () => {
+When(/^Data provider chooses to see the details of the upload$/, async function(){
+    const client = this.browser;
     let url;
     await client.url( (result) => { url = result.value });
     let id = url.substring(url.lastIndexOf("/")+1);
@@ -134,8 +142,9 @@ When(/^Data provider chooses to see the details of the upload$/, async () => {
     return client.click('#upload-'+id);
 });
 
-Then(/^Data provider should see information on the characteristics of the data upload$/, async() => {
-    await client.assert.containsText('#uploadDetail-name', data1.name.value);
+Then(/^Data provider should see information on the characteristics of the data upload$/, async function(){
+    const client = this.browser;
+    await client.assert.textContains('#uploadDetail-name', data1.name.value);
     await client.pause(5000);
     //await client.click('#uploadDetail-showInfo');
     await client.waitForElementVisible('#ministry_organization-value', 10000)
@@ -144,12 +153,14 @@ Then(/^Data provider should see information on the characteristics of the data u
     var success = true;
 
     for (var property in data1){
-        success = (success && await client.assert.containsText(data1[property].selector2, data1[property].value));
+        success = (success && await client.assert.textContains(data1[property].selector2, data1[property].value));
     }
 
     return success;
   });
 
-Then(/^the title is "([^"]*)"$/, title => {
-  return client.assert.title(title);
+Then(/^the title is "([^"]*)"$/, async function(title){
+    const client = this.browser;
+    await client.assert.titleEquals(title);
+    return true;
 });

@@ -27,8 +27,8 @@
                     <span v-html="displayTooltip"></span>
                 </v-tooltip>
             </span>
-            <h2 v-if="large">{{displayVal}}</h2>
-            <span v-else>{{displayVal}}</span>
+            <h2 v-if="large" :id="name+'-value'">{{displayVal}}</h2>
+            <span v-else :id="name+'-value'">{{displayVal}}</span>
         </span>
 
         <span v-else>

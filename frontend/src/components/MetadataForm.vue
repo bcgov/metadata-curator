@@ -46,7 +46,7 @@
                         </v-row>
                         <v-row v-else>
                             <v-col cols=12>
-                                <v-btn color="primary" @click="createBasic">{{$tc('Create Without Import')}}</v-btn>
+                                <v-btn color="primary" id="create-without-import" @click="createBasic">{{$tc('Create Without Import')}}</v-btn>
                             </v-col>
                             <v-col cols=12>
                                 <FileReader
@@ -82,7 +82,7 @@
                         </v-card-actions>
                         <v-card-actions class="fixed" v-else-if="editing">
                             <v-btn @click="closeOrBack()" class="mt-1">{{$tc('Cancel')}}</v-btn>
-                            <v-btn @click="save" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
+                            <v-btn @click="save" id="saveMetadata" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
                         </v-card-actions>
                         <v-card-actions v-else>
                             <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
@@ -152,11 +152,11 @@ export default {
             createDataPackageSchema: 'schemaImport/createDataPackageSchema',
             getSchema: 'schemaImport/getTableSchema',
             getInferredSchema: 'schemaImport/getInferredSchema',
+            setTableSchema: 'schemaImport/setTableSchema',
         }),
         ...mapMutations({    
             editBranch: 'repos/editBranch',
             clearBranch: 'repos/clearBranch',
-            setTableSchema: 'schemaImport/setTableSchema',
             resetSchemaImportState: 'schemaImport/resetState',
             setDataPackageSchema: "schemaImport/setDataPackageSchema",
         }),
@@ -240,7 +240,15 @@ export default {
         },
 
         async save(){
-            this.setTableSchema({schema: this.schemaObj});
+            await this.setTableSchema({schema: this.schemaObj});
+            if (this.schemaError){
+                this.alertType = "error"
+                this.alertText = this.schemaError;
+                this.alert = true;
+                window.scrollTo(0,0);
+                return;
+            }
+
             if (this.creating){
                 this.saveTableSchema();
                 this.updateBranch().then( () => {
@@ -257,19 +265,27 @@ export default {
                 });
                 
             }else{
-                this.updateDataPackageSchema().then( () => {
-                // this.updateBranch().then( () => {
-                    this.alertType = "success"
-                    this.alertText = this.$tc('Sucessfully updated') + " " + this.$tc('version');
-                    this.alert = true;
-                    this.closeOrBack();
+                try{
+                    await this.updateDataPackageSchema();
+                    // this.updateBranch().then( () => {
+                    if (this.schemaError){
+                        this.alertType = "error"
+                        this.alertText = (this.schemaError && typeof(this.schemaError) === 'string') ? this.schemaError : JSON.stringify(this.schemaError);
+                        this.alert = true;
+                        window.scrollTo(0,0);
+                    }else{
+                        this.alertType = "success"
+                        this.alertText = this.$tc('Sucessfully updated') + " " + this.$tc('version');
+                        this.alert = true;
+                        this.closeOrBack();
+                    }
 
-                }).catch( err => {
+                }catch(err){
                     this.alertType = "error"
                     this.alertText = err.message;
                     this.alert = true;
                     window.scrollTo(0,0);
-                });
+                }
             }
         },
 
@@ -308,7 +324,8 @@ export default {
             branch: state => state.repos.branch,
             dataUploads: state => state.dataUploads.dataUploads,
             schema: state => state.schemaImport.tableSchema,
-            inferredSchema: state => state.schemaImport.inferredSchema
+            inferredSchema: state => state.schemaImport.inferredSchema,
+            schemaError: state => state.schemaImport.error
         }),
         canEdit: function(){
             return this.branchApproved ? this.user.isAdmin : true;

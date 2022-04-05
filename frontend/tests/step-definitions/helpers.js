@@ -1,4 +1,3 @@
-const { client } = require('nightwatch-api');
 const conf = require('./config.json');
 
 confGet = function(parm){
@@ -14,8 +13,9 @@ module.exports = {
 
     confHas: confHas,
 
-    open: function(){
-        return client.url(confGet('url'));
+    open: async function(client){
+        let url = confGet('url');
+        return await client.url(url);
     },
 
     //assumes not logged in won't work otherwise
@@ -41,8 +41,8 @@ module.exports = {
         return client.waitForElementVisible('div.v-toolbar__title.font-weight-light', 1000);
     },
 
-    logout: function(client){
-        return client.click('#userMenu').click('#userMenu-Logout');
+    logout: async function(client){
+        return await client.click('#userMenu').click('#userMenu-Logout');
     },
 
     newUpload: async function(client){
@@ -53,5 +53,10 @@ module.exports = {
         }
         
         return client.click('#newUpload');
+    },
+
+    newDataset: async function(client){
+        await client.click('#tab-datasets');
+        return client.click('#newDataset');
     }
 }

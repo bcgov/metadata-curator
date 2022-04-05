@@ -195,7 +195,7 @@ const mutations = {
         state.allRepos = repos;
     },
     setRepo(state, {repo}){
-        state.repo = repo;
+        Vue.set(state, 'repo', repo);
     },
 
     setBranches(state, {branches}){
@@ -244,8 +244,8 @@ const mutations = {
         Vue.set(state.branch, name, value);
     },
     clearRepo(state){
-        state.repo = {};
-        state.branches = [];
+        Vue.set(state, 'repo', {});
+        Vue.set(state, 'branches', []);
     },
     clearBranch(state){
         state.branch = {};

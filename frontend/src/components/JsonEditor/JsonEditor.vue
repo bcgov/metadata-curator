@@ -39,7 +39,7 @@
                     <v-col v-for="(resource, key) in workingVal.resources" :key="'basic-resource-'+key+'-'+reindexKey" cols=12 :class="editing ? 'field' : ''">
                         <v-row v-if="(resource && resource.name) || editing" class="pb-2">
                             <v-col cols=3>
-                                <v-btn x-small @click="toggleExpandedBasicResource(key)"><v-icon>{{expandedBasicResource[key] ? 'mdi-minus' : 'mdi-plus'}}</v-icon></v-btn>
+                                <v-btn x-small class="expandResource" @click="toggleExpandedBasicResource(key)"><v-icon>{{expandedBasicResource[key] ? 'mdi-minus' : 'mdi-plus'}}</v-icon></v-btn>
                             </v-col>
                             <v-col cols=3>
                                Number of fields: {{(resource.schema && resource.schema.fields) ? resource.schema.fields.length : 0 }}
@@ -51,7 +51,7 @@
                                 <TextInput
                                     :label="$tc('Resource', 1) + ' ' + $tc('Name')"
                                     placeholder=""
-                                    name="name"
+                                    name="resName"
                                     :refName="'basicField-' + key + '-name'"
                                     :idName="'basicField-' + key + '-name'"
                                     :large="true"
@@ -92,7 +92,7 @@
                                     <TextArea
                                         :label="$tc('Description (resource)')"
                                         placeholder=""
-                                        name="description"
+                                        name="resDescription"
                                         :refName="'basicField-' + key + '-description'"
                                         :idName="'basicField-' + key + '-description'"
                                         :large="true"
@@ -167,7 +167,7 @@
                             <span v-if="resource.schema && resource.schema.fields" style="width: 100%">
                                 <draggable v-bind:disabled="!editing" @end="dragEnd(key, $event)">
                                     <v-row 
-                                        :id="'fieldHeader-'+resource.name+'.'+field.name" 
+                                        :id="'fieldHeader-'+key+'-'+fKey"
                                         no-gutters
                                         v-for="(field, fKey) in resource.schema.fields" 
                                         :key="'field-'+key+'-'+fKey+'-'+reindexKey" 
@@ -177,7 +177,7 @@
                                                 <v-col cols=7>
                                                     <v-row no-gutters>
                                                         <v-col cols=3>
-                                                            <v-btn x-small @click="toggleExpandedBasic(key, fKey)"><v-icon>{{expandedBasic[key][fKey] ? 'mdi-minus' : 'mdi-plus'}}</v-icon></v-btn>
+                                                            <v-btn x-small class="expandField" @click="toggleExpandedBasic(key, fKey)"><v-icon>{{expandedBasic[key][fKey] ? 'mdi-minus' : 'mdi-plus'}}</v-icon></v-btn>
                                                         </v-col>
                                                         <v-col cols=6></v-col>
                                                         <v-col cols=3 v-if="editing">
@@ -402,7 +402,7 @@
                             </span>
                             <v-row>
                                 <v-col cols=2>
-                                    <v-btn v-if="editing" class="primary" @click="addField(key)">{{$tc('Add Field')}}<v-icon>mdi-plus</v-icon></v-btn>
+                                    <v-btn v-if="editing" class="primary" id="addField" @click="addField(key)">{{$tc('Add Field')}}<v-icon>mdi-plus</v-icon></v-btn>
                                 </v-col>
                                 <v-col cols=10>
                                 </v-col>
@@ -410,7 +410,7 @@
                         </span>
                     </v-col>
                 </span>
-                <v-btn v-if="editing" class="primary" @click="addResource">{{$tc('Add File/Resource')}}</v-btn>
+                <v-btn v-if="editing" class="primary" id="addFileResource" @click="addResource">{{$tc('Add File/Resource')}}</v-btn>
             </v-row>
 
             <v-row v-else-if="stateType == 2 && editing">

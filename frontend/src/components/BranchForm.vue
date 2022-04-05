@@ -20,12 +20,12 @@
             </v-col>
             <v-col cols="12">
                 <v-tabs v-model="tab" @change="changeTab">
-                    <v-tab key="version">{{$tc('Version')}}</v-tab>
-                    <v-tab v-if="dataset && !creating" key="dataset">{{$tc('Dataset')}}</v-tab>
-                    <v-tab key="schema" v-if="!creating">{{$tc('Schema')}}</v-tab>
-                    <v-tab key="compare" v-if="!creating && inferredSchema">{{$tc('Compare')}}</v-tab>
-                    <v-tab key="revisions" v-if="revisionsLoading === false && revisions.length>0">{{$tc('Revisions', 2)}}</v-tab>
-                    <v-tab key="schemaRevisions" v-if="schemaRevisionsLoading === false && schemaRevisions.length>0">{{$tc('Schema Revisions', 2)}}</v-tab>
+                    <v-tab key="version" id="version-tab">{{$tc('Version')}}</v-tab>
+                    <v-tab v-if="dataset && !creating" key="dataset" id="dataset-tab">{{$tc('Dataset')}}</v-tab>
+                    <v-tab key="schema" v-if="!creating" id="schema-tab">{{$tc('Schema')}}</v-tab>
+                    <v-tab key="compare" v-if="!creating && inferredSchema" id="compare-tab">{{$tc('Compare')}}</v-tab>
+                    <v-tab key="revisions" v-if="revisionsLoading === false && revisions.length>0" id="revisions-tab">{{$tc('Revisions', 2)}}</v-tab>
+                    <v-tab key="schemaRevisions" v-if="schemaRevisionsLoading === false && schemaRevisions.length>0" id="schema-revisions-tab">{{$tc('Schema Revisions', 2)}}</v-tab>
                 </v-tabs>
                 <v-tabs-items v-model="tabItem" class="fullWidth">
                     <v-tab-item key="version">
@@ -363,11 +363,11 @@
                             </v-card-text>
                              <v-card-actions v-if="editing">
                                 <v-btn @click="closeOrBack()" class="mt-1">{{$tc('Cancel')}}</v-btn>
-                                <v-btn @click="save" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
+                                <v-btn @click="save" class="mt-1" id="saveVersion" color="primary">{{$tc('Save')}}</v-btn>
                             </v-card-actions>
                             <v-card-actions v-else>
                                 <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
-                                <v-btn v-if="canEdit" @click="toggleEditing" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
+                                <v-btn v-if="canEdit" id="edit-btn-version-info" @click="toggleEditing" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-tab-item>

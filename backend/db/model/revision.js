@@ -77,7 +77,7 @@ revisionSchema.methods.revise = function(fieldName, previousValue, newValue){
             this.changes = {};
         }
         this.changes[fieldName] = newValue;
-        console.log("Revision, ", fieldName, newValue, previousValue, this);
+        // console.log("Revision, ", fieldName, newValue, previousValue, this);
     }
     if (!this.changes){
         this.changes = {};
