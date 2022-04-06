@@ -179,7 +179,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             throw new Error('404');
         }
 
-        if (!user.isAdmin && repoBranchSchema.approved){
+        if (!user.isAdmin && !user.isApprover && repoBranchSchema.approved){
             throw new Error('approved');
         }
 

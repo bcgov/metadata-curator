@@ -172,7 +172,11 @@ jobs:
           sudo update-ca-certificates
 
           npm ci
-          xvfb-run --auto-servernum npm test
+          export OUTPUT=`xvfb-run --auto-servernum npm test`
+          echo $OUTPUT
+          if [[ $OUTPUT == *"failed"* ]]; then
+            exit 1
+          fi
       - name: "store screens"
         uses: actions/upload-artifact@v2
         if: ${{ failure() }}
