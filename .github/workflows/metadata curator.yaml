@@ -179,18 +179,18 @@ jobs:
           fi
       - name: "store screens"
         uses: actions/upload-artifact@v2
-        if: ${{ failure() }}
+        if: ${{ always() }}
         with:
           name: screenshots
           path: frontend/screenshots
       - name: "store selenium server info"
         uses: actions/upload-artifact@v2
-        if: ${{ failure() }}
+        if: ${{ always() }}
         with:
           name: selenium-log.log
           path: frontend/selenium-server.log
       - name: "output mc backend logs"
-        if: ${{ failure() }}
+        if: ${{ always() }}
         run: |
           docker logs --since 40m mc_backend || echo "backend container not found"
       - name: "output mc formio logs"

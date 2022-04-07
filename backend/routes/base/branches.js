@@ -773,7 +773,13 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             let ckanRes = await axios.post(url, ckanDataset, axiosConfig);
 
             if (!ckanRes || !ckanRes.data || !ckanRes.data.result || !ckanRes.data.result.id){
-                return res.status(500).json({error: "Failed to create dataset", ex: JSON.stringify(ckanRes)});
+                let rv = {
+                    error: "Failed to create dataset"
+                };
+                if (ckanRes.data){
+                    rv[ex] = JSON.stringify(ckanRes.data)
+                };
+                return res.status(500).json(rv);
             }
 
             let datasetId = ckanRes.data.result.id
