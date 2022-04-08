@@ -141,10 +141,10 @@ When(/^Data approver makes a new edition$/, async function(){
         }
         
         await client.pause(1000);
-        await client.saveScreenshot('./'+path+'/preEditionSave-'+new Date().toISOString()+'.png');
+        await client.saveScreenshot('./'+path+'/preEditionSave-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
         await client.click('#saveVersion');
         await client.pause(5000);
-        await client.saveScreenshot('./'+path+'/postEditionSave-'+new Date().toISOString()+'.png');
+        await client.saveScreenshot('./'+path+'/postEditionSave-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
 
 
 
@@ -159,7 +159,7 @@ Then(/^Data approver chooses to see the details of the edition$/, async function
     try{
 
         await client.click('#branch-link-0');
-        await client.saveScreenshot('./'+path+'/viewEdition-'+new Date().toISOString()+'.png');
+        await client.saveScreenshot('./'+path+'/viewEdition-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
 
     }catch(ex){
         await helpers.logout(client);
@@ -192,7 +192,7 @@ Then(/^Data approver should see information on the characteristics of the editio
             }
         }
 
-        await client.saveScreenshot('./'+path+'/postEditionReview-'+new Date().toISOString()+'.png');
+        await client.saveScreenshot('./'+path+'/postEditionReview-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
 
         return success;
     }catch(ex){
@@ -231,9 +231,9 @@ When(/^Data approver edits the edition$/, async function(){
 
         await client.pause(5000);
         
-        await client.saveScreenshot('./'+path+'/preEditEditionSave-'+new Date().toISOString()+'.png');
+        await client.saveScreenshot('./'+path+'/preEditEditionSave-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
         await client.click('#saveVersion');
-        await client.saveScreenshot('./'+path+'/postEditEditionSave-'+new Date().toISOString()+'.png');
+        await client.saveScreenshot('./'+path+'/postEditEditionSave-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     }catch(ex){
         await helpers.logout(client);
         throw ex;
@@ -249,7 +249,7 @@ Given(/^the browser is dataset ready$/, async function(){
         await client.pause(3000);
         await client.click('div[role="list"] a');
         await client.pause(3000);
-        await client.saveScreenshot('./'+path+'/postBrowserIsDatasetReady-'+new Date().toISOString()+'.png');
+        await client.saveScreenshot('./'+path+'/postBrowserIsDatasetReady-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     }catch(ex){
         await helpers.logout(client);
         throw ex;

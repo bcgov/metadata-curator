@@ -115,10 +115,10 @@ When(/^they provide schema information$/, async function(){
         }
         
         await client.pause(1000);
-        await client.saveScreenshot('./'+path+'/preSchemaSave-'+new Date().toISOString()+'.png');
+        await client.saveScreenshot('./'+path+'/preSchemaSave-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
         await client.click('#saveMetadata');
         await client.pause(5000);
-        await client.saveScreenshot('./'+path+'/postSchemaSave-'+new Date().toISOString()+'.png');
+        await client.saveScreenshot('./'+path+'/postSchemaSave-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
 
     }catch(ex){
         await helpers.logout(client);
@@ -150,7 +150,7 @@ Then(/^they should see the schema information$/, async function(){
             }
         }
 
-        await client.saveScreenshot('./'+path+'/postSchemaReview-'+new Date().toISOString()+'.png');
+        await client.saveScreenshot('./'+path+'/postSchemaReview-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
 
         return success;
     }catch(ex){
@@ -167,7 +167,7 @@ When(/^the user is on the files and fields tab$/, async function(){
         await client.pause(3000);
         await client.click('#schema-tab');
         await client.pause(3000);
-        await client.saveScreenshot('./'+path+'/onFilesAndFieldsTab-'+new Date().toISOString()+'.png');
+        await client.saveScreenshot('./'+path+'/onFilesAndFieldsTab-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     }catch(ex){
         await helpers.logout(client);
         throw ex;
@@ -180,7 +180,7 @@ Then(/^They should be able to upload a data package$/, async function(){
         await client.pause(3000);
         await client.assert.elementPresent("input[type='file'][accept='.json,application/json,application/JSON']");
         await client.assert.elementPresent("#create-without-import");
-        await client.saveScreenshot('./'+path+'/postSchemaCanUpload-'+new Date().toISOString()+'.png');
+        await client.saveScreenshot('./'+path+'/postSchemaCanUpload-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     }catch(ex){
         await helpers.logout(client);
         throw ex;
@@ -192,7 +192,7 @@ When(/^they create without import$/, async function(){
     try{
         await client.click("#create-without-import");
         await client.pause(1000)
-        await client.saveScreenshot('./'+path+'/postSchemaNoImport-'+new Date().toISOString()+'.png');
+        await client.saveScreenshot('./'+path+'/postSchemaNoImport-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     }catch(ex){
         await helpers.logout(client);
         throw ex;
@@ -206,7 +206,7 @@ When(/^they choose to view schema information$/, async function(){
         await client.pause(3000)
         await client.click('#schema-tab');
         await client.pause(3000);
-        await client.saveScreenshot('./'+path+'/postViewSchemaTab-'+new Date().toISOString()+'.png');
+        await client.saveScreenshot('./'+path+'/postViewSchemaTab-'+new Date().toISOString().replace(/[:.]/g, '').replace(/[:.]/g, '')+'.png');
     }catch(ex){
         await helpers.logout(client);
         throw ex;
