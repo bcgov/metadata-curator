@@ -6,9 +6,7 @@ db.createUser(
     }
 );
 
-use oc_db;
-
 db.config.insertOne({
     key: "enabledPhase",
     value: "3"
-})
+});
