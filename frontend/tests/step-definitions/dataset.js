@@ -1,6 +1,7 @@
 const { Given, Then, When } = require('@cucumber/cucumber');
 
 const helpers = require('./helpers');
+const path = helpers.confGet('screenshotPath');
 
 var workingDataset = {
     name: {
@@ -84,8 +85,10 @@ Given(/^Data approver successfully creates a dataset$/, async function(){
             }
         }
         
+        await client.saveScreenshot('./'+path+'/preSaveDataset-'+new Date().toISOString()+'.png');
         await client.click('#saveDataset');
         await client.pause(500);
+        await client.saveScreenshot('./'+path+'/postSaveDataset-'+new Date().toISOString()+'.png');
     }catch(ex){
         await helpers.logout(client);
         throw ex;
@@ -101,6 +104,7 @@ When(/^Data approver chooses to see the details of the dataset$/, async function
         await client.pause(2000);
         await client.click(id);
         await client.pause(1000);
+        await client.saveScreenshot('./'+path+'/viewDataset-'+new Date().toISOString()+'.png');
     }catch(ex){
         await helpers.logout(client);
         throw ex
@@ -127,6 +131,8 @@ Then(/^Data approver should see information on the characteristics of the datase
                 success = false;
             }
         }
+
+        await client.saveScreenshot('./'+path+'/postDatasetReview-'+new Date().toISOString()+'.png');
 
         return success;
     }catch(ex){
@@ -164,7 +170,9 @@ Then(/^Data approver edits the dataset information$/, async function(){
 
         await client.pause(5000);
         
+        await client.saveScreenshot('./'+path+'/preDatasetEditSave-'+new Date().toISOString()+'.png');
         await client.click('#saveDataset');
+        await client.saveScreenshot('./'+path+'/postDatasetEditSave-'+new Date().toISOString()+'.png');
     }catch(ex){
         await helpers.logout(client);
         throw ex;

@@ -158,7 +158,7 @@ jobs:
           terraform apply -var hostRootPath=`pwd`/_tmp -auto-approve
 
       - name: test
-        timeout-minutes: 60
+        timeout-minutes: 30
         run: |
           docker ps
           sleep 45
@@ -174,7 +174,7 @@ jobs:
 
           npm ci
           export OUTPUT=`xvfb-run --auto-servernum npm test`
-          echo $OUTPUT
+          printf $OUTPUT
           if [[ $OUTPUT == *"failed"* ]]; then
             exit 1
           fi
@@ -189,7 +189,7 @@ jobs:
         if: ${{ always() }}
         with:
           name: selenium-log.log
-          path: frontend/selenium-server.log
+          path: frontend/*selenium-server.log
       - name: "output mc backend logs"
         if: ${{ always() }}
         run: |
