@@ -108,6 +108,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         const topic = await forumClient.addTopic((id+"repo"), user);
 
         if ( (user.isApprover) || (user.isAdmin) ){
+            console.log("USER FOR REPO TOPIC CREATE", user, topic);
             user.groups = JSON.parse(JSON.stringify(originalGroups));
             user.jwt = originalJWT;
         }
