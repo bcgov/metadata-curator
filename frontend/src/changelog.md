@@ -11,6 +11,9 @@ April 5, 2022
  - No longer copies published or approved values when copying a version
  - Added more integration tests for datasets/editions/schemas
  - Improved error handling on schema tab
+ - Allowed editors to edit approved editions
+ - Added resource notes to resource level of files and fields
+ - Updated terraform scripts to give proper permissions to approvers and to enable phase 3 by default (for automated testing)
 
 
 <br />

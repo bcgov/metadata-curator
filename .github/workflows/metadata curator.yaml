@@ -214,3 +214,9 @@ jobs:
         run: |
           docker exec mc_forum_api env || echo "forum api container not found"
           docker logs --since 40m mc_forum_api || echo "forum api container not found"
+
+      - name: "output mc datasets from database"
+        if: ${{ failure() }}
+        run: |
+          docker exec mc_mongodb env || echo "mongo container not found"
+          docker exec mc_mongodb mongo oc_db --eval db.repo.find\({}\) || echo "mongo container not found"

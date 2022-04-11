@@ -106,6 +106,25 @@
                                 </v-col>
                             </v-row>
 
+                            <v-row v-if="(resource && resource.notes) || editing" class="pb-2">
+                                <v-col cols=12>
+                                    <TextArea
+                                        :label="$tc('Resource Notes')"
+                                        placeholder=""
+                                        name="resNotes"
+                                        :refName="'basicField-' + key + '-resNotes'"
+                                        :idName="'basicField-' + key + '-resNotes'"
+                                        :large="true"
+                                        :editing="editing"
+                                        :value="resource.notes"
+                                        helpPrefix="schema"
+                                        :focusField="focusProp"
+                                        @focus="onFocusBasic"
+                                        @blur="(event) => { updateResourceBase(key, 'notes', event) }"
+                                    ></TextArea>
+                                </v-col>
+                            </v-row>
+
                             <v-row v-if="(resource && resource.temporal_start) || editing" class="pb-2">
                                 <v-col cols=12>
                                     <DateInput
