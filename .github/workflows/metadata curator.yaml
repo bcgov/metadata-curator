@@ -174,7 +174,7 @@ jobs:
 
           npm ci
           export OUTPUT=`xvfb-run --auto-servernum npm test`
-          printf $OUTPUT
+          echo "$OUTPUT"
           if [[ $OUTPUT == *"failed"* ]]; then
             exit 1
           fi
