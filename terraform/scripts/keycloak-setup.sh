@@ -80,6 +80,7 @@ kcadm.sh set-password -r mc --username provider_2 --new-password provider_2_pass
 
 TUID=$(kcadm.sh create users -r mc -s username=approver_1 -s enabled=true -s email=approver_1@nowhere.com -s firstName=Appro -s lastName=Ver1 -i)
 echo "Approver User $TUID"
+kcadm.sh update users/$TUID/groups/$GID1 -r mc -s realm=mc -s userId=$TUID -s groupId=$GID1 -n
 kcadm.sh update users/$TUID/groups/$GID2 -r mc -s realm=mc -s userId=$TUID -s groupId=$GID2 -n
 kcadm.sh update users/$TUID/groups/$GID4 -r mc -s realm=mc -s userId=$TUID -s groupId=$GID4 -n
 kcadm.sh update users/$TUID/groups/$GID6 -r mc -s realm=mc -s userId=$TUID -s groupId=$GID6 -n
@@ -87,6 +88,7 @@ kcadm.sh set-password -r mc --username approver_1 --new-password approver_1_pass
 
 TUID=$(kcadm.sh create users -r mc -s username=approver_2 -s enabled=true -s email=approver_2@nowhere.com -s firstName=Appro -s lastName=Ver2 -i)
 echo "Approver User 2 $TUID"
+kcadm.sh update users/$TUID/groups/$GID1 -r mc -s realm=mc -s userId=$TUID -s groupId=$GID1 -n
 kcadm.sh update users/$TUID/groups/$GID3 -r mc -s realm=mc -s userId=$TUID -s groupId=$GID3 -n
 kcadm.sh update users/$TUID/groups/$GID5 -r mc -s realm=mc -s userId=$TUID -s groupId=$GID5 -n
 kcadm.sh update users/$TUID/groups/$GID6 -r mc -s realm=mc -s userId=$TUID -s groupId=$GID6 -n
