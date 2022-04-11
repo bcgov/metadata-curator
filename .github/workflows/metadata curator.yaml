@@ -173,8 +173,8 @@ jobs:
           sudo update-ca-certificates
 
           npm ci
-          export OUTPUT=`xvfb-run --auto-servernum npm test`
-          echo "$OUTPUT"
+          xvfb-run --auto-servernum npm test | tee test_output
+          export OUTPUT=$(cat test_output)
           if [[ $OUTPUT == *"failed"* ]]; then
             exit 1
           fi
