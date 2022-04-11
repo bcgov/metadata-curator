@@ -264,7 +264,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
                 return (item && String(item).length > 0)
             });
 
-            console.log("LISTING REPOSITORIES, repoIds", repoIds);
+            console.log("LISTING REPOSITORIES, repoIds", repoIds, topicResponse);
 
             if(query && query.upload_id) {
                 //return await db.RepoSchema.find({data_upload_id: mongoose.Types.ObjectId(query.filterBy)}).sort({ "create_date": 1});
