@@ -108,7 +108,6 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         const topic = await forumClient.addTopic((id+"repo"), user);
 
         if ( (user.isApprover) || (user.isAdmin) ){
-            console.log("USER FOR REPO TOPIC CREATE", user, topic);
             user.groups = JSON.parse(JSON.stringify(originalGroups));
             user.jwt = originalJWT;
         }
@@ -246,7 +245,6 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
     
     const listRepositories = async (user, query) => {
         try {
-            console.log("LISTING REPOSITORIES");
             const topicResponse = await forumClient.getTopics(user, {});
             let topics = topicResponse.data.filter(item => item.parent_id);
 
@@ -263,8 +261,6 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             }).filter( (item) => { 
                 return (item && String(item).length > 0)
             });
-
-            console.log("LISTING REPOSITORIES, repoIds", repoIds, topicResponse);
 
             if(query && query.upload_id) {
                 //return await db.RepoSchema.find({data_upload_id: mongoose.Types.ObjectId(query.filterBy)}).sort({ "create_date": 1});

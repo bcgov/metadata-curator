@@ -202,9 +202,12 @@ When(/^they create without import$/, async function(){
 When(/^they choose to view schema information$/, async function(){
     client = this.browser;
     try{
-        await client.saveScreenshot('./'+path+'/schemaPreRefresh-'+new Date().toISOString().replace(/[:.]/g, '').replace(/[:.]/g, '')+'.png');
-        await client.refresh();
-        await client.saveScreenshot('./'+path+'/schemaPostRefresh-'+new Date().toISOString().replace(/[:.]/g, '').replace(/[:.]/g, '')+'.png');
+        
+        // await client.refresh();
+        await client.click('#tab-versions');
+        await client.pause(3000);
+        await client.click('.v-list-item--link')
+        
         await client.pause(3000)
         await client.saveScreenshot('./'+path+'/schemaPreTab-'+new Date().toISOString().replace(/[:.]/g, '').replace(/[:.]/g, '')+'.png');
         await client.click('#schema-tab');
