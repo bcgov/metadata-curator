@@ -88,7 +88,6 @@ Given(/^Data approver successfully creates a dataset$/, async function(){
         await client.saveScreenshot('./'+path+'/preSaveDataset-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
         await client.click('#saveDataset');
         await client.pause(500);
-        await client.saveScreenshot('./'+path+'/postSaveDataset-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     }catch(ex){
         await helpers.logout(client);
         throw ex;
@@ -104,7 +103,6 @@ When(/^Data approver chooses to see the details of the dataset$/, async function
         await client.pause(2000);
         await client.click(id);
         await client.pause(1000);
-        await client.saveScreenshot('./'+path+'/viewDataset-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     }catch(ex){
         await helpers.logout(client);
         throw ex
@@ -114,6 +112,7 @@ When(/^Data approver chooses to see the details of the dataset$/, async function
 Then(/^Data approver should see information on the characteristics of the dataset$/, async function(){
     client = this.browser;
     await client.pause(3000);
+    await client.saveScreenshot('./'+path+'/preDatasetReview-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     try{
         let success = true;
         for (var property in workingDataset){
@@ -131,8 +130,6 @@ Then(/^Data approver should see information on the characteristics of the datase
                 success = false;
             }
         }
-
-        await client.saveScreenshot('./'+path+'/postDatasetReview-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
 
         return success;
     }catch(ex){
@@ -172,7 +169,6 @@ Then(/^Data approver edits the dataset information$/, async function(){
         
         await client.saveScreenshot('./'+path+'/preDatasetEditSave-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
         await client.click('#saveDataset');
-        await client.saveScreenshot('./'+path+'/postDatasetEditSave-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     }catch(ex){
         await helpers.logout(client);
         throw ex;
