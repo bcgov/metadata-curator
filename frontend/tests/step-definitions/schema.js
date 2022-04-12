@@ -132,8 +132,9 @@ Then(/^they should see the schema information$/, async function(){
     await client.click('button.expandResource');
     await client.pause(1000);
     await client.click('button.expandField');
+    await client.pause(1000);
 
-    await client.moveToElement(workingSchema.name.selector2, 10, 10)
+    await client.moveToElement(workingSchema.name.selector2, 50, 50);
 
     await client.saveScreenshot('./'+path+'/preSchemaReview-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     try{
