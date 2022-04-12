@@ -141,14 +141,18 @@ Then(/^they should see the schema information$/, async function(){
             if (workingSchema[property].selector2 === '#highlight-value'){
                 success = (success && await client.assert.attributeContains('#fieldHeader-0-0', 'class', 'fieldHighlight'));
             }else if (workingSchema[property].selector2){
-                await client.click(workingSchema[property].selector2);
+                browser.execute(function () {
+                    document.getElementById(workingSchema[property].selector2).scrollIntoView();
+                }, []);
                 if (workingSchema[property].expectedValue){
                     success = (success && await client.assert.textContains(workingSchema[property].selector2, workingSchema[property].expectedValue));
                 }else{
                     success = (success && await client.assert.textContains(workingSchema[property].selector2, workingSchema[property].value));
                 }
             }else if (workingSchema[property].value){
-                await client.click(workingSchema[property].selector);
+                browser.execute(function () {
+                    document.getElementById(workingSchema[property].selector).scrollIntoView();
+                }, []);
                 success = (success && await client.assert.value(workingSchema[property].selector, workingSchema[property].value));
             }else{
                 success = false;
