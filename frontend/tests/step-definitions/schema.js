@@ -130,7 +130,10 @@ Then(/^they should see the schema information$/, async function(){
     client = this.browser;
     await client.pause(4000);
     await client.click('button.expandResource');
+    await client.pause(1000);
     await client.click('button.expandField');
+
+    await client.saveScreenshot('./'+path+'/preSchemaReview-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     try{
         let success = true;
         for (var property in workingSchema){
