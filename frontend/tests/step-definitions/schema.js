@@ -141,7 +141,7 @@ Then(/^they should see the schema information$/, async function(){
             if (workingSchema[property].selector2 === '#highlight-value'){
                 success = (success && await client.assert.attributeContains('#fieldHeader-0-0', 'class', 'fieldHighlight'));
             }else if (workingSchema[property].selector2){
-                browser.execute(function () {
+                await client.execute(function () {
                     document.getElementById(workingSchema[property].selector2).scrollIntoView();
                 }, []);
                 if (workingSchema[property].expectedValue){
@@ -150,7 +150,7 @@ Then(/^they should see the schema information$/, async function(){
                     success = (success && await client.assert.textContains(workingSchema[property].selector2, workingSchema[property].value));
                 }
             }else if (workingSchema[property].value){
-                browser.execute(function () {
+                await client.execute(function () {
                     document.getElementById(workingSchema[property].selector).scrollIntoView();
                 }, []);
                 success = (success && await client.assert.value(workingSchema[property].selector, workingSchema[property].value));
