@@ -262,6 +262,7 @@
                                                                 :items="fieldTypes"
                                                                 :editing="editing"
                                                                 :value="field.type"
+                                                                :idName="'basicField-' + key + '-' + fKey + '-type'"
                                                                 helpPrefix="schema"
                                                                 @edited="(newValue) => { updateResource(key, fKey, 'type', newValue) }"
                                                             ></Select>
@@ -309,6 +310,7 @@
                                                                 :items="variableClassificationValues"
                                                                 itemText="code"
                                                                 itemValue="code"
+                                                                :idName="'basicField-' + key + '-' + fKey + '-var_class'"
 
                                                                 :editing="editing"
                                                                 :value="field.var_class"
@@ -391,6 +393,7 @@
                                                                 name="highlight"
                                                                 :editing="true"
                                                                 :value="field.highlight"
+                                                                :idName="'basicField-' + key + '-' + fKey + '-highlight'"
                                                                 :items="[ {text: 'Yes', value: true}, {text: 'No', value: false}]"
                                                                 helpPrefix="schema"
                                                                 @edited="(newValue) => { updateResourceHighlight(key, fKey, 'highlight', newValue) }"

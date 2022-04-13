@@ -37,59 +37,59 @@ var workingSchema = {
     name: {
         selector: 'input[name="name"]',
         value: 'field 0 name',
-        selector2: '#name-value'
+        selector2: '#basicField-0-0-name'
     },
     title: {
         selector: 'input[name="title"]',
         value: 'field 0 title',
-        selector2: '#title-value'
+        selector2: '#basicField-0-0-title'
     },
     shortName: {
         selector: 'input[name="shortName"]',
-        value: 'field 0 title',
-        selector2: '#title-value'
+        value: 'field 0 short',
+        selector2: '#basicField-0-0-shortName'
     },
     type: {
         selector: '//input[@name="type"]/..',
         select: true,
         value: "string",
-        selector2: '#type-value',
+        selector2: '#basicField-0-0-type',
     },
     description: {
         selector: 'textarea[name="description"]',
         value: 'field description',
-        selector2: '#description-value'
+        selector2: '#basicField-0-0-description'
     },
     format: {
         selector: 'input[name="format"]',
         value: 'field 0 format',
-        selector2: '#format-value'
+        selector2: '#basicField-0-0-format'
     },
     rdfType: {
         selector: 'input[name="rdfType"]',
         value: "field 0 rdfType",
-        selector2: '#rdfType-value',
+        selector2: '#basicField-0-0-rdfType',
     },
     tags: {
         selector: 'input[name="tags"]',
         value: "field 0 tag",
-        selector2: '#tags-value',
+        selector2: '#basicField-0-0-tags',
     },
     notes: {
         selector: 'input[name="notes"]',
         value: "field 0 notes",
-        selector2: '#notes-value',
+        selector2: '#basicField-0-0-notes',
     },
     enum: {
         selector: 'textarea[name="enum"]',
         value: 'field enum',
-        selector2: '#enum-value'
+        selector2: '#basicField-0-0-enum'
     },
     highlight: {
         selector: '//input[@name="highlight"]/..',
         select: true,
         value: "Yes",
-        selector2: '#highlight-value',
+        selector2: '#basicField-0-0-highlight',
     },
 };
 
@@ -134,7 +134,7 @@ Then(/^they should see the schema information$/, async function(){
     await client.pause(1000);
 
     await client.saveScreenshot('./'+path+'/preSchemaReview-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
-    await client.execute('window.scrollTo(0,document.body.scrollHeight);');
+    await client.execute('window.scrollTo(0,(document.body.scrollHeight-150));');
     await client.saveScreenshot('./'+path+'/preSchemaReviewBOTTOM-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     try{
         let success = true;

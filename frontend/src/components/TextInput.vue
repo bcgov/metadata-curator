@@ -31,10 +31,10 @@
             </span>
 
             <span>
-                <h2 v-if="large" class="inline" :id="name+'-value'">
+                <h2 v-if="large" class="inline" :id="idName ? idName : (name+'-value')">
                     {{val}}
                 </h2>
-                <span v-else :id="name+'-value'">
+                <span v-else :id="idName ? idName : (name+'-value')">
                     {{val}}
                 </span>
             </span>
