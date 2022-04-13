@@ -145,10 +145,10 @@ Then(/^they should see the schema information$/, async function(){
             }else if (workingSchema[property].selector2){
                 let text = await client.getText(workingSchema[property].selector2);
                 if (workingSchema[property].expectedValue){
-                    console.log(client.workingSchema[property].selector2 + " = " + text + "; expected " + workingSchema[property].expectedValue);
+                    console.log(workingSchema[property].selector2 + " = " + text + "; expected " + workingSchema[property].expectedValue);
                     success = (success && await client.assert.textContains(workingSchema[property].selector2, workingSchema[property].expectedValue));
                 }else{
-                    console.log(client.workingSchema[property].selector2 + " = " + text + "; expected " + workingSchema[property].value);
+                    console.log(workingSchema[property].selector2 + " = " + text + "; expected " + workingSchema[property].value);
                     success = (success && await client.assert.textContains(workingSchema[property].selector2, workingSchema[property].value));
                 }
             }else if (workingSchema[property].value){
