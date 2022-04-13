@@ -134,6 +134,8 @@ Then(/^they should see the schema information$/, async function(){
     await client.pause(1000);
 
     await client.saveScreenshot('./'+path+'/preSchemaReview-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
+    await client.execute('window.scrollTo(0,document.body.scrollHeight);');
+    await client.saveScreenshot('./'+path+'/preSchemaReviewBOTTOM-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     try{
         let success = true;
         for (var property in workingSchema){
@@ -141,18 +143,12 @@ Then(/^they should see the schema information$/, async function(){
             if (workingSchema[property].selector2 === '#highlight-value'){
                 success = (success && await client.assert.attributeContains('#fieldHeader-0-0', 'class', 'fieldHighlight'));
             }else if (workingSchema[property].selector2){
-                await client.execute(function () {
-                    document.getElementById(workingSchema[property].selector2).scrollIntoView();
-                }, []);
                 if (workingSchema[property].expectedValue){
                     success = (success && await client.assert.textContains(workingSchema[property].selector2, workingSchema[property].expectedValue));
                 }else{
                     success = (success && await client.assert.textContains(workingSchema[property].selector2, workingSchema[property].value));
                 }
             }else if (workingSchema[property].value){
-                await client.execute(function () {
-                    document.getElementById(workingSchema[property].selector).scrollIntoView();
-                }, []);
                 success = (success && await client.assert.value(workingSchema[property].selector, workingSchema[property].value));
             }else{
                 success = false;
