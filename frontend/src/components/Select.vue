@@ -31,7 +31,7 @@
             <span v-else :id="idName ? idName : (name+'-value')">{{displayVal}}</span>
         </span>
 
-        <span v-else>
+        <span v-else :id="(idName ? idName : 'name')+'-span'">
             <ValidationProvider :rules="validationRules" v-slot="{ errors }" :name="label ? ($te(label) ? $tc(label) : label) : ($te(name) ? $tc(name) : name)">
                 <v-select
                     :name="name"

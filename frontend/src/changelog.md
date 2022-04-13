@@ -15,7 +15,7 @@ April 5, 2022
  - Added resource notes to resource level of files and fields
  - Updated terraform scripts to give proper permissions to approvers and to enable phase 3 by default (for automated testing)
  - Only call upload hook when an upload is updated to submission if the original status wasn't submitted (IE it just became submitted)
- 
+ - Fixed public editions not showing when not logged in
 
 
 <br />

@@ -330,7 +330,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
                 }
             }
             res = await db.RepoBranchSchema.findOne({_id: id}).populate('repo_id');
-            if (user.isApprover || user.isAdmin){
+            if (user && (user.isApprover || user.isAdmin) ){
                 res = JSON.parse(JSON.stringify(res));
                 res.author_groups = topicResponse.data[0].author_groups;
             }
@@ -370,7 +370,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         let id = mongoose.Types.ObjectId(repoId);
         try {
             let r = await db.RepoBranchSchema.find({_id: {$in: branchIds}, repo_id: id}).sort({ "create_date": -1});
-            if (user.isAdmin || user.isApprover){
+            if (user && (user.isAdmin || user.isApprover) ){
                 for (let i=0; i<r.length; i++){
                     r[i] = JSON.parse(JSON.stringify(r[i]));
                     r[i].author_groups = author_groups[r[i].topic_id];

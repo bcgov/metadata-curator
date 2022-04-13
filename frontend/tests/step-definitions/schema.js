@@ -89,7 +89,7 @@ var workingSchema = {
         selector: '//input[@name="highlight"]/..',
         select: true,
         value: "Yes",
-        selector2: '#basicField-0-0-highlight',
+        selector2: '#basicField-0-0-highlight-span .v-select__selection',
     },
 };
 
