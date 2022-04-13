@@ -7,17 +7,17 @@ var workingSchema = {
     resName: {
         selector: 'input[name="resName"]',
         value: 'Resource 1',
-        selector2: '#resName-value'
+        selector2: '#basicField-0-name'
     },
     path: {
         selector: 'input[name="path"]',
         value: './tmp/upload.csv',
-        selector2: '#path-value'
+        selector2: '#basicField-0-path'
     },
     resDescription: {
         selector: 'textarea[name="resDescription"]',
         value: 'file description',
-        selector2: '#resDescription-value'
+        selector2: '#basicField-0-description'
     },
     temporal_start: {
         selector: 'input[name="temporal_start"]',
@@ -32,7 +32,7 @@ var workingSchema = {
     source: {
         selector: 'input[name="source_system"]',
         value: 'source',
-        selector2: '#source_system-value'
+        selector2: '#basicField-0-source_system'
     },
     name: {
         selector: 'input[name="name"]',
