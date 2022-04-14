@@ -17,6 +17,7 @@ April 14, 2022
  - Only call upload hook when an upload is updated to submission if the original status wasn't submitted (IE it just became submitted)
  - Fixed public editions not showing when not logged in
  - Added recently commented on items to activity feed
+ - Added real time notifications for comments
 
 
 <br />
