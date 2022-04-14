@@ -42,6 +42,7 @@ export default {
         "Format": "Formats | Format | Formats",
         "Var Class": "Variable Classification",
         "var_class": "Variable Classification",
+        "varClass": "Variable Classification",
         "RDF Type": "RDF Types | RDF Type | RDF Types",
         "Add File/Resource": "Add File/Resource",
         "Description": "Descriptions | Description | Descriptions",
@@ -226,7 +227,9 @@ export default {
 
         "uploads": "Uploads | Upload | Uploads",
         "repos": "Datasets | Dataset | Datasets",
+        "repo": "Datasets | Dataset | Datasets",
         "branches": "Editions | Edition | Editions",
+        "branch": "Editions | Edition | Editions",
 
         "Update Information": "Update Information",
         "Updates": "Updates",

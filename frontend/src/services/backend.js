@@ -405,6 +405,17 @@ export class Backend {
         return axios.delete(url, {}, {withCredentials: true}).then(response => response.data)
     }
 
+    getCommentsByVarClass(varClassId){
+        const url = '/api/v1/varclass/' + varClassId + '/comments';
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+    postCommentByVarClass(varClassId, comment){
+        const url = '/api/v1/varclass/' + varClassId + '/comments';
+        const body = { content: comment};
+        return axios.post(url, body,{withCredentials: true}).then(response => response.data)
+    }
+
     putUserBCDC(email, bcdcUserInfo){
         const url = `/api/v1/user/${email}`;
         return axios.put(url, bcdcUserInfo, {withCredentials: true}).then(response => response.data)

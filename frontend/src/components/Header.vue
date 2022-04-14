@@ -42,12 +42,31 @@
             <v-switch v-model="dark" :label="$tc('Dark Mode')" :class="(this.setTheme ? 'pt-4' : 'pt-4')"></v-switch>
 
         </v-app-bar>
+        <v-snackbar
+            v-model="showNotification"
+            top
+            right
+            timeout="-1"
+            class="mt-14"
+        >
+            <span v-html="notificationText"></span>
+
+            <template v-slot:action="{ attrs }">
+                <v-btn
+                    text
+                    v-bind="attrs"
+                    @click="clearNotifications">
+                        <v-icon>mdi-close</v-icon>
+                </v-btn>
+            </template>
+            </v-snackbar>
     </v-container>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import User from './User'
+import md5 from 'md5'
 
 import { Backend } from '../services/backend';
 const authServ = new Backend();
@@ -76,7 +95,11 @@ export default {
             activeTab: null,
             stayLoggedIn: false,
             showError: false,
-            error: ""
+            error: "",
+            forumWSUrl: "",
+            forumApiWS: null,
+            showNotification: false,
+            notificationText: ""
         }
     },
 
@@ -163,6 +186,14 @@ export default {
 
         loggedIn(){
             this.preserveToken()
+        },
+
+        jwt(){
+            this.forumApiWS = new WebSocket(this.forumWSUrl, this.jwt);
+
+            this.forumApiWS.onmessage = this.forumApiMessage;
+
+            this.forumApiWS.onopen = this.forumWSOpen
         }
     },
 
@@ -183,6 +214,11 @@ export default {
             }
         },
 
+        clearNotifications: function(){
+            this.showNotification = false;
+            this.notificationText = '';
+        },
+
         keepAlive: async function(){
             
             let tok = await authServ.getToken(this.jwt);
@@ -195,11 +231,79 @@ export default {
             }
             
         },
+
+        forumApiMessage: function(event){
+            
+            this.showNotification = false;
+            //this.notificationText = ''
+            
+            try{
+                let data = JSON.parse(event.data);
+
+                let author = (data.topic) ? data.topic.contributors[0] : data.comment.author_user;
+                if (author === this.user.email){
+                    return;
+                }
+                let type = (data.topic) ? data.topic.name.substring(24) : data.comment.topic_name.substring(24)
+                if (type === ''){
+                    type = 'upload'
+                }
+                let url = '/';
+                switch(type){
+                    case 'upload':
+                        url += 'upload/';
+                        break;
+                    case 'repo':
+                        url += 'datasets/';
+                        break;
+                    case 'branch':
+                        url += 'version/';
+                        break;
+
+                    default:
+                        url += 'variable-classification/';
+                        break;
+                }
+                url += (data.topic) ? data.topic.name.substring(0,24) : data.comment.topic_name.substring(0,24);
+                if (this.notificationText.length > 0){
+                    this.notificationText += "<br /><hr /><br />";
+                }
+
+                let creatingUserGrav = 'https://www.gravatar.com/avatar/' + md5(author.toLowerCase().trim());
+                this.notificationText += '<img src="'+creatingUserGrav+'" alt="'+author+'" width="50" height="50"></img>'
+
+                if (data.topic){
+                    //new upload,dataset,edition...
+                    this.notificationText += "<a class='tall' href='" + url + "'>New " + this.$tc(type) + " created</a>"
+                }else if(data.comment){
+                    //new comment somewhere
+                    this.notificationText += '<a class="tall" href="' + url + '">' + this.$tc("New comment on ") + this.$tc(type) 
+                    this.notificationText += " - " + data.comment.comment + '</a>'
+                }
+                this.showNotification = true;
+            }catch(e){
+                // eslint-disable-next-line
+                console.log("WS Error", e, event)
+            }
+
+        },
+
+        forumWSOpen: function(){
+            console.log("Successfully connected to the forum api websocket server...")
+        }
     },
 
-    mounted(){
+    async mounted(){
         this.dark = this.useDark;
         this.$vuetify.theme.dark = this.dark
+        let urlConf = await this.$store.dispatch('config/getItem', {field: 'key', value: 'forumApiWS', def: {key: 'forumApiWS', value: ''}});
+        this.forumWSUrl = urlConf.value;
+        this.forumApiWS = new WebSocket(this.forumWSUrl, this.jwt);
+
+        this.forumApiWS.onmessage = this.forumApiMessage;
+
+        this.forumApiWS.onopen = this.forumWSOpen
+
         this.preserveToken();
     }
 }
@@ -209,6 +313,11 @@ export default {
 
 .noBack.v-tabs>.v-tabs-bar{
     background: none;
+}
+
+.tall{
+    line-height: 50px;
+    vertical-align: top;
 }
 
 </style>

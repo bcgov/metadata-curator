@@ -68,12 +68,18 @@ var buildDynamic = function(db, router, auth, cache){
 
     router.get('/:configKey', async function(req, res, next){
         try{
+            if (req.params.configKey === 'forumApiWS'){
+                let forumApi = config.get('forumApi');
+                return res.status(200).json({key: req.params.configKey, value: forumApi.wsUrl})
+            }
+
             let conf = await db.ConfigSchema.findOne({key: req.params.configKey});
             if (!conf && safeKeys.indexOf(req.params.configKey) !== -1 && config.has(req.params.configKey)){
                 conf = {key: req.params.configKey, value: config.get(req.params.configKey)};
             }
             res.status(200).json(conf);
         }catch(ex){
+            console.log("config", ex);
             res.status(500).json({error: ex});
         }
     });

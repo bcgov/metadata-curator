@@ -3,7 +3,7 @@
 <br />
 
 ## Version 1.4.3
-April 5, 2022
+April 14, 2022
  - Increased clarity of BCDC publishing
  - Enhanced social and dialog feel of comment areas
  - Increased datepicker usability especially when picking years and or months
@@ -16,6 +16,7 @@ April 5, 2022
  - Updated terraform scripts to give proper permissions to approvers and to enable phase 3 by default (for automated testing)
  - Only call upload hook when an upload is updated to submission if the original status wasn't submitted (IE it just became submitted)
  - Fixed public editions not showing when not logged in
+ - Added recently commented on items to activity feed
 
 
 <br />

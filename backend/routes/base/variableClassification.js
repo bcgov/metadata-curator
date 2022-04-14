@@ -6,6 +6,81 @@ var buildStatic = function(db, router){
 var buildDynamic = function(db, router, auth, forumClient){
     const mongoose = require('mongoose');
 
+    const addComment = async (varClassId, user, comment) => {
+        try {
+            const topicResponse = await forumClient.getTopics(user, {});
+            topics = topicResponse.data.filter(item => item.parent_id);
+
+            const varClassIds = topics.map( (item) => {
+                let id = item.name;
+                if (!id || id.indexOf("varClass") === -1){
+                    return;
+                }
+                
+                id = id.substring(0,id.length-8);
+                let oid = mongoose.Types.ObjectId(id);
+                return oid;
+
+            }).filter( (item) => { 
+                return (item && String(item).length > 0)
+            }).filter( (item) => {
+                return item.toString() == varClassId.toString()
+            });
+
+            if (varClassIds.length < 1){
+                throw new Error(404);
+            }
+            
+            let varClass = await db.VariableClassification.findOne({_id: varClassId});
+
+            if (varClass == null) {
+                throw new Error("Invalid var class ID")
+            }
+
+            await forumClient.addComment(varClass.topic_id, comment, user);
+    
+            
+        } catch(e) {
+            console.error(e);
+            throw new Error(e.message)
+        }
+    }
+    
+    const getComments = async (varClassId, user) => {
+        try {
+            const topicResponse = await forumClient.getTopics(user, {});
+            topics = topicResponse.data.filter(item => item.parent_id);
+
+            const varClassIds = topics.map( (item) => {
+                let id = item.name;
+                if (!id || id.indexOf("varClass") === -1){
+                    return;
+                }
+                
+                id = id.substring(0,id.length-8);
+                let oid = mongoose.Types.ObjectId(id);
+                return oid;
+
+            }).filter( (item) => { 
+                return (item && String(item).length > 0)
+            }).filter( (item) => {
+                return item.toString() == varClassId.toString()
+            });
+
+            if (varClassIds.length < 1){
+                throw new Error(404);
+            }
+            let varClass = await db.VariableClassification.findOne({_id: varClassId});
+            if (varClass == null) {
+                throw new Error("Invalid var class ID")
+            }
+            return await forumClient.getComments (varClass.topic_id, user);
+        } catch(e) {
+            console.error(e);
+            throw new Error(e.message)
+        }
+    }
+
     router.get('/', auth.requireLoggedIn, async function(req, res, next) {
 
         var q = {};
@@ -175,6 +250,36 @@ var buildDynamic = function(db, router, auth, forumClient){
             await db.VariableClassification.deleteOne({key: req.params.varClassId});
             res.status(204).send();
         }catch(ex){
+            res.status(500).json({error: ex});
+        }
+    });
+
+    router.get('/:varClassId/comments', async function(req, res, next){
+        try{
+            if (req.params.varClassId !== 'create'){
+                const comments = await getComments (req.params.varClassId, req.user);
+                return res.json(comments);
+            }else{
+                return res.json([]);
+            }
+        }catch(ex){
+            if (ex.message == 404){
+                res.status(404).json({error: "Not Found"});
+            }
+            res.status(500).json({error: ex});
+        }
+    });
+
+    router.post('/:varClassId/comments', async function(req, res, next){
+        try{
+            await addComment (req.params.varClassId, req.user, req.body.content);
+            return res.status(201).json({
+                message: 'Comment saved successfully.'
+            });
+        }catch(ex){
+            if (ex.message == 404){
+                res.status(404).json({error: "Not Found"});
+            }
             res.status(500).json({error: ex});
         }
     });

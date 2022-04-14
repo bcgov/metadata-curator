@@ -97,6 +97,8 @@
 import {mapActions, mapState} from "vuex";
 import Markdown from './Markdown.vue';
 import md5 from 'md5'
+import { Backend } from '../services/backend';
+const backend = new Backend();
 
     export default {
         components: { 
@@ -139,6 +141,7 @@ import md5 from 'md5'
             comment: "",
             commentFocused: false,
             commentDisplayItems: [],
+            varClassComments: [],
         }),
         methods: {
             ...mapActions({
@@ -193,6 +196,13 @@ import md5 from 'md5'
             setComment(val){
                 this.comment = val;
             },
+            async addVarClassComment({id, comment}){
+                await backend.postCommentByVarClass(id, comment);
+                await this.getVarClassComments(id);
+            },
+            async getVarClassComments(id){
+                this.varClassComments = await backend.getCommentsByVarClass(id)
+            },
             calcMd5(val){
                 return md5(val);
             },
@@ -206,6 +216,9 @@ import md5 from 'md5'
                         break;
                     case 'branch':
                         this.addBranchComment({branchId: this.id, comment: this.comment});
+                        break;
+                    case 'variableClassification':
+                        this.addVarClassComment({id: this.id, comment: this.comment});
                         break;
                 }
                 
@@ -232,6 +245,9 @@ import md5 from 'md5'
                     break;
                 case 'schema':
                     await this.getBranchComments({branchId: this.id, force: false});
+                    break;
+                case 'variableClassification':
+                    this.getVarClassComments(this.id);
                     break;
             }
             
@@ -270,6 +286,8 @@ import md5 from 'md5'
                         return this.$store.state.repos.branchComments;
                     case 'schema':
                         return this.$store.state.repos.branchComments;
+                    case 'variableClassification':
+                        return this.varClassComments;
                 }
                 return []
             },
