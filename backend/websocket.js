@@ -11,7 +11,7 @@ websocket.init = function(){
     var self = this;
 
     this.server = new WebSocket.Server({
-        port: config.get("wsPort"),
+        port: 3030,
         perMessageDeflate: false,
         verifyClient: function(info, cb){
             var token = info.req.headers['sec-websocket-protocol'];
