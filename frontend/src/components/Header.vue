@@ -59,7 +59,26 @@
                         <v-icon>mdi-close</v-icon>
                 </v-btn>
             </template>
-            </v-snackbar>
+        </v-snackbar>
+
+        <v-snackbar
+            v-model="showMCNotification"
+            top
+            center
+            timeout="-1"
+            class="mt-14"
+        >
+            <span v-html="mcNotificationText"></span>
+
+            <template v-slot:action="{ attrs }">
+                <v-btn
+                    text
+                    v-bind="attrs"
+                    @click="clearMCNotification">
+                        <v-icon>mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </v-snackbar>
     </v-container>
 </template>
 
@@ -99,7 +118,13 @@ export default {
             forumWSUrl: "",
             forumApiWS: null,
             showNotification: false,
-            notificationText: ""
+            notificationText: "",
+            mcWSUrl: "",
+            mcWS: null,
+            showMCNotification: false,
+            mcNotificationText: "",
+            pendingMCMessage: null,
+
         }
     },
 
@@ -188,12 +213,51 @@ export default {
             this.preserveToken()
         },
 
+        $route (to){
+
+            if (to.params.id){
+                let type = (to.name === "upload_view") ? "upload" : false;
+                type = (!type && to.name === "datasets_form") ? "dataset" : false;
+                type = (!type && to.name === "version_form") ? "version" : false;
+                type = (!type && to.name === "variableClassificationForm") ? "variableClassification" : false;
+                if (type){
+                    let m = {type: type, id: to.params.id};
+                    if (this.mcWS){
+                        this.mcWS.send(JSON.stringify(m));
+                    }else{
+                        this.pendingMCMessage = m;
+                    }
+                }
+            }else{
+                let m = {type: 'none'}
+                if (this.mcWS){
+                    this.mcWS.send(JSON.stringify(m));
+                }else{
+                    this.pendingMCMessage = m;
+                }
+            }
+            
+        },
+
         jwt(){
-            this.forumApiWS = new WebSocket(this.forumWSUrl, this.jwt);
+            if (this.jwt){
+                this.forumApiWS = new WebSocket(this.forumWSUrl, this.jwt);
+                this.forumApiWS.onmessage = this.forumApiMessage;
+                this.forumApiWS.onopen = this.forumWSOpen;
 
-            this.forumApiWS.onmessage = this.forumApiMessage;
-
-            this.forumApiWS.onopen = this.forumWSOpen
+                this.mcWS = new WebSocket(this.mcWSUrl, this.jwt);
+                this.mcWS.onmessage = this.mcMessage;
+                this.mcWS.onopen = this.mcWSOpen
+            }else{
+                if (this.forumApiWS){
+                    this.forumApiWS.close();
+                }
+                if (this.mcWS){
+                    this.mcWS.close();
+                }
+                this.forumApiWS = null;
+                this.mcWS = null;
+            }
         }
     },
 
@@ -217,6 +281,11 @@ export default {
         clearNotifications: function(){
             this.showNotification = false;
             this.notificationText = '';
+        },
+
+        clearMCNotification: function(){
+            this.showMCNotification = false;
+            this.mcNotificationText = '';
         },
 
         keepAlive: async function(){
@@ -290,19 +359,69 @@ export default {
 
         forumWSOpen: function(){
             console.log("Successfully connected to the forum api websocket server...")
+        },
+
+        mcMessage: function(event){
+            
+            try{
+                let data = JSON.parse(event.data);
+
+                if (data.users){
+                    for (let i=0; i<data.users.length; i++){
+                        let author = data.users[i];
+                        let creatingUserGrav = 'https://www.gravatar.com/avatar/' + md5(author.toLowerCase().trim());
+                        this.mcNotificationText += '<img src="'+creatingUserGrav+'" alt="'+author+'" width="50" height="50"></img>';
+                        this.mcNotificationText += "WARNING: " + author + " is already here, you might overwrite each others work";
+                    }
+                }else if (data.arrived){
+                    let author = data.arrived;
+                    let creatingUserGrav = 'https://www.gravatar.com/avatar/' + md5(author.toLowerCase().trim());
+                    this.mcNotificationText += '<img src="'+creatingUserGrav+'" alt="'+author+'" width="50" height="50"></img>';
+                    this.mcNotificationText += "WARNING: " + author + "just showed up, you might overwrite each others work";
+                }else if (data.left){
+                    let author = data.left;
+                    let creatingUserGrav = 'https://www.gravatar.com/avatar/' + md5(author.toLowerCase().trim());
+                    this.mcNotificationText += '<img src="'+creatingUserGrav+'" alt="'+author+'" width="50" height="50"></img>';
+                    this.mcNotificationText += author + " just left recommend refreshing to ensure you don't overwrite anything they did";
+                }
+
+                this.showMCNotification = true;
+            }catch(e){
+                // eslint-disable-next-line
+                console.log("WS Error", e, event)
+            }
+
+        },
+
+        mcWSOpen: function(){
+            if (this.pendingMCMessage){
+                this.mcWS.send(JSON.stringify(this.pendingMCMessage));
+                this.pendingMCMessage = null;
+            }
+            console.log("Successfully connected to the mc websocket server...")
         }
     },
 
     async mounted(){
         this.dark = this.useDark;
         this.$vuetify.theme.dark = this.dark
+        
         let urlConf = await this.$store.dispatch('config/getItem', {field: 'key', value: 'forumApiWS', def: {key: 'forumApiWS', value: ''}});
         this.forumWSUrl = urlConf.value;
-        this.forumApiWS = new WebSocket(this.forumWSUrl, this.jwt);
+        if (this.forumWSUrl !== '' && this.jwt){
+            this.forumApiWS = new WebSocket(this.forumWSUrl, this.jwt);
+            this.forumApiWS.onmessage = this.forumApiMessage;
+            this.forumApiWS.onopen = this.forumWSOpen
+        }
 
-        this.forumApiWS.onmessage = this.forumApiMessage;
-
-        this.forumApiWS.onopen = this.forumWSOpen
+        let mcUrlConf = await this.$store.dispatch('config/getItem', {field: 'key', value: 'wsPort', def: {key: 'wsPort', value: ''}});
+        let mcUrlProto = await this.$store.dispatch('config/getItem', {field: 'key', value: 'wsProto', def: {key: 'wsProto', value: ''}});
+        this.mcWSUrl = mcUrlProto.value + "://" + location.hostname + (mcUrlConf.value ? (":" + mcUrlConf.value) : "");
+        if ( (mcUrlProto.value !== '') ){
+            this.mcWS = new WebSocket(this.mcWSUrl, this.jwt);
+            this.mcWS.onmessage = this.mcMessage;
+            this.mcWS.onopen = this.mcWSOpen
+        }
 
         this.preserveToken();
     }

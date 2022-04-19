@@ -3,7 +3,7 @@
 <br />
 
 ## Version 1.4.3
-April 14, 2022
+April 19, 2022
  - Increased clarity of BCDC publishing
  - Enhanced social and dialog feel of comment areas
  - Increased datepicker usability especially when picking years and or months
@@ -18,6 +18,7 @@ April 14, 2022
  - Fixed public editions not showing when not logged in
  - Added recently commented on items to activity feed
  - Added real time notifications for comments
+ - Added real time notifications for who else is on a record
 
 
 <br />

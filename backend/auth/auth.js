@@ -75,7 +75,11 @@ passport.use('jwt', new JWTStrategy({
 
 var buildProfile = function(token, refreshToken){
     let profile = token;
+    if (!profile._json){
+      profile._json = {};
+    }
     profile._json['aud'] = config.get('jwtAud');
+    
     profile.jwt = jwt.sign(token._json, config.get('jwtSecret'));
     profile.isAdmin = false;
     let idField = config.get('userIdField');
@@ -89,6 +93,7 @@ var buildProfile = function(token, refreshToken){
     }
 
     if ((typeof(token._json) !== "undefined") && (typeof(token._json.email) !== "undefined")){
+        profile.id =  token._json.email;
         profile.email = token._json.email;
     }
 
@@ -286,4 +291,7 @@ var strategy = new OidcStrategy(config.get('oidc'), async function(issuer, sub, 
 // set up passport
 passport.use('oidc', strategy);
 
-module.exports = passport;
+module.exports = {
+  passport: passport,
+  buildProfile: buildProfile
+}

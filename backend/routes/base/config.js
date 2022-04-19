@@ -70,7 +70,17 @@ var buildDynamic = function(db, router, auth, cache){
         try{
             if (req.params.configKey === 'forumApiWS'){
                 let forumApi = config.get('forumApi');
-                return res.status(200).json({key: req.params.configKey, value: forumApi.wsUrl})
+                return res.status(200).json({key: req.params.configKey, value: forumApi.wsUrl});
+            }
+
+            if (req.params.configKey === 'wsPort'){
+                let wsPort = config.get('wsPort');
+                return res.status(200).json({key: req.params.configKey, value: wsPort});
+            }
+
+            if (req.params.configKey === 'wsProto'){
+                let wsProto = config.get('wsProto');
+                return res.status(200).json({key: req.params.configKey, value: wsProto});
             }
 
             let conf = await db.ConfigSchema.findOne({key: req.params.configKey});

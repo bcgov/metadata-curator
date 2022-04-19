@@ -6,6 +6,8 @@
     "password": "{pwd}",
     "dbName": "{dbName}"
   },
+  "wsPort": 3030,
+  "wsProto": "ws",
   "sessionSecret": "totally secure",
   "jwtSecret": "jwtSecret",
   "jwtAud": "aud",

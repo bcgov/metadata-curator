@@ -30,7 +30,7 @@ var buildDynamic = function(db, router, auth, forumClient){
             if (varClassIds.length < 1){
                 throw new Error(404);
             }
-            
+
             let varClass = await db.VariableClassification.findOne({_id: varClassId});
 
             if (varClass == null) {
@@ -48,33 +48,35 @@ var buildDynamic = function(db, router, auth, forumClient){
     
     const getComments = async (varClassId, user) => {
         try {
-            const topicResponse = await forumClient.getTopics(user, {});
-            topics = topicResponse.data.filter(item => item.parent_id);
+            if (user){
+                const topicResponse = await forumClient.getTopics(user, {});
+                topics = topicResponse.data.filter(item => item.parent_id);
 
-            const varClassIds = topics.map( (item) => {
-                let id = item.name;
-                if (!id || id.indexOf("varClass") === -1){
-                    return;
+                const varClassIds = topics.map( (item) => {
+                    let id = item.name;
+                    if (!id || id.indexOf("varClass") === -1){
+                        return;
+                    }
+                    
+                    id = id.substring(0,id.length-8);
+                    let oid = mongoose.Types.ObjectId(id);
+                    return oid;
+
+                }).filter( (item) => { 
+                    return (item && String(item).length > 0)
+                }).filter( (item) => {
+                    return item.toString() == varClassId.toString()
+                });
+
+                if (varClassIds.length < 1){
+                    throw new Error(404);
                 }
-                
-                id = id.substring(0,id.length-8);
-                let oid = mongoose.Types.ObjectId(id);
-                return oid;
-
-            }).filter( (item) => { 
-                return (item && String(item).length > 0)
-            }).filter( (item) => {
-                return item.toString() == varClassId.toString()
-            });
-
-            if (varClassIds.length < 1){
-                throw new Error(404);
+                let varClass = await db.VariableClassification.findOne({_id: varClassId});
+                if (varClass == null) {
+                    throw new Error("Invalid var class ID")
+                }
+                return await forumClient.getComments (varClass.topic_id, user);
             }
-            let varClass = await db.VariableClassification.findOne({_id: varClassId});
-            if (varClass == null) {
-                throw new Error("Invalid var class ID")
-            }
-            return await forumClient.getComments (varClass.topic_id, user);
         } catch(e) {
             console.error(e);
             throw new Error(e.message)
@@ -254,7 +256,7 @@ var buildDynamic = function(db, router, auth, forumClient){
         }
     });
 
-    router.get('/:varClassId/comments', async function(req, res, next){
+    router.get('/:varClassId/comments', auth.requireLoggedIn, async function(req, res, next){
         try{
             if (req.params.varClassId !== 'create'){
                 const comments = await getComments (req.params.varClassId, req.user);
@@ -270,7 +272,7 @@ var buildDynamic = function(db, router, auth, forumClient){
         }
     });
 
-    router.post('/:varClassId/comments', async function(req, res, next){
+    router.post('/:varClassId/comments', auth.requireLoggedIn, async function(req, res, next){
         try{
             await addComment (req.params.varClassId, req.user, req.body.content);
             return res.status(201).json({
