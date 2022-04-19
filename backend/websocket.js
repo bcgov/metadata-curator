@@ -45,6 +45,10 @@ websocket.init = function(){
         ws.on('pong', heartbeat);
         ws.on('close', function close() {
             message = {left: req.user.id};
+            if (!self.locations){
+                self.locations = {};
+            }
+            let keys = Object.keys(self.locations);
             for (let i=0; i<keys.length; i++){
                 if ( (keys[i] !== req.user.id) && (self.locations[keys[i]].type === self.locations[req.user.id].type) ){
                     if (self.locations[keys[i]].id === dataObj.id){
@@ -71,6 +75,9 @@ websocket.init = function(){
                     }
                 }
 
+                if (!self.locations){
+                    self.locations = {};
+                }
                 self.locations[req.user.id] = dataObj;
                 
                 let message = []
@@ -84,6 +91,9 @@ websocket.init = function(){
                 }
                 ws.send(JSON.stringify({users: message}));
             }catch(e){
+                if (!self.locations){
+                    self.locations = {};
+                }
                 self.locations[req.user.id] = {type: "none"}
             }
             
