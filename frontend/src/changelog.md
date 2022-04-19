@@ -3,7 +3,7 @@
 <br />
 
 ## Version 1.4.3
-April 19, 2022
+April 20, 2022
  - Increased clarity of BCDC publishing
  - Enhanced social and dialog feel of comment areas
  - Increased datepicker usability especially when picking years and or months

@@ -217,12 +217,12 @@ export default {
 
             if (to.params.id){
                 let type = (to.name === "upload_view") ? "upload" : false;
-                type = (!type && to.name === "datasets_form") ? "dataset" : false;
-                type = (!type && to.name === "version_form") ? "version" : false;
-                type = (!type && to.name === "variableClassificationForm") ? "variableClassification" : false;
+                type = (!type && to.name === "datasets_form") ? "dataset" : type;
+                type = (!type && to.name === "version_form") ? "version" : type;
+                type = (!type && to.name === "variableClassificationForm") ? "variableClassification" : type;
                 if (type){
                     let m = {type: type, id: to.params.id};
-                    if (this.mcWS){
+                    if (this.mcWS && this.mcWS.readyState==1){
                         this.mcWS.send(JSON.stringify(m));
                     }else{
                         this.pendingMCMessage = m;
@@ -367,22 +367,34 @@ export default {
                 let data = JSON.parse(event.data);
 
                 if (data.users){
+
                     for (let i=0; i<data.users.length; i++){
+                        if (this.mcNotificationText !== ''){
+                            this.mcNotificationText += "<br /><hr /><br />";
+                        }
                         let author = data.users[i];
                         let creatingUserGrav = 'https://www.gravatar.com/avatar/' + md5(author.toLowerCase().trim());
                         this.mcNotificationText += '<img src="'+creatingUserGrav+'" alt="'+author+'" width="50" height="50"></img>';
-                        this.mcNotificationText += "WARNING: " + author + " is already here, you might overwrite each others work";
+                        this.mcNotificationText += "<span class='tall'>WARNING: " + author + " is already here, you might overwrite each others work</span>";
                     }
+                    this.showMCNotification = (data.users.length >= 1);
+                    return;
                 }else if (data.arrived){
+                    if (this.mcNotificationText !== ''){
+                        this.mcNotificationText += "<br /><hr /><br />";
+                    }
                     let author = data.arrived;
                     let creatingUserGrav = 'https://www.gravatar.com/avatar/' + md5(author.toLowerCase().trim());
                     this.mcNotificationText += '<img src="'+creatingUserGrav+'" alt="'+author+'" width="50" height="50"></img>';
-                    this.mcNotificationText += "WARNING: " + author + "just showed up, you might overwrite each others work";
+                    this.mcNotificationText += "<span class='tall'>WARNING: " + author + " just showed up, you might overwrite each others work</span>";
                 }else if (data.left){
+                    if (this.mcNotificationText !== ''){
+                        this.mcNotificationText += "<br /><hr /><br />";
+                    }
                     let author = data.left;
                     let creatingUserGrav = 'https://www.gravatar.com/avatar/' + md5(author.toLowerCase().trim());
                     this.mcNotificationText += '<img src="'+creatingUserGrav+'" alt="'+author+'" width="50" height="50"></img>';
-                    this.mcNotificationText += author + " just left recommend refreshing to ensure you don't overwrite anything they did";
+                    this.mcNotificationText += '<span class="tall">' + author + " just left recommend refreshing to ensure you don't overwrite anything they did</span>";
                 }
 
                 this.showMCNotification = true;
@@ -398,7 +410,7 @@ export default {
                 this.mcWS.send(JSON.stringify(this.pendingMCMessage));
                 this.pendingMCMessage = null;
             }
-            console.log("Successfully connected to the mc websocket server...")
+            console.log("Successfully connected to the mc websocket server...");
         }
     },
 

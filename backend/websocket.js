@@ -50,26 +50,31 @@ websocket.init = function(){
             }
             let keys = Object.keys(self.locations);
             for (let i=0; i<keys.length; i++){
-                if ( (keys[i] !== req.user.id) && (self.locations[keys[i]].type === self.locations[req.user.id].type) ){
-                    if (self.locations[keys[i]].id === dataObj.id){
-                        self.connections[keys[i]].send(JSON.stringify(message));
+                if (self.locations[keys[i]] && self.locations[keys[i]].type && self.locations[req.user.id] && self.locations[req.user.id].type && self.locations[req.user.id].id){
+                    if ( (keys[i] !== req.user.id) && (self.locations[keys[i]].type === self.locations[req.user.id].type) ){
+                        if (self.locations[keys[i]].id === self.locations[req.user.id].id){
+                            self.connections[keys[i]].send(JSON.stringify(message));
+                        }
                     }
                 }
             }
             delete self.connections[req.user.id];
             delete self.locations[req.user.id];
         });
+
         ws.on('message', function message(data){
             try{
-                let dataObj = JSON.parse(data.toString);
+                let dataObj = JSON.parse(data.toString());
                 let keys = Object.keys(self.locations);
 
                 if (dataObj.type === 'none'){
                     message = {left: req.user.id};
                     for (let i=0; i<keys.length; i++){
-                        if ( (keys[i] !== req.user.id) && (self.locations[keys[i]].type === self.locations[req.user.id].type) ){
-                            if (self.locations[keys[i]].id === dataObj.id){
-                                self.connections[keys[i]].send(JSON.stringify(message));
+                        if (self.locations[keys[i]] && self.locations[keys[i]].type && self.locations[req.user.id] && self.locations[req.user.id].type){
+                            if ( (keys[i] !== req.user.id) && (self.locations[keys[i]].type === self.locations[req.user.id].type) ){
+                                if (self.locations[keys[i]].id === dataObj.id){
+                                    self.connections[keys[i]].send(JSON.stringify(message));
+                                }
                             }
                         }
                     }
@@ -78,22 +83,23 @@ websocket.init = function(){
                 if (!self.locations){
                     self.locations = {};
                 }
-                self.locations[req.user.id] = dataObj;
+                self.locations[req.user.id] = JSON.parse(JSON.stringify(dataObj));
                 
-                let message = []
+                let m = []
                 for (let i=0; i<keys.length; i++){
                     if ( (self.locations[keys[i]].type === dataObj.type) && (keys[i] !== req.user.id) ){
                         if (self.locations[keys[i]].id === dataObj.id){
-                            message.append(keys[i]);
+                            m.push(keys[i]);
                             self.connections[keys[i]].send(JSON.stringify({arrived: req.user.id}))
                         }
                     }
                 }
-                ws.send(JSON.stringify({users: message}));
+                ws.send(JSON.stringify({users: m}));
             }catch(e){
                 if (!self.locations){
                     self.locations = {};
                 }
+                console.log("E", e, self.locations);
                 self.locations[req.user.id] = {type: "none"}
             }
             
