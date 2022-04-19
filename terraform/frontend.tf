@@ -72,8 +72,7 @@ EOF
 
     sessionSecret =  "\"sessionSecret\": \"${random_string.jwtSecret.result}\""
     frontend = "\"frontend\": \"${var.host}\""
-    wsPort = "\"wsPort\": 3030"
-    wsProto = "\"wsProto\": \"ws\""
+    wsUrl: "\"wsUrl\": \"http://localhost:3030\"",
     
 
     uploadUrl = "\"uploadUrl\": \"${var.host}/files/\"",
@@ -110,8 +109,7 @@ data "null_data_source" "configValues" {
   ${data.null_data_source.feIndConfig.outputs["database"]},
   ${data.null_data_source.feIndConfig.outputs["sessionSecret"]},
   ${data.null_data_source.feIndConfig.outputs["frontend"]},
-  ${data.null_data_source.feIndConfig.outputs["wsPort"]},
-  ${data.null_data_source.feIndConfig.outputs["wsProto"]},
+  ${data.null_data_source.feIndConfig.outputs["wsUrl"]},
   ${data.null_data_source.feIndConfig.outputs["oidc"]},
   ${data.null_data_source.feIndConfig.outputs["uploadUrl"]},
   ${data.null_data_source.feIndConfig.outputs["base64EncodedPGPPublicKey"]},

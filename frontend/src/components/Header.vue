@@ -414,10 +414,9 @@ export default {
             this.forumApiWS.onopen = this.forumWSOpen
         }
 
-        let mcUrlConf = await this.$store.dispatch('config/getItem', {field: 'key', value: 'wsPort', def: {key: 'wsPort', value: ''}});
-        let mcUrlProto = await this.$store.dispatch('config/getItem', {field: 'key', value: 'wsProto', def: {key: 'wsProto', value: ''}});
-        this.mcWSUrl = mcUrlProto.value + "://" + location.hostname + (mcUrlConf.value ? (":" + mcUrlConf.value) : "");
-        if ( (mcUrlProto.value !== '') ){
+        let mcUrlConf = await this.$store.dispatch('config/getItem', {field: 'key', value: 'wsUrl', def: {key: 'wsUrl', value: ''}});
+        this.mcWSUrl = mcUrlConf.value;
+        if ( (this.mcWSUrl !== '') ){
             this.mcWS = new WebSocket(this.mcWSUrl, this.jwt);
             this.mcWS.onmessage = this.mcMessage;
             this.mcWS.onopen = this.mcWSOpen

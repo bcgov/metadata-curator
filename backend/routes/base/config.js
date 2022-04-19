@@ -73,14 +73,9 @@ var buildDynamic = function(db, router, auth, cache){
                 return res.status(200).json({key: req.params.configKey, value: forumApi.wsUrl});
             }
 
-            if (req.params.configKey === 'wsPort'){
-                let wsPort = config.get('wsPort');
-                return res.status(200).json({key: req.params.configKey, value: wsPort});
-            }
-
-            if (req.params.configKey === 'wsProto'){
-                let wsProto = config.get('wsProto');
-                return res.status(200).json({key: req.params.configKey, value: wsProto});
+            if (req.params.configKey === 'wsUrl'){
+                let wsUrl = config.get('wsUrl');
+                return res.status(200).json({key: req.params.configKey, value: wsUrl});
             }
 
             let conf = await db.ConfigSchema.findOne({key: req.params.configKey});
