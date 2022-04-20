@@ -499,8 +499,8 @@ export default {
         },
 
         leftResources: function(){
-            let r = this.getResources(this.leftWorkingVal);
-            let rightResources = this.getResources(this.workingVal);
+            let r = this.getResources(this.leftWorkingVal, this.workingVal);
+            let rightResources = this.getResources(this.workingVal, this.leftWorkingVal);
             
             let hi = r.length-1;
             
@@ -572,13 +572,13 @@ export default {
         },
 
         rightResources: function(){
-            let r = this.getResources(this.workingVal);
+            let r = this.getResources(this.workingVal, this.leftWorkingVal);
 
             let rDiff = this.rightSideResourceDiff;
             let hi = r.length-1;
             let movedToEnd = 0;
             
-            let leftResources = this.getResources(this.leftWorkingVal);
+            let leftResources = this.getResources(this.leftWorkingVal, this.workingVal);
             
             if (r.length > leftResources.length){
                 let newR = [];

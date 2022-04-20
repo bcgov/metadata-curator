@@ -274,6 +274,16 @@ export default {
         "Push Draft to BCDC": "Push Draft to BCDC",
         "Field Name": "Field Name",
 
+        "constraints": "Constraints",
+        "description": "Description",
+        "format": "Format",
+        "notes": "Notes",
+        "rdfType": "RDF Type",
+        "shortName": "Short Name",
+        "tags": "Tags",
+        "title": "Title",
+        "type": "Type",
+
         "help.dataset.name": "The name of the dataset",
         "help.dataset.description": "A description of the dataset",
         "help.dataset.gov_allow_publish": "Is this allowed to be published to government DAR",

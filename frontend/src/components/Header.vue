@@ -231,7 +231,7 @@ export default {
                 }
             }else{
                 let m = {type: 'none'}
-                if (this.mcWS){
+                if (this.mcWS && this.mcWS.readyState==1){
                     this.mcWS.send(JSON.stringify(m));
                 }else{
                     this.pendingMCMessage = m;

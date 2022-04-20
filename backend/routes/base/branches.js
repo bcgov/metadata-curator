@@ -29,7 +29,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
 
         if (( (user.isApprover) || (user.isAdmin) ) && !fields.providerGroup){
             throw new Error("Data Approvers must provide a data provider group");
-        }else if ( (user.isApprover) || (user.isAdmin) ){
+        }else if (user.isApprover){
             if (!user.groups.some( (el) => el === fields.providerGroup) ){
                 throw new Error("Data Approvers must select a data provider group they belong to");
             }

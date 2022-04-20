@@ -167,7 +167,7 @@ Then(/^Data approver chooses to see the details of the edition$/, async function
 
 Then(/^Data approver should see information on the characteristics of the edition$/, async function(){
     client = this.browser;
-    await client.pause(4000);
+    await client.pause(5000);
     await client.saveScreenshot('./'+path+'/preEditionReview-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     try{
         let success = true;
