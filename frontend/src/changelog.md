@@ -19,6 +19,9 @@ April 20, 2022
  - Added recently commented on items to activity feed
  - Added real time notifications for comments
  - Added real time notifications for who else is on a record
+ - Comparison now shows a value Not Specified for fields that don't exist
+ - Comparison now ellipsis fields longer than one line
+ - Comparison now allows collapse of resources and fields
 
 
 <br />
