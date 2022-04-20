@@ -24,7 +24,7 @@ April 20, 2022
 <br />
 
 ## Table Of Contents
-- [Version 1.4.3 (April 5 2022)](#version-143)
+- [Version 1.4.3 (April 20 2022)](#version-143)
 - [Version 1.4.2 (March 25 2022)](#version-142)
 - [Version 1.4.1 (March 18 2022)](#version-141)
 - [Version 1.4.0 (March 16 2022)](#version-140)
