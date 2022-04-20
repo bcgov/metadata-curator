@@ -214,7 +214,8 @@ export default {
         },
 
         $route (to){
-
+            this.clearMCNotification();
+            
             if (to.params.id){
                 let type = (to.name === "upload_view") ? "upload" : false;
                 type = (!type && to.name === "datasets_form") ? "dataset" : type;
