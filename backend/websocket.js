@@ -68,12 +68,12 @@ websocket.init = function(){
                 let keys = Object.keys(self.locations);
 
                 if (dataObj.type === 'none'){
-                    message = {left: req.user.id};
+                    let mes = {left: req.user.id};
                     for (let i=0; i<keys.length; i++){
                         if (self.locations[keys[i]] && self.locations[keys[i]].type && self.locations[req.user.id] && self.locations[req.user.id].type){
                             if ( (keys[i] !== req.user.id) && (self.locations[keys[i]].type === self.locations[req.user.id].type) ){
                                 if (self.locations[keys[i]].id === self.locations[req.user.id].id){
-                                    self.connections[keys[i]].send(JSON.stringify(message));
+                                    self.connections[keys[i]].send(JSON.stringify(mes));
                                 }
                             }
                         }
