@@ -75,11 +75,11 @@
 
 
             <v-col cols=6>
-                <ResourceDisplay :resources="leftResources" :diff="basicDiff" compare-type="left"></ResourceDisplay>
+                <ResourceDisplay :resources="leftResources" :other="rightResources" :diff="basicDiff" compare-type="left"></ResourceDisplay>
             </v-col>
 
             <v-col cols=6>
-                <ResourceDisplay :resources="rightResources" :diff="basicDiff" compare-type="right"></ResourceDisplay>
+                <ResourceDisplay :resources="rightResources" :other="leftResources" :diff="basicDiff" compare-type="right"></ResourceDisplay>
             </v-col>
         </v-row>
     </v-container>
@@ -499,8 +499,8 @@ export default {
         },
 
         leftResources: function(){
-            let r = this.getResources(this.leftWorkingVal, this.workingVal);
-            let rightResources = this.getResources(this.workingVal, this.leftWorkingVal);
+            let r = this.getResources(this.leftWorkingVal);
+            let rightResources = this.getResources(this.workingVal);
             
             let hi = r.length-1;
             
@@ -572,13 +572,13 @@ export default {
         },
 
         rightResources: function(){
-            let r = this.getResources(this.workingVal, this.leftWorkingVal);
+            let r = this.getResources(this.workingVal);
 
             let rDiff = this.rightSideResourceDiff;
             let hi = r.length-1;
             let movedToEnd = 0;
             
-            let leftResources = this.getResources(this.leftWorkingVal, this.workingVal);
+            let leftResources = this.getResources(this.leftWorkingVal);
             
             if (r.length > leftResources.length){
                 let newR = [];

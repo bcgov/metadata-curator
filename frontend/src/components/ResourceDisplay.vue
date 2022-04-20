@@ -20,11 +20,11 @@
                     </v-row>
 
                     <span v-if="!collapsedFields[key][fkey]">
-                        <v-row v-for="(attribute, attribKey) in field" :key="'field-'+fkey+'-'+attribKey+'attribute'" :class="'ma-0 noOverflow' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.'+attribKey)">
-                            <v-col cols=3 v-if="attribKey !== 'name' && attribKey !== 'highlight'">
+                        <v-row v-for="(attribute, attribKey) in sortedField(field, key, fkey)" :key="'field-'+fkey+'-'+attribKey+'attribute'" :class="'ma-0' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.'+attribKey)">
+                            <v-col cols="3" v-if="attribKey !== 'name' && attribKey !== 'highlight'">
                                 {{$tc(attribKey)}}
                             </v-col>
-                            <v-col cols=9 class="noOverflow" v-if="attribKey !== 'name' && attribKey !== 'highlight'">
+                            <v-col cols="9" class="noOverflow" v-if="attribKey !== 'name' && attribKey !== 'highlight'">
                                 {{attribute}}
                             </v-col>
                         </v-row>
@@ -47,6 +47,10 @@ export default {
         resources: {
             type: Array,
             required: true,
+        },
+        other: {
+            type: Array,
+            required: false,
         },
         diff: {
             type: Object,
@@ -100,6 +104,28 @@ export default {
     },
 
     methods: {
+
+        sortedField: function(field, key, fkey){
+            if (this.other && this.other[key] && this.other[key].schema && this.other[key].schema.fields && this.other[key].schema.fields[fkey]){
+                let otherAttribs = Object.keys(this.other[key].schema.fields[fkey]);
+                for (let i=0; i<otherAttribs.length; i++){
+                    if (typeof(field[otherAttribs[i]]) === 'undefined'){
+                        field[otherAttribs[i]] = "<Not Specified>";
+                    }
+                }
+            }
+
+            field = Object.keys(field).sort().reduce(
+                (obj, key) => { 
+                    obj[key] = field[key]; 
+                    return obj;
+                }, 
+                {}
+            );
+
+            return field;
+
+        },
 
         collapse: function(key, fkey){
             if (typeof(fkey) === 'undefined'){
