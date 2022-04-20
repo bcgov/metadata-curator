@@ -87,7 +87,7 @@ Given(/^Data approver successfully creates a dataset$/, async function(){
         
         await client.saveScreenshot('./'+path+'/preSaveDataset-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
         await client.click('#saveDataset');
-        await client.pause(500);
+        await client.pause(5000);
     }catch(ex){
         await helpers.logout(client);
         throw ex;
@@ -169,6 +169,7 @@ Then(/^Data approver edits the dataset information$/, async function(){
         
         await client.saveScreenshot('./'+path+'/preDatasetEditSave-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
         await client.click('#saveDataset');
+        await client.pause(2000);
     }catch(ex){
         await helpers.logout(client);
         throw ex;
