@@ -44,7 +44,7 @@ websocket.init = function(){
         ws.isAlive = true;
         ws.on('pong', heartbeat);
         ws.on('close', function close() {
-            message = {left: req.user.id};
+            let message = {left: req.user.id};
             if (!self.locations){
                 self.locations = {};
             }
