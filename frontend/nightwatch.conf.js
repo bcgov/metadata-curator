@@ -16,7 +16,7 @@ module.exports = {
         },
         globals: {
           asyncHookTimeout: 50000,
-          waitForConditionTimeout: 500
+          waitForConditionTimeout: 1000
         },
         selenium: {
             start_process: true,

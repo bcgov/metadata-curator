@@ -37,8 +37,8 @@
                                                 <v-icon>mdi-account</v-icon>
                                             </v-col>
                                             
-                                            <v-col cols=1>
-                                                <v-btn x-small @click="expand(index)" v-if="item.content.length >= 75">
+                                            <v-col cols=1 v-if="item.content.length >= 75">
+                                                <v-btn x-small @click="expand(index)">
                                                     <v-icon>{{expanded[index] ? 'mdi-minus' : 'mdi-plus'}}</v-icon>
                                                 </v-btn>
                                             </v-col>
