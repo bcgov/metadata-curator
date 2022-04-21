@@ -7,29 +7,40 @@
             <v-col cols=1>
                 <v-btn @click="collapse(key)"><v-icon>{{collapsed[key] ? 'mdi-plus' : 'mdi-minus'}}</v-icon></v-btn>
             </v-col>
-            <v-col cols=12 v-if="!collapsed[key] && ( (resource.schema && resource.schema.fields) || (resource.tableSchema && resource.tableSchema.fields))">
-                <div v-for="(field, fkey) in ((resource.tableSchema && resource.tableSchema.fields) ? resource.tableSchema.fields : resource.schema.fields)" :key="'field-'+fkey+'-'+(field ? field.name : '')" :class="`field` + displayClass('resources.' + key + '.schema.fields.' + fkey.toString())">
-                    <v-row v-if="field && field.name" :class="'ma-0 noOverflow' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.name')">
-                        <v-col cols=1 v-if="collapsedFields && collapsedFields[key] && collapsedFields[key][fkey]">
-                            <v-btn @click="collapse(key, fkey)"><v-icon>{{collapsedFields[key][fkey] ? 'mdi-plus' : 'mdi-minus'}}</v-icon></v-btn>
-                        </v-col>
-                        <v-col cols=2></v-col>
-                        <v-col cols=9>
-                            <h3>{{field.name}}</h3>
-                        </v-col>
-                    </v-row>
-
-                    <span v-if="!collapsedFields || !collapsedFields[key] || !collapsedFields[key][fkey]">
-                        <v-row v-for="(attribute, attribKey) in sortedField(field, key, fkey)" :key="'field-'+fkey+'-'+attribKey+'attribute'" :class="'ma-0' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.'+attribKey)">
-                            <v-col cols="3" v-if="attribKey !== 'name' && attribKey !== 'highlight'">
-                                {{$tc(attribKey)}}
+            <v-col cols=12 v-if="!collapsed[key]" class="field">
+                <v-row v-for="(attrib, aKey) in sortedResource(resource, key)" :key="'resource-attrib-'+aKey+'-'+key" :class="'ma-0' + displayClass('resources.' + key + '.'+aKey)">
+                    <v-col cols=3 v-if="aKey !== 'schema'">
+                        {{$tc(aKey)}}
+                    </v-col>
+                    <v-col cols=9 v-if="aKey !== 'schema'" class="noOverflow">
+                        {{attrib}}
+                    </v-col>
+                </v-row>
+            
+                <v-col cols=12 v-if="!collapsed[key] && ( (resource.schema && resource.schema.fields) || (resource.tableSchema && resource.tableSchema.fields))">
+                    <div v-for="(field, fkey) in ((resource.tableSchema && resource.tableSchema.fields) ? resource.tableSchema.fields : resource.schema.fields)" :key="'field-'+fkey+'-'+(field ? field.name : '')" :class="`field` + displayClass('resources.' + key + '.schema.fields.' + fkey.toString())">
+                        <v-row v-if="field && field.name" :class="'ma-0 noOverflow' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.name')">
+                            <v-col cols=1 v-if="collapsedFields && collapsedFields[key]">
+                                <v-btn @click="collapse(key, fkey)"><v-icon>{{collapsedFields[key][fkey] ? 'mdi-plus' : 'mdi-minus'}}</v-icon></v-btn>
                             </v-col>
-                            <v-col cols="9" class="noOverflow" v-if="attribKey !== 'name' && attribKey !== 'highlight'">
-                                {{attribute}}
+                            <v-col cols=2></v-col>
+                            <v-col cols=9>
+                                <h3>{{field.name}}</h3>
                             </v-col>
                         </v-row>
-                    </span>
-                </div>
+
+                        <span v-if="!collapsedFields || !collapsedFields[key] || !collapsedFields[key][fkey]">
+                            <v-row v-for="(attribute, attribKey) in sortedField(field, key, fkey)" :key="'field-'+fkey+'-'+attribKey+'attribute'" :class="'ma-0' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.'+attribKey)">
+                                <v-col cols="3" v-if="attribKey !== 'name' && attribKey !== 'highlight'">
+                                    {{$tc(attribKey)}}
+                                </v-col>
+                                <v-col cols="9" class="noOverflow" v-if="attribKey !== 'name' && attribKey !== 'highlight'">
+                                    {{attribute}}
+                                </v-col>
+                            </v-row>
+                        </span>
+                    </div>
+                </v-col>
             </v-col>
         </v-row>
     </v-container>
@@ -104,6 +115,31 @@ export default {
     },
 
     methods: {
+
+        sortedResource: function(resource, key){
+            let r = JSON.parse(JSON.stringify(resource));
+            if (this.other && this.other[key] && this.other[key]){
+                let otherAttribs = Object.keys(this.other[key]);
+                for (let i=0; i<otherAttribs.length; i++){
+                    
+                    if (r && typeof(r[otherAttribs[i]]) === 'undefined'){
+                        r[otherAttribs[i]] = "<Not Specified>";
+                    }
+                }
+            }
+
+            if (r){
+                r = Object.keys(r).sort().reduce(
+                    (obj, key) => { 
+                        obj[key] = r[key]; 
+                        return obj;
+                    }, 
+                    {}
+                );
+            }
+
+            return r;
+        },
 
         sortedField: function(field, key, fkey){
             let f = JSON.parse(JSON.stringify(field));

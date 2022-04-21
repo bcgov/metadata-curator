@@ -283,6 +283,11 @@ export default {
         "tags": "Tags",
         "title": "Title",
         "type": "Type",
+        "data": "Data",
+        "name": "Name",
+        "path": "Path",
+        "temporal_end": "Temporal End",
+        "temporal_start": "Temporal Start",
 
         "help.dataset.name": "The name of the dataset",
         "help.dataset.description": "A description of the dataset",
