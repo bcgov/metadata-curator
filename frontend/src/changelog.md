@@ -3,7 +3,7 @@
 <br />
 
 ## Version 1.4.3
-April 20, 2022
+April 21, 2022
  - Increased clarity of BCDC publishing
  - Enhanced social and dialog feel of comment areas
  - Increased datepicker usability especially when picking years and or months
@@ -22,12 +22,14 @@ April 20, 2022
  - Comparison now shows a value Not Specified for fields that don't exist
  - Comparison now ellipsis fields longer than one line
  - Comparison now allows collapse of resources and fields
+ - Comparison compares better matches
+ - Fixed some comparison colouring bigs
 
 
 <br />
 
 ## Table Of Contents
-- [Version 1.4.3 (April 20 2022)](#version-143)
+- [Version 1.4.3 (April 21 2022)](#version-143)
 - [Version 1.4.2 (March 25 2022)](#version-142)
 - [Version 1.4.1 (March 18 2022)](#version-141)
 - [Version 1.4.0 (March 16 2022)](#version-140)

@@ -170,6 +170,75 @@ export default {
     },
     methods: {
 
+        //expects left and right to be arrays of objects
+        getBestMatches: function(left, right){
+            let matchArr = [];
+
+            for (let i=0; i<left.length; i++){
+
+                if ((typeof(left[i]) === 'undefined') || (typeof(left[i]) === 'undefined')){
+                    console.log("undef?");
+                }
+                let lk = new Set(Object.keys(left[i]));
+
+                //bestMatch is expected to have target and rating, ratings is an array of those objects
+                let matchObj = {
+                    ratings: [],
+                    bestMatch: {},
+                    bestMatchIndex: -1
+                };
+
+                let bestScore = -1;
+                let bestIndex = -1;
+
+                for (let j=0; j<right.length; j++){
+                    let rk = new Set(Object.keys(right[j]));
+
+                    let ak = new Set([...lk, ...rk]);
+
+                    let allKeys = [...ak];
+
+                    let totalRating = 0;
+                    for (let k=0; k<allKeys.length; k++){
+                        let lC = left[i][allKeys[k]];
+                        let skip = false;
+                        if (typeof(lC) === 'object'){
+                            lC = JSON.stringify(lC);
+                        }else if (typeof(lC) === 'undefined'){
+                            skip = true;
+                        }else if (typeof(lC) !== 'string'){
+                            lC = lC.toString();
+                        }
+
+                        let rC = right[j][allKeys[k]];
+                        if (typeof(rC) === 'object'){
+                            rC = JSON.stringify(rC);
+                        }else if (typeof(rC) === 'undefined'){
+                            skip = true;
+                        }else if (typeof(rC) !== 'string'){
+                            rC = rC.toString();
+                        }
+
+                        if (!skip){
+                            let propRating = StringSimilarity.compareTwoStrings(lC, rC);
+                            totalRating += (propRating + 1) //1 for the property match and the some value based on similarity of value
+                        }
+                    }
+                    totalRating = totalRating / (allKeys.length*2) // the maximum possible value is all keys match and all values of said keys match
+                    matchObj.ratings.push({rating: totalRating, target: right[j], index: j});
+                    if (totalRating > bestScore){
+                        bestScore = totalRating;
+                        bestIndex = j;
+                    }
+                }
+                matchObj.bestMatch = matchObj.ratings[bestIndex];
+                matchObj.bestMatchIndex = bestIndex;
+                matchArr.push(matchObj);
+            }
+            
+            return matchArr;
+        },
+
         setChangeRight: function(value){
             this.changeRight = value;
         },
@@ -212,6 +281,10 @@ export default {
                     return {diff: true};
                 }
 
+                if (l[0] && l[0].name === 'Quantity'){
+                    console.trace();
+                }
+
                 
                 let compareAgainst = [];
 
@@ -220,28 +293,14 @@ export default {
                     if (entryType === 'object'){
                         //is either an array or an object so need to compare against all other entries for closest match
 
-                        let matchArr = [];
-                        let rightSideJsonS = [];
-                        for (let i=0; i<r.length; i++){
-                            rightSideJsonS.push(JSON.stringify(r[i]));
-                        }
-
-
-                        for (let i=0; i<l.length && rightSideJsonS.length>0; i++){
-                            let leftSideJsonS = JSON.stringify(l[i]);
-                            let matches = StringSimilarity.findBestMatch(leftSideJsonS, rightSideJsonS);
-                            
-                            matchArr.push(matches);
-                        }
+                        let matchArr = this.getBestMatches(l, r);
 
                         //matchArr[i] is the ratings for each l[i] we need to compareAgainst the best rating
                         //but not necessarily in order ie 1 might be a best match for 2, but 2 might be exactly 2 ie [1,2] [2]
-                        for (let i=0; i<l.length && rightSideJsonS.length>0; i++){
+                        for (let i=0; i<matchArr.length && r.length>0; i++){
                             
                             let sortedMatchArr = JSON.parse(JSON.stringify(matchArr[i].ratings));
                             sortedMatchArr.sort((a,b) => (a.rating < b.rating) ? 1 : ((b.rating < a.rating) ? -1 : 0))
-
-                            let bestRatingIndex = matchArr[i].bestMatchIndex;
 
                             let ratingsIndex = 0;
                             let bestRating = sortedMatchArr[ratingsIndex].rating;
@@ -252,7 +311,7 @@ export default {
                             for (let j=0; j<matchArr.length; j++){
                                 if (j !== i){
                                     let bestJIndex = matchArr[j].bestMatchIndex
-                                    if ( (bestJIndex == bestRatingIndex) && (matchArr[j].ratings[bestJIndex].rating > bestRating) ){
+                                    if ( (bestJIndex == ratingsIndex) && (matchArr[j].ratings[bestJIndex].rating > bestRating) ){
                                         ratingsIndex++;
                                         while (compareAgainst.indexOf(ratingsIndex) !== -1){
                                             ratingsIndex++;
@@ -260,19 +319,16 @@ export default {
 
                                         try{
                                             bestRating = sortedMatchArr[ratingsIndex].rating;
-                                            bestRatingIndex = matchArr[i].ratings.filter(obj => {
-                                                return obj.rating === bestRating
-                                            })[0];
                                         }catch(ex){
                                             bestRating = -1;
-                                            bestRatingIndex = -1;
+                                            ratingsIndex = -1;
                                         }
                                         j=-1;
                                     }
                                 }
                             }
-                            if (bestRatingIndex<r.length){
-                                compareAgainst.push(bestRatingIndex);
+                            if (ratingsIndex<r.length){
+                                compareAgainst.push(ratingsIndex);
                             }else{
                                 compareAgainst.push(-1);
                             }
