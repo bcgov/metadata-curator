@@ -3,7 +3,7 @@ const chromeDriver = require('chromedriver');
 const geckoDriver = require('geckodriver');
 const ieDriver = require('iedriver');
 const edgeDriver = require('edgedriver');
-const config = require('./step-definitions/config.json');
+const config = require('./tests/step-definitions/config.json');
 const path = config.screenshotPath;
 
 module.exports = {
@@ -13,6 +13,10 @@ module.exports = {
         screenshots: {
             enabled: true,
             path: path
+        },
+        globals: {
+          asyncHookTimeout: 50000,
+          waitForConditionTimeout: 1000
         },
         selenium: {
             start_process: true,

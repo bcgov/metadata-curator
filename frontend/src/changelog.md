@@ -2,25 +2,36 @@
 
 <br />
 
-## Version 1.4.2
-March 25, 2022
- - BC Data Catalogue record creation (Phase 3)
- - Field type in Files & Fields is now a select with the frictionless standard options
- - Prevented jump to top when adding a new field in the files & fields area
- - Changed drag functionality to reorder fields to be cascade instead of swap
- - Added number of fields to the top of a resource as an informative label on files & fields
- - Changed - icon to remove a field to be a trash can and to the far right
- - Fixed exporting resource level fields
- - Strengthened ability of login to persist across server restarts
- - Showed a banner when the call to keep you logged in fails to do so
- - Moved edition page to a 2 column layout
- - Fixed some visual issues with checkboxes (being large, and wrong colour/size font)
- - Cleaned up data upload summary form
+## Version 1.4.3
+April 22, 2022
+ - Increased clarity of BCDC publishing
+ - Enhanced social and dialog feel of comment areas
+ - Increased datepicker usability especially when picking years and or months
+ - Fixed a bug preventing editing of dataset checkboxes to unchecked or clearing of fields after initial create
+ - No longer copies published or approved values when copying a version
+ - Added more integration tests for datasets/editions/schemas
+ - Improved error handling on schema tab
+ - Allowed editors to edit approved editions
+ - Added resource notes to resource level of files and fields
+ - Updated terraform scripts to give proper permissions to approvers and to enable phase 3 by default (for automated testing)
+ - Only call upload hook when an upload is updated to submission if the original status wasn't submitted (IE it just became submitted)
+ - Fixed public editions not showing when not logged in
+ - Added recently commented on items to activity feed
+ - Added real time notifications for comments
+ - Added real time notifications for who else is on a record
+ - Comparison now shows a value Not Specified for fields that don't exist
+ - Comparison now ellipsis fields longer than one line
+ - Comparison now allows collapse of resources and fields
+ - Comparison compares better matches
+ - Fixed some comparison colouring bigs
+ - Added resources to comparison
+ - Fixed comparison not aligning fields that it's compared against
 
 
 <br />
 
 ## Table Of Contents
+- [Version 1.4.3 (April 22 2022)](#version-143)
 - [Version 1.4.2 (March 25 2022)](#version-142)
 - [Version 1.4.1 (March 18 2022)](#version-141)
 - [Version 1.4.0 (March 16 2022)](#version-140)
@@ -39,6 +50,21 @@ March 25, 2022
 - [Version 1.2.2 (January 27 2022)](#version-122)
 
 <br />
+
+## Version 1.4.2
+March 25, 2022
+ - BC Data Catalogue record creation (Phase 3)
+ - Field type in Files & Fields is now a select with the frictionless standard options
+ - Prevented jump to top when adding a new field in the files & fields area
+ - Changed drag functionality to reorder fields to be cascade instead of swap
+ - Added number of fields to the top of a resource as an informative label on files & fields
+ - Changed - icon to remove a field to be a trash can and to the far right
+ - Fixed exporting resource level fields
+ - Strengthened ability of login to persist across server restarts
+ - Showed a banner when the call to keep you logged in fails to do so
+ - Moved edition page to a 2 column layout
+ - Fixed some visual issues with checkboxes (being large, and wrong colour/size font)
+ - Cleaned up data upload summary form
 
 ## Version 1.4.1
 March 18, 2022

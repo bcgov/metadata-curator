@@ -72,6 +72,7 @@ EOF
 
     sessionSecret =  "\"sessionSecret\": \"${random_string.jwtSecret.result}\""
     frontend = "\"frontend\": \"${var.host}\""
+    wsUrl: "\"wsUrl\": \"http://localhost:3030\"",
     
 
     uploadUrl = "\"uploadUrl\": \"${var.host}/files/\"",
@@ -80,7 +81,7 @@ EOF
 
     approverGroups = "\"approverGroups\": []"
 
-    forumApi = "\"forumApi\": {\"baseUrl\": \"http://mc_forum_api:3000/v1\"}"
+    forumApi = "\"forumApi\": {\"baseUrl\": \"http://mc_forum_api:3000/v1\", \"wsUrl\": \"ws://mc_forum_api:3001\"}"
 
     oidc = var.makeKeycloak ? data.null_data_source.oidcConfig.outputs.oidc2 : data.null_data_source.oidcConfig.outputs.oidc1
 
@@ -108,6 +109,7 @@ data "null_data_source" "configValues" {
   ${data.null_data_source.feIndConfig.outputs["database"]},
   ${data.null_data_source.feIndConfig.outputs["sessionSecret"]},
   ${data.null_data_source.feIndConfig.outputs["frontend"]},
+  ${data.null_data_source.feIndConfig.outputs["wsUrl"]},
   ${data.null_data_source.feIndConfig.outputs["oidc"]},
   ${data.null_data_source.feIndConfig.outputs["uploadUrl"]},
   ${data.null_data_source.feIndConfig.outputs["base64EncodedPGPPublicKey"]},

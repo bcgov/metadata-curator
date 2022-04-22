@@ -185,42 +185,42 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         revision.create_date = new Date();
     
         //record exists
-        if (fields.name){
+        if ( typeof(fields.name) !== 'undefined' ){
             revision.revise('name', record.name, fields.name);
             record.name = fields.name;
         }
 
-        if (fields.description){
+        if ( typeof(fields.description) !== 'undefined' ){
             revision.revise('description', record.description, fields.description);
             record.description = fields.description;
         }
 
-        if (fields.gov_allow_publish){
+        if ( typeof(fields.gov_allow_publish) !== 'undefined'){
             revision.revise('gov_allow_publish', record.gov_allow_publish, fields.gov_allow_publish);
             record.gov_allow_publish = fields.gov_allow_publish;
         }
 
-        if (fields.aca_allow_publish){
+        if ( typeof(fields.aca_allow_publish) !== 'undefined'){
             revision.revise('aca_allow_publish', record.aca_allow_publish, fields.aca_allow_publish);
             record.aca_allow_publish = fields.aca_allow_publish;
         }
 
-        if (fields.gov_approval_needed){
+        if ( typeof(fields.gov_approval_needed) !== 'undefined'){
             revision.revise('gov_approval_needed', record.gov_approval_needed, fields.gov_approval_needed);
             record.gov_approval_needed = fields.gov_approval_needed;
         }
 
-        if (fields.aca_approval_needed){
+        if ( typeof(fields.aca_approval_needed) !== 'undefined'){
             revision.revise('aca_approval_needed', record.aca_approval_needed, fields.aca_approval_needed);
             record.aca_approval_needed = fields.aca_approval_needed;
         }
 
-        if (fields.in_bc_catalogue){
+        if ( typeof(fields.in_bc_catalogue) !== 'undefined'){
             revision.revise('in_bc_catalogue', record.in_bc_catalogue, fields.in_bc_catalogue);
             record.in_bc_catalogue = fields.in_bc_catalogue;
         }
 
-        if (fields.data_collection_type){
+        if (typeof(fields.data_collection_type) !== 'undefined'){
             revision.revise('data_collection_type', record.data_collection_type, fields.data_collection_type);
             record.data_collection_type = fields.data_collection_type;
         }
@@ -229,7 +229,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             throw new Error("Ministry / Organization is required");
         }
 
-        if (fields.ministry_organization){
+        if (typeof(fields.ministry_organization) !== 'undefined'){
             revision.revise('ministry_organization', record.ministry_organization, fields.ministry_organization);
             record.ministry_organization = fields.ministry_organization
         }

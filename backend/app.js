@@ -14,7 +14,10 @@ let history = require('connect-history-api-fallback');
 if (process.env.NODE_ENV !== "test"){
   require('./db/db').init();
 }
-let passport = require('./auth/auth');
+let passport = require('./auth/auth').passport;
+
+var websockets = require('./websocket');
+var wss = websockets.init();
 
 let backendRouter = require('./routes/backendRouter');
 

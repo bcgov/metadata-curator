@@ -205,11 +205,11 @@
                                 <h2>{{$tc('Versions', 2)}}</h2>
                             </v-col>
                             <v-col cols=9>
-                                <v-btn v-if="allowAddEdition" color="primary" @click="addVersion">{{$tc('Add')}} {{$tc('Version')}}</v-btn>
+                                <v-btn v-if="allowAddEdition" id="addVersion" color="primary" @click="addVersion">{{$tc('Add')}} {{$tc('Version')}}</v-btn>
                             </v-col>
 
                             <v-col cols=12 v-for="(branch, i) in branches" :key="'branch-'+i">
-                                <span @click="editVersion(branch._id)" class="pointer">
+                                <span @click="editVersion(branch._id)" :id="'branch-link-'+i" class="pointer">
                                     {{branch.name}} 
                                     - {{branch.type.charAt(0).toUpperCase() + branch.type.slice(1)}} 
                                     - {{$tc('Created')}} {{branch.create_date | formatDate}} 
@@ -222,11 +222,11 @@
                 </v-card>
                 <v-card-actions v-if="editing && !hideEditions && allowAddEdition">
                     <v-btn @click="routeToHome()" class="mt-1">{{$tc('Cancel')}}</v-btn>
-                    <v-btn @click="save" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
+                    <v-btn @click="save" id="saveDataset" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
                 </v-card-actions>
                 <v-card-actions v-else-if="!editing && !hideEditions && allowAddEdition">
                     <v-btn @click="routeToHome()" class="mt-1">{{$tc('Back')}}</v-btn>
-                    <v-btn @click="editing=!editing" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
+                    <v-btn @click="editing=!editing" id="editDatasetBtn" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                 </v-card-actions>
             </v-col>
         </v-row>
@@ -363,6 +363,8 @@ export default {
                     this.editBranch({name: keys[i], value: branch[keys[i]] + " " + d.toISOString().split('T')[0]});
                 }else if (keys[i] === "author_groups"){
                     this.editBranch({name: "providerGroup", value: branch[keys[i]][0]});
+                }else if ( (keys[i] === 'approved') || (keys[i] === 'published') ){
+                    this.editBranch({name: keys[i], value: false});
                 }else if (keys[i] !== "_id"){
                     this.editBranch({name: keys[i], value: branch[keys[i]]});
                 }else{
@@ -443,6 +445,7 @@ export default {
         }),
     },
     async created() {
+        this.clearDataset();
         // console.log("dataUpload id: " + this.$route.params.id);
         
         this.id = this.$route.params.id;

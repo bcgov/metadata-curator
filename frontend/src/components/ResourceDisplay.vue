@@ -1,129 +1,46 @@
 <template>
     <v-container class="comparison">
-        <v-row v-for="(resource, key) in resources" :key="'resources'+key" :class="displayClass('resources.' + key)">
-            <v-col cols=12 :class="'noOverflow' + displayClass('resources.' + key + '.name')">
+        <v-row v-for="(resource, key) in resources" :key="'resources'+key+'-'+redrawResource" :class="displayClass('resources.' + key)">
+            <v-col cols=11 :class="'noOverflow' + displayClass('resources.' + key + '.name')">
                 <h1>{{$tc('Resource')}} {{resource.name}}</h1>
             </v-col>
-            <v-col cols=12 v-if="(resource.schema && resource.schema.fields) || (resource.tableSchema && resource.tableSchema.fields)">
-                <div v-for="(field, fkey) in ((resource.tableSchema && resource.tableSchema.fields) ? resource.tableSchema.fields : resource.schema.fields)" :key="'field-'+fkey+'-'+(field ? field.name : '')" :class="`field${field && field.highlight ? ' fieldHighlight' : ''}` + displayClass('resources.' + key + '.schema.fields.' + fkey.toString())">
-                    <v-row v-if="field && field.name" :class="'ma-0 noOverflow' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.name')">
-                        <v-col cols=9>
-                            <h3>{{field.name}}</h3>
-                        </v-col>
-                    </v-row>
+            <v-col cols=1>
+                <v-btn @click="collapse(key)"><v-icon>{{collapsed[key] ? 'mdi-plus' : 'mdi-minus'}}</v-icon></v-btn>
+            </v-col>
+            <v-col cols=12 v-if="!collapsed[key]" class="field">
+                <v-row v-for="(attrib, aKey) in sortedResource(resource, key)" :key="'resource-attrib-'+aKey+'-'+key" :class="'ma-0' + displayClass('resources.' + key + '.'+aKey)">
+                    <v-col cols=3 v-if="aKey !== 'schema'">
+                        {{$tc(aKey)}}
+                    </v-col>
+                    <v-col cols=9 v-if="aKey !== 'schema'" class="noOverflow">
+                        {{attrib}}
+                    </v-col>
+                </v-row>
+            
+                <v-col cols=12 v-if="!collapsed[key] && ( (resource.schema && resource.schema.fields) || (resource.tableSchema && resource.tableSchema.fields))">
+                    <div v-for="(field, fkey) in ((resource.tableSchema && resource.tableSchema.fields) ? resource.tableSchema.fields : resource.schema.fields)" :key="'field-'+fkey+'-'+(field ? field.name : '')" :class="`field` + displayClass('resources.' + key + '.schema.fields.' + fkey.toString())">
+                        <v-row v-if="field && field.name" :class="'ma-0 noOverflow' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.name')">
+                            <v-col cols=1 v-if="collapsedFields && collapsedFields[key]">
+                                <v-btn @click="collapse(key, fkey)"><v-icon>{{collapsedFields[key][fkey] ? 'mdi-plus' : 'mdi-minus'}}</v-icon></v-btn>
+                            </v-col>
+                            <v-col cols=2></v-col>
+                            <v-col cols=9>
+                                <h3>{{field.name}}</h3>
+                            </v-col>
+                        </v-row>
 
-                    <v-row v-if="field && (field.shortName || (field._descriptor && field._descriptor.shortName))" :class="'ma-0 noOverflow' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.shortName')">
-                        <v-col cols=3>
-                            {{$tc('Short Name')}}:
-                        </v-col>
-                        <v-col cols=9>
-                            {{field.shortName ? field.shortName : field._descriptor.shortName}}
-                        </v-col>
-                    </v-row>
-
-                    <v-row v-if="field && (field.title || (field._descriptor && field._descriptor.title))" :class="'ma-0'  + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.title')">
-                        <v-col cols=3>
-                            {{$tc('Title')}}:
-                        </v-col>
-                        <v-col cols=9>
-                            {{field.title ? field.title : field._descriptor.title}}
-                        </v-col>
-                    </v-row>
-
-                    <v-row v-if="field && (field.type || (field._descriptor && field._descriptor.type))" :class="'ma-0' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.type')">
-                        <v-col cols=3>
-                            {{$tc('Type')}}:
-                        </v-col>
-                        <v-col cols=9>
-                            {{field.type ? field.type : field._descriptor.type}}
-                        </v-col>
-                    </v-row>
-
-                    <v-row v-if="field && (field.description || (field._descriptor && field._descriptor.description))" :class="'ma-0' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.description')">
-                        <v-col cols=3>
-                            {{$tc('Description')}}:
-                        </v-col>
-                        <v-col cols=9>
-                            {{field.description ? field.description : field._descriptor.description}}
-                        </v-col>
-                    </v-row>
-
-                    <v-row v-if="field && (field.example || (field._descriptor && field._descriptor.example))" :class="'ma-0' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.example')">
-                        <v-col cols=3>
-                            {{$tc('Example')}}:
-                        </v-col>
-                        <v-col cols=9>
-                            {{field.example ? field.example : field._descriptor.example}}
-                        </v-col>
-                    </v-row>
-
-                    <v-row v-if="field && (field.constraints || (field._descriptor && field._descriptor.constraints))" :class="'ma-0' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.constraints')">
-                        <v-col cols=3>
-                            {{$tc('Constraint', 2)}}:
-                        </v-col>
-                        <v-col cols=9>
-                            {{field.constraints ? field.constraints : field._descriptor.constraints}}
-                        </v-col>
-                    </v-row>
-
-                    <v-row v-if="field && field.var_class" :class="'ma-0' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.var_class')">
-                        <v-col cols=3>
-                            {{$tc('Var Class', 1)}}:
-                        </v-col>
-                        <v-col cols=9>
-                            {{field.var_class ? field.var_class : "" }}
-                        </v-col>
-                    </v-row>
-
-                    <v-row 
-                        v-if="field 
-                            && (field.format || (field._descriptor && field._descriptor.format))
-                            && ( (field.format && field.format !== 'default') || ((field._descriptor && field._descriptor.format && field._descriptor.format !== 'default')) )" 
-                            :class="'ma-0'  + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.format')">
-                        <v-col cols=3>
-                            {{$tc('Format')}}:
-                        </v-col>
-                        <v-col cols=9>
-                            {{field.format ? field.format : field._descriptor.format}}
-                        </v-col>
-                    </v-row>
-
-                    <v-row v-if="field && (field.rdfType || (field._descriptor && field._descriptor.rdfType))" :class="'ma-0' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.rdfType')">
-                        <v-col cols=3>
-                            {{$tc('RDF Type')}}:
-                        </v-col>
-                        <v-col cols=9>
-                            {{field.rdfType ? field.rdfType : field._descriptor.rdfType}}
-                        </v-col>
-                    </v-row>
-
-                    <v-row v-if="field && (field.tags || (field._descriptor && field._descriptor.tags))" :class="'ma-0' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.tags')">
-                        <v-col cols=3>
-                            {{$tc('Tags', 2)}}:
-                        </v-col>
-                        <v-col cols=9>
-                            {{field.tags ? field.tags : field._descriptor.tags}}
-                        </v-col>
-                    </v-row>
-
-                    <v-row v-if="field && (field.missingValues || (field._descriptor && field._descriptor._missingValues))" :class="'ma-0' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.missingValues')">
-                        <v-col cols=3>
-                            {{$tc('Missing Value', 2)}}:
-                        </v-col>
-                        <v-col cols=9>
-                            {{field.missingValues ? field.missingValues : field._descriptor._missingValues}}
-                        </v-col>
-                    </v-row>
-
-                    <v-row v-if="field && (field.comments || (field._descriptor && field._descriptor.comments))" :class="'ma-0' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.comments')">
-                        <v-col cols=3>
-                            {{$tc('Comments', 2)}}:
-                        </v-col>
-                        <v-col cols=9>
-                            {{field.comments ? field.comments : field._descriptor.comments}}
-                        </v-col>
-                    </v-row>
-                </div>
+                        <span v-if="!collapsedFields || !collapsedFields[key] || !collapsedFields[key][fkey]">
+                            <v-row v-for="(attribute, attribKey) in sortedField(field, key, fkey)" :key="'field-'+fkey+'-'+attribKey+'attribute'" :class="'ma-0' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.'+attribKey)">
+                                <v-col cols="3" v-if="attribKey !== 'name' && attribKey !== 'highlight'">
+                                    {{$tc(attribKey)}}
+                                </v-col>
+                                <v-col cols="9" class="noOverflow" v-if="attribKey !== 'name' && attribKey !== 'highlight'">
+                                    {{attribute}}
+                                </v-col>
+                            </v-row>
+                        </span>
+                    </div>
+                </v-col>
             </v-col>
         </v-row>
     </v-container>
@@ -142,6 +59,10 @@ export default {
             type: Array,
             required: true,
         },
+        other: {
+            type: Array,
+            required: false,
+        },
         diff: {
             type: Object,
             required: false,
@@ -152,6 +73,35 @@ export default {
             required: false,
             default: "left",
         },
+        resourcesCollapsedByDefault: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
+        fieldsCollapsedByDefault: {
+            type: Boolean,
+            required: false,
+            default: false,
+        }
+    },
+
+    data() {
+        return {
+            collapsed: [],
+            collapsedFields: [],
+            redrawResource: 0,
+        }
+    },
+
+    mounted(){
+        for (let i=0; i<this.resources.length; i++){
+            this.collapsed.push(this.resourcesCollapsedByDefault);
+            this.collapsedFields.push([]);
+            let f = (this.resources[i].schema && this.resources[i].schema.fields) ? this.resources[i].schema.fields : this.resources[i].tableSchema.fields
+            for (let j=0; j<f.length; j++){
+                this.collapsedFields[i].push(this.fieldsCollapsedByDefault);
+            }
+        }
     },
 
     computed: {
@@ -166,7 +116,66 @@ export default {
 
     methods: {
 
-        
+        sortedResource: function(resource, key){
+            let r = JSON.parse(JSON.stringify(resource));
+            if (this.other && this.other[key] && this.other[key]){
+                let otherAttribs = Object.keys(this.other[key]);
+                for (let i=0; i<otherAttribs.length; i++){
+                    
+                    if (r && typeof(r[otherAttribs[i]]) === 'undefined'){
+                        r[otherAttribs[i]] = "<Not Specified>";
+                    }
+                }
+            }
+
+            if (r){
+                r = Object.keys(r).sort().reduce(
+                    (obj, key) => { 
+                        obj[key] = r[key]; 
+                        return obj;
+                    }, 
+                    {}
+                );
+            }
+
+            return r;
+        },
+
+        sortedField: function(field, key, fkey){
+            let f = JSON.parse(JSON.stringify(field));
+            if (this.other && this.other[key] && this.other[key].schema && this.other[key].schema.fields && this.other[key].schema.fields[fkey]){
+                let otherAttribs = Object.keys(this.other[key].schema.fields[fkey]);
+                for (let i=0; i<otherAttribs.length; i++){
+                    
+                    if (f && typeof(f[otherAttribs[i]]) === 'undefined'){
+                        f[otherAttribs[i]] = "<Not Specified>";
+                    }
+                }
+            }
+
+            if (f){
+                f = Object.keys(f).sort().reduce(
+                    (obj, key) => { 
+                        obj[key] = f[key]; 
+                        return obj;
+                    }, 
+                    {}
+                );
+            }
+
+            return f;
+
+        },
+
+        collapse: function(key, fkey){
+            if (typeof(fkey) === 'undefined'){
+                this.collapsed[key] = !this.collapsed[key];
+                this.redrawResource++;
+            }else{
+                this.collapsedFields[key][fkey] = !this.collapsedFields[key][fkey];
+                this.redrawResource++;
+            }
+        },
 
         displayClass: function(keyString){
             let currDif = JSON.parse(JSON.stringify(this.diff));
@@ -213,6 +222,12 @@ export default {
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
+    }
+
+    .noOverflow:hover{
+        text-overflow: clip;
+        white-space: normal;
+        word-break: break-all;
     }
 
     .field{

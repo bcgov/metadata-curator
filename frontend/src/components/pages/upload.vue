@@ -315,8 +315,6 @@
             ...mapMutations({
                 resetState: 'upload/resetState',
                 setDataPackageSchema: 'schemaImport/setDataPackageSchema',
-                setTableSchema: 'schemaImport/setTableSchema',
-                setTableSchemaId: "schemaImport/setTableSchemaId",
                 editDataset: 'repos/editRepo',
                 clearDataset: 'repos/clearRepo',
                 editBranch: 'repos/editBranch',
@@ -606,11 +604,14 @@
                 this.clearBranch();
                 this.editBranch({name: 'name', value: this.upload.name});
                 let desc = ( (this.upload) && (this.upload.description)) ? this.upload.description : this.upload.name;
+                let keyw = " ";
                 
                 this.editBranch({name: 'description', value: desc});
                 this.editBranch({name: 'type', value: 'standard'});
                 this.editBranch({name: 'data_upload_id', value: this.uploadId});
                 this.editBranch({name: "repo_id", value: this.selectedDataset});
+                this.editBranch({name: "keywords", value: keyw});
+                
                 let b = await this.saveBranch();
                 this.selectedVersion = b.id;
                 this.editBranch({name: "_id", value: this.selectedVersion});
@@ -626,6 +627,7 @@
                 }
                 this.clearDataset();
                 this.editDataset({name: 'name', value: this.upload.name});
+                this.editDataset({name: 'ministry_organization', value: this.upload.ministry_organization});
                 let d = await this.saveDataset();
                 await this.getAllRepos();
                 this.setRepo({repo: {_id: d.id}});

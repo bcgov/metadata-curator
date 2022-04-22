@@ -25,23 +25,38 @@
                                 v-else
                                 :key="item.title"
                             >
-                                <v-btn icon :key="'comment-icon-btn-'+index+'-'+refreshKey" class="mr-4">
-                                    <v-icon>mdi-comment-multiple</v-icon>
-                                </v-btn>
-
-                                <v-btn x-small @click="expand(index)">
-                                    <v-icon>{{expanded[index] ? 'mdi-minus' : 'mdi-plus'}}</v-icon>
-                                </v-btn>
 
                                 <v-list-item-content>
-                                    <v-list-item-title :class="expanded[index] ? 'expanded' : ''">
-                                        <Markdown
-                                            name=""
-                                            :value="item.content"
-                                            :label="$tc('')"
-                                            :editing="false"
-                                            :placeholder="$tc('')"
-                                        ></Markdown>
+                                    
+                                    <v-list-item-title :class="(expanded[index] ? 'expanded' : '')">
+                                        <v-row>
+                                            <v-col cols=1 v-if="item.author && user && user._json && user._json.email && item.author !== user._json.email">
+                                                <v-img class="ma-0 pa-0" :src="(item && item.author) ? 'https://www.gravatar.com/avatar/' + calcMd5(item.author.toLowerCase().trim()) : false" :alt="item.author" height="50px" width="50px" contain></v-img>
+                                            </v-col>
+                                            <v-col cols=1 v-else-if="!item.author || !user || !user._json || !user._json.email">
+                                                <v-icon>mdi-account</v-icon>
+                                            </v-col>
+                                            
+                                            <v-col cols=1 v-if="item.content.length >= 75">
+                                                <v-btn x-small @click="expand(index)">
+                                                    <v-icon>{{expanded[index] ? 'mdi-minus' : 'mdi-plus'}}</v-icon>
+                                                </v-btn>
+                                            </v-col>
+
+                                            <v-col cols=10 :class="(item.author && user && user._json && user._json.email && item.author === user._json.email) ? 'from-me' : 'from-them'">
+                                                <Markdown
+                                                    name=""
+                                                    :value="item.content"
+                                                    :label="$tc('')"
+                                                    :editing="false"
+                                                    :placeholder="$tc('')"
+                                                ></Markdown>
+                                            </v-col>
+
+                                            <v-col cols=1 v-if="item.author && user && user._json && user._json.email && item.author === user._json.email">
+                                                <v-img class="ma-0 pa-0" :src="(item && item.author) ? 'https://www.gravatar.com/avatar/' + calcMd5(item.author.toLowerCase().trim()) : false" :alt="item.author" height="50px" width="50px" contain></v-img>
+                                            </v-col>
+                                        </v-row>
                                     </v-list-item-title>
                                     <v-list-item-action-text v-html="item.subtitle"></v-list-item-action-text>
                                 </v-list-item-content>
@@ -79,8 +94,11 @@
 
 <script>
 
-import {mapActions} from "vuex";
+import {mapActions, mapState} from "vuex";
 import Markdown from './Markdown.vue';
+import md5 from 'md5'
+import { Backend } from '../services/backend';
+const backend = new Backend();
 
     export default {
         components: { 
@@ -123,6 +141,7 @@ import Markdown from './Markdown.vue';
             comment: "",
             commentFocused: false,
             commentDisplayItems: [],
+            varClassComments: [],
         }),
         methods: {
             ...mapActions({
@@ -144,7 +163,8 @@ import Markdown from './Markdown.vue';
                     const item = {
                         subtitle: "Updated on " + createDate + " by " + comment.author_user,
                         content: comment.comment,
-                        comment: comment
+                        comment: comment,
+                        author: comment.author_user,
                     };
 
                     let fieldRef = "!" + self.resource + "." + self.field;
@@ -176,6 +196,16 @@ import Markdown from './Markdown.vue';
             setComment(val){
                 this.comment = val;
             },
+            async addVarClassComment({id, comment}){
+                await backend.postCommentByVarClass(id, comment);
+                await this.getVarClassComments(id);
+            },
+            async getVarClassComments(id){
+                this.varClassComments = await backend.getCommentsByVarClass(id)
+            },
+            calcMd5(val){
+                return md5(val);
+            },
             addComment(){
                 switch(this.type){
                     case 'repo':
@@ -186,6 +216,9 @@ import Markdown from './Markdown.vue';
                         break;
                     case 'branch':
                         this.addBranchComment({branchId: this.id, comment: this.comment});
+                        break;
+                    case 'variableClassification':
+                        this.addVarClassComment({id: this.id, comment: this.comment});
                         break;
                 }
                 
@@ -213,6 +246,9 @@ import Markdown from './Markdown.vue';
                 case 'schema':
                     await this.getBranchComments({branchId: this.id, force: false});
                     break;
+                case 'variableClassification':
+                    this.getVarClassComments(this.id);
+                    break;
             }
             
             this.computeCommentDisplayItems();
@@ -236,6 +272,10 @@ import Markdown from './Markdown.vue';
         },
 
         computed: {
+            ...mapState({
+                user: state => state.user.user,
+            }),
+
             comments: function(){
                 switch (this.type){
                     case 'repo':
@@ -246,6 +286,8 @@ import Markdown from './Markdown.vue';
                         return this.$store.state.repos.branchComments;
                     case 'schema':
                         return this.$store.state.repos.branchComments;
+                    case 'variableClassification':
+                        return this.varClassComments;
                 }
                 return []
             },
@@ -255,10 +297,26 @@ import Markdown from './Markdown.vue';
 
 <style scoped>
 
+    .v-list-item__subtitle, .v-list-item__title{
+        text-overflow: hidden;
+        overflow: hidden;
+        max-height: 50px;
+        white-space: break-spaces;
+    }
+
     .v-list-item__subtitle, .v-list-item__title.expanded{
         text-overflow: unset;
         overflow: visible;
         white-space: break-spaces;
+        max-height: unset;
+    }
+
+    .from-me{
+        text-align: right;
+    }
+
+    .from-them{
+        
     }
 
 </style>

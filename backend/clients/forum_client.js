@@ -1,5 +1,7 @@
 const axios = require('axios');
 
+const TOPIC_RES_LIMIT = 250;
+
 const addTopic = async (name, user) => {
     if (user.organization){
         const parentTopicResponse = await createTopicIfDoesNotExist(user.organization, user);
@@ -57,6 +59,31 @@ const getComments = async (topic_id, user) => {
     });
 }
 
+const getAllComments = async (user, afterDate) => {
+    let config = require('config');
+    const forumApiConfig = config.get("forumApi");
+
+    const jwt = user.jwt;
+    const options = {
+        withCredentials: true,
+        headers: {
+            'Authorization': `Bearer ${jwt}`
+        }
+    };
+
+    let url = forumApiConfig.baseUrl + "/comment";
+
+    if (afterDate){
+        let d = afterDate.toISOString();
+        
+        url += "?createdAfter=" + d
+    }
+
+    const response = await axios.get(url, options);
+
+    return response.data;
+}
+
 const getTopic = async (user, name) => {
     let config = require('config');
     const forumApiConfig = config.get("forumApi");
@@ -98,6 +125,7 @@ const getTopics = async (user, query) => {
     let url = forumApiConfig.baseUrl;
 
     let queryKeys = [];
+    query.limit=TOPIC_RES_LIMIT;
     if (typeof(query) === "object"){
         queryKeys = Object.keys(query);
         for (let i=0; i<queryKeys.length; i++){
@@ -111,7 +139,7 @@ const getTopics = async (user, query) => {
         let x = await axios.get(url, options);
         results.data = results.data.concat(x.data);
         let page = 1;
-        while (x.data.length >= 100){
+        while (x.data.length >= TOPIC_RES_LIMIT){
             let urlAdd = (queryKeys.length > 0) ? "&" : "?";
             urlAdd += "page=" + page;
             page += 1;
@@ -200,5 +228,6 @@ module.exports = {
     getVersion,
     addTopic,
     addComment,
-    getComments
+    getComments,
+    getAllComments
 }

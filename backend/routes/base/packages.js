@@ -123,12 +123,16 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
             let key = k[i];
             if (dontSet.indexOf(key) === -1){
                 revision.revise(key, data[key], descriptor[key]);
-                data[key] = descriptor[key]
+
+                data[key] = descriptor[key].replace(/\//g, '\/');
             }
         }
 
+        console.log("about to transform");
+
         data.resources = transformResources(descriptor.resources);
         revision.revise('resources', oldRecord.resources, data.resources);
+        console.log("post to transform");
         
         let branchQ = {};
         if (descriptor.version){
@@ -140,6 +144,8 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
             let branchId = mongoose.Types.ObjectId(oldRecord.version);
             branchQ = {_id: branchId}
         }
+
+        console.log("PUT ABOUT TO FIND, data", branchQ);
         
         const branch = await db.RepoBranchSchema.findOne(branchQ);
         if (!branch){
@@ -148,10 +154,14 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
             throw new Error("The branch is approved no metadata changes")
         }
 
+        console.log("PUT ABOUT TO SAVE, data", data);
+
         let newRecord = await db.DataPackageSchema.findOneAndUpdate(filter, data, {new: true}).catch (e => {
             log.error(e);
             throw new Error(e.message)
         });
+
+        console.log("PUT AFTER SAVE, data", data);
 
         const util = require('util')
 

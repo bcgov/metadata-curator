@@ -75,11 +75,11 @@
 
 
             <v-col cols=6>
-                <ResourceDisplay :resources="leftResources" :diff="basicDiff" compare-type="left"></ResourceDisplay>
+                <ResourceDisplay :resources="leftResources" :other="rightResources" :diff="basicDiff" compare-type="left"></ResourceDisplay>
             </v-col>
 
             <v-col cols=6>
-                <ResourceDisplay :resources="rightResources" :diff="basicDiff" compare-type="right"></ResourceDisplay>
+                <ResourceDisplay :resources="rightResources" :other="leftResources" :diff="basicDiff" compare-type="right"></ResourceDisplay>
             </v-col>
         </v-row>
     </v-container>
@@ -170,6 +170,76 @@ export default {
     },
     methods: {
 
+        //expects left and right to be arrays of objects
+        getBestMatches: function(left, right){
+            let matchArr = [];
+
+                for (let i=0; i<left.length; i++){
+
+                    try{
+                        let lk = new Set(Object.keys(left[i]));
+
+                        //bestMatch is expected to have target and rating, ratings is an array of those objects
+                        let matchObj = {
+                            ratings: [],
+                            bestMatch: {},
+                            bestMatchIndex: -1
+                        };
+
+                        let bestScore = -1;
+                        let bestIndex = -1;
+
+                        for (let j=0; j<right.length; j++){
+                            let rk = new Set(Object.keys(right[j]));
+
+                            let ak = new Set([...lk, ...rk]);
+
+                            let allKeys = [...ak];
+
+                            let totalRating = 0;
+                            for (let k=0; k<allKeys.length; k++){
+                                let lC = left[i][allKeys[k]];
+                                let skip = false;
+                                if (typeof(lC) === 'object'){
+                                    lC = JSON.stringify(lC);
+                                }else if (typeof(lC) === 'undefined'){
+                                    skip = true;
+                                }else if (typeof(lC) !== 'string'){
+                                    lC = lC.toString();
+                                }
+
+                                let rC = right[j][allKeys[k]];
+                                if (typeof(rC) === 'object'){
+                                    rC = JSON.stringify(rC);
+                                }else if (typeof(rC) === 'undefined'){
+                                    skip = true;
+                                }else if (typeof(rC) !== 'string'){
+                                    rC = rC.toString();
+                                }
+
+                                if (!skip){
+                                    let propRating = StringSimilarity.compareTwoStrings(lC, rC);
+                                    totalRating += ((propRating*2) + 1) //1 for the property match and the some value based on similarity of value
+                                }
+                            }
+                            totalRating = totalRating / (allKeys.length*3) // the maximum possible value is all keys match and all values of said keys match we double weight value
+                            matchObj.ratings.push({rating: totalRating, target: right[j], index: j});
+                            if (totalRating > bestScore){
+                                bestScore = totalRating;
+                                bestIndex = j;
+                            }
+                        }
+                        matchObj.bestMatch = matchObj.ratings[bestIndex];
+                        matchObj.bestMatchIndex = bestIndex;
+                        matchArr.push(matchObj);
+                    }catch(e){
+                        //eslint-disable-next-line
+                    }
+                }
+            
+            return matchArr;
+        },
+
         setChangeRight: function(value){
             this.changeRight = value;
         },
@@ -212,6 +282,10 @@ export default {
                     return {diff: true};
                 }
 
+                if (l[0] && l[0].name === 'Quantity'){
+                    console.trace();
+                }
+
                 
                 let compareAgainst = [];
 
@@ -220,59 +294,47 @@ export default {
                     if (entryType === 'object'){
                         //is either an array or an object so need to compare against all other entries for closest match
 
-                        let matchArr = [];
-                        let rightSideJsonS = [];
-                        for (let i=0; i<r.length; i++){
-                            rightSideJsonS.push(JSON.stringify(r[i]));
-                        }
-
-
-                        for (let i=0; i<l.length && rightSideJsonS.length>0; i++){
-                            let leftSideJsonS = JSON.stringify(l[i]);
-                            let matches = StringSimilarity.findBestMatch(leftSideJsonS, rightSideJsonS);
-                            
-                            matchArr.push(matches);
-                        }
+                        let matchArr = this.getBestMatches(l, r);
 
                         //matchArr[i] is the ratings for each l[i] we need to compareAgainst the best rating
                         //but not necessarily in order ie 1 might be a best match for 2, but 2 might be exactly 2 ie [1,2] [2]
-                        for (let i=0; i<l.length && rightSideJsonS.length>0; i++){
+                        for (let i=0; i<matchArr.length && r.length>0; i++){
                             
                             let sortedMatchArr = JSON.parse(JSON.stringify(matchArr[i].ratings));
                             sortedMatchArr.sort((a,b) => (a.rating < b.rating) ? 1 : ((b.rating < a.rating) ? -1 : 0))
 
-                            let bestRatingIndex = matchArr[i].bestMatchIndex;
-
                             let ratingsIndex = 0;
                             let bestRating = sortedMatchArr[ratingsIndex].rating;
-                            while (compareAgainst.indexOf(ratingsIndex) !== -1){
+                            while ((ratingsIndex<sortedMatchArr.length) && (compareAgainst.indexOf(sortedMatchArr[ratingsIndex].index) !== -1)){
                                 ratingsIndex++;
                             }
 
                             for (let j=0; j<matchArr.length; j++){
                                 if (j !== i){
-                                    let bestJIndex = matchArr[j].bestMatchIndex
-                                    if ( (bestJIndex == bestRatingIndex) && (matchArr[j].ratings[bestJIndex].rating > bestRating) ){
+                                    let sortedJArr = JSON.parse(JSON.stringify(matchArr[j].ratings));
+                                    sortedJArr.sort((a,b) => (a.rating < b.rating) ? 1 : ((b.rating < a.rating) ? -1 : 0))
+                                    let bestJIndex = 0;
+                                    while ((bestJIndex<sortedJArr.length) && (compareAgainst.indexOf(sortedJArr[bestJIndex].index) !== -1)){
+                                        bestJIndex++;
+                                    }
+                                    if ( (ratingsIndex>=0) && (ratingsIndex<sortedMatchArr.length) && (bestJIndex<sortedJArr.length) && (sortedJArr[bestJIndex].index == sortedMatchArr[ratingsIndex].index) && (sortedJArr[bestJIndex].rating > bestRating) ){
                                         ratingsIndex++;
-                                        while (compareAgainst.indexOf(ratingsIndex) !== -1){
+                                        while ((ratingsIndex<sortedMatchArr.length) && (compareAgainst.indexOf(sortedMatchArr[ratingsIndex].index) !== -1)){
                                             ratingsIndex++;
                                         }
 
                                         try{
                                             bestRating = sortedMatchArr[ratingsIndex].rating;
-                                            bestRatingIndex = matchArr[i].ratings.filter(obj => {
-                                                return obj.rating === bestRating
-                                            })[0];
                                         }catch(ex){
                                             bestRating = -1;
-                                            bestRatingIndex = -1;
+                                            ratingsIndex = -1;
                                         }
                                         j=-1;
                                     }
                                 }
                             }
-                            if (bestRatingIndex<r.length){
-                                compareAgainst.push(bestRatingIndex);
+                            if (ratingsIndex >=0 && ratingsIndex<sortedMatchArr.length && sortedMatchArr[ratingsIndex].index<r.length){
+                                compareAgainst.push(sortedMatchArr[ratingsIndex].index);
                             }else{
                                 compareAgainst.push(-1);
                             }
@@ -283,6 +345,7 @@ export default {
                             a[i] = parseInt(e)
                         });
                         let notComparedAgainst = [...allRKeys].filter(v => (compareAgainst.indexOf(v) === -1));
+
 
                         for (let i=0; i<l.length; i++){
                             
@@ -320,7 +383,7 @@ export default {
                         }
 
                         for (let i=0; i<notComparedAgainst.length; i++){
-                            b[notComparedAgainst[i]] = {added: true};
+                            b[l.length+i] = {added: true};
                         }
 
                         b.hasDiff = hasDiff
@@ -464,9 +527,6 @@ export default {
         this.calcDiff();
     },
     computed: {
-        rightSideResourceDiff: function(){
-            return this.calcJsonDiff(this.workingRightSideText, this.workingLeftSideText);
-        },
 
         leftWorkingVal: function(){
             try{
@@ -541,7 +601,7 @@ export default {
                         
                         newR[parseInt(this.basicDiff.resources[i].comparedAgainst)] = r[i];
                         
-                    }else if ( this.basicDiff && this.basicDiff.resources && this.basicDiff.resources[i] && (this.basicDiff.resources[i].removed || this.basicDiff.resources[i].added) ){
+                    }else if ( this.basicDiff && this.basicDiff.resources && this.basicDiff.resources[i] && (this.basicDiff.resources[i].removed) ){
                         
                         newR[hi] = r[i];
                         hi--;
@@ -574,18 +634,22 @@ export default {
         rightResources: function(){
             let r = this.getResources(this.workingVal);
 
-            let rDiff = this.rightSideResourceDiff;
+            let rDiff = this.basicDiff;
             let hi = r.length-1;
             let movedToEnd = 0;
+
             
             let leftResources = this.getResources(this.leftWorkingVal);
             
             if (r.length > leftResources.length){
                 let newR = [];
                 for (let i=0; i<r.length; i++){
-                    let newF = {};
+                    let newF = [];
                     let hiF = (r[i] && r[i].schema && r[i].schema.fields && r[i].schema.fields.length) ? r[i].schema.fields.length-1 : 0;
+                    
                     if (r[i] && r[i].schema && r[i].schema.fields){
+                        
+                        let originalKeys = Object.keys(r[i].schema.fields);
                         for (let j=0; j<r[i].schema.fields.length; j++){
                             let bd = false;
                             try{
@@ -594,25 +658,51 @@ export default {
                             }catch(ex){
                             }
 
+                            //basic diff, has compared against
                             if (bd && (bd.comparedAgainst || bd.comparedAgainst === 0) ){
-                                newF[parseInt(bd.comparedAgainst)] = r[i].schema.fields[j];
-                            }else if ( bd && (bd.removed || bd.added) ){
-                                newF[hiF] = r[i].schema.fields[j];
+                                let ind = j;
+                                let compareAgainstInt = parseInt(bd.comparedAgainst)
+                                let removeInd = originalKeys.indexOf(compareAgainstInt.toString())
+                                originalKeys.splice(removeInd, 1);
+                                newF[ind] = JSON.parse(JSON.stringify(r[i].schema.fields[compareAgainstInt]));
+
+                            }else if ( bd &&  bd.added ){
+                                //9 on the right is added we need it to be at 22
+                                newF[hiF] = JSON.parse(JSON.stringify(r[i].schema.fields[parseInt(originalKeys[0])]));
+                                originalKeys.splice(0,1);
+                                // resourceMoveToEnd++;
                                 hiF--;
+                                movedToEnd++;
+                                //let ind = j-resourceMoveToEnd;
+                                //ind = ind<0 ? 0 : ind;
+                                //newF[ind] = r[i].schema.fields[j];
                             }else{
-                                newF[j] = r[i].schema.fields[j];
+                                let ind = j;
+                                originalKeys.splice(j,1);
+                                newF[ind] = JSON.parse(JSON.stringify(r[i].schema.fields[j]));
                             }
+                            
                         }
-                        r[i].schema.fields = JSON.parse(JSON.stringify(newF));
+                        if (Object.keys(newF).length > 0){
+                            r[i].schema.fields = JSON.parse(JSON.stringify(newF));
+                        }
                     }
+                }
+
+                let originalRKeys = Object.keys(r);
+                for (let i=0; i<r.length; i++){
                     
                     if ( this.basicDiff && this.basicDiff.resources && this.basicDiff.resources[i] && (this.basicDiff.resources[i].comparedAgainst || this.basicDiff.resources[i].comparedAgainst === 0) ){
                         
-                        newR[parseInt(this.basicDiff.resources[i].comparedAgainst)] = r[i];
+
+                        newR[i] = r[parseInt(this.basicDiff.resources[i].comparedAgainst)];
+                        let origKeyIndex = originalRKeys.indexOf(parseInt(this.basicDiff.resources[i].comparedAgainst).toString())
+                        originalRKeys.splice(origKeyIndex,1)
                         
-                    }else if ( this.basicDiff && this.basicDiff.resources && this.basicDiff.resources[i] && (this.basicDiff.resources[i].removed || this.basicDiff.resources[i].added) ){
+                    }else if ( this.basicDiff && this.basicDiff.resources && this.basicDiff.resources[i] && this.basicDiff.resources[i].added ){
                         
-                        newR[hi] = r[i];
+                        newR[hi] = r[originalRKeys[0]];
+                        originalRKeys.splice(0,1);
                         hi--;
                         
                     }else{
@@ -632,12 +722,12 @@ export default {
                 let newR = [];
                 for (let i=0; i<r.length; i++){
                     let newF = [];
-                    //let hiF = (r[i] && r[i].schema && r[i].schema.fields && r[i].schema.fields.length) ? r[i].schema.fields.length-1 : 0;
+                    let hiF = (r[i] && r[i].schema && r[i].schema.fields && r[i].schema.fields.length) ? r[i].schema.fields.length-1 : 0;
                     newR[i] = JSON.parse(JSON.stringify(r[i]));
                     if (r[i] && r[i].schema && r[i].schema.fields){
-                        //let keysToUse = Object.keys(r[i].schema.fields);
+                        
+                        let originalKeys = Object.keys(r[i].schema.fields);
                         for (let j=0; j<r[i].schema.fields.length; j++){
-                            let resourceMoveToEnd = 0;
                             let bd = false;
                             try{
                                 bd = rDiff.resources[i].schema.fields[j];
@@ -647,22 +737,26 @@ export default {
 
                             //basic diff, has compared against
                             if (bd && (bd.comparedAgainst || bd.comparedAgainst === 0) ){
-                                let ind = j-resourceMoveToEnd;
-                                //ind = ind<0 ? 0 : ind;
+                                let ind = j;
                                 let compareAgainstInt = parseInt(bd.comparedAgainst)
-                                newF[ind] = r[i].schema.fields[compareAgainstInt];
+                                let removeInd = originalKeys.indexOf(compareAgainstInt.toString())
+                                originalKeys.splice(removeInd, 1);
+                                newF[ind] = JSON.parse(JSON.stringify(r[i].schema.fields[compareAgainstInt]));
 
-                            //}else if ( bd && (bd.removed || bd.added) ){
-                                // newF[hiF] = r[i].schema.fields[j];
+                            }else if ( bd &&  bd.added ){
+                                //9 on the right is added we need it to be at 22
+                                newF[hiF] = JSON.parse(JSON.stringify(r[i].schema.fields[parseInt(originalKeys[0])]));
+                                originalKeys.splice(0,1);
                                 // resourceMoveToEnd++;
-                                // hiF--;
+                                hiF--;
+                                movedToEnd++;
                                 //let ind = j-resourceMoveToEnd;
                                 //ind = ind<0 ? 0 : ind;
                                 //newF[ind] = r[i].schema.fields[j];
                             }else{
-                                let ind = j-resourceMoveToEnd;
-                                ind = ind<0 ? 0 : ind;
-                                newF[ind] = r[i].schema.fields[j];
+                                let ind = j;
+                                originalKeys.splice(j,1);
+                                newF[ind] = JSON.parse(JSON.stringify(r[i].schema.fields[j]));
                             }
                             
                         }
@@ -674,22 +768,19 @@ export default {
                     
                 }
                 
-                if (this.changeRight){
-                    this.setChangeRight(false);
+                if (movedToEnd > this.previouslyMovedtoEnd){
+                    // this.setChangeRight(false);
                     this.updateWorkingText('right', {resources: newR});
                     this.calcDiff();
-                    if (movedToEnd == this.previouslyMovedtoEnd){
-                        movedToEnd++;
-                    }
                     this.setMovedToEnd(movedToEnd);
-                    //this.setChangeRight(true);
-                    return newR;
+                    // this.setChangeRight(true);
                 }
+                return newR;
                 
             }
             
             //this.setChangeRight(true);
-            return r;
+            // return r;
         },
     },
     

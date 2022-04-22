@@ -136,6 +136,7 @@ var buildDynamic = function(db, router, auth, forumClient, notify, formioClient)
             }
         }
 
+        let originalStatus = dataUpload.status;
         if (updatedData.status){
             dataUpload.status = updatedData.status;
         }
@@ -189,7 +190,7 @@ var buildDynamic = function(db, router, auth, forumClient, notify, formioClient)
             log.error("Exception emailing", ex);
         }
 
-        if (dataUpload.status === "submitted"){
+        if ( (dataUpload.status === "submitted") && (originalStatus !== "submitted") ){
             const confQ = {key: "uploadHook"};
             const configs = await db.ConfigSchema.findOne(confQ);
             try{

@@ -109,7 +109,7 @@ postgres = {
 }
 
 # oidc related which field should be considered the user id for mc
-userIdField = "preferred_username"
+userIdField = "id"
 
 # oidc related which field should be considered the email for mc
 emailField = "email"

@@ -6,3 +6,7 @@ db.createUser(
     }
 );
 
+db.config.insertOne({
+    key: "enabledPhase",
+    value: "3"
+});

@@ -1,6 +1,6 @@
 {
   "name": "metadata-curator",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -9,7 +9,7 @@
     "build-storybook": "build-storybook",
     "serve:storybook": "start-storybook -p 6006",
     "storybook": "NODE_PATH=src start-storybook -p 6006 -c .storybook -s ./public",
-    "test": "cucumber-js --require cucumber.conf.js --require step-definitions -f @cucumber/pretty-formatter --publish-quiet"
+    "test": "cucumber-js --require tests/cucumber.conf.js --require tests/step-definitions -f @cucumber/pretty-formatter --publish-quiet tests/features"
   },
   "dependencies": {
     "@cucumber/pretty-formatter": "^1.0.0-alpha.1",
@@ -62,7 +62,7 @@
   "devDependencies": {
     "@babel/core": "^7.16.7",
     "@babel/preset-react": "^7.16.7",
-    "@cucumber/cucumber": "^7.3.1",
+    "@cucumber/cucumber": "^7.3.2",
     "@fortawesome/fontawesome-free": "^5.15.4",
     "@storybook/addon-a11y": "^5.3.21",
     "@storybook/addon-actions": "^5.3.21",
@@ -78,14 +78,13 @@
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.3",
     "babel-preset-vue": "^2.0.2",
-    "chromedriver": "^98.0.1",
+    "chromedriver": "^100.0.0",
     "edgedriver": "^4.17134.1",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.2.3",
     "geckodriver": "^2.0.4",
     "iedriver": "^3.150.1",
-    "nightwatch": "^1.7.13",
-    "nightwatch-api": "^3.0.2",
+    "nightwatch": "^2.0.10",
     "prettier": "^2.5.1",
     "prism-react-renderer": "^0.1.7",
     "prismjs": "^1.26.0",

@@ -50,8 +50,35 @@ const actions = {
             commit('setTableSchemaId', {id: s._id});
             dispatch('getRevisions', {id: s._id});
         }
-        commit('setTableSchema', {schema: s});
+        commit('setTableSchemaM', {schema: s});
         return s;
+    },
+
+    async setTableSchema({commit}, {schema}){
+        try{
+            commit('clearSuccessMsg');
+            commit('clearError');
+            const Schema = require('tableschema').Schema;
+            const DSchema = require('datapackage').Package
+            if (schema && schema.resources && schema.resources[0] && schema.resources[0].schema){
+                delete schema._id;
+                delete schema.profile;
+                delete schema.__v;
+                delete schema.version;
+                
+                await DSchema.load(schema);
+            }else if (schema){
+                let s = schema;
+                if (typeof(s) === "string"){
+                    s = JSON.parse(s);
+                }
+                
+                await Schema.load(s);
+            }
+            commit('setTableSchemaM', {schema: schema})
+        }catch(ex){
+            commit('setError', {error: "Invalid schema: " + ex.message});
+        }
     },
 
     async getRevisions({commit}, {id}){
@@ -123,29 +150,29 @@ const actions = {
             commit('clearDataPackageSchema');
             commit('setSuccessMsg', {message: "Successfully saved data package schema"});
         }).catch((e) => {
-            commit('setError', {error: e.response.data.error});
+            commit('setError', {error: {message: e.response.data.error}});
         });
 
     },
 
-    updateDataPackageSchema({commit, state}){
+    async updateDataPackageSchema({commit, state}){
 
         commit('clearSuccessMsg');
         commit('clearError');
 
-        backend.putDataPackageSchema(state.tableSchemaId, state.tableSchema).then(() => {
-            commit('clearDataPackageSchema');
+        try{
+            await backend.putDataPackageSchema(state.tableSchemaId, state.tableSchema);
             commit('setSuccessMsg', {message: "Successfully updated data package schema"});
-        }).catch((e) => {
+        }catch(e){
             commit('setError', {error: e.response.data.error});
-        });
+        }
     }
 
 }
 
 
 const mutations = {
-    setTableSchema(state, {schema}){
+    setTableSchemaM(state, {schema}){
         // console.log("setSchema: ", schema);
         Vue.set(state, 'tableSchema', schema);
     },
@@ -174,7 +201,7 @@ const mutations = {
         state.successMsg = null;
     },
     setError(state, { error }) {
-        state.error = Object.assign({}, error);
+        state.error = error;
     },
     clearError(state) {
         state.error = null;

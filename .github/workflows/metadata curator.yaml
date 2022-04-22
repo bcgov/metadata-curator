@@ -158,13 +158,14 @@ jobs:
           terraform apply -var hostRootPath=`pwd`/_tmp -auto-approve
 
       - name: test
+        timeout-minutes: 20
         run: |
           docker ps
           sleep 45
           docker ps
           docker logs mc_backend
           cd frontend
-          cp step-definitions/config.json.example step-definitions/config.json
+          cp tests/step-definitions/config.json.example tests/step-definitions/config.json
           sudo apt-get install xvfb openssl
           export NODE_ENV='development'
           
@@ -172,21 +173,25 @@ jobs:
           sudo update-ca-certificates
 
           npm ci
-          xvfb-run --auto-servernum npm test
+          xvfb-run --auto-servernum npm test | tee test_output
+          export OUTPUT=$(cat test_output)
+          if [[ $OUTPUT == *"failed"* ]]; then
+            exit 1
+          fi
       - name: "store screens"
         uses: actions/upload-artifact@v2
-        if: ${{ failure() }}
+        if: ${{ always() }}
         with:
           name: screenshots
           path: frontend/screenshots
       - name: "store selenium server info"
         uses: actions/upload-artifact@v2
-        if: ${{ failure() }}
+        if: ${{ always() }}
         with:
           name: selenium-log.log
-          path: frontend/selenium-server.log
+          path: frontend/*selenium-server.log
       - name: "output mc backend logs"
-        if: ${{ failure() }}
+        if: ${{ always() }}
         run: |
           docker logs --since 40m mc_backend || echo "backend container not found"
       - name: "output mc formio logs"
@@ -209,3 +214,9 @@ jobs:
         run: |
           docker exec mc_forum_api env || echo "forum api container not found"
           docker logs --since 40m mc_forum_api || echo "forum api container not found"
+
+      - name: "output mc datasets from database"
+        if: ${{ failure() }}
+        run: |
+          docker exec mc_mongodb env || echo "mongo container not found"
+          docker exec mc_mongodb mongo oc_db --eval db.repo.find\({}\) || echo "mongo container not found"

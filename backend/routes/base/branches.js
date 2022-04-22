@@ -29,7 +29,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
 
         if (( (user.isApprover) || (user.isAdmin) ) && !fields.providerGroup){
             throw new Error("Data Approvers must provide a data provider group");
-        }else if ( (user.isApprover) || (user.isAdmin) ){
+        }else if (user.isApprover){
             if (!user.groups.some( (el) => el === fields.providerGroup) ){
                 throw new Error("Data Approvers must select a data provider group they belong to");
             }
@@ -179,7 +179,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             throw new Error('404');
         }
 
-        if (!user.isAdmin && repoBranchSchema.approved){
+        if (!user.isAdmin && !user.isApprover && repoBranchSchema.approved){
             throw new Error('approved');
         }
 
@@ -330,7 +330,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
                 }
             }
             res = await db.RepoBranchSchema.findOne({_id: id}).populate('repo_id');
-            if (user.isApprover || user.isAdmin){
+            if (user && (user.isApprover || user.isAdmin) ){
                 res = JSON.parse(JSON.stringify(res));
                 res.author_groups = topicResponse.data[0].author_groups;
             }
@@ -370,7 +370,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         let id = mongoose.Types.ObjectId(repoId);
         try {
             let r = await db.RepoBranchSchema.find({_id: {$in: branchIds}, repo_id: id}).sort({ "create_date": -1});
-            if (user.isAdmin || user.isApprover){
+            if (user && (user.isAdmin || user.isApprover) ){
                 for (let i=0; i<r.length; i++){
                     r[i] = JSON.parse(JSON.stringify(r[i]));
                     r[i].author_groups = author_groups[r[i].topic_id];
@@ -773,7 +773,13 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             let ckanRes = await axios.post(url, ckanDataset, axiosConfig);
 
             if (!ckanRes || !ckanRes.data || !ckanRes.data.result || !ckanRes.data.result.id){
-                return res.status(500).json({error: "Failed to create dataset", ex: JSON.stringify(ckanRes)});
+                let rv = {
+                    error: "Failed to create dataset"
+                };
+                if (ckanRes.data){
+                    rv[ex] = JSON.stringify(ckanRes.data)
+                };
+                return res.status(500).json(rv);
             }
 
             let datasetId = ckanRes.data.result.id

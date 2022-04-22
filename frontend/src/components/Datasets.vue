@@ -10,7 +10,7 @@
             <v-col cols=10>
             </v-col>
             <v-col cols=2>
-                <v-btn color="primary" to="/datasets/create">{{$tc('New')}} {{$tc('Datasets')}}</v-btn>
+                <v-btn color="primary" to="/datasets/create" id="newDataset">{{$tc('New')}} {{$tc('Datasets')}}</v-btn>
             </v-col>
         </v-row>
 
@@ -39,6 +39,7 @@
                 <v-list-item
                     v-else
                     :key="item.id"
+                    :id="'dataset-'+item.title.toLowerCase().replace(/[ :.]/g, '-')"
                     :to="{ name: 'datasets_form', params: { id: item.id } }"
                 >
                     <v-list-item-content>

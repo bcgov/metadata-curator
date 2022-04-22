@@ -1,9 +1,10 @@
 <template>
-    <span>
+    <span :id="name+'-id'">
         <v-checkbox
             v-model="checkbox"
             :color="clr"
             :disabled="disabled"
+            :name="name"
             :class="'ma-0 mt-n3' + (large ? ' bolded' : ' normalText') + (editing ? ' editMode' : '')"
             @change="$emit('edited', checkbox)"
         >

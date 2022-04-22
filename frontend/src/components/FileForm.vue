@@ -59,7 +59,7 @@
 </template>
 
 <script>
-    import { mapState, mapActions } from "vuex";
+    import { mapState, mapActions, mapMutations } from "vuex";
     import FileReader from './FileReader';
 
     export default {
@@ -78,10 +78,15 @@
             ...mapActions({
                 modifyStoreUpload: 'upload/modifyStoreUpload',
             }),
+
+            ...mapMutations({
+                removeContent: 'file/removeContent'
+            }),
             
             removeFile(index){
                 delete this.fileReaders.splice(index, 1);
                 delete this.files.splice(index, 1);
+                this.removeContent(index);
                 this.spanKey++
                 this.$emit('changed', this.files.length);
                 this.updateFormSubmission();

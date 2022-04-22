@@ -31,15 +31,15 @@ passport.use('jwt', new JWTStrategy({
             decodedJWT = buildProfile(decodedJWT, 'a');
             var db = require('../db/db');
   
-    if (process.env.NODE_ENV !== "test" && decodedJWT.email){
-      try{
-        var u = await db.User.findOne({email: decodedJWT.email});
-        decodedJWT.lastLogin = u.lastLogin;
-        decodedJWT = await buildActivity(decodedJWT);
-      }catch(ex){
-        console.log("No previous user info", ex);
-      }
-    }
+            if (process.env.NODE_ENV !== "test" && decodedJWT.email){
+              try{
+                var u = await db.User.findOne({email: decodedJWT.email});
+                decodedJWT.lastLogin = u.lastLogin;
+                decodedJWT = await buildActivity(decodedJWT);
+              }catch(ex){
+                console.log("No previous user info", ex);
+              }
+            }
         } catch(err) {
             console.log("Error resigning", err);
             return cb(err, null);
@@ -47,6 +47,24 @@ passport.use('jwt', new JWTStrategy({
         //var userConf = config.get('user');
         if (!decodedJWT){
             cb("No JWT", null);
+        }
+
+        var user = {
+          email: decodedJWT.email,
+          name: decodedJWT.displayName,
+          groups: decodedJWT.groups,
+          lastLogin: new Date()
+        }
+      
+        if (decodedJWT.email){
+          db.User.updateOne({email: decodedJWT.email}, user, {upsert: true, setDefaultsOnInsert: true}, function(e,r){
+            if (e){
+              console.log("Error updating user info", e);
+            }else{
+              console.log("Updated user info jwt");
+            }
+      
+          });
         }
             
         logger.verbose('user ' + decodedJWT.jwt + ' authenticated successfully');
@@ -57,7 +75,11 @@ passport.use('jwt', new JWTStrategy({
 
 var buildProfile = function(token, refreshToken){
     let profile = token;
+    if (!profile._json){
+      profile._json = {};
+    }
     profile._json['aud'] = config.get('jwtAud');
+    
     profile.jwt = jwt.sign(token._json, config.get('jwtSecret'));
     profile.isAdmin = false;
     let idField = config.get('userIdField');
@@ -71,6 +93,7 @@ var buildProfile = function(token, refreshToken){
     }
 
     if ((typeof(token._json) !== "undefined") && (typeof(token._json.email) !== "undefined")){
+        profile.id =  token._json.email;
         profile.email = token._json.email;
     }
 
@@ -140,6 +163,44 @@ var buildActivity = async function(profile){
 
       let ups = await db.DataUploadSchema.find({_id: {$in: uploadIds}, upload_date: {$gt: profile.lastLogin}}).sort({ "upload_date": -1});;
       profile.activity.uploads = ups;
+
+      let currentComments = await forumClient.getAllComments(profile, profile.lastLogin);
+      
+      let cs = currentComments.filter ( item => {
+        return item.author_user !== profile.id
+      });
+
+      for (key in cs){
+        item = cs[key];
+        let type = item.topic_name.substring(24);
+        let record = null;
+        let itemId = item.topic_name.substring(0,24)
+        switch(type){
+          case 'branch':
+            record = await db.RepoBranchSchema.findOne({_id: itemId});
+            break;
+
+          case 'repo':
+            record = await db.RepoSchema.findOne({_id: itemId});
+            break;
+
+          case 'varClass':
+            record = await db.VariableClassification.findOne({_id: itemId});
+            break;
+
+          default:
+            //upload
+            record = await db.DataUploadSchema.findOne({_id: itemId});
+            break;
+        }
+        if (record){
+          item.name = record.name;
+        }
+        item.type = type;
+        item.item_id = itemId
+      }
+
+      profile.activity.comments = cs
 
 
       const repoIds = topics.map( (item) => {
@@ -230,4 +291,7 @@ var strategy = new OidcStrategy(config.get('oidc'), async function(issuer, sub, 
 // set up passport
 passport.use('oidc', strategy);
 
-module.exports = passport;
+module.exports = {
+  passport: passport,
+  buildProfile: buildProfile
+}

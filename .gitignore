@@ -26,3 +26,5 @@ frontend/storybook-static
 frontend/chromedriver.log
 frontend/screenshots
 frontend/selenium-server.log
+frontend/_selenium-server.log
+frontend/logs

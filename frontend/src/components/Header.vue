@@ -42,12 +42,50 @@
             <v-switch v-model="dark" :label="$tc('Dark Mode')" :class="(this.setTheme ? 'pt-4' : 'pt-4')"></v-switch>
 
         </v-app-bar>
+        <v-snackbar
+            v-model="showNotification"
+            top
+            right
+            timeout="-1"
+            class="mt-14"
+        >
+            <span v-html="notificationText"></span>
+
+            <template v-slot:action="{ attrs }">
+                <v-btn
+                    text
+                    v-bind="attrs"
+                    @click="clearNotifications">
+                        <v-icon>mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </v-snackbar>
+
+        <v-snackbar
+            v-model="showMCNotification"
+            top
+            center
+            timeout="-1"
+            class="mt-14"
+        >
+            <span v-html="mcNotificationText"></span>
+
+            <template v-slot:action="{ attrs }">
+                <v-btn
+                    text
+                    v-bind="attrs"
+                    @click="clearMCNotification">
+                        <v-icon>mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </v-snackbar>
     </v-container>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import User from './User'
+import md5 from 'md5'
 
 import { Backend } from '../services/backend';
 const authServ = new Backend();
@@ -76,7 +114,17 @@ export default {
             activeTab: null,
             stayLoggedIn: false,
             showError: false,
-            error: ""
+            error: "",
+            forumWSUrl: "",
+            forumApiWS: null,
+            showNotification: false,
+            notificationText: "",
+            mcWSUrl: "",
+            mcWS: null,
+            showMCNotification: false,
+            mcNotificationText: "",
+            pendingMCMessage: null,
+
         }
     },
 
@@ -163,6 +211,54 @@ export default {
 
         loggedIn(){
             this.preserveToken()
+        },
+
+        $route (to){
+            this.clearMCNotification();
+            
+            if (to.params.id){
+                let type = (to.name === "upload_view") ? "upload" : false;
+                type = (!type && to.name === "datasets_form") ? "dataset" : type;
+                type = (!type && to.name === "version_form") ? "version" : type;
+                type = (!type && to.name === "variableClassificationForm") ? "variableClassification" : type;
+                if (type){
+                    let m = {type: type, id: to.params.id};
+                    if (this.mcWS && this.mcWS.readyState==1){
+                        this.mcWS.send(JSON.stringify(m));
+                    }else{
+                        this.pendingMCMessage = m;
+                    }
+                }
+            }else{
+                let m = {type: 'none'}
+                if (this.mcWS && this.mcWS.readyState==1){
+                    this.mcWS.send(JSON.stringify(m));
+                }else{
+                    this.pendingMCMessage = m;
+                }
+            }
+            
+        },
+
+        jwt(){
+            if (this.jwt){
+                this.forumApiWS = new WebSocket(this.forumWSUrl, this.jwt);
+                this.forumApiWS.onmessage = this.forumApiMessage;
+                this.forumApiWS.onopen = this.forumWSOpen;
+
+                this.mcWS = new WebSocket(this.mcWSUrl, this.jwt);
+                this.mcWS.onmessage = this.mcMessage;
+                this.mcWS.onopen = this.mcWSOpen
+            }else{
+                if (this.forumApiWS){
+                    this.forumApiWS.close();
+                }
+                if (this.mcWS){
+                    this.mcWS.close();
+                }
+                this.forumApiWS = null;
+                this.mcWS = null;
+            }
         }
     },
 
@@ -183,6 +279,16 @@ export default {
             }
         },
 
+        clearNotifications: function(){
+            this.showNotification = false;
+            this.notificationText = '';
+        },
+
+        clearMCNotification: function(){
+            this.showMCNotification = false;
+            this.mcNotificationText = '';
+        },
+
         keepAlive: async function(){
             
             let tok = await authServ.getToken(this.jwt);
@@ -195,11 +301,140 @@ export default {
             }
             
         },
+
+        forumApiMessage: function(event){
+            
+            this.showNotification = false;
+            //this.notificationText = ''
+            
+            try{
+                let data = JSON.parse(event.data);
+
+                let author = (data.topic) ? data.topic.contributors[0] : data.comment.author_user;
+                if (author === this.user.email){
+                    return;
+                }
+                let type = (data.topic) ? data.topic.name.substring(24) : data.comment.topic_name.substring(24)
+                if (type === ''){
+                    type = 'upload'
+                }
+                let url = '/';
+                switch(type){
+                    case 'upload':
+                        url += 'upload/';
+                        break;
+                    case 'repo':
+                        url += 'datasets/';
+                        break;
+                    case 'branch':
+                        url += 'version/';
+                        break;
+
+                    default:
+                        url += 'variable-classification/';
+                        break;
+                }
+                url += (data.topic) ? data.topic.name.substring(0,24) : data.comment.topic_name.substring(0,24);
+                if (this.notificationText.length > 0){
+                    this.notificationText += "<br /><hr /><br />";
+                }
+
+                let creatingUserGrav = 'https://www.gravatar.com/avatar/' + md5(author.toLowerCase().trim());
+                this.notificationText += '<img src="'+creatingUserGrav+'" alt="'+author+'" width="50" height="50"></img>'
+
+                if (data.topic){
+                    //new upload,dataset,edition...
+                    this.notificationText += "<a class='tall' href='" + url + "'>New " + this.$tc(type) + " created</a>"
+                }else if(data.comment){
+                    //new comment somewhere
+                    this.notificationText += '<a class="tall" href="' + url + '">' + this.$tc("New comment on ") + this.$tc(type) 
+                    this.notificationText += " - " + data.comment.comment + '</a>'
+                }
+                this.showNotification = true;
+            }catch(e){
+                // eslint-disable-next-line
+                console.log("WS Error", e, event)
+            }
+
+        },
+
+        forumWSOpen: function(){
+            console.log("Successfully connected to the forum api websocket server...")
+        },
+
+        mcMessage: function(event){
+            
+            try{
+                let data = JSON.parse(event.data);
+
+                if (data.users){
+
+                    for (let i=0; i<data.users.length; i++){
+                        if (this.mcNotificationText !== ''){
+                            this.mcNotificationText += "<br /><hr /><br />";
+                        }
+                        let author = data.users[i];
+                        let creatingUserGrav = 'https://www.gravatar.com/avatar/' + md5(author.toLowerCase().trim());
+                        this.mcNotificationText += '<img src="'+creatingUserGrav+'" alt="'+author+'" width="50" height="50"></img>';
+                        this.mcNotificationText += "<span class='tall'>WARNING: " + author + " is already here, you might overwrite each others work</span>";
+                    }
+                    this.showMCNotification = (data.users.length >= 1);
+                    return;
+                }else if (data.arrived){
+                    if (this.mcNotificationText !== ''){
+                        this.mcNotificationText += "<br /><hr /><br />";
+                    }
+                    let author = data.arrived;
+                    let creatingUserGrav = 'https://www.gravatar.com/avatar/' + md5(author.toLowerCase().trim());
+                    this.mcNotificationText += '<img src="'+creatingUserGrav+'" alt="'+author+'" width="50" height="50"></img>';
+                    this.mcNotificationText += "<span class='tall'>WARNING: " + author + " just showed up, you might overwrite each others work</span>";
+                }else if (data.left){
+                    if (this.mcNotificationText !== ''){
+                        this.mcNotificationText += "<br /><hr /><br />";
+                    }
+                    let author = data.left;
+                    let creatingUserGrav = 'https://www.gravatar.com/avatar/' + md5(author.toLowerCase().trim());
+                    this.mcNotificationText += '<img src="'+creatingUserGrav+'" alt="'+author+'" width="50" height="50"></img>';
+                    this.mcNotificationText += '<span class="tall">' + author + " just left recommend refreshing to ensure you don't overwrite anything they did</span>";
+                }
+
+                this.showMCNotification = true;
+            }catch(e){
+                // eslint-disable-next-line
+                console.log("WS Error", e, event)
+            }
+
+        },
+
+        mcWSOpen: function(){
+            if (this.pendingMCMessage){
+                this.mcWS.send(JSON.stringify(this.pendingMCMessage));
+                this.pendingMCMessage = null;
+            }
+            console.log("Successfully connected to the mc websocket server...");
+        }
     },
 
-    mounted(){
+    async mounted(){
         this.dark = this.useDark;
         this.$vuetify.theme.dark = this.dark
+        
+        let urlConf = await this.$store.dispatch('config/getItem', {field: 'key', value: 'forumApiWS', def: {key: 'forumApiWS', value: ''}});
+        this.forumWSUrl = urlConf.value;
+        if (this.forumWSUrl !== '' && this.jwt){
+            this.forumApiWS = new WebSocket(this.forumWSUrl, this.jwt);
+            this.forumApiWS.onmessage = this.forumApiMessage;
+            this.forumApiWS.onopen = this.forumWSOpen
+        }
+
+        let mcUrlConf = await this.$store.dispatch('config/getItem', {field: 'key', value: 'wsUrl', def: {key: 'wsUrl', value: ''}});
+        this.mcWSUrl = mcUrlConf.value;
+        if ( (this.mcWSUrl !== '') ){
+            this.mcWS = new WebSocket(this.mcWSUrl, this.jwt);
+            this.mcWS.onmessage = this.mcMessage;
+            this.mcWS.onopen = this.mcWSOpen
+        }
+
         this.preserveToken();
     }
 }
@@ -209,6 +444,11 @@ export default {
 
 .noBack.v-tabs>.v-tabs-bar{
     background: none;
+}
+
+.tall{
+    line-height: 50px;
+    vertical-align: top;
 }
 
 </style>
