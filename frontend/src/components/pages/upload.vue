@@ -202,8 +202,9 @@
     import Select from '../Select';
 
     import JsonEditor from '../JsonEditor/JsonEditor';
-    const { Schema } = require('tableschema')
+
     const TEST_ACCOUNT = "provider_1"
+    var semanticInfer = require('semantic_infer');
 
     export default {
         components:{
@@ -347,7 +348,7 @@
             },
 
             async infer(){
-                this.inferredSchema = {resources: []}
+                let inferredSchema = {resources: []}
                 for (let i=0; ( (i<this.inferContent.length) && (i<this.upload.files.length) ); i++){
                     try{
                         let string = new TextDecoder().decode(this.inferContent[i]);
@@ -366,22 +367,46 @@
                         }
                         let headers = rows.shift();
                         rows.unshift(headers);
-                        if (rows.length > 1){
+
+                        //header row and at least one data row
+                        if (rows.length > 2){
                             rows.pop(); //remove last element in case its a partial row
                         }
-                        let s = await Schema.load({});
-                        s.infer(rows, headers);
-                        this.inferredSchema.resources.push({
-                            name: this.upload.files[i].name.substring(0,this.upload.files[i].name.lastIndexOf('.')),
-                            path: "./"+this.upload.files[i].name,
-                            schema: s.descriptor,
+                        // let s = await Schema.load({});
+                        // s.infer(rows, headers);
+                        inferredSchema.resources.push({
+                            name: this.upload.files[i].name.substring(0,this.upload.files[i].name.lastIndexOf('.')).toLowerCase(),
+                            saved_path: "./"+this.upload.files[i].name,
+                            data: rows,
+                            // schema: s.descriptor,
                             description: this.upload.files[i].description,
                             temporal_start: this.upload.files[i].start_date,
                             temporal_end: this.upload.files[i].end_date,
                         });
+                        
                     }catch(ex){
                         console.error("Error inferring:", ex);
                     }
+                }
+                try{
+
+                    let optUrl = '/js/semantic_infer.json';
+                    let opt = await (await fetch(optUrl)).json();
+                    
+                    let r = await semanticInfer.datapackage_infer.infer_datapackage(inferredSchema, false, opt);
+                    this.inferredSchema = r;
+                    for (let i=0; i<this.inferredSchema.resources.length; i++){
+                        this.inferredSchema.resources[i].name = this.upload.files[i].name.substring(0,this.upload.files[i].name.lastIndexOf('.'));
+                    }
+                }catch(e){
+                    this.inferredSchema = inferredSchema;
+                    for (let i=0; i<this.inferredSchema.resources.length; i++){
+                        this.inferredSchema.resources[i].path = this.inferredSchema.resources[i].saved_path;
+                        this.inferredSchema.resources[i].name = this.upload.files[i].name.substring(0,this.upload.files[i].name.lastIndexOf('.'));
+                        delete this.inferredSchema.resources[i].saved_path;
+                        delete this.inferredSchema.resources[i].data;
+                    }
+                    console.error(e);
                 }
 
                 this.showDiff = false;

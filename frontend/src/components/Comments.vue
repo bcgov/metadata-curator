@@ -167,19 +167,13 @@ const backend = new Backend();
                         author: comment.author_user,
                     };
 
+                    let anchorRegex = /!([^.]+\.\S+)/g;
+                                
                     let fieldRef = "!" + self.resource + "." + self.field;
 
                     if ( (self.type !== 'schema') || ( (fieldRef.length > 2) && (comment.comment.indexOf(fieldRef) !== -1) ) ){
-
-                        for (let i=0; i<this.refable.length; i++){
-                            let target = "!"+this.refable[i].text;
-                            let ind = item.content.indexOf(target);
-                            if (ind !== -1){
-                                item.content = item.content.replaceAll(target, '['+target+']('+this.refable[i].link+')')
-                            }
-                            
-                        }
-
+                        item.content = item.content.replace(anchorRegex, "[$1](#$1)");
+                        
                         if (self.commentDisplayItems.length > 0){
                             self.commentDisplayItems.push({ divider: true, inset: true });
                             self.expanded.push(false);

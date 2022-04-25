@@ -73,7 +73,9 @@ websocket.init = function(){
                         if (self.locations[keys[i]] && self.locations[keys[i]].type && self.locations[req.user.id] && self.locations[req.user.id].type){
                             if ( (keys[i] !== req.user.id) && (self.locations[keys[i]].type === self.locations[req.user.id].type) ){
                                 if (self.locations[keys[i]].id === self.locations[req.user.id].id){
-                                    self.connections[keys[i]].send(JSON.stringify(mes));
+                                    if (self.locations[keys[i]].type !== 'none'){ //catch the left when on nothing and closes browser
+                                        self.connections[keys[i]].send(JSON.stringify(mes));
+                                    }
                                 }
                             }
                         }

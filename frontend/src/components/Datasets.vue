@@ -14,46 +14,62 @@
             </v-col>
         </v-row>
 
-        <v-row>
+        <v-row class="bordered">
             <v-col cols=4>Filter By:</v-col>
-            <v-col cols=8>
+            <v-col cols=8></v-col>
+            <v-col cols=6>
                 <Select
                     :editing="true"
                     name="ministry_organization"
                     :label="$tc('Ministry / Organization')"
+                    :multiple="true"
                     :items="filterOrgItems"
                     :value="filterOrg"
                     @edited=" (newVal) => { filterOrg = newVal; }">
                 </Select>
             </v-col>
+            <v-col cols=6>
+                <TextInput
+                    :editing="true"
+                    name="name"
+                    :label="$tc('Name')"
+                    :multiple="true"
+                    :value="filterName"
+                    @edited=" (newVal) => { filterName = newVal; }">
+                </TextInput>
+            </v-col>
         </v-row>
 
-        <v-list three-line>
-            <template v-for="(item, index) in datasetDisplayItems">
-                <v-divider
-                    v-if="item.divider"
-                    :key="index"
-                    :inset="item.inset"
-                ></v-divider>
+        <v-row>
+            <v-col cols=12>
+                <v-list three-line>
+                    <template v-for="(item, index) in datasetDisplayItems">
+                        <v-divider
+                            v-if="item.divider"
+                            :key="index"
+                            :inset="item.inset"
+                        ></v-divider>
 
-                <v-list-item
-                    v-else
-                    :key="item.id"
-                    :id="'dataset-'+item.title.toLowerCase().replace(/[ :.]/g, '-')"
-                    :to="{ name: 'datasets_form', params: { id: item.id } }"
-                >
-                    <v-list-item-content>
-                        <v-list-item-title v-html="item.title"></v-list-item-title>
-                        <v-list-item-subtitle>
-                            {{$tc('Created on')}} {{item.subtitle | formatDate}}
-                        </v-list-item-subtitle>
+                        <v-list-item
+                            v-else
+                            :key="item.id"
+                            :id="'dataset-'+item.title.toLowerCase().replace(/[ :.]/g, '-')"
+                            :to="{ name: 'datasets_form', params: { id: item.id } }"
+                        >
+                            <v-list-item-content>
+                                <v-list-item-title v-html="item.title"></v-list-item-title>
+                                <v-list-item-subtitle>
+                                    {{$tc('Created on')}} {{item.subtitle | formatDate}}
+                                </v-list-item-subtitle>
 
-                    </v-list-item-content>
+                            </v-list-item-content>
 
 
-                </v-list-item>
-            </template>
-        </v-list>
+                        </v-list-item>
+                    </template>
+                </v-list>
+            </v-col>
+        </v-row>
     </v-container>
 </template>
 
@@ -61,10 +77,12 @@
 
 import {mapActions, mapState, mapMutations} from "vuex";
 import Select from './Select';
+import TextInput from './TextInput';
 
 export default {
     components:{
         Select,
+        TextInput,
     },
 
     async created() {
@@ -75,7 +93,8 @@ export default {
         return {
             message: '',
             filterBy: null,
-            filterOrg: false,
+            filterOrg: [],
+            filterName: '',
             isUpdating: false,
         }
     },
@@ -122,7 +141,9 @@ export default {
         datasetDisplayItems: function(){
             let items = [];
             this.repos.forEach( (repo, index) => {
-                if (!this.filterOrg || repo.ministry_organization===this.filterOrg){
+                let add = (this.filterOrg.length === 0 || this.filterOrg.indexOf(repo.ministry_organization) !== -1);
+                add = ( (add) && (!this.filterName || repo.name.indexOf(this.filterName) !== -1) );
+                if (add){
                     const item = {
                         title: `${repo.name} ${repo.ministry_organization ? ' - ' + repo.ministry_organization : ''}`,
                         subtitle: repo.create_date,
@@ -151,5 +172,9 @@ export default {
 </script>
 
 <style scoped>
+
+.bordered{
+    border: 1px solid;
+}
 
 </style>

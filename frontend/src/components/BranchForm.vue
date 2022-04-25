@@ -898,6 +898,14 @@ export default {
                 this.loadSections();
             }
             this.loading = false;
+
+            this.$nextTick(function () {     
+                let anchorRegex = /#([^.]+\.\S+)/g;
+                if ((this.$route.hash) && (this.$route.hash.match(anchorRegex))){
+                    this.tab = 2;
+                    this.tabItem = 2;
+                }
+            });
         },
 
         async save(){
@@ -976,7 +984,7 @@ export default {
 
         canEdit: function(){
             if (this.branch.approved){
-                return this.user.isAdmin; //|| this.user.isApprover;
+                return this.user.isAdmin || this.user.isApprover;
             }
             return true;
         }
