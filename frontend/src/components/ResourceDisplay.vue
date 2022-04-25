@@ -129,6 +129,12 @@ export default {
             }
 
             if (r){
+                if (r && r.schema && r.schema.fields){
+                    r["Number of Fields"] = r.schema.fields.length;
+                }
+            }
+
+            if (r){
                 r = Object.keys(r).sort().reduce(
                     (obj, key) => { 
                         obj[key] = r[key]; 
@@ -179,6 +185,20 @@ export default {
 
         displayClass: function(keyString){
             let currDif = JSON.parse(JSON.stringify(this.diff));
+            let specialKey = ".Number of Fields";
+            let initialKey = 'resources.';
+            let expectedPos = keyString.length - specialKey.length;
+            
+            if ( (keyString.indexOf(initialKey) === 0) && (keyString.indexOf(specialKey) === expectedPos) ){
+                let index = parseInt(keyString.substring(initialKey.length, keyString.indexOf(specialKey) ));
+                if (this.other && this.other[index] && this.other[index].schema && this.other[index].schema.fields){
+                    if (this.resources[index].schema.fields.length === this.other[index].schema.fields.length){
+                        return '';
+                    }
+                    return ' yellowDiff';
+                }
+            
+            }
             if (this.compareType === 'right'){
                 currDif = JSON.parse(JSON.stringify(this.rightSideDiff));
             }

@@ -108,7 +108,7 @@
                 default: () => 'value'
             },
             value: {
-                type: [String, Boolean],
+                type: [String, Boolean, Array],
             },
             editing: {
                 type: Boolean,

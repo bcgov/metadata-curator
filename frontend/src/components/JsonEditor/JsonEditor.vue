@@ -529,6 +529,12 @@ export default{
 
     watch: {
 
+        $route: function(to, from){
+            if (to.hash !== from.hash){
+                this.openAndScroll(to.hash);
+            }
+        },
+
         stateType: function(){
             this.$emit('state', this.stateType);
         },
@@ -554,6 +560,25 @@ export default{
         ...mapState({
             variableClassification: state => state.variableClassifications.wipItem,
         }),
+
+        resourceNameToIndex: function(){
+            let items = {};
+            for (let i=0; i<this.workingVal.resources.length; i++){
+                items[this.workingVal.resources[i].name] = i;
+            }
+            return items;
+        },
+
+        fieldNameToIndex: function(){
+            let items = {};
+            for (let i=0; i<this.workingVal.resources.length; i++){
+                items[this.workingVal.resources[i].name] = {};
+                for (let j=0; j<this.workingVal.resources[i].schema.fields.length; j++){
+                    items[this.workingVal.resources[i].name][this.workingVal.resources[i].schema.fields[j].name] = j;
+                }
+            }
+            return items;
+        },
 
         variableClassificationValues: function(){
             let rv = [];
@@ -623,6 +648,30 @@ export default{
             this.expandedBasic[key][fKey] = !this.expandedBasic[key][fKey];
             this.reindexKey++;
             this.$forceUpdate();
+        },
+
+        openAndScroll: function(resourceFieldKey){
+            let resName = resourceFieldKey.substring(1, resourceFieldKey.indexOf('.'))
+            let fieldName = resourceFieldKey.substring(resourceFieldKey.indexOf('.')+1);
+
+            let resIndex = this.resourceNameToIndex[resName];
+            let fieldIndex = this.fieldNameToIndex[resName][fieldName];
+
+            this.expandedBasicResource[resIndex] = true;
+            this.expandedBasic[resIndex][fieldIndex] = true;
+            this.reindexKey++;
+            this.$forceUpdate();
+
+            this.$nextTick(function () {
+
+                let el = document.getElementById('fieldHeader-'+resIndex+'-'+fieldIndex);
+
+                el.scrollIntoView({
+                    behavior: 'smooth', // smooth scroll
+                    block: 'start' // the upper border of the element will be aligned at the top of the visible part of the window of the scrollable area.
+                })
+                
+            });
         },
 
         toggleExpandedBasicResource: function(key){
@@ -1012,6 +1061,11 @@ export default{
 
         this.redrawIndex++;
         this.$forceUpdate();
+        this.$nextTick(function () {     
+            if (this.$route.hash){
+                this.openAndScroll(this.$route.hash);
+            }
+        });
     }
 }
 </script>

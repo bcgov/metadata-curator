@@ -634,11 +634,11 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             //     return res.status(400).json({error: "Sorry we can't find your user record"});
             // }
 
-            let upload = await db.DataUploadSchema.findOne({_id: branch.data_upload_id});
+            // let upload = await db.DataUploadSchema.findOne({_id: branch.data_upload_id});
 
-            if (!upload){
-                return res.status(400).json({error: "Sorry we can't find your upload"});
-            }
+            // if (!upload){
+            //     return res.status(400).json({error: "Sorry we can't find your upload"});
+            // }
 
             if ( (existing.bcdc_apiKey) && (!existing.bcdc_accessKey) ){
                 return res.status(400).json({error: "You have not configured your account to use the bcdc, enter your api and access key on your profile page"});
