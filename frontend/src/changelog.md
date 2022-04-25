@@ -16,6 +16,7 @@ April 25, 2022
    - These links only work on the edition page
    - If you are on the edition page you will get moved to the files and fields tab (so you can direct link to a field)
    - If you are on the files and fields tab the resource and field will be opened up and then you will be scrolled to it
+- Added number of fields to comparison
 
 
 
