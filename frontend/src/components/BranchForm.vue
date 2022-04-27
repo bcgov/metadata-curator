@@ -355,13 +355,13 @@
                                     <v-row v-if="enabledPhase >= 3 && branch && branch.bcdc_record">
                                         <v-col cols=12>
                                             Catalogue: <a :href="branch.bcdc_record">{{branch.bcdc_record}}</a>
-                                            <v-btn :disabled="disableSunset" v-if="user && (user.isAdmin || user.isApprover) && user.bcdcSet" color="error" @click="goSunsetBCDC">
+                                            <!-- <v-btn :disabled="disableSunset" v-if="user && (user.isAdmin || user.isApprover) && user.bcdcSet" color="error" @click="goSunsetBCDC">
                                                 {{$tc('Sunset Record')}}
                                                 <v-progress-circular
                                                     indeterminate
                                                     v-if="disableSunset"
                                                 ></v-progress-circular>
-                                            </v-btn>
+                                            </v-btn> -->
                                         </v-col>
                                     </v-row>
                                 </ValidationObserver>
