@@ -35,6 +35,7 @@ passport.use('jwt', new JWTStrategy({
               try{
                 var u = await db.User.findOne({email: decodedJWT.email});
                 decodedJWT.lastLogin = u.lastLogin;
+                decodedJWT.bcdcSet = u.bcdc_apiKey && u.bcdc_accessKey;
                 decodedJWT = await buildActivity(decodedJWT);
               }catch(ex){
                 console.log("No previous user info", ex);

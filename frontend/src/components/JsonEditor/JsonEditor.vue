@@ -190,7 +190,7 @@
                                         no-gutters
                                         v-for="(field, fKey) in resource.schema.fields" 
                                         :key="'field-'+key+'-'+fKey+'-'+reindexKey" 
-                                        :class="'pa-0 relativePos' + ( (field && field.highlight && !editing) ? ' fieldHighlight': '') + (!filtered(field) ? ' field' : '')">
+                                        :class="'pa-0 relativePos' + ( (field && field.highlight && !editing) ? ' fieldHighlight': '') + (!filtered(field) ? ' field' : '') + (duplicated(key, field.name) ? ' duplicate' : '')">
                                         <v-container fluid v-if="!filtered(field)"> 
                                             <v-row>
                                                 <v-col cols=7>
@@ -354,7 +354,7 @@
                                                         </v-col>
 
                                                         <v-col cols=12 v-if="((field && field.notes) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
-                                                            <TextInput
+                                                            <TextArea
                                                                 :label="$tc('Notes', 2)"
                                                                 placeholder=""
                                                                 name="notes"
@@ -367,7 +367,7 @@
                                                                 :focusField="focusProp"
                                                                 @focus="onFocusBasic"
                                                                 @blur="(event) => { updateResource(key, fKey, 'notes', event) }"
-                                                            ></TextInput>
+                                                            ></TextArea>
                                                         </v-col>
 
                                                         <v-col cols=12 v-if="((field && field.constraints && field.constraints.enum) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
@@ -561,6 +561,23 @@ export default{
             variableClassification: state => state.variableClassifications.wipItem,
         }),
 
+        fieldNameOccurences: function(){
+            let items = {};
+
+            for (let i=0; i<this.workingVal.resources.length; i++){
+                items[i] = {};
+                for (let j=0; j<this.workingVal.resources[i].schema.fields.length; j++){
+                    let val = 1;
+                    if (typeof(items[i][this.workingVal.resources[i].schema.fields[j].name]) !== 'undefined'){
+                        val = items[i][this.workingVal.resources[i].schema.fields[j].name] + 1;
+                    }
+                    items[i][this.workingVal.resources[i].schema.fields[j].name] = val;
+                }
+            }
+
+            return items;
+        },
+
         resourceNameToIndex: function(){
             let items = {};
             for (let i=0; i<this.workingVal.resources.length; i++){
@@ -650,7 +667,17 @@ export default{
             this.$forceUpdate();
         },
 
+        duplicated: function(resKey, fieldName){
+            if (this.fieldNameOccurences[resKey][fieldName] > 1){
+                this.error = true;
+                this.errorText = "Some resources have duplicated field names, bordered in red, consider revising"
+                return true;
+            }
+            return false;
+        },
+
         openAndScroll: function(resourceFieldKey){
+            resourceFieldKey = resourceFieldKey.replaceAll("+", " ");
             let resName = resourceFieldKey.substring(1, resourceFieldKey.indexOf('.'))
             let fieldName = resourceFieldKey.substring(resourceFieldKey.indexOf('.')+1);
 
@@ -1103,6 +1130,11 @@ export default{
 
     .relativePos{
         position: relative;
+    }
+
+    .duplicate{
+        border-color: var(--v-error-base);
+        border-width: 2px;
     }
 
 </style>>

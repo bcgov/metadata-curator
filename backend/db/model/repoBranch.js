@@ -113,6 +113,11 @@ var repoBranchSchema = new Schema({
     bcdc_record: {
         type: String,
         required: false,
+    },
+    bcdc_record_is_sunset: {
+        type: Boolean,
+        required: false,
+        default: false,
     }
 
 });

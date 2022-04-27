@@ -426,4 +426,9 @@ export class Backend {
         return axios.post(url, {accessKey: accessKey}, {withCredentials: true}).then(response => response.data)
     }
 
+    sunsetBCDC(branchId, accessKey){
+        const url = `/api/v1/repobranches/${branchId}/bcdc_sunset`;
+        return axios.post(url, {accessKey: accessKey}, {withCredentials: true}).then(response => response.data)
+    }
+
 }

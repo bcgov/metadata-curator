@@ -125,7 +125,7 @@ export default {
         }),
 
         filterOrgItems: function(){
-            let rv = [{value: false, text: ""}];
+            let rv = [];
             let rvValues = [];
             this.repos.forEach( (repo) => {
                 if (rvValues.indexOf(repo.ministry_organization) === -1){

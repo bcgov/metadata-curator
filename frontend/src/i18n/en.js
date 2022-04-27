@@ -289,6 +289,8 @@ export default {
         "temporal_end": "Temporal End",
         "temporal_start": "Temporal Start",
 
+        "Resource Notes": "Resource Notes",
+
         "help.dataset.name": "The name of the dataset",
         "help.dataset.description": "A description of the dataset",
         "help.dataset.gov_allow_publish": "Is this allowed to be published to government DAR",

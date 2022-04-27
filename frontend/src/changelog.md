@@ -2,27 +2,20 @@
 
 <br />
 
-## Version 1.4.4
-April 25, 2022
- - Fixed edit button not showing on approved editions for approvers
- - Fixed left message when a user is on nothing and closes browser getting sent to people also on nothing
- - Removed requirement for a upload to publish to the catalogue
- - Added name to dataset list filter
- - Allowed multiple select of ministry on dataset list
- - Switched to semantic infer from data package infer to infer more information about fields
- - After switching to default collapsed for resources/fields on files and fields tab of editions comments no longer hyperlinked
-   - The link doesn't make sense when closed as is as the field isn't visible therefore...
-   - Greatly changed how this works and will now treat ALL instances of !stuff.moreStuff as a link
-   - These links only work on the edition page
-   - If you are on the edition page you will get moved to the files and fields tab (so you can direct link to a field)
-   - If you are on the files and fields tab the resource and field will be opened up and then you will be scrolled to it
-- Added number of fields to comparison
+## Version 1.4.5
+April 27, 2022
+ - Removed blank option from dataset list ministry organization filter
+ - Fields and resources with spaces in the name replace with a + for the comment link to make them work
+ - Duplicate fields (same field name in a resource) in files & fields will be flagged with a red border and an alert will be displayed at the top
+ - Made field notes a text area (files and fields tab)
+ - Publish to BCDC now adds "- [Edition name]" to the dataset
 
 
 
 <br />
 
 ## Table Of Contents
+- [Version 1.4.5 (April 27 2022)](#version-145)
 - [Version 1.4.4 (April 25 2022)](#version-144)
 - [Version 1.4.3 (April 22 2022)](#version-143)
 - [Version 1.4.2 (March 25 2022)](#version-142)
@@ -41,6 +34,24 @@ April 25, 2022
 - [Version 1.2.4 (February 7 2022)](#version-124)
 - [Version 1.2.3 (February 1 2022)](#version-123)
 - [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
+## Version 1.4.4
+April 25, 2022
+ - Fixed edit button not showing on approved editions for approvers
+ - Fixed left message when a user is on nothing and closes browser getting sent to people also on nothing
+ - Removed requirement for a upload to publish to the catalogue
+ - Added name to dataset list filter
+ - Allowed multiple select of ministry on dataset list
+ - Switched to semantic infer from data package infer to infer more information about fields
+ - After switching to default collapsed for resources/fields on files and fields tab of editions comments no longer hyperlinked
+   - The link doesn't make sense when closed as is as the field isn't visible therefore...
+   - Greatly changed how this works and will now treat ALL instances of !stuff.moreStuff as a link
+   - These links only work on the edition page
+   - If you are on the edition page you will get moved to the files and fields tab (so you can direct link to a field)
+   - If you are on the files and fields tab the resource and field will be opened up and then you will be scrolled to it
+- Added number of fields to comparison
 
 <br />
 
