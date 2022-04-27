@@ -76,7 +76,7 @@ var workingSchema = {
         selector2: '#basicField-0-0-tags',
     },
     notes: {
-        selector: 'input[name="notes"]',
+        selector: 'textarea[name="notes"]',
         value: "field 0 notes",
         selector2: '#basicField-0-0-notes',
     },
