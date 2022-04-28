@@ -91,7 +91,7 @@ server {
     proxy_set_header        Upgrade $http_upgrade;
     proxy_set_header        Connection $connection_upgrade;
 
-    set $backend "http://mc_frontend:3030";
+    set $backend "http://mc_backend:3030";
 
     proxy_pass $backend;
   }
