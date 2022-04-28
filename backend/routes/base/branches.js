@@ -613,19 +613,19 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             let branch = await db.RepoBranchSchema.findOne({_id: req.params.branchId});
 
             if (!branch){
-                return res.status(400).json({error: "No such branch " + req.params.branchId});
+                return res.status(400).json({error: "No such edition " + req.params.branchId});
             }
 
             let repo = await db.RepoSchema.findOne({_id: branch.repo_id});
             
             if (!repo){
-                return res.status(400).json({error: "Somehow branch does not have a repo"});
+                return res.status(400).json({error: "Somehow edition does not have a dataset"});
             }
 
             let providedSchema = await db.DataPackageSchema.findOne({version: branch._id, inferred: false});
             
             if (!providedSchema){
-                return res.status(400).json({error: "Somehow branch does not have a repo"});
+                return res.status(400).json({error: "Somehow edition does not have a schema"});
             }
 
             // let inferredSchema = await db.DataPackageSchema.findOne({version: branch._id, inferred: true});
