@@ -72,7 +72,7 @@ EOF
 
     sessionSecret =  "\"sessionSecret\": \"${random_string.jwtSecret.result}\""
     frontend = "\"frontend\": \"${var.host}\""
-    wsUrl: "\"wsUrl\": \"wss://${var.host}/mcsocket\"",
+    wsUrl: "\"wsUrl\": \"wss://${var.hostname}/mcsocket\"",
     
 
     uploadUrl = "\"uploadUrl\": \"${var.host}/files/\"",
@@ -81,7 +81,7 @@ EOF
 
     approverGroups = "\"approverGroups\": []"
 
-    forumApi = "\"forumApi\": {\"baseUrl\": \"http://mc_forum_api:3000/v1\", \"wsUrl\": \"wss://${var.host}/socket\"}"
+    forumApi = "\"forumApi\": {\"baseUrl\": \"http://mc_forum_api:3000/v1\", \"wsUrl\": \"wss://${var.hostname}/socket\"}"
 
     oidc = var.makeKeycloak ? data.null_data_source.oidcConfig.outputs.oidc2 : data.null_data_source.oidcConfig.outputs.oidc1
 
