@@ -2,19 +2,14 @@
 
 <br />
 
-## Version 1.4.5
-April 27, 2022
- - Removed blank option from dataset list ministry organization filter
- - Fields and resources with spaces in the name replace with a + for the comment link to make them work
- - Duplicate fields (same field name in a resource) in files & fields will be flagged with a red border and an alert will be displayed at the top
- - Made field notes a text area (files and fields tab)
- - Publish to BCDC now adds "- [Edition name]" to the dataset
-
-
+## Version 1.4.6
+April 28, 2022
+ - This release contains changes for the terraform version
 
 <br />
 
 ## Table Of Contents
+- [Version 1.4.6 (April 28 2022)](#version-146)
 - [Version 1.4.5 (April 27 2022)](#version-145)
 - [Version 1.4.4 (April 25 2022)](#version-144)
 - [Version 1.4.3 (April 22 2022)](#version-143)
@@ -34,6 +29,16 @@ April 27, 2022
 - [Version 1.2.4 (February 7 2022)](#version-124)
 - [Version 1.2.3 (February 1 2022)](#version-123)
 - [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
+## Version 1.4.5
+April 27, 2022
+ - Removed blank option from dataset list ministry organization filter
+ - Fields and resources with spaces in the name replace with a + for the comment link to make them work
+ - Duplicate fields (same field name in a resource) in files & fields will be flagged with a red border and an alert will be displayed at the top
+ - Made field notes a text area (files and fields tab)
+ - Publish to BCDC now adds "- [Edition name]" to the dataset
 
 <br />
 

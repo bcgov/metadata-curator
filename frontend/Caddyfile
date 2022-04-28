@@ -3,9 +3,10 @@
     errors visible
 
     rewrite {
-        if {path} not_match ^\/(api\/.*)
+        if {path} not_match ^\/((api)?(mcsocket)?\/.*)
         to {path} /
     }
 
     proxy /api/ http://{$HOSTNAME}:9090/
+    proxy /mcsocket/ http://{$HOSTNAME}:3030/
 }
