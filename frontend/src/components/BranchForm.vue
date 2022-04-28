@@ -355,6 +355,13 @@
                                     <v-row v-if="enabledPhase >= 3 && branch && branch.bcdc_record">
                                         <v-col cols=12>
                                             Catalogue: <a :href="branch.bcdc_record">{{branch.bcdc_record}}</a>
+                                            <!-- <v-btn :disabled="disableSunset" v-if="user && (user.isAdmin || user.isApprover) && user.bcdcSet" color="error" @click="goSunsetBCDC">
+                                                {{$tc('Sunset Record')}}
+                                                <v-progress-circular
+                                                    indeterminate
+                                                    v-if="disableSunset"
+                                                ></v-progress-circular>
+                                            </v-btn> -->
                                         </v-col>
                                     </v-row>
                                 </ValidationObserver>
@@ -598,6 +605,7 @@ export default {
             filters: {},
             accessKey: '',
             disablePublish: false,
+            disableSunset: false,
         }
     },
     methods: {
@@ -649,6 +657,27 @@ export default {
             }
             this.alert = true;
             this.disablePublish = false;
+            window.scrollTo(0,0);
+        },
+
+        async goSunsetBCDC(){
+            this.disablePublish = true;
+            this.disableSunset = true;
+            const backend = new Backend();
+            try{
+                let catR = await backend.sunsetBCDC(this.id, this.accessKey);
+                console.log(catR);
+                this.alertType = "success";
+                let alertText = "Record: " + catR.url;
+                this.alertText = alertText;
+            }catch(ex){
+                this.alertType = "error";
+                this.alertText = "Error: " + ( (ex.response && ex.response.data && ex.response.data.error) ? ex.response.data.error : ex.message) +"\n";
+                this.alertText += (ex.response && ex.response.data && ex.response.data.ex) ? ex.response.data.ex : '';
+            }
+            this.alert = true;
+            this.disablePublish = false;
+            this.disableSunset = false;
             window.scrollTo(0,0);
         },
 
@@ -942,7 +971,7 @@ export default {
             }else{
                 this.updateBranch().then( () => {
                     this.alertType = "success"
-                    this.alertText = "Sucessfully updated version";
+                    this.alertText = "Successfully updated edition";
                     this.alert = true;
                     //this.closeOrBack();
                     this.editing = false;

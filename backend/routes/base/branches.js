@@ -672,7 +672,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             if (!repo.name){
                 return res.status(400).json({error: "Dataset name is required for bcdc publishing"});
             }
-            ckanDataset.title = 'Metadata for ' + repo.name.trim();
+            ckanDataset.title = 'Metadata for ' + repo.name.trim() + " - " + branch.name.trim();
             ckanDataset.name = ckanDataset.title.toLowerCase().replace(/ /g, "-");
 
             if (!repo.ministry_organization){
@@ -777,7 +777,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
                     error: "Failed to create dataset"
                 };
                 if (ckanRes.data){
-                    rv[ex] = JSON.stringify(ckanRes.data)
+                    rv.ex = JSON.stringify(ckanRes.data)
                 };
                 return res.status(500).json(rv);
             }
@@ -875,6 +875,127 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             }
 
             return res.status(200).json({url: branch.bcdc_record, resourceErrors: errors});
+            
+        }catch(e){
+            console.log("bcdc e", e);
+            res.status(500).json(e);
+        }
+    });
+
+    router.post('/:branchId/bcdc_sunset', auth.requireLoggedIn, auth.isApprover, async function(req, res, next){
+        const config = require('config');
+        try{
+            //version check
+            if (!util.phaseCheck(cache, bcdcPhase, db)){
+                return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.repoId+"/bcdc_sunset")));
+            }
+            if (req.params.branchId === 'create'){
+                return res.status(400).json({error: "The branch must be saved previously"});
+            }
+            if (!config.has('bcdc')){
+                return res.status(400).json({error: "Metadata Curator is not hooked up to a catalogue"});
+            }
+
+            let body = req.body;
+            if (!body.accessKey){
+                return res.status(400).json({error: "You must enter your access key to use your api key"});
+            }
+
+            let existing = await db.User.findOne({email: req.user.email});
+            let branch = await db.RepoBranchSchema.findOne({_id: req.params.branchId});
+
+            if (!branch){
+                return res.status(400).json({error: "No such edition " + req.params.branchId});
+            }
+
+            if (branch.bcdc_record_is_sunset){
+                return res.status(400).json({error: "This edition is already sunset"});
+            }
+
+            if ((typeof(branch.bcdc_record) === 'undefined') || (!branch.bcdc_record) ){
+                return res.status(400).json({error: "This edition doens't appear to be published"});
+            }
+
+            let lastIndex = branch.bcdc_record.lastIndexOf('/');
+            if (lastIndex<=0){
+                return res.status(400).json({error: "This edition doens't appear to be published"});
+            }
+            let datasetId = branch.bcdc_record.substring(lastIndex+1);
+
+            if ( (existing.bcdc_apiKey) && (!existing.bcdc_accessKey) ){
+                return res.status(400).json({error: "You have not configured your account to use the bcdc, enter your api and access key on your profile page"});
+            }
+
+            var md5 = require('md5'); 
+            let hashedKey = md5(body.accessKey);
+            if (hashedKey !== existing.bcdc_accessKey){
+                return res.status(403).json({error: "Your access key did not match your account"});
+            }
+
+
+            var CryptoJS = require("crypto-js");
+            // Decrypt
+            let apiKey  = CryptoJS.AES.decrypt(existing.bcdc_apiKey, body.accessKey.toString()).toString(CryptoJS.enc.Utf8);
+
+            const axios = require('axios');
+            const axiosConfig = {
+                headers: {'Authorization': apiKey}, 
+                validateStatus: function(){ return true; }
+            }
+
+            let url = config.get('bcdc');
+            url += url[url.length-1] === "/" ? '' : "/";
+            url += "api/3/action/package_show?id="+datasetId;
+
+            let ckanRes = await axios.get(url, axiosConfig);
+
+            if (!ckanRes || !ckanRes.data || !ckanRes.data.result || !ckanRes.data.result.id){
+                let rv = {
+                    error: "Failed to fetch dataset"
+                };
+                if (ckanRes.data){
+                    rv.ex = JSON.stringify(ckanRes.data)
+                };
+                return res.status(500).json(rv);
+            }
+
+            ckanDataset = ckanRes.data.result;
+
+            let appendToName = " - " + branch.name;
+            let index = ckanDataset.title.lastIndexOf(appendToName);
+            if ( (index >= 0) && (ckanDataset.title.substring(index) === appendToName) ){
+                branch.bcdc_record_is_sunset = true;
+                await branch.save();
+                return res.status(400).json({error: "This edition appears to be already sunset"});
+            }
+
+            ckanDataset.title = ckanDataset.title + appendToName;
+            ckanDataset.name = ckanDataset.name + appendToName.replace(/ /g, '').toLowerCase();
+
+            let updateUrl = config.get('bcdc');
+            updateUrl += updateUrl[updateUrl.length-1] === "/" ? '' : "/";
+            updateUrl += "api/3/action/package_update";
+            let ckanUpRes = await axios.post(updateUrl, ckanDataset, axiosConfig);
+
+            if (!ckanUpRes || !ckanUpRes.data || !ckanUpRes.data.result || !ckanUpRes.data.result.id){
+                let rv = {
+                    error: "Failed to create dataset"
+                };
+                if (ckanUpRes.data){
+                    rv.ex = JSON.stringify(ckanUpRes.data)
+                };
+                return res.status(500).json(rv);
+            }
+            
+            try{
+                branch.bcdc_record_is_sunset = true;
+                await branch.save();
+            }catch(e){
+                return res.status(500).json({error: "Failed to save branch with catalogue dataset id" + datasetId, ex: e.message});
+            }
+
+
+            return res.status(200).json({url: branch.bcdc_record, message: "is now sunset"});
             
         }catch(e){
             console.log("bcdc e", e);

@@ -8,7 +8,7 @@
 
         <v-row v-if="commentDisplayItems.length == 0 && type === 'schema'" class="ml-3">
             <v-col cols=12>
-                {{$tc('No comments about this field, reference with ')}}!{{resource}}.{{field}}
+                {{$tc('No comments about this field, reference with ')}}!{{resource.replaceAll(' ', '+')}}.{{field.replaceAll(' ','+')}}
             </v-col>
         </v-row>
         <v-row v-else>
@@ -172,7 +172,7 @@ const backend = new Backend();
                     let fieldRef = "!" + self.resource + "." + self.field;
 
                     if ( (self.type !== 'schema') || ( (fieldRef.length > 2) && (comment.comment.indexOf(fieldRef) !== -1) ) ){
-                        item.content = item.content.replace(anchorRegex, "[$1](#$1)");
+                        item.content = item.content.replace(anchorRegex, "[!$1](#$1)");
                         
                         if (self.commentDisplayItems.length > 0){
                             self.commentDisplayItems.push({ divider: true, inset: true });
@@ -221,7 +221,7 @@ const backend = new Backend();
             },
 
             scrollBottom(){
-                let fieldRef = "!" + this.resource + "." + this.field;
+                let fieldRef = "!" + this.resource.replaceAll(' ', '+') + "." + this.field.replaceAll(' ', '+');
                 window.scrollTo(0,document.body.scrollHeight);
                 this.$emit("setComment", fieldRef);
             }
