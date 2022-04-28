@@ -106,7 +106,22 @@ server {
     proxy_set_header        Upgrade $http_upgrade;
     proxy_set_header        Connection $connection_upgrade;
 
-    set $backend "http://forum_api:3001";
+    set $backend "http://mc_forum_api:3001";
+
+    proxy_pass $backend;
+  }
+
+  location /mcsocket {
+    resolver 127.0.0.11 ipv6=off valid=30s;
+    proxy_set_header        Host            $host;
+    proxy_set_header        X-Real-IP       $remote_addr;
+    proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header        X-Forwarded-Proto $scheme;
+    proxy_http_version      1.1;
+    proxy_set_header        Upgrade $http_upgrade;
+    proxy_set_header        Connection $connection_upgrade;
+
+    set $backend "http://mc_frontend:3030";
 
     proxy_pass $backend;
   }
