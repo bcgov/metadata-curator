@@ -19,6 +19,7 @@ const state = {
     revisionsLoading: false,
     branchRevisions: [],
     branchRevisionsLoading: false,
+    reposFull: [],
 };
 
 const getters = {
@@ -78,6 +79,20 @@ const actions = {
             const data = await backend.getRepos(query);
             commit('clearRepos');
             commit('setRepos', {repos: data});
+
+        } catch(e) {
+            // console.log("Retrieve data uploads error: ", e);
+            commit('setError', {error: e.response.data.error});
+        }
+
+    },
+
+    async getReposFull({ commit }, {filterBy}) {
+        const query = {filterBy: filterBy};
+
+        try {
+            const data = await backend.getReposFull(query);
+            commit('setReposFull', {repos: data});
 
         } catch(e) {
             // console.log("Retrieve data uploads error: ", e);
@@ -190,6 +205,9 @@ const actions = {
 const mutations = {
     setRepos(state, {repos}){
         state.repos = repos;
+    },
+    setReposFull(state, {repos}){
+        state.reposFull = repos;
     },
     setAllRepos(state, {repos}){
         state.allRepos = repos;

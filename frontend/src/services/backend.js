@@ -262,6 +262,21 @@ export class Backend {
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 
+    getReposFull(query){
+        if (typeof(query) === "undefined"){
+            query = {filterBy: false};
+        }
+        let url = '/api/v1/repos/editionfull';
+        if(query.filterBy) {
+            let keys = Object.keys(query.filterBy);
+            for (let i=0; i<keys.length; i++){
+                url += (i==0) ? `/?` : `&`;
+                url += `${keys[i]}=${query.filterBy[keys[i]]}`;
+            }
+        }
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
     getRepoRevs(id){
         let url = `/api/v1/repos/${id}/revisions`;
         return axios.get(url, {withCredentials: true}).then(response => response.data)

@@ -24,7 +24,7 @@ var dataPackageSchema = new Schema({
     version: {
         type: Schema.Types.ObjectId,
         required: true,
-        ref: 'repo_branch'
+        ref: 'repoBranch'
     },
     resources: {type: [resourceSchema], required: true}
 });

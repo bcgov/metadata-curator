@@ -291,6 +291,8 @@ export default {
 
         "Resource Notes": "Resource Notes",
 
+        "Field Tags": "Field Tags",
+
         "help.dataset.name": "The name of the dataset",
         "help.dataset.description": "A description of the dataset",
         "help.dataset.gov_allow_publish": "Is this allowed to be published to government DAR",

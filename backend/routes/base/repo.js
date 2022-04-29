@@ -242,6 +242,35 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
         return r;
     }
+
+    const listRepositoriesEditionFull = async (user, query) => {
+        try {
+            const topicResponse = await forumClient.getTopics(user, {});
+            let topics = topicResponse.data.filter(item => item.parent_id);
+
+            const repoIds = topics.map( (item) => {
+                let id = item.name;
+                if (!id || id.indexOf("repo") === -1){
+                    return;
+                }
+                
+                id = id.substring(0,id.length-4);
+                let oid = mongoose.Types.ObjectId(id);
+                return oid;
+
+            }).filter( (item) => { 
+                return (item && String(item).length > 0)
+            });
+            
+            //let data = await db.RepoBranchSchema.find({repo_id: {$in: repoIds}, data_upload_id: query.upload_id}).populate('repo_id').sort({ "create_date": -1});
+            return await db.DataPackageSchema.find({inferred: false}).populate({path: 'version', populate: 'repo_id'});//.sort({ "create_date": -1});
+            
+            
+        } catch (e) {
+            log.error(e);
+            throw new Error(e.message)
+        }
+    }
     
     const listRepositories = async (user, query) => {
         try {
@@ -291,6 +320,20 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
         try{
             let repos = await listRepositories(req.user, req.query);
+            res.status(200).json(repos);
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
+    });
+
+    router.get('/editionfull', async function(req, res, next) {
+        //version check
+        if (!util.phaseCheck(cache, requiredPhase, db)){
+            return res.status(404).send(util.phaseText('GET', 'repos'));
+        }
+        try{
+            console.log("list full");
+            let repos = await listRepositoriesEditionFull(req.user, req.query);
             res.status(200).json(repos);
         }catch(ex){
             res.status(500).json({error: ex});
