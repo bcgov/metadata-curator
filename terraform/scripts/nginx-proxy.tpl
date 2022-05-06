@@ -96,6 +96,46 @@ server {
     client_max_body_size     0;
   }
 
+  location /files_supplemental {
+    resolver 127.0.0.11 ipv6=off valid=30s;
+    
+    proxy_hide_header Access-Control-Allow-Origin;
+    add_header Access-Control-Allow-Origin *;
+    add_header Access-Control-Allow-Headers x-http-method-override;
+    proxy_read_timeout 14400;
+    proxy_connect_timeout 14400;
+    proxy_send_timeout 14400;
+
+    if ($request_method = DELETE)
+    {
+        return 405;
+    }
+
+    if ($request_method = GET)
+    {
+        return 405;
+    }
+    
+    proxy_pass http://mc_tusd_supplemental:1080/files;
+
+    # Disable request and response buffering
+    proxy_request_buffering  off;
+    proxy_buffering          off;
+    proxy_http_version       1.1;
+
+    # Add X-Forwarded-* headers
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    proxy_set_header        Host            $host;
+    proxy_set_header        X-Real-IP       $remote_addr;
+
+    proxy_set_header         Upgrade $http_upgrade;
+    proxy_set_header         Connection $connection_upgrade;
+    
+    client_max_body_size     0;
+  }
+
   location /socket {
     resolver 127.0.0.11 ipv6=off valid=30s;
     proxy_set_header        Host            $host;

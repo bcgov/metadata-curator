@@ -255,6 +255,20 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
                 }
                 
                 id = id.substring(0,id.length-4);
+                let oid = id;
+                return oid;
+
+            }).filter( (item) => { 
+                return (item && item.length > 0)
+            });
+
+            const branchIds = topics.map( (item) => {
+                let id = item.name;
+                if (!id || id.indexOf("branch") === -1){
+                    return;
+                }
+                
+                id = id.substring(0,id.length-6);
                 let oid = mongoose.Types.ObjectId(id);
                 return oid;
 
@@ -263,7 +277,20 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             });
             
             //let data = await db.RepoBranchSchema.find({repo_id: {$in: repoIds}, data_upload_id: query.upload_id}).populate('repo_id').sort({ "create_date": -1});
-            return await db.DataPackageSchema.find({inferred: false}).populate({path: 'version', populate: 'repo_id'});//.sort({ "create_date": -1});
+            let topQ = {inferred: {$in: ['false', false, null]}, version: {$in: branchIds}};
+            console.log("TOP Q", topQ, topQ.version);
+            let fullDPS = await db.DataPackageSchema.find(topQ).populate({
+                path: 'version', 
+                populate: 'repo_id',
+            });
+            
+            fullDPS = fullDPS.filter( (item) => {
+                let id = String(item.version.repo_id._id);
+                return (item && repoIds.indexOf(id) !== -1);
+            })
+
+            return fullDPS;
+            //.sort({ "create_date": -1});
             
             
         } catch (e) {

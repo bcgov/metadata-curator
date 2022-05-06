@@ -29,6 +29,11 @@ export class Backend {
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 
+    getSupplementalUploadUrl(){
+        const url = '/api/v1/supplementaluploadurl'
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
     concatenateUpload(joinIds, uploadUrl, jwt, resumable, filename, filetype){
         let uploadOptions = {}
         uploadOptions.headers = {
@@ -444,6 +449,11 @@ export class Backend {
     sunsetBCDC(branchId, accessKey){
         const url = `/api/v1/repobranches/${branchId}/bcdc_sunset`;
         return axios.post(url, {accessKey: accessKey}, {withCredentials: true}).then(response => response.data)
+    }
+
+    getSuppFile(branchId, fileId){
+        const url = `/api/v1/repobranches/${branchId}/file/${fileId}`;
+        return axios.get(url, {withCredentials: true}).then(response => response)
     }
 
 }

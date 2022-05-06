@@ -45,7 +45,7 @@
                     name="name"
                     :label="$tc('Name')"
                     :value="filterName"
-                    @blur=" (newVal) => { filterName = newVal; }">
+                    @blur=" (newVal) => { filterName = newVal.target.value; }">
                 </TextInput>
             </v-col>
             <v-col cols=6>
@@ -99,9 +99,9 @@
                     </template>
                     <v-list>
                         <v-list-item-group>
-                            <v-list-item v-for="(item, index) in reports" :key="index">
+                            <v-list-item v-for="(item, index) in reports" :key="index" @click="goReport(item)">
                                 <v-list-item-content>
-                                    <v-list-item-title @click="goReport(item)">{{item}}</v-list-item-title>
+                                    <v-list-item-title>{{item}}</v-list-item-title>
                                 </v-list-item-content>
                             </v-list-item>
                         </v-list-item-group>
@@ -183,7 +183,7 @@ export default {
                                         tags = tagStr.split(",")
                                     }
                                     if (tagItems[repo.version.repo_id._id]){
-                                        tagItems[repo.version.repo_id._id] = [...new Set(tagItems[repo.version.repo_id._id], tags)];
+                                        tagItems[repo.version.repo_id._id] = [...new Set([...tagItems[repo.version.repo_id._id], ...tags])];
                                     }else{
                                         tagItems[repo.version.repo_id._id] = [...new Set(tags)];
                                     }
@@ -199,9 +199,6 @@ export default {
             this.repos.forEach( (repo) => {
                 let add = (this.filterOrg.length === 0 || this.filterOrg.indexOf(repo.ministry_organization) !== -1);
                 add = ( (add) && (!this.filterName || repo.name.indexOf(this.filterName) !== -1) );
-                if (repo._id === '61b131dc49d74576f787e936'){
-                    console.log("hi");
-                }
                 add = ( (add) && ((!this.filterTags) || ( (!this.datasetTags) || (this.datasetTags[repo._id] && this.datasetTags[repo._id].indexOf(this.filterTags) !== -1)) ));
                 if (add){
                     newFiltered.push(repo)
@@ -240,6 +237,11 @@ export default {
                         value: 'field.name',
                     },
                     {
+                        text: this.$tc('Field', 1) + ' Description',
+                        sortable: false,
+                        value: 'field.description',
+                    },
+                    {
                         text: this.$tc('Tags', 2),
                         sortable: false,
                         value: 'field.tags',
@@ -250,9 +252,11 @@ export default {
                     this.reposFull.forEach( (repo) => {
                         let add = (this.filterOrg.length === 0 || this.filterOrg.indexOf(repo.version.repo_id.ministry_organization) !== -1);
                         add = ( (add) && (!this.filterName || repo.version.repo_id.name.indexOf(this.filterName) !== -1) );
+                        
                         if (add){
                             for (let i=0; i<repo.resources.length; i++){
                                 if (repo.resources[i].tableSchema && repo.resources[i].tableSchema.fields){
+
                                     for (let j=0; j<repo.resources[i].tableSchema.fields.length; j++){
                                         let item = JSON.parse(JSON.stringify(repo));
                                         item.field = JSON.parse(JSON.stringify(repo.resources[i].tableSchema.fields[j]));

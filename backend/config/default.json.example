@@ -29,6 +29,16 @@
     "wsUrl": "ws://localhost:2999"
   },
   "uploadUrl": "http://localhost:1080/files",
+  "supplementalUploadUrl": "http://localhost:1080/files_supplemental",
+  "minio": {
+      "url": "127.0.0.1",
+      "port": 9000,
+      "ssl": false,
+      "key": "accessKey",
+      "secret": "secretKey",
+      "bucket": "supplemental"
+  },
+
   "base64EncodedPGPPublicKey": "{publickey}",
   "orgAttribute": "businessCategory",
   "requiredRoleToCreateRequest": "exporter",

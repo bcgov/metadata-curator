@@ -104,6 +104,15 @@ module.exports = (router) => {
         let url = config.get('uploadUrl');
         return res.json({url: url});
     });
+
+    router.get('/v1/supplementaluploadurl', auth.removeExpired, auth.requireLoggedIn, function(req, res){
+        var config = require('config');
+        if (!config.has('supplementalUploadUrl')){
+            return res.json({error: "Not configured"});
+        }
+        let url = config.get('supplementalUploadUrl');
+        return res.json({url: url});
+    })
     
     
     return router;

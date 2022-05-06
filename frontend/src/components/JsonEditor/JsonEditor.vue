@@ -193,7 +193,7 @@
                                         :class="'pa-0 relativePos' + ( (field && field.highlight && !editing) ? ' fieldHighlight': '') + (!filtered(field) ? ' field' : '') + (duplicated(key, field.name) ? ' duplicate' : '')">
                                         <v-container fluid v-if="!filtered(field)"> 
                                             <v-row>
-                                                <v-col cols=7>
+                                                <v-col :cols="loggedIn ? 7 : 12">
                                                     <v-row no-gutters>
                                                         <v-col cols=3>
                                                             <v-btn x-small class="expandField" @click="toggleExpandedBasic(key, fKey)"><v-icon>{{expandedBasic[key][fKey] ? 'mdi-minus' : 'mdi-plus'}}</v-icon></v-btn>
@@ -387,7 +387,7 @@
                                                             ></TextArea>
                                                         </v-col>
 
-                                                        <v-col cols=12 v-if="expandedBasic[key][fKey]" class="pt-0 pb-1">
+                                                        <v-col cols=12 v-if="expandedBasic[key][fKey] && loggedIn" class="pt-0 pb-1">
                                                             <Select
                                                                 :label="$tc('Highlight')"
                                                                 name="highlight"
@@ -411,7 +411,7 @@
                                                     </v-row>
                                                 </v-col>
                                                 
-                                                <v-col v-if="expandedBasic[key][fKey]" cols=5 class="borderLeft">
+                                                <v-col v-if="expandedBasic[key][fKey] && loggedIn" cols=5 class="borderLeft">
                                                     <Comments @setComment="(e) => { $emit('setComment', e) }" :id="commentId" :type="'schema'" :resource="resource.name" :field="field.name" :refable="commentRefs"></Comments>
                                                 </v-col>
 
@@ -559,6 +559,7 @@ export default{
     computed: {
         ...mapState({
             variableClassification: state => state.variableClassifications.wipItem,
+            loggedIn: state => state.user.loggedIn,
         }),
 
         fieldNameOccurences: function(){

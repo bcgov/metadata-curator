@@ -129,7 +129,12 @@ export default {
         doNotChop: {
             type: Boolean,
             default: false,
-        }
+        },
+        uploadUrlOverride: {
+            type: String,
+            default: '',
+            required: false
+        },
     },
 
     mounted() {
@@ -298,7 +303,7 @@ export default {
                 this.key = await this.getPublicKey();
             }
 
-            if (!this.uploadUrl){
+            if ((!this.uploadUrl) && (!this.uploadUrlOverride)){
                 this.$store.dispatch('file/getUploadUrl');
             }
 
@@ -505,7 +510,7 @@ export default {
                 ].join("-"));
             }
             var uploadOptions = {
-                endpoint: this.uploadUrl,
+                endpoint: this.uploadUrlOverride ? this.uploadUrlOverride : this.uploadUrl,
                 fingerprint: fing,
                 headers: {
                     "Upload-Concat": "partial"
@@ -598,7 +603,8 @@ export default {
                         let succeeded=false;
                         while (!succeeded && attempt<5){
                             try {
-                                let concatResponse = await backendApi.concatenateUpload(joinIds, self.uploadUrl, self.jwt, "1.0.0", self.file.name, self.file.type);
+                                let upUrl = self.uploadUrlOverride ? self.uploadUrlOverride : self.uploadUrl;
+                                let concatResponse = await backendApi.concatenateUpload(joinIds, upUrl, self.jwt, "1.0.0", self.file.name, self.file.type);
                                 self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
                                 
                                 let concatLocation = concatResponse.headers.location;

@@ -65,39 +65,41 @@ websocket.init = function(){
         ws.on('message', function message(data){
             try{
                 let dataObj = JSON.parse(data.toString());
-                let keys = Object.keys(self.locations);
+                if (self && self.locations){
+                    let keys = Object.keys(self.locations);
 
-                if (dataObj.type === 'none'){
-                    let mes = {left: req.user.id};
-                    for (let i=0; i<keys.length; i++){
-                        if (self.locations[keys[i]] && self.locations[keys[i]].type && self.locations[req.user.id] && self.locations[req.user.id].type){
-                            if ( (keys[i] !== req.user.id) && (self.locations[keys[i]].type === self.locations[req.user.id].type) ){
-                                if (self.locations[keys[i]].id === self.locations[req.user.id].id){
-                                    if (self.locations[keys[i]].type !== 'none'){ //catch the left when on nothing and closes browser
-                                        self.connections[keys[i]].send(JSON.stringify(mes));
+                    if (dataObj.type === 'none'){
+                        let mes = {left: req.user.id};
+                        for (let i=0; i<keys.length; i++){
+                            if (self.locations[keys[i]] && self.locations[keys[i]].type && self.locations[req.user.id] && self.locations[req.user.id].type){
+                                if ( (keys[i] !== req.user.id) && (self.locations[keys[i]].type === self.locations[req.user.id].type) ){
+                                    if (self.locations[keys[i]].id === self.locations[req.user.id].id){
+                                        if (self.locations[keys[i]].type !== 'none'){ //catch the left when on nothing and closes browser
+                                            self.connections[keys[i]].send(JSON.stringify(mes));
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
 
-                if (!self.locations){
-                    self.locations = {};
-                }
-                self.locations[req.user.id] = JSON.parse(JSON.stringify(dataObj));
-                
-                let m = []
-                if (dataObj.id){
-                    for (let i=0; i<keys.length; i++){
-                        if ( (self.locations[keys[i]].type === dataObj.type) && (keys[i] !== req.user.id) ){
-                            if (self.locations[keys[i]].id === dataObj.id){
-                                m.push(keys[i]);
-                                self.connections[keys[i]].send(JSON.stringify({arrived: req.user.id}))
+                    if (!self.locations){
+                        self.locations = {};
+                    }
+                    self.locations[req.user.id] = JSON.parse(JSON.stringify(dataObj));
+                    
+                    let m = []
+                    if (dataObj.id){
+                        for (let i=0; i<keys.length; i++){
+                            if ( (self.locations[keys[i]].type === dataObj.type) && (keys[i] !== req.user.id) ){
+                                if (self.locations[keys[i]].id === dataObj.id){
+                                    m.push(keys[i]);
+                                    self.connections[keys[i]].send(JSON.stringify({arrived: req.user.id}))
+                                }
                             }
                         }
+                        ws.send(JSON.stringify({users: m}));
                     }
-                    ws.send(JSON.stringify({users: m}));
                 }
             }catch(e){
                 if (!self.locations){

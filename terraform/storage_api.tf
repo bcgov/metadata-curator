@@ -78,6 +78,28 @@ resource "docker_container" "tusd" {
   ]
 }
 
+resource "docker_container" "tusd_supplemental" {
+  image = docker_image.tusd.latest
+  name  = "mc_tusd_supplemental"
+  volumes {
+    host_path      = "${var.hostRootPath}/config/tusd"
+    container_path = "/srv/tusd-hooks"
+  }
+  restart = "on-failure"
+  networks_advanced {
+    name = docker_network.private_network.name
+  }
+  env = [
+    "AWS_ACCESS_KEY=${random_id.accessKey.hex}",
+    "AWS_SECRET_ACCESS_KEY=${random_string.secretKey.result}",
+    "AWS_REGION=not_applicable",
+    "JWT_SECRET=${random_string.jwtSecret.result}",
+    "JWT_AUD=aud",
+    "S3_ENDPOINT=http://mc_minio:9000",
+    "S3_BUCKET=supplemental -behind-proxy",
+  ]
+}
+
 resource "null_resource" "minio_first_install" {
   provisioner "local-exec" {
     command = "scripts/wait-for-healthy.sh mc_minio"
@@ -88,6 +110,13 @@ resource "null_resource" "minio_first_install" {
       MC_HOST_PRIMARY = "http://${random_id.accessKey.hex}:${random_string.secretKey.result}@mc_minio:9000"
     }
     command = "docker run -e MC_HOST_PRIMARY --net=mc_vnet minio/mc mb PRIMARY/bucket || echo \"owned\""
+  }
+
+  provisioner "local-exec" {
+    environment = {
+      MC_HOST_PRIMARY = "http://${random_id.accessKey.hex}:${random_string.secretKey.result}@mc_minio:9000"
+    }
+    command = "docker run -e MC_HOST_PRIMARY --net=mc_vnet minio/mc mb PRIMARY/supplemental || echo \"owned\""
   }
 
   depends_on = [docker_container.minio]

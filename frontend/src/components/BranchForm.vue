@@ -26,6 +26,7 @@
                     <v-tab key="compare" v-if="!creating && inferredSchema" id="compare-tab">{{$tc('Compare')}}</v-tab>
                     <v-tab key="revisions" v-if="revisionsLoading === false && revisions.length>0" id="revisions-tab">{{$tc('Revisions', 2)}}</v-tab>
                     <v-tab key="schemaRevisions" v-if="schemaRevisionsLoading === false && schemaRevisions.length>0" id="schema-revisions-tab">{{$tc('Schema Revisions', 2)}}</v-tab>
+                    <v-tab key="supplemental" v-if="!creating" id="supplemental-tab">{{$tc('Supplemental Information', 1)}}</v-tab>
                 </v-tabs>
                 <v-tabs-items v-model="tabItem" class="fullWidth">
                     <v-tab-item key="version">
@@ -408,6 +409,10 @@
                     <v-tab-item key="schemaRevisions" v-if="schemaRevisionsLoading === false && schemaRevisions.length>0">
                         <Revisions :revisions="schemaRevisions"></Revisions>
                     </v-tab-item>
+
+                    <v-tab-item key="supplemental" v-if="!creating">
+                        <SupplementalInformation :branch="branch"></SupplementalInformation>
+                    </v-tab-item>
                 </v-tabs-items>
             </v-col>
         </v-row>
@@ -538,6 +543,7 @@ import TextArea from './TextArea';
 import Select from './Select';
 import Markdown from './Markdown';
 import MetadataForm from './MetadataForm';
+import SupplementalInformation from './SupplementalInformation';
 import Comments from './Comments';
 import Comparison from './Comparison';
 import Revisions from './Revisions';
@@ -565,6 +571,7 @@ export default {
         DatasetForm: () => import('./DatasetForm'),
         Revisions,
         ValidationObserver,
+        SupplementalInformation
     },
     props: {
         dialog: {

@@ -8,6 +8,8 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
 
     let log = require('npmlog');
 
+    const config = require('config');
+
     const util = require('./util');
     const requiredPhase = 2;
     const bcdcPhase = 3;
@@ -306,6 +308,11 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             revision.revise('more_information', repoBranchSchema.more_information, fields.more_information);
             repoBranchSchema.more_information = fields.more_information;
         }
+
+        if (fields.supplemental_files && ( (user.isApprover) || (user.isAdmin) )){
+            revision.revise('supplemental_files', repoBranchSchema.supplemental_files, fields.supplemental_files);
+            repoBranchSchema.supplemental_files = fields.supplemental_files;
+        };
         
         //if change_summary is set there is at least one change
         if (revision.change_summary){
@@ -1001,6 +1008,65 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             console.log("bcdc e", e);
             res.status(500).json(e);
         }
+    });
+
+    router.get('/:branchId/file/:fileId', auth.requireLoggedIn, async function(req, res, next){
+        //version check
+        if (!util.phaseCheck(cache, bcdcPhase, db)){
+            return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.branchId+"/file/"+req.params.fileId)));
+        }
+
+        let topicResponse = null;;
+        if (req.user){
+            topicResponse = await forumClient.getTopics(req.user, {name: req.params.branchId+"branch"});
+            if (!topicResponse || !topicResponse.data || topicResponse.data.length < 1){
+                return res.status(404).json({error: '404'})
+            }
+        }else{
+            return res.status(404).json({error: '404'})
+        }
+
+        let branch = await db.RepoBranchSchema.findOne({_id: req.params.branchId});
+
+        if (!branch){
+            return res.status(400).json({error: "No such edition " + req.params.branchId});
+        }
+
+        if (!config.has('minio')){
+            return res.status(500).json({error: "Not configured"});
+        }
+
+        var minioConf = config.get('minio');
+        
+        var Minio = require('minio')
+        var minioClient = new Minio.Client({
+            endPoint: minioConf.url,
+            port: minioConf.port,
+            useSSL: minioConf.ssl,
+            accessKey: minioConf.key,
+            secretKey: minioConf.secret
+        });
+
+        const { metaData } = await minioClient.statObject(minioConf.bucket, req.params.fileId);
+        const stream = await minioClient.getObject(minioConf.bucket, req.params.fileId);
+        let data = [];
+
+        stream.on('data', chunk => data.push(chunk));
+        stream.on('end', () => {
+            const fileData = Buffer.concat(data);
+      
+            res.writeHead(200, {
+              'Content-Type': metaData.filetype || metaData['content-type'],
+              'Content-Disposition': `attachment; filename=${metaData.filename}`,
+              'Content-Length': fileData.length,
+            });
+      
+            res.end(fileData);
+        });
+
+        stream.on('error', function(err) {
+            res.json({error: err});
+        });
     });
 
     return router;
