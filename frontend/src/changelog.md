@@ -3,14 +3,17 @@
 <br />
 
 ## Version 1.5.0
-May 4, 2022
+May 9, 2022
  - First draft of dataset reports, includes 'tagged fields' report
  - Added a supplemental information tab to editions
+ - Removed comment button from published view of an edition (which didn't work)
+ - Removed comment section from published view of an edition (as it doesn't work)
+ - Removed highlight field from published view of an edition (as the field either is or is not highlighted)
 
 <br />
 
 ## Table Of Contents
-- [Version 1.5.0 (May 4 2022)](#version-146)
+- [Version 1.5.0 (May 9 2022)](#version-146)
 - [Version 1.4.6 (April 28 2022)](#version-146)
 - [Version 1.4.5 (April 27 2022)](#version-145)
 - [Version 1.4.4 (April 25 2022)](#version-144)
