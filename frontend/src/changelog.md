@@ -2,13 +2,18 @@
 
 <br />
 
-## Version 1.4.6
-April 28, 2022
- - This release contains changes for the terraform version
+## Version 1.5.0
+May 9, 2022
+ - First draft of dataset reports, includes 'tagged fields' report
+ - Added a supplemental information tab to editions
+ - Removed comment button from published view of an edition (which didn't work)
+ - Removed comment section from published view of an edition (as it doesn't work)
+ - Removed highlight field from published view of an edition (as the field either is or is not highlighted)
 
 <br />
 
 ## Table Of Contents
+- [Version 1.5.0 (May 9 2022)](#version-146)
 - [Version 1.4.6 (April 28 2022)](#version-146)
 - [Version 1.4.5 (April 27 2022)](#version-145)
 - [Version 1.4.4 (April 25 2022)](#version-144)
@@ -29,6 +34,12 @@ April 28, 2022
 - [Version 1.2.4 (February 7 2022)](#version-124)
 - [Version 1.2.3 (February 1 2022)](#version-123)
 - [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
+## Version 1.4.6
+April 28, 2022
+ - This release contains changes for the terraform version
 
 <br />
 

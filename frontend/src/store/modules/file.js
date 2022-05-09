@@ -14,6 +14,10 @@ const state = {
     uploadUrl: "",
     fileSig: {},
     successfullyUploadedChunks: {},
+    supplementalUploadUrl: '',
+    supplementalFile: null,
+    supError: '',
+    supHeaders: {}
 };
 
 const getters = {
@@ -56,15 +60,36 @@ async function encrypt(commit, clear, content, key, replaceIndex){
 
 const actions = {
     async getUploadUrl({commit, state}){
-
         if ( (state.uploadUrl === null) || (state.uploadUrl === "") ){
             backend.getUploadUrl().then( (data) => {
                 commit('setUploadUrl', {uploadUrl: data.url});
             });
         }
-
-
     },
+
+    async getSupplementalUploadUrl({commit, state}){
+        if ( (state.supplementalUploadUrl === null) || (state.supplementalUploadUrl === "") ){
+            backend.getSupplementalUploadUrl().then( (data) => {
+                commit('setSupplementalUploadUrl', {uploadUrl: data.url});
+            });
+        }
+    },
+
+    async getSupplementalFile({commit}, {branchId, fileId}){
+        commit('setSupplementalFile', {file: null});
+        commit('setSupHeaders', {headers: null});
+        commit('setSupError', {error: ''});
+
+        try {
+            let data = await backend.getSuppFile(branchId, fileId);
+            commit('setSupplementalFile', {file: data.data});    
+            commit('setSupHeaders', {headers: data.headers});
+
+        }catch(e){
+            commit('setSupError', {error: e});
+        }
+    },
+
     async encryptContent({commit, state}, {index, clear, content}){
 
         if (state.publicKey == null){
@@ -169,6 +194,18 @@ const mutations = {
     },
     setUploadUrl(state, { uploadUrl }){
         state.uploadUrl = uploadUrl;
+    },
+    setSupplementalUploadUrl(state, { uploadUrl }){
+        state.supplementalUploadUrl = uploadUrl;
+    },
+    setSupplementalFile(state, { file }){
+        state.supplementalFile = file;
+    },
+    setSupError(state, { error }){
+        state.supError = error;
+    },
+    setSupHeaders(state, { headers }){
+        state.supHeaders = headers;
     },
     
     // eslint-disable-next-line

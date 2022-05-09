@@ -207,8 +207,14 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         }
 
         let current = null;
+        if (!inferred){
+            inferred = {
+                $in: ['false', null, false]
+            };
+        }
+        let q = {version: id, inferred: inferred}
         try{
-            current = await db.DataPackageSchema.findOne({version: id, inferred: inferred}).lean()
+            current = await db.DataPackageSchema.findOne(q).lean()
             if (!current){
                 return current;
             }

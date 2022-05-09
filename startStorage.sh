@@ -5,4 +5,5 @@ export AWS_SECRET_ACCESS_KEY=$MINIO_SECRET_KEY
 export AWS_REGION=us-east-1
 
 minio server ./tmp &
-tusd -s3-endpoint http://localhost:9000 -s3-bucket files
+tusd -s3-endpoint http://localhost:9000 -s3-bucket files &
+tusd -s3-endpoint http://localhost:9000 -s3-bucket supplemental -port 1081

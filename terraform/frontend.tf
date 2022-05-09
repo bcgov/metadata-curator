@@ -76,6 +76,17 @@ EOF
     
 
     uploadUrl = "\"uploadUrl\": \"${var.host}/files/\"",
+    supplementalUploadUrl = "\"supplementalUploadUrl\": \"${var.host}/files_supplemental/\"",
+    minio = <<-EOF
+  "minio":  {
+    "url": "${var.host}/minio",
+      "port": 80,
+      "ssl": true,
+      "key": "${random_id.accessKey.hex}",
+      "secret": "${random_string.secretKey.result}",
+      "bucket": "supplemental"
+  }
+  EOF
 
     base64EncodedPGPPublicKey = "\"base64EncodedPGPPublicKey\": \"${var.base64EncodedPGPPublicKey}\"",
 
@@ -112,6 +123,8 @@ data "null_data_source" "configValues" {
   ${data.null_data_source.feIndConfig.outputs["wsUrl"]},
   ${data.null_data_source.feIndConfig.outputs["oidc"]},
   ${data.null_data_source.feIndConfig.outputs["uploadUrl"]},
+  ${data.null_data_source.feIndConfig.outputs["supplementalUploadUrl"]},
+  ${data.null_data_source.feIndConfig.outputs["minio"]},
   ${data.null_data_source.feIndConfig.outputs["base64EncodedPGPPublicKey"]},
   ${data.null_data_source.feIndConfig.outputs["approverGroups"]},
   ${data.null_data_source.feIndConfig.outputs["forumApi"]},

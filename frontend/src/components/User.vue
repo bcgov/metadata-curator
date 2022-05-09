@@ -6,7 +6,7 @@
                 <v-card-title>
                     {{$tc('About')}}
                     <v-spacer></v-spacer>
-                    <v-btn @click="aboutDia = false">X</v-btn>
+                    <v-btn @click="aboutDia = false"><v-icon>mdi-close</v-icon></v-btn>
                 </v-card-title>
                 <v-card-text>
                     <About></About>
@@ -19,7 +19,7 @@
                 <v-card-title>
                     {{$tc('Update Information')}}
                     <v-spacer></v-spacer>
-                    <v-btn @click="changesDia = false">X</v-btn>
+                    <v-btn @click="changesDia = false"><v-icon>mdi-close</v-icon></v-btn>
                 </v-card-title>
                 <v-card-text>
                     <Changes></Changes>
