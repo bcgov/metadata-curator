@@ -26,9 +26,6 @@
             <v-col cols=12>
                 <v-btn v-if="showUploadButton" :disabled="disabled" @click="upload">{{$tc('Uploads')}}</v-btn>
                 <div v-if="showProgress">
-                    <div>
-                        {{$tc('FileUploadNote')}}
-                    </div>
                     <span>
                         <v-progress-linear :value="(up1Progress/up1Size)*100"></v-progress-linear>
                     </span>
