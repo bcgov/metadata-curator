@@ -6,7 +6,7 @@
 <script>
 
 import {mapMutations} from 'vuex';
-import DataUploads from "../DataUploads";
+import DataUploads from "../Uploads/DataUploads";
 
 export default {
     components:{

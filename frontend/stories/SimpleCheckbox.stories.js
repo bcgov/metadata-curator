@@ -1,4 +1,4 @@
-import SimpleCheckbox from '../src/components/SimpleCheckbox';
+import SimpleCheckbox from '../src/components/FormElements/SimpleCheckbox';
 import {withKnobs, text, boolean} from "@storybook/addon-knobs";
 
 export default {

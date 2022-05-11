@@ -69,7 +69,7 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex';
-import { Backend } from '../services/backend';
+import { Backend } from '../../services/backend';
 
 let backendApi = new Backend();
 

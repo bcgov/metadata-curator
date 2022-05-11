@@ -79,7 +79,7 @@
 
 <script>
 
-    import ValidationRules from "../mixins/ValidationRules";
+    import ValidationRules from "../../mixins/ValidationRules";
 
     export default {
         mixins: [ValidationRules],

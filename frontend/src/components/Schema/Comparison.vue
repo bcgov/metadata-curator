@@ -91,7 +91,7 @@ const Diff = require('diff');
 
 import ResourceDisplay from './ResourceDisplay';
 
-import JsonProcessor from '../mixins/JsonProcessor'
+import JsonProcessor from '../../mixins/JsonProcessor'
 
 const StringSimilarity = require("string-similarity");
 

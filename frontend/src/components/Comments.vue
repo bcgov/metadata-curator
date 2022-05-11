@@ -95,7 +95,7 @@
 <script>
 
 import {mapActions, mapState} from "vuex";
-import Markdown from './Markdown.vue';
+import Markdown from './FormElements/Markdown.vue';
 import md5 from 'md5'
 import { Backend } from '../services/backend';
 const backend = new Backend();

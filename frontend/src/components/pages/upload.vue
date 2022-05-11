@@ -194,12 +194,12 @@
 <script>
 
     import {mapActions, mapMutations, mapState} from "vuex";
-    import UploadForm from "../UploadForm";
-    import FileForm from "../FileForm";
-    import FileInfoForm from "../FileInfoForm";
-    import FileUploadForm from "../FileUploadForm";
-    import Comparison from '../Comparison';
-    import Select from '../Select';
+    import UploadForm from "../Uploads/UploadForm";
+    import FileForm from "../Uploads/FileForm";
+    import FileInfoForm from "../Uploads/FileInfoForm";
+    import FileUploadForm from "../Uploads/FileUploadForm";
+    import Comparison from '../Schema/Comparison';
+    import Select from '../FormElements/Select';
 
     import JsonEditor from '../JsonEditor/JsonEditor';
 

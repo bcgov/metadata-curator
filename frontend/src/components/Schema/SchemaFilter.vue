@@ -55,8 +55,8 @@
 <script>
 
 import { mapState } from 'vuex';
-import Select from './Select';
-import TextInput from './TextInput';
+import Select from '../FormElements/Select';
+import TextInput from '../FormElements/TextInput';
 
     export default {
         components:{

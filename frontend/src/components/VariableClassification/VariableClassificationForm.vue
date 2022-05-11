@@ -145,9 +145,9 @@
 
 <script>
 import {mapActions, mapMutations, mapState} from "vuex";
-import TextInput from './TextInput';
-import SimpleCheckbox from './SimpleCheckbox';
-import TextArea from './TextArea';
+import TextInput from '../FormElements/TextInput';
+import SimpleCheckbox from '../FormElements/SimpleCheckbox';
+import TextArea from '../FormElements/TextArea';
 
 export default {
     props: {

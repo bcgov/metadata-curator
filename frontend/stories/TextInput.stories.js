@@ -1,4 +1,4 @@
-import TextInput from '../src/components/TextInput';
+import TextInput from '../src/components/FormElements/TextInput';
 import {withKnobs, text, boolean} from "@storybook/addon-knobs";
 
 export default {

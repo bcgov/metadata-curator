@@ -472,14 +472,14 @@ import RepeatingObject from './RepeatingObject';
 
 import JsonProcessor from '../../mixins/JsonProcessor';
 
-import TextInput from '../TextInput';
-// import SimpleCheckbox from '../SimpleCheckbox';
-import Select from '../Select';
-import DateInput from '../DateInput';
-import TextArea from '../TextArea';
+import TextInput from '../FormElements/TextInput';
+// import SimpleCheckbox from '../FormElements/SimpleCheckbox';
+import Select from '../FormElements/Select';
+import DateInput from '../FormElements/DateInput';
+import TextArea from '../FormElements/TextArea';
 import Comments from '../Comments';
 import draggable from 'vuedraggable'
-import SchemaFilter from '../SchemaFilter.vue'
+import SchemaFilter from '../Schema/SchemaFilter.vue'
 
 
 export default{

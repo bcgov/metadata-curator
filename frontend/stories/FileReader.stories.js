@@ -1,6 +1,6 @@
 import { action } from '@storybook/addon-actions';
 import { withKnobs, text, boolean } from '@storybook/addon-knobs';
-import FileReader from '../src/components/FileReader';
+import FileReader from '../src/components/FormElements/FileReader';
 
 export default {
     title: 'FileReader',

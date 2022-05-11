@@ -538,22 +538,22 @@
 <script>
 
 import {mapActions, mapMutations, mapState} from "vuex";
-import TextInput from './TextInput';
-import TextArea from './TextArea';
-import Select from './Select';
-import Markdown from './Markdown';
+import TextInput from '../FormElements/TextInput';
+import TextArea from '../FormElements/TextArea';
+import Select from '../FormElements/Select';
+import Markdown from '../FormElements/Markdown';
 import MetadataForm from './MetadataForm';
 import SupplementalInformation from './SupplementalInformation';
-import Comments from './Comments';
-import Comparison from './Comparison';
-import Revisions from './Revisions';
+import Comments from '../Comments';
+import Comparison from '../Schema/Comparison';
+import Revisions from '../Revisions';
 import { ValidationObserver } from "vee-validate";
 
 import Vue from 'vue';
-import SimpleCheckbox from './SimpleCheckbox';
-import DataUploadSelect from './DataUploadSelect';
+import SimpleCheckbox from '../FormElements/SimpleCheckbox';
+import DataUploadSelect from '../FormElements/DataUploadSelect';
 
-import { Backend } from '../services/backend';
+import { Backend } from '../../services/backend';
 
 export default {
     name: "BranchForm",
@@ -568,7 +568,7 @@ export default {
         Comments,
         Comparison,
         DataUploadSelect,
-        DatasetForm: () => import('./DatasetForm'),
+        DatasetForm: () => import('../Datasets/DatasetForm'),
         Revisions,
         ValidationObserver,
         SupplementalInformation

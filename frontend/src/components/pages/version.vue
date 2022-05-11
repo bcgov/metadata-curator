@@ -5,7 +5,7 @@
 </template>
 <script>
 
-import BranchForm from "../BranchForm";
+import BranchForm from "../Versions/BranchForm";
 
 export default {
     components:{

@@ -98,8 +98,8 @@
 <script>
 
 import {mapActions, mapMutations, mapState} from "vuex";
-import FileReader from './FileReader';
-import SchemaView from './SchemaView';
+import FileReader from '../FormElements/FileReader';
+import SchemaView from '../Schema/SchemaView';
 
 export default {
     components:{

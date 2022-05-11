@@ -60,7 +60,7 @@
 
 <script>
     import { mapState, mapActions, mapMutations } from "vuex";
-    import FileReader from './FileReader';
+    import FileReader from '../FormElements/FileReader';
 
     export default {
         name: 'FileForm',

@@ -219,9 +219,9 @@
 <script>
 
     import {mapActions, mapState} from "vuex";
-    import TextInput from './TextInput';
-    import TextArea from './TextArea';
-    import DateInput from './DateInput';
+    import TextInput from '../FormElements/TextInput';
+    import TextArea from '../FormElements/TextArea';
+    import DateInput from '../FormElements/DateInput';
 
     export default {
         mixins: [],

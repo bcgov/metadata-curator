@@ -33,7 +33,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import JsonEditor from './JsonEditor/JsonEditor';
+import JsonEditor from '../JsonEditor/JsonEditor';
 
     export default {
         components: {

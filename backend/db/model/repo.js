@@ -1,6 +1,33 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+var lifecycleDateSchema = mongoose.Schema({
+    type: {
+        type: String,
+        enum : ['created','published', 'modified', 'archived', 'destroyed', 'comment'],
+        required: true
+    },
+    date_comments: {
+        type: String,
+        required: true
+    },
+}, { _id : false });
+
+var contactSchema = mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: false
+    },
+    phone: {
+        type: String,
+        required: false,
+    }
+}, { _id : false });
+
 var repoSchema = new Schema({
     name: {
         type: String,
@@ -51,6 +78,45 @@ var repoSchema = new Schema({
         type: String,
         required: false,
     },
+
+
+    //added may 11, 2022
+    sector: {
+        type: String,
+        required: false,
+        default: "",
+    },
+    data_type: {
+        type: String,
+        required: false,
+        default: "",
+    },
+    restrictions_comments: {
+        type: String,
+        required: false,
+        default: "",
+    },
+    contact: {
+        type: [contactSchema],
+        required: false,
+        default: {},
+    },
+    refresh_schedule: {
+        type: String,
+        required: false,
+        default: "",
+    },
+    lifecycle_status: {
+        type: String,
+        enum : ['active','semiactive', 'destroyed'],
+        default: 'active',
+        required: true
+    },
+    lifecycle_dates: {
+        type: [lifecycleDateSchema],
+        required: false,
+        default: [],
+    }
 });
 
 var model = mongoose.model('repo', repoSchema, 'repo');

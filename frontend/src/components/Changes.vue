@@ -17,7 +17,7 @@
 
 <script>
 
-import Markdown from './Markdown';
+import Markdown from './FormElements/Markdown';
 import changes from '../changelog.md';
 
 export default {
