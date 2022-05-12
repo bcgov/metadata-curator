@@ -99,7 +99,7 @@ var repoSchema = new Schema({
     contact: {
         type: [contactSchema],
         required: false,
-        default: {},
+        default: [],
     },
     refresh_schedule: {
         type: String,

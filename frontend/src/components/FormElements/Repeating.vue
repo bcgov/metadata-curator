@@ -176,7 +176,16 @@ import Composite from './Composite';
 
             addValue: function(){
                 let x = JSON.parse(JSON.stringify(this.val));
-                x.push(this.defaults);
+                if (!Array.isArray(this.defaults)){
+                    let emptyObj = {};
+                    let keys = Object.keys(this.defaults);
+                    for (let i=0; i<keys.length; i++){
+                        emptyObj[keys[i]] = "";
+                    }
+                    x.push(emptyObj);
+                }else{
+                    x.push(this.defaults[0]);
+                }
                 Vue.set(this, 'val', x);
             },
 

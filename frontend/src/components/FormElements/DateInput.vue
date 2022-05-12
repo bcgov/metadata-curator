@@ -59,7 +59,7 @@
                             @focus="$emit('focus', $event)"
                             @blur="$emit('blur', $event)"
                         >
-                            <template v-slot:label>
+                            <template v-slot:prepend>
                                 {{displayLabel}}
                                 <v-tooltip right v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
                                     <template v-slot:activator="{ on }">

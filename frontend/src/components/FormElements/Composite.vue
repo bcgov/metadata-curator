@@ -6,7 +6,7 @@
                     v-if="eval(renderTypes[key]) === 'DateInput'"
                     :label="label[key]"
                     :placeholder="placeholder[key]"
-                    :name="name+'['+key+']'"
+                    :name="name+'.'+key"
                     :editing="editing"
                     :helpPrefix="helpPrefix"
                     :value="innerVal"
