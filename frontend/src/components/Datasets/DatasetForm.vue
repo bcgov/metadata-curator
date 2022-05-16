@@ -253,6 +253,7 @@
                                     helpPrefix="dataset"
                                     innerType="Composite"
                                     :innerLabel="{name: 'Name', email: 'Email', phone: 'Phone'}"
+                                    :inner-validation-rules="{name: 'required'}"
                                     :innerPlaceholder="{name: 'John Doe', email: 'jdoe@gmail.com', phone: '1-555-123-4567'}"
                                     :defaults="{
                                         name: 'John Doe',
@@ -341,6 +342,7 @@
                                     :conditions="{
                                         date_comments: 'val.type===\'comment\' ? \'TextInput\' : \'DateInput\''
                                     }"
+                                    :inner-validation-rules="{type: 'required', date_comments: 'required'}"
                                     @edited="(newValue) => { updateValues('lifecycle_dates', newValue) }"
                                 ></Repeating>
                             </v-col>

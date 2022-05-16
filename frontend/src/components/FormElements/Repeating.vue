@@ -32,11 +32,6 @@
         </v-row>
 
         <v-row v-for="(item, key) in val" :key="'repeating-row-'+key">
-            <v-col cols=1 v-if="editing">
-                <v-btn color="error" @click="removeValue(key)"><v-icon>mdi-minus</v-icon></v-btn>
-            </v-col>
-            <v-col cols=11 v-if="editing">
-            </v-col>
             <v-col cols=12>
                 <DateInput
                     v-if="innerType=='DateInput'"
@@ -47,6 +42,7 @@
                     :helpPrefix="helpPrefix"
                     :value="item"
                     :large="large"
+                    :validation-rules="innerValidationRules"
                     @edited="(newValue) => { updateVal(key, newValue) }">
                 </DateInput>
 
@@ -62,16 +58,23 @@
                     :schema="defaults"
                     :items="items"
                     :conditions="conditions"
+                    :validation-rules="innerValidationRules"
                     @edited="(newValue) => { updateVal(key, newValue) }">
                 </Composite>
             </v-col>
+            <v-col cols=11 v-if="editing">
+            </v-col>
+            <v-col cols=1 v-if="editing">
+                <v-btn color="error" @click="removeValue(key)"><v-icon>mdi-delete</v-icon></v-btn>
+            </v-col>
+            
         </v-row>
 
         <v-row v-if="editing">
-            <v-col cols=11>
-            </v-col>
             <v-col cols=1>
                 <v-btn color="success" @click="addValue"><v-icon>mdi-plus</v-icon></v-btn>
+            </v-col>
+            <v-col cols=11>
             </v-col>
         </v-row>
 
@@ -105,7 +108,12 @@ import Composite from './Composite';
             validationRules: {
                 type: String,
                 required: false,
-                default: () => ''
+                default: ''
+            },
+            innerValidationRules: {
+                type: [String, Object],
+                required: false,
+                default: ''
             },
             value: {
                 type: Array,
@@ -157,7 +165,7 @@ import Composite from './Composite';
                 type: Object,
                 required: false,
                 default: () => {}
-            }
+            },
             
         },
         data() {

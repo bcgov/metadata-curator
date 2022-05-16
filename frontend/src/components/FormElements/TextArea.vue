@@ -18,7 +18,7 @@
         </span>
 
         <span v-else>
-            <ValidationProvider ref="provider" :rules="validationRules" v-slot="{ errors }" :name="label ? $tc(label) : $tc(name)">
+            <ValidationProvider ref="provider" :rules="validationRules" v-slot="{ errors }" :name="label && $te(label) ? $tc(label) : name">
                 <v-textarea
                     :placeholder="$tc(placeholder)"
                     :name="name"
@@ -145,9 +145,9 @@
 
             displayLabel: function () {
                 if (this.validationRules.toLowerCase().indexOf("required") >= 0) {
-                    return this.$tc(this.label) + '*';
+                    return this.$te(this.label) ? this.$tc(this.label) + '*' : this.label + '*';
                 }
-                return this.$tc(this.label);
+                return this.$te(this.label) ? this.$tc(this.label) : this.label;
             }
         },
         watch: {

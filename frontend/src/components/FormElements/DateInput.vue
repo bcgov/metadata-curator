@@ -149,18 +149,22 @@
         data() {
             let v = this.value;
             let tryDate = false;
-            try{
-                v = this.value.toISOString().split('T')[0];
-            }catch(ex){
-                tryDate = true;
-            }
-
-            if (tryDate){
+            if (v){
                 try{
-                    v = new Date(this.value).toISOString().split('T')[0];
+                    v = this.value.toISOString().split('T')[0];
                 }catch(ex){
-                    v = ""
+                    tryDate = true;
                 }
+
+                if (tryDate){
+                    try{
+                        v = new Date(this.value).toISOString().split('T')[0];
+                    }catch(ex){
+                        v = ""
+                    }
+                }
+            }else{
+                v = null;
             }
 
             return {
@@ -189,10 +193,14 @@
         },
         watch: {
             value: function (newVal) {
-                try{
-                    this.val = newVal.toISOString().split('T')[0];
-                }catch{
-                    this.val = new Date(newVal).toISOString().split('T')[0];
+                if (newVal){
+                    try{
+                        this.val = newVal.toISOString().split('T')[0];
+                    }catch{
+                        this.val = new Date(newVal).toISOString().split('T')[0];
+                    }
+                }else{
+                    this.val = null;
                 }
             },
             val(){

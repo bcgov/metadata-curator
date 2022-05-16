@@ -204,7 +204,7 @@
                                                         </v-col>
                                                         <v-col cols=12 v-if="(field && field.name) || editing" class="py-1">
                                                             <TextInput
-                                                                :label="$tc('Name')"
+                                                                :label="$tc('Field') + ' ' + $tc('Name')"
                                                                 placeholder=""
                                                                 name="name"
                                                                 :refName="'basicField-' + key + '-' + fKey + '-name'"
@@ -256,7 +256,7 @@
 
                                                         <v-col cols=12 v-if="((field && field.type) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
                                                             <Select
-                                                                :label="$tc('Type')"
+                                                                :label="$tc('Field') + ' ' + $tc('Type')"
                                                                 placeholder=""
                                                                 name="type"
                                                                 :items="fieldTypes"
@@ -270,7 +270,7 @@
 
                                                         <v-col cols=12 v-if="((field && field.description) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
                                                             <TextArea
-                                                                :label="$tc('Description')"
+                                                                :label="$tc('Field') + ' ' + $tc('Description')"
                                                                 placeholder=""
                                                                 name="description"
                                                                 :refName="'basicField-' + key + '-' + fKey + '-description'"
@@ -355,7 +355,7 @@
 
                                                         <v-col cols=12 v-if="((field && field.notes) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
                                                             <TextArea
-                                                                :label="$tc('Notes', 2)"
+                                                                :label="$tc('Field') + ' ' + $tc('Notes', 2)"
                                                                 placeholder=""
                                                                 name="notes"
                                                                 :refName="'basicField-' + key + '-' + fKey + '-notes'"

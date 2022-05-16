@@ -11,6 +11,7 @@
                     :helpPrefix="helpPrefix"
                     :value="innerVal"
                     :large="large"
+                    :validation-rules="(validationRules && validationRules[key]) ? validationRules[key] : ''"
                     @edited="(newValue) => { updateVal(key, newValue) }">
                 </DateInput>
                 <Select
@@ -23,6 +24,7 @@
                     :editing="editing"
                     :value="innerVal"
                     :helpPrefix="helpPrefix"
+                    :validation-rules="(validationRules && validationRules[key]) ? validationRules[key] : ''"
                     @edited="(newValue) => { updateVal(key, newValue) }"
                 ></Select>
                 <TextInput
@@ -34,6 +36,7 @@
                     :editing="editing"
                     :value="innerVal"
                     :helpPrefix="helpPrefix"
+                    :validation-rules="(validationRules && validationRules[key]) ? validationRules[key] : ''"
                     @blur="(newValue) => { updateVal(key, newValue.target.value) }"
                 ></TextInput>
             </v-col>
@@ -72,9 +75,9 @@
                 default: () => ''
             },
             validationRules: {
-                type: String,
+                type: Object,
                 required: false,
-                default: () => ''
+                default: () => {}
             },
             value: {
                 type: Object,
@@ -114,14 +117,17 @@
         },
         data() {
             let emptyObj = {}
+            let modifiedVal = {}
             if (this.schema){
                 let keys = Object.keys(this.schema);
                 for (let i=0; i<keys.length; i++){
                     emptyObj[keys[i]] = null;
+                    modifiedVal[keys[i]] = (this.value && this.value[keys[i]]) ? this.value[keys[i]] : null;
                 }
             }
+            
             return {
-                val: (this.value && Object.keys(this.value).length>0) ? JSON.parse(JSON.stringify(this.value)) : emptyObj,
+                val: (this.value && Object.keys(this.value).length>0) ? modifiedVal : emptyObj,
                 showTooltip: false,
                 closeOnLeave: true,
                 redrawIndex: 0
@@ -181,13 +187,15 @@
         watch: {
             value: function (newVal) {
                 let emptyObj = {}
+                let modifiedVal = {}
                 if (this.schema){
                     let keys = Object.keys(this.schema);
                     for (let i=0; i<keys.length; i++){
                         emptyObj[keys[i]] = null;
+                        modifiedVal[keys[i]] = (this.value && this.value[keys[i]]) ? this.value[keys[i]] : null;
                     }
                 }
-                this.val = (newVal && Object.keys(newVal).length>0) ? JSON.parse(JSON.stringify(newVal)) : emptyObj;
+                this.val = (newVal && Object.keys(newVal).length>0) ? modifiedVal : emptyObj;
             },
         },
         mounted(){
