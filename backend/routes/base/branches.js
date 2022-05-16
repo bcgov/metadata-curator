@@ -132,7 +132,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         repoBranchSchema.keywords = typeof(fields.keywords) !== 'undefined' ? fields.keywords : "";
         revision.revise('keywords', '', repoBranchSchema.keywords);
 
-        repoBranchSchema.more_information = typeof(fields.more_information) !== 'undefined' ? fields.more_information : "";
+        repoBranchSchema.more_information = typeof(fields.more_information) !== 'undefined' ? fields.more_information : [];
         revision.revise('more_information', '', repoBranchSchema.more_information);
 
         repoBranchSchema.linking_summary = typeof(fields.linking_summary) !== 'undefined' ? fields.linking_summary : "";

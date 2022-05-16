@@ -37,16 +37,6 @@ var workingEdition = {
         value: 'collectionMethod',
         selector2: '#collectionMethod-value'
     },
-    availability: {
-        selector: 'input[name="availability"]',
-        value: 'availability',
-        selector2: '#availability-value'
-    },
-    notes: {
-        selector: 'textarea[name="notes"]',
-        value: 'some edition notes go here',
-        selector2: '#notes-value'
-    },
     citation: {
         selector: 'input[name="citation"]',
         value: 'citation',
@@ -87,11 +77,6 @@ var workingEdition = {
         value: 'References',
         selector2: '#references-value'
     },
-    more_information: {
-        selector: 'input[name="more_information"]',
-        value: 'https://google.ca',
-        selector2: '#more_information-value'
-    },
     faq: {
         selector: 'textarea[name="faq"]',
         value: "# Header\nsecond line",
@@ -115,6 +100,8 @@ When(/^Data approver makes a new edition$/, async function(){
     client = this.browser;
 
     try{
+
+        await client.pause(2000);
 
         await client.click('#addVersion');
 
