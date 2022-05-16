@@ -3,15 +3,18 @@
 <br />
 
 ## Version 1.5.1
-May 15, 2022
+May 18, 2022
  - Update labels and helper text on dataset page
  - Add new fields to dataset page
  - Better organized files
+ - Update labels and helper text on edition page
+ - Add new fields to edition page
+ - Update labels and helper text on edition files and fields tab
 
 <br />
 
 ## Table Of Contents
-- [Version 1.5.1 (May 15 2022)](#version-151)
+- [Version 1.5.1 (May 18 2022)](#version-151)
 - [Version 1.5.0 (May 9 2022)](#version-150)
 - [Version 1.4.6 (April 28 2022)](#version-146)
 - [Version 1.4.5 (April 27 2022)](#version-145)
