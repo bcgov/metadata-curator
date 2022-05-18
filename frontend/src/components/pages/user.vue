@@ -68,7 +68,7 @@
 
 import { mapActions, mapState} from 'vuex';
 import md5 from 'md5'
-import TextInput from '../TextInput';
+import TextInput from '../FormElements/TextInput';
 
 export default {
     components:{

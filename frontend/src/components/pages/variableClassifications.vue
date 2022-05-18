@@ -5,7 +5,7 @@
 </template>
 <script>
 
-import VariableClassifications from "../VariableClassifications";
+import VariableClassifications from "../VariableClassification/VariableClassifications";
 
 export default {
     components:{

@@ -115,9 +115,9 @@
 <script>
 import Vue from 'vue';
 import {mapActions, mapState, mapMutations} from "vuex";
-import Select from './Select';
-import TextInput from './TextInput';
-import TableReport from './TableReport';
+import Select from '../FormElements/Select';
+import TextInput from '../FormElements/TextInput';
+import TableReport from '../Reports/TableReport';
 
 const taggedFieldsRep = 'Tagged fields';
 

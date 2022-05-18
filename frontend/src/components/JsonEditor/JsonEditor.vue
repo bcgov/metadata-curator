@@ -204,7 +204,7 @@
                                                         </v-col>
                                                         <v-col cols=12 v-if="(field && field.name) || editing" class="py-1">
                                                             <TextInput
-                                                                :label="$tc('Name')"
+                                                                :label="$tc('Field') + ' ' + $tc('Name')"
                                                                 placeholder=""
                                                                 name="name"
                                                                 :refName="'basicField-' + key + '-' + fKey + '-name'"
@@ -256,7 +256,7 @@
 
                                                         <v-col cols=12 v-if="((field && field.type) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
                                                             <Select
-                                                                :label="$tc('Type')"
+                                                                :label="$tc('Field') + ' ' + $tc('Type')"
                                                                 placeholder=""
                                                                 name="type"
                                                                 :items="fieldTypes"
@@ -270,7 +270,7 @@
 
                                                         <v-col cols=12 v-if="((field && field.description) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
                                                             <TextArea
-                                                                :label="$tc('Description')"
+                                                                :label="$tc('Field') + ' ' + $tc('Description')"
                                                                 placeholder=""
                                                                 name="description"
                                                                 :refName="'basicField-' + key + '-' + fKey + '-description'"
@@ -355,7 +355,7 @@
 
                                                         <v-col cols=12 v-if="((field && field.notes) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
                                                             <TextArea
-                                                                :label="$tc('Notes', 2)"
+                                                                :label="$tc('Field') + ' ' + $tc('Notes', 2)"
                                                                 placeholder=""
                                                                 name="notes"
                                                                 :refName="'basicField-' + key + '-' + fKey + '-notes'"
@@ -472,14 +472,14 @@ import RepeatingObject from './RepeatingObject';
 
 import JsonProcessor from '../../mixins/JsonProcessor';
 
-import TextInput from '../TextInput';
-// import SimpleCheckbox from '../SimpleCheckbox';
-import Select from '../Select';
-import DateInput from '../DateInput';
-import TextArea from '../TextArea';
+import TextInput from '../FormElements/TextInput';
+// import SimpleCheckbox from '../FormElements/SimpleCheckbox';
+import Select from '../FormElements/Select';
+import DateInput from '../FormElements/DateInput';
+import TextArea from '../FormElements/TextArea';
 import Comments from '../Comments';
 import draggable from 'vuedraggable'
-import SchemaFilter from '../SchemaFilter.vue'
+import SchemaFilter from '../Schema/SchemaFilter.vue'
 
 
 export default{
@@ -738,8 +738,10 @@ export default{
             for (let i=0; i<fKeys.length; i++){
                 let filterFieldName = fKeys[i];
                 if (Array.isArray(this.filters[filterFieldName])){
-                    if (!filterFieldName || (!field[filterFieldName] && field[filterFieldName] !== 0 && field[filterFieldName] !== false) || (this.filters[filterFieldName].indexOf(field[filterFieldName]) === -1)){
-                        rv = true;
+                    if (this.filters[filterFieldName].length > 0){
+                        if (!filterFieldName || (!field[filterFieldName] && field[filterFieldName] !== 0 && field[filterFieldName] !== false) || (this.filters[filterFieldName].indexOf(field[filterFieldName]) === -1)){
+                            rv = true;
+                        }
                     }
                 }else if(textFilters.indexOf(filterFieldName) !== -1){
                     if (!filterFieldName || !field[filterFieldName] || (field[filterFieldName].indexOf(this.filters[filterFieldName]) === -1) ){

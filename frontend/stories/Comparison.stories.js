@@ -1,4 +1,4 @@
-import Comparison from '../src/components/Comparison';
+import Comparison from '../src/components/Schema/Comparison';
 import {withKnobs, text, boolean} from "@storybook/addon-knobs";
 
 export default {

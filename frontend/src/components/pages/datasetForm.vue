@@ -51,10 +51,10 @@
 </template>
 <script>
 
-import DatasetForm from '../DatasetForm';
-import SchemaView from '../SchemaView';
+import DatasetForm from '../Datasets/DatasetForm';
+import SchemaView from '../Schema/SchemaView';
 import Comments from '../Comments';
-import Comparison from '../Comparison';
+import Comparison from '../Schema/Comparison';
 import Revisions from '../Revisions';
 import { mapActions, mapState } from 'vuex';
 import { Backend } from '../../services/backend';

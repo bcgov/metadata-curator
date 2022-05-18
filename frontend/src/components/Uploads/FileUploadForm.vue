@@ -32,7 +32,7 @@
 <script>
     import Vue from 'vue';
     import { mapState, mapActions } from "vuex";
-    import FileReader from './FileReader';
+    import FileReader from '../FormElements/FileReader';
 
     export default {
         name: 'FileUploadForm',

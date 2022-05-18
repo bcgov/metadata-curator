@@ -19,7 +19,7 @@
 </template>
 <script>
 
-import VariableClassificationForm from '../VariableClassificationForm';
+import VariableClassificationForm from '../VariableClassification/VariableClassificationForm';
 
 import Comments from '../Comments';
 

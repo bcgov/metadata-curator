@@ -90,7 +90,7 @@
 <script>
 
 import {mapActions, mapState, mapMutations} from "vuex";
-import Select from './Select';
+import Select from '../FormElements/Select';
 
 export default {
     components:{

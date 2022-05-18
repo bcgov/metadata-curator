@@ -48,7 +48,7 @@
 
 <script>
 
-import JsonProcessor from '../mixins/JsonProcessor';
+import JsonProcessor from '../../mixins/JsonProcessor';
 
 export default {
 

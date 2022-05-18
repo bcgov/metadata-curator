@@ -61,8 +61,8 @@
 import {mapActions, mapMutations, mapState} from "vuex";
 // import MetadataRevisions from "../MetadataRevisions";
 import Comments from "../Comments";
-import ViewUploadForm from "../ViewUploadForm";
-import SimpleCheckbox from "../SimpleCheckbox";
+import ViewUploadForm from "../Uploads/ViewUploadForm";
+import SimpleCheckbox from "../FormElements/SimpleCheckbox";
 
 export default {
     components:{

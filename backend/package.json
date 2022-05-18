@@ -8,7 +8,8 @@
     "start": "node ./bin/www",
     "test": "NODE_ENV=test nyc --reporter=lcov mocha --exit --timeout 10000",
     "serve": "nodemon ./bin/www",
-    "formioMigration": "node ./scripts/moveFromFormio.mjs"
+    "formioMigration": "node ./scripts/moveFromFormio.mjs",
+    "editionMigration": "node ./scripts/migrateEditions.mjs"
   },
   "dependencies": {
     "atob": "^2.1.2",

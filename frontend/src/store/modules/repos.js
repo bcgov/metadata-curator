@@ -34,7 +34,9 @@ const actions = {
         let r = state.repos.find(repo => repo._id === id);
         commit('setRepo', {repo: r});
 
-        dispatch('getRevisions', {id: r._id});
+        if (r && r._id){
+            dispatch('getRevisions', {id: r._id});
+        }
 
         return state.repo;
     },

@@ -1,20 +1,7 @@
 <template>
     <div>
          <span v-if="!editing">
-             <h2 v-if="large" class="mr-2">
-                {{displayLabel}}:
-                <v-tooltip right v-model="showTooltip" v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
-                    <template v-slot:activator="{}">
-                        <v-icon color="label_colour" 
-                            @mouseenter="showTooltip = true"
-                            @mouseleave="closeOnLeave ? (showTooltip = false) : false">
-                            mdi-help-circle-outline
-                        </v-icon>
-                    </template>
-                    <span v-html="displayTooltip"></span>
-                </v-tooltip>
-            </h2>
-            <span v-else class="mr-2">
+            <span class="mr-2">
                 {{displayLabel}}:
                 <v-tooltip right v-model="showTooltip" v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
                     <template v-slot:activator="{}">
@@ -27,23 +14,21 @@
                     <span v-html="displayTooltip"></span>
                 </v-tooltip>
             </span>
-            <h2 v-if="large" :id="idName ? idName : (name+'-value')">{{displayVal}}</h2>
-            <span v-else :id="idName ? idName : (name+'-value')">{{displayVal}}</span>
+            <span :id="idName ? idName : (name+'-value')">{{val}}</span>
         </span>
 
-        <span v-else :id="(idName ? idName : 'name')+'-span'">
-            <ValidationProvider :rules="validationRules" v-slot="{ errors }" :name="label ? ($te(label) ? $tc(label) : label) : ($te(name) ? $tc(name) : name)">
-                <v-select
+        <span v-else>
+            <ValidationProvider ref="provider" :rules="validationRules" v-slot="{ errors }" :name="label && $te(label) ? $tc(label) : name">
+                <v-textarea
+                    :placeholder="$tc(placeholder)"
                     :name="name"
                     v-model="val"
-                    :items="items"
-                    :item-text="itemText"
-                    :item-value="itemValue"
-                    :id="idName ? idName : ''"
-                    :multiple="multiple"
+                    :outlined="outlined"
+                    :auto-grow="autogrow"
                     :error-messages="errors.length > 0 ? [errors[0]] : []"
-                    @change="$emit('edited', val)"
-                    outlined
+                    ref="txtArea"
+                    :id="idName ? idName : ''"
+                    @blur="$emit('blur', $event)"
                 >
                     <template v-slot:prepend>
                         {{displayLabel}}&nbsp;
@@ -58,7 +43,7 @@
                             <span v-html="displayTooltip"></span>
                         </v-tooltip>
                     </template>
-                </v-select>
+                </v-textarea>
             </ValidationProvider>
         </span>
     </div>
@@ -66,7 +51,7 @@
 
 <script>
 
-    import ValidationRules from "../mixins/ValidationRules";
+    import ValidationRules from "../../mixins/ValidationRules";
     let marked = require('marked');
 
     export default {
@@ -87,28 +72,30 @@
                 required: false,
                 default: () => ''
             },
+            autogrow: {
+                type: Boolean,
+                required: false,
+                default: () => true
+            },
             validationRules: {
                 type: String,
                 required: false,
                 default: () => ''
             },
-            items: {
-                type: Array,
-                required: false,
-                default: () => []
-            },
-            itemText: {
-                type: String,
-                required: false,
-                default: () => 'text'
-            },
-            itemValue: {
-                type: String,
-                required: false,
-                default: () => 'value'
-            },
             value: {
-                type: [String, Boolean, Array],
+                type: String,
+                required: false,
+                default: () => ''
+            },
+            outlined: {
+                type: Boolean,
+                required: false,
+                default: () => true
+            },
+            normal: {
+                type: Boolean,
+                required: false,
+                default: () => true
             },
             editing: {
                 type: Boolean,
@@ -120,30 +107,32 @@
                 required: false,
                 default: ''
             },
-            large: {
-                type: Boolean,
-                required: false,
-                default: () => false
-            },
             idName: {
                 type: String,
                 required: false,
-                default: "",
-            },
-            multiple: {
-                type: Boolean,
-                required: false,
-                default: false,
+                default: ''
             }
-
         },
         data() {
             return {
-                val: null,
+                val: this.value,
                 showTooltip: false,
                 closeOnLeave: true,
             }
         },
+
+        methods: {
+            clearValidation() {
+                this.$refs.provider.reset();
+            },
+            reset() {
+                this.$refs.txtArea.reset();
+            },
+            focus() {
+                this.$refs.txtArea.focus();
+            }
+        },
+
         computed: {
             displayTooltip: function(){
                 let t = ''
@@ -156,29 +145,19 @@
 
             displayLabel: function () {
                 if (this.validationRules.toLowerCase().indexOf("required") >= 0) {
-                    return this.label + '*';
+                    return this.$te(this.label) ? this.$tc(this.label) + '*' : this.label + '*';
                 }
-                return this.label;
-            },
-
-            displayVal: function(){
-                let displayVal = this.val;
-                for (let i=0; i<this.items.length; i++){
-                    if (this.items[i][this.itemValue] === this.val){
-                        displayVal = this.items[i][this.itemText];
-                    }
-                }
-                return displayVal
+                return this.$te(this.label) ? this.$tc(this.label) : this.label;
             }
-
         },
         watch: {
             value: function (newVal) {
                 this.val = newVal
             },
-        },
-        mounted(){
-            this.val = this.value;
+            val(){
+                // console.log("val changed: ", this.val);
+                this.$emit('edited', this.val);
+            },
         }
 
     };

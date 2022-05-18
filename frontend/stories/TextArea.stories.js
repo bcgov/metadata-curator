@@ -1,4 +1,4 @@
-import TextArea from '../src/components/TextArea';
+import TextArea from '../src/components/FormElements/TextArea';
 import {withKnobs, text, boolean} from "@storybook/addon-knobs";
 
 export default {

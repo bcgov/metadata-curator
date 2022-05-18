@@ -41,9 +41,9 @@
         </span>
 
         <span v-else>
-            <ValidationProvider ref="provider" :rules="validationRules" v-slot="{ errors }" :name="label ? $tc(label) : $tc(name)">
+            <ValidationProvider ref="provider" :rules="validationRules" v-slot="{ errors }" :name="label && $te(label) ? $tc(label) : name">
                 <v-text-field
-                    :placeholder="$tc(placeholder)"
+                    :placeholder="$te(placeholder) ? $tc(placeholder) : placeholder"
                     :name="name"
                     v-model="val"
                     :append-icon="( !password ? '' : (plainText ? 'mdi-eye' : 'mdi-eye-off') )"
@@ -78,7 +78,7 @@
 
 <script>
 
-    import ValidationRules from "../mixins/ValidationRules";
+    import ValidationRules from "../../mixins/ValidationRules";
     let marked = require('marked');
 
     export default {
@@ -183,9 +183,9 @@
 
             displayLabel: function(){
                 if (this.validationRules.toLowerCase().indexOf("required") >= 0) {
-                    return this.$tc(this.label) + '*';
+                    return this.label + '*';
                 }
-                return this.$tc(this.label);
+                return this.label;
             }
         },
         watch: {

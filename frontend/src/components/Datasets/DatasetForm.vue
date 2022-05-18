@@ -11,7 +11,20 @@
             </v-col>
         </v-row>
 
-        <v-row>
+        <v-row v-if="loading">
+            <v-col cols=12>
+                    <span>{{$tc('Loading')}}...</span>
+                    <v-progress-circular indeterminate></v-progress-circular>
+            </v-col>
+        </v-row>
+
+        <v-row v-else-if="notFound">
+            <v-col cols=12>
+                <span>{{$tc('404 Not Found')}}...</span>
+            </v-col>
+        </v-row>
+
+        <v-row v-else>
             <v-dialog 
                 v-model="branchDia"
                 fullscreen
@@ -59,7 +72,7 @@
                         <v-row>
                             <v-col cols=12>
                                 <TextInput
-                                    :label="$tc('Name')"
+                                    :label="$tc('Dataset') + ' ' + $tc('Name')"
                                     :placeholder="$tc('My') + ' ' + $tc('Dataset')"
                                     name="name"
                                     :large="true"
@@ -91,7 +104,7 @@
                         <v-row>
                             <v-col cols=12>
                                 <TextInput
-                                    :label="$tc('Description')"
+                                    :label="$tc('Dataset') + ' ' + $tc('Description')"
                                     :placeholder="$tc('Description')"
                                     name="description"
                                     :large="true"
@@ -99,6 +112,36 @@
                                     :value="(dataset) ? dataset.description : ''"
                                     helpPrefix="dataset"
                                     @edited="(newValue) => { updateValues('description', newValue) }"
+                                ></TextInput>
+                            </v-col>
+                        </v-row>
+
+                        <v-row>
+                            <v-col cols=12>
+                                <TextInput
+                                    :label="$tc('Sector')"
+                                    :placeholder="$tc('Sector')"
+                                    name="sector"
+                                    :large="true"
+                                    :editing="editing"
+                                    :value="(dataset) ? dataset.sector : ''"
+                                    helpPrefix="dataset"
+                                    @edited="(newValue) => { updateValues('sector', newValue) }"
+                                ></TextInput>
+                            </v-col>
+                        </v-row>
+
+                        <v-row>
+                            <v-col cols=12>
+                                <TextInput
+                                    :label="$tc('Data Type')"
+                                    :placeholder="$tc('Data Type')"
+                                    name="data_type"
+                                    :large="true"
+                                    :editing="editing"
+                                    :value="(dataset) ? dataset.data_type : ''"
+                                    helpPrefix="dataset"
+                                    @edited="(newValue) => { updateValues('data_type', newValue) }"
                                 ></TextInput>
                             </v-col>
                         </v-row>
@@ -115,6 +158,21 @@
                                     helpPrefix="dataset"
                                     @edited="(newValue) => { updateValues('data_collection_type', newValue) }"
                                 ></Select>
+                            </v-col>
+                        </v-row>
+
+                        <v-row>
+                            <v-col cols=12>
+                                <TextInput
+                                    :label="$tc('Restrictions Comments')"
+                                    :placeholder="$tc('Restrictions Comments')"
+                                    name="restrictions_comments"
+                                    :large="true"
+                                    :editing="editing"
+                                    :value="(dataset) ? dataset.restrictions_comments : ''"
+                                    helpPrefix="dataset"
+                                    @edited="(newValue) => { updateValues('restrictions_comments', newValue) }"
+                                ></TextInput>
                             </v-col>
                         </v-row>
 
@@ -186,6 +244,29 @@
 
                         <v-row>
                             <v-col cols=12>
+                                <Repeating
+                                    name="contact"
+                                    :label="$tc('Send Approval Requests To')"
+                                    :value="(dataset) ? dataset.contact : []"
+                                    :editing="editing"
+                                    :large="true"
+                                    helpPrefix="dataset"
+                                    innerType="Composite"
+                                    :innerLabel="{name: 'Name', email: 'Email', phone: 'Phone'}"
+                                    :inner-validation-rules="{name: 'required'}"
+                                    :innerPlaceholder="{name: 'John Doe', email: 'jdoe@gmail.com', phone: '1-555-123-4567'}"
+                                    :defaults="{
+                                        name: 'John Doe',
+                                        email: 'jdoe@gmail.com',
+                                        phone: '1-555-123-4567',
+                                    }"
+                                    @edited="(newValue) => { updateValues('contact', newValue) }"
+                                ></Repeating>
+                            </v-col>
+                        </v-row>
+
+                        <v-row>
+                            <v-col cols=12>
                                 <SimpleCheckbox
                                     :label="$tc('Metadata listed in B.C. Data Catalogue')"
                                     :placeholder="$tc('Metadata listed in B.C. Data Catalogue')"
@@ -197,6 +278,73 @@
                                     helpPrefix="dataset"
                                     @edited="(newValue) => { updateValues('in_bc_catalogue', newValue) }">
                                 </SimpleCheckbox>
+                            </v-col>
+                        </v-row>
+
+                        <v-row>
+                            <v-col cols=12>
+                                <TextInput
+                                    :label="$tc('Dataset') + ' ' + $tc('Refresh Schedule')"
+                                    :placeholder="$tc('Refresh Schedule')"
+                                    name="refresh_schedule"
+                                    :large="true"
+                                    :editing="editing"
+                                    :value="(dataset) ? dataset.refresh_schedule : ''"
+                                    helpPrefix="dataset"
+                                    @edited="(newValue) => { updateValues('refresh_schedule', newValue) }"
+                                ></TextInput>
+                            </v-col>
+                        </v-row>
+
+                        <v-row>
+                            <v-col cols=12>
+                                <Select
+                                    :label="$tc('Dataset') + ' ' + $tc('Lifecycle Status')"
+                                    :placeholder="$tc('Lifecycle Status')"
+                                    name="lifecycle_status"
+                                    :large="true"
+                                    validation-rules="required"
+                                    :editing="editing"
+                                    :items="[{text: 'Active', value: 'active'}, {text: 'Semi-active', value: 'semiactive'}, {text: 'Destroyed', value: 'destroyed'}]"
+                                    :value="(dataset) ? dataset.lifecycle_status : ''"
+                                    helpPrefix="dataset"
+                                    @edited="(newValue) => { updateValues('lifecycle_status', newValue) }"
+                                ></Select>
+                            </v-col>
+                        </v-row>
+
+                        <v-row>
+                            <v-col cols=12>
+                                <Repeating
+                                    name="lifecycle_dates"
+                                    :label="$tc('Dataset') + ' ' + $tc('Lifecycle Dates')"
+                                    :value="(dataset) ? dataset.lifecycle_dates : []"
+                                    :editing="editing"
+                                    :large="true"
+                                    helpPrefix="dataset"
+                                    innerType="Composite"
+                                    :innerLabel="{type: 'Date Type', date_comments: 'Date/Comment'}"
+                                    :innerPlaceholder="{type: 'created', date_comments: new Date().toString()}"
+                                    :defaults="{
+                                        type: 'created',
+                                        date_comments: new Date()
+                                    }"
+                                    :items="{
+                                        type: [
+                                            {text: 'Created', value: 'created'},
+                                            {text: 'Published', value: 'published'},
+                                            {text: 'Modified', value: 'modified'},
+                                            {text: 'Archived', value: 'archived'},
+                                            {text: 'Destroyed', value: 'destroyed'},
+                                            {text: 'Comment', value: 'comment'}
+                                        ]
+                                    }"
+                                    :conditions="{
+                                        date_comments: 'val.type===\'comment\' ? \'TextInput\' : \'DateInput\''
+                                    }"
+                                    :inner-validation-rules="{type: 'required', date_comments: 'required'}"
+                                    @edited="(newValue) => { updateValues('lifecycle_dates', newValue) }"
+                                ></Repeating>
                             </v-col>
                         </v-row>
 
@@ -235,11 +383,12 @@
 
 <script>
 import {mapActions, mapMutations, mapState} from "vuex";
-import TextInput from './TextInput';
-import BranchForm from './BranchForm';
-import SimpleCheckbox from './SimpleCheckbox';
-import Select from './Select';
-import { Backend } from '../services/backend';
+import TextInput from '../FormElements/TextInput';
+import BranchForm from '../Versions/BranchForm';
+import SimpleCheckbox from '../FormElements/SimpleCheckbox';
+import Select from '../FormElements/Select';
+import Repeating from '../FormElements/Repeating';
+import { Backend } from '../../services/backend';
 const backend = new Backend();
 
 export default {
@@ -249,7 +398,8 @@ export default {
         TextInput,
         BranchForm,
         SimpleCheckbox,
-        Select
+        Select,
+        Repeating
     },
 
     props: {
@@ -280,6 +430,8 @@ export default {
             types: [ {text: 'Main', value: 'main'}, {text: 'Reserve', value: 'reserve'}, {text: 'Restricted', value: 'restricted'} ],
             providerGroup: null,
             selectableGroups: [],
+            loading: false,
+            notFound: false,
         }
     },
     methods: {
@@ -301,8 +453,14 @@ export default {
         }),
 
         async loadSections() {
+            this.loading = true;
             await this.getDataset({id: this.id});
-            await this.getBranches({repoId: this.id});
+            if (!this.dataset){
+                this.notFound = true;
+            }else{
+                await this.getBranches({repoId: this.id});
+            }
+            this.loading = false;
         },
 
         closeBranchDia(){
@@ -421,10 +579,11 @@ export default {
             }else{
                 this.updateDataset().then( () => {
                         this.alertType = "success"
-                        this.alertText = this.$tc("Sucessfully created dataset");
+                        this.alertText = this.$tc("Sucessfully updated dataset");
                         this.alert = true;
                         window.scrollTo(0,0);
-                        this.routeToHome();
+                        this.editing = false;
+                        //this.routeToHome();
 
                     }).catch( err => {
                         this.alertType = "error"

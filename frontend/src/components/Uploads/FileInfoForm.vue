@@ -116,10 +116,10 @@
 
 <script>
     import { mapState, mapActions } from "vuex";
-    import DateInput from './DateInput'
-    import TextArea from './TextArea'
-    import Select from './Select'
-    import TextInput from './TextInput'
+    import DateInput from '../FormElements/DateInput'
+    import TextArea from '../FormElements/TextArea'
+    import Select from '../FormElements/Select'
+    import TextInput from '../FormElements/TextInput'
 
     export default {
         name: 'FileInfoForm',

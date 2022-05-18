@@ -1,4 +1,4 @@
-import Select from '../src/components/Select';
+import Select from '../src/components/FormElements/Select';
 import {withKnobs, text, object} from "@storybook/addon-knobs";
 
 export default {

@@ -5,7 +5,7 @@
 </template>
 <script>
 
-import Datasets from "../Datasets";
+import Datasets from "../Datasets/Datasets";
 
 export default {
     components:{

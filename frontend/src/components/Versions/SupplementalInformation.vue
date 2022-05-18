@@ -107,7 +107,7 @@ import pdfvuer from 'pdfvuer';
 
 import { mapState, mapActions, mapMutations } from 'vuex';
 
-import BasicFileReader from './BasicFileReader';
+import BasicFileReader from '../FormElements/BasicFileReader';
 
 export default {
     mixins: [],

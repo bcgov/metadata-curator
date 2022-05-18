@@ -108,9 +108,9 @@
 </template>
 <script>
 import {mapActions, mapState} from "vuex";
-import SchemaView from '../SchemaView';
-import Markdown from '../Markdown';
-import SimpleCheckbox from '../SimpleCheckbox';
+import SchemaView from '../Schema/SchemaView';
+import Markdown from '../FormElements/Markdown';
+import SimpleCheckbox from '../FormElements/SimpleCheckbox';
 
 export default {
     

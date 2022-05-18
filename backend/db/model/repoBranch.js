@@ -1,6 +1,29 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+var lifecycleDateSchema = mongoose.Schema({
+    date: {
+        type: Date,
+        required: false
+    },
+    comment: {
+        type: String,
+        required: false,
+    },
+}, { _id : false });
+
+var urlSchema = mongoose.Schema({
+    name: {
+        type: String,
+        required: false
+    },
+    url: {
+        type: String,
+        required: true
+    }
+
+}, { _id : false });
+
 var repoBranchSchema = new Schema({
     repo_id: {
         type: Schema.Types.ObjectId,
@@ -52,8 +75,8 @@ var repoBranchSchema = new Schema({
         type: String,
         required: false,
     },
-    notes: {
-        type: String,
+    lifecycle: {
+        type: lifecycleDateSchema,
         required: false,
     },
     citation:{
@@ -115,7 +138,7 @@ var repoBranchSchema = new Schema({
         required: true,
     },
     more_information:{
-        type: String,
+        type: [urlSchema],
         required: false,
     },
     bcdc_record: {
@@ -126,7 +149,17 @@ var repoBranchSchema = new Schema({
         type: Boolean,
         required: false,
         default: false,
+    },
+    linking_summary: {
+        type: String,
+        required: false
+    },
+    processing_summary: {
+        type: String,
+        required: false
     }
+
+
 
 });
 

@@ -90,8 +90,8 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         revision.revise('availability', '', repoBranchSchema.availability);
         repoBranchSchema.variable_classification = fields.variable_classification;
         revision.revise('variable_classification', '', repoBranchSchema.variable_classification);
-        repoBranchSchema.notes = fields.notes;
-        revision.revise('notes', '', repoBranchSchema.notes);
+        repoBranchSchema.lifecycle = fields.lifecycle;
+        revision.revise('lifecycle', '', repoBranchSchema.lifecycle);
         repoBranchSchema.citation = fields.citation;
         revision.revise('citation', '', repoBranchSchema.citation);
         repoBranchSchema.short_title = fields.short_title;
@@ -132,8 +132,14 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         repoBranchSchema.keywords = typeof(fields.keywords) !== 'undefined' ? fields.keywords : "";
         revision.revise('keywords', '', repoBranchSchema.keywords);
 
-        repoBranchSchema.more_information = typeof(fields.more_information) !== 'undefined' ? fields.more_information : "";
+        repoBranchSchema.more_information = typeof(fields.more_information) !== 'undefined' ? fields.more_information : [];
         revision.revise('more_information', '', repoBranchSchema.more_information);
+
+        repoBranchSchema.linking_summary = typeof(fields.linking_summary) !== 'undefined' ? fields.linking_summary : "";
+        revision.revise('linking_summary', '', repoBranchSchema.linking_summary);
+
+        repoBranchSchema.processing_summary = typeof(fields.processing_summary) !== 'undefined' ? fields.processing_summary : "";
+        revision.revise('processing_summary', '', repoBranchSchema.processing_summary);
     
         let r = await repoBranchSchema.save();
         await revision.save();
@@ -229,9 +235,9 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             repoBranchSchema.variable_classification = fields.variable_classification;
         }
 
-        if (fields.notes){
-            revision.revise('notes', repoBranchSchema.notes, fields.notes);
-            repoBranchSchema.notes = fields.notes;
+        if (fields.lifecycle){
+            revision.revise('lifecycle', repoBranchSchema.lifecycle, fields.lifecycle);
+            repoBranchSchema.lifecycle = fields.lifecycle;
         }
 
         if (fields.citation){
@@ -304,7 +310,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             repoBranchSchema.keywords = fields.keywords;
         }
 
-        if (fields.more_information){
+        if (typeof(fields.more_information) === "object"){
             revision.revise('more_information', repoBranchSchema.more_information, fields.more_information);
             repoBranchSchema.more_information = fields.more_information;
         }
@@ -312,7 +318,17 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         if (fields.supplemental_files && ( (user.isApprover) || (user.isAdmin) )){
             revision.revise('supplemental_files', repoBranchSchema.supplemental_files, fields.supplemental_files);
             repoBranchSchema.supplemental_files = fields.supplemental_files;
-        };
+        }
+
+        if (typeof(fields.linking_summary) !== 'undefined'){
+            revision.revise('linking_summary', repoBranchSchema.linking_summary, fields.linking_summary);
+            repoBranchSchema.linking_summary = fields.linking_summary;
+        }
+
+        if (typeof(fields.processing_summary) !== 'undefined'){
+            revision.revise('processing_summary', repoBranchSchema.processing_summary, fields.processing_summary);
+            repoBranchSchema.processing_summary = fields.processing_summary;
+        }
         
         //if change_summary is set there is at least one change
         if (revision.change_summary){
@@ -733,17 +749,23 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             
 
             if (branch.more_information){
-                let desc = branch.more_information
-                let pos = desc.lastIndexOf("/");
-                if ( (pos !== -1) && ((pos+1) < desc.length) ){
-                    desc = desc.substring(pos+1);
+                let more_info = [];
+                for (let i=0; i<branch.more_information.length; i++){
+                    let desc = (branch.more_information[i].title) ? branch.more_information[i].title : branch.more_information[i].url
+                    if (!branch.more_information[i].title){
+                        let pos = desc.lastIndexOf("/");
+                        if ( (pos !== -1) && ((pos+1) < desc.length) ){
+                            desc = desc.substring(pos+1);
+                        }
+                        desc.replace(/-/g, " ");
+                        desc[0] = desc[0].toUpperCase();
+                    }
+                    more_info.push({
+                        description: desc,
+                        url: branch.more_information[i].url
+                    });
                 }
-                desc.replace(/-/g, " ");
-                desc[0] = desc[0].toUpperCase();
-                let more_info = [{
-                    description: desc,
-                    url: branch.more_information
-                }];
+                
                 ckanDataset.more_info = JSON.stringify(more_info);
             }
 

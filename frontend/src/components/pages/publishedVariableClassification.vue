@@ -7,7 +7,7 @@
 </template>
 <script>
 
-import VariableClassificationForm from '../VariableClassificationForm';
+import VariableClassificationForm from '../VariableClassification/VariableClassificationForm';
 
 import { mapActions, mapState } from 'vuex';
 

@@ -71,7 +71,7 @@
 
 <script>
 
-    import ValidationRules from "../mixins/ValidationRules";
+    import ValidationRules from "../../mixins/ValidationRules";
     import { mapActions, mapState, mapMutations } from 'vuex';
 
     export default {

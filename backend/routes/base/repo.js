@@ -9,6 +9,9 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
     const util = require('./util');
     const requiredPhase = 2;
 
+    const VALID_LIFECYCLE_STATUS = ['active','semiactive', 'destroyed'];
+    const VALID_LIFECYCLE_DATES = ['created','published', 'modified', 'archived', 'destroyed', 'comment'];
+
     const getRepoById = async function(user, id){
         let record = await db.RepoSchema.findOne({_id: mongoose.Types.ObjectId(id)});
         if (!record){
@@ -151,6 +154,50 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             revision.revise('data_collection_type', '', fields.data_collection_type);
             repoSchema.data_collection_type = fields.data_collection_type;
         }
+
+        //added may 11 2022
+        if (typeof(fields.sector) !== 'undefined'){
+            revision.revise('sector', '', fields.sector);
+            repoSchema.sector = fields.sector;
+        }
+        if (typeof(fields.data_type) !== 'undefined'){
+            revision.revise('data_type', '', fields.data_type);
+            repoSchema.data_type = fields.data_type;
+        }
+        if (typeof(fields.restrictions_comments) !== 'undefined'){
+            revision.revise('restrictions_comments', '', fields.restrictions_comments);
+            repoSchema.restrictions_comments = fields.restrictions_comments;
+        }
+        if (typeof(fields.contact) !== 'undefined'){
+            revision.revise('contact', '', fields.contact);
+            repoSchema.contact = fields.contact;
+        }
+        if (typeof(fields.refresh_schedule) !== 'undefined'){
+            revision.revise('refresh_schedule', '', fields.refresh_schedule);
+            repoSchema.refresh_schedule = fields.refresh_schedule;
+        }
+        if ((typeof(fields.lifecycle_status) !== 'undefined') && (VALID_LIFECYCLE_STATUS.indexOf(fields.lifecycle_status) !== -1) ){
+            revision.revise('lifecycle_status', '', fields.lifecycle_status);
+            repoSchema.lifecycle_status = fields.lifecycle_status;
+        }
+
+        if (fields.lifecycle_dates && Array.isArray(fields.lifecycle_dates)){
+            let valid = true;
+            
+            for (let i=0; i<fields.lifecycle_dates.length; i++){
+                if (VALID_LIFECYCLE_DATES.indexOf(fields.lifecycle_dates[i].type) === -1){
+                    valid = false;
+                }
+                if (fields.lifecycle_dates[i].type !== 'comment'){
+                    fields.lifecycle_dates[i].date_comments = new Date(fields.lifecycle_dates[i].date_comments);
+                }
+            }
+            if (valid){
+                revision.revise('lifecycle_dates', '', fields.lifecycle_dates);
+                repoSchema.lifecycle_dates = fields.lifecycle_dates;
+            }
+        }
+        //done fields added may 11 2022
     
     
         let r = await repoSchema.save();
@@ -233,6 +280,50 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             revision.revise('ministry_organization', record.ministry_organization, fields.ministry_organization);
             record.ministry_organization = fields.ministry_organization
         }
+
+        //added may 11 2022
+        if (typeof(fields.sector) !== 'undefined'){
+            revision.revise('sector', record.sector, fields.sector);
+            record.sector = fields.sector;
+        }
+        if (typeof(fields.data_type) !== 'undefined'){
+            revision.revise('data_type', record.data_type, fields.data_type);
+            record.data_type = fields.data_type;
+        }
+        if (typeof(fields.restrictions_comments) !== 'undefined'){
+            revision.revise('restrictions_comments', record.restrictions_comments, fields.restrictions_comments);
+            record.restrictions_comments = fields.restrictions_comments;
+        }
+        if (typeof(fields.contact) !== 'undefined'){
+            revision.revise('contact', record.contact, fields.contact);
+            record.contact = fields.contact;
+        }
+        if (typeof(fields.refresh_schedule) !== 'undefined'){
+            revision.revise('refresh_schedule', record.refresh_schedule, fields.refresh_schedule);
+            record.refresh_schedule = fields.refresh_schedule;
+        }
+        if ((typeof(fields.lifecycle_status) !== 'undefined') && (VALID_LIFECYCLE_STATUS.indexOf(fields.lifecycle_status) !== -1) ){
+            revision.revise('lifecycle_status', record.lifecycle_status, fields.lifecycle_status);
+            record.lifecycle_status = fields.lifecycle_status;
+        }
+
+        if (fields.lifecycle_dates && Array.isArray(fields.lifecycle_dates)){
+            let valid = true;
+            
+            for (let i=0; i<fields.lifecycle_dates.length; i++){
+                if (VALID_LIFECYCLE_DATES.indexOf(fields.lifecycle_dates[i].type) === -1){
+                    valid = false;
+                }
+                if (fields.lifecycle_dates[i].type !== 'comment'){
+                    fields.lifecycle_dates[i].date_comments = new Date(fields.lifecycle_dates[i].date_comments);
+                }
+            }
+            if (valid){
+                revision.revise('lifecycle_dates', record.lifecycle_dates, fields.lifecycle_dates);
+                record.lifecycle_dates = fields.lifecycle_dates;
+            }
+        }
+        //done fields added may 11 2022
     
         let r = {};
         //if change_summary is set there is at least one change
@@ -278,7 +369,6 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             
             //let data = await db.RepoBranchSchema.find({repo_id: {$in: repoIds}, data_upload_id: query.upload_id}).populate('repo_id').sort({ "create_date": -1});
             let topQ = {inferred: {$in: ['false', false, null]}, version: {$in: branchIds}};
-            console.log("TOP Q", topQ, topQ.version);
             let fullDPS = await db.DataPackageSchema.find(topQ).populate({
                 path: 'version', 
                 populate: 'repo_id',
@@ -359,7 +449,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             return res.status(404).send(util.phaseText('GET', 'repos'));
         }
         try{
-            console.log("list full");
+
             let repos = await listRepositoriesEditionFull(req.user, req.query);
             res.status(200).json(repos);
         }catch(ex){

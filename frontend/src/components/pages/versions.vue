@@ -5,7 +5,7 @@
 </template>
 <script>
 
-import Versions from "../Versions";
+import Versions from "../Versions/Versions";
 
 export default {
     components:{
