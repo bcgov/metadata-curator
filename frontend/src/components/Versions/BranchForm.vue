@@ -46,7 +46,7 @@
 
                                 <v-row>
                                     <v-col cols=12 v-if="branch && branch.repo_id && branch.repo_id.name">
-                                        <h2 class="font-weight-thin">Dataset Name: {{branch.repo_id.name}}</h2>
+                                        <h2 class="font-weight-thin largerFont">Dataset Name: {{branch.repo_id.name}}</h2>
                                     </v-col>
                                 </v-row>
 
@@ -1143,6 +1143,10 @@ export default {
         height: 36px;
         line-height: 36px;
         vertical-align: middle;
+    }
+
+    .largerFont{
+        font-size: 1.75rem;
     }
     
 

@@ -10,6 +10,7 @@ May 18, 2022
  - Update labels and helper text on edition page
  - Add new fields to edition page
  - Update labels and helper text on edition files and fields tab
+ - Fixed variable classification and highlight filter being unfiltered on files and fields
 
 <br />
 

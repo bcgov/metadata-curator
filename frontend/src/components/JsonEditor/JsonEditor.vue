@@ -738,8 +738,10 @@ export default{
             for (let i=0; i<fKeys.length; i++){
                 let filterFieldName = fKeys[i];
                 if (Array.isArray(this.filters[filterFieldName])){
-                    if (!filterFieldName || (!field[filterFieldName] && field[filterFieldName] !== 0 && field[filterFieldName] !== false) || (this.filters[filterFieldName].indexOf(field[filterFieldName]) === -1)){
-                        rv = true;
+                    if (this.filters[filterFieldName].length > 0){
+                        if (!filterFieldName || (!field[filterFieldName] && field[filterFieldName] !== 0 && field[filterFieldName] !== false) || (this.filters[filterFieldName].indexOf(field[filterFieldName]) === -1)){
+                            rv = true;
+                        }
                     }
                 }else if(textFilters.indexOf(filterFieldName) !== -1){
                     if (!filterFieldName || !field[filterFieldName] || (field[filterFieldName].indexOf(this.filters[filterFieldName]) === -1) ){
