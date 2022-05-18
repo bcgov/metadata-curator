@@ -453,7 +453,16 @@
                     </v-tab-item>
 
                     <v-tab-item key="schemaRevisions" v-if="schemaRevisionsLoading === false && schemaRevisions.length>0">
-                        <Revisions :revisions="schemaRevisions"></Revisions>
+                        <v-select :items="schemaRevisionsDrop" v-model="leftRevision"></v-select>
+                        <v-select :items="schemaRevisionsDrop" v-model="rightRevision"></v-select>
+                        <Comparison 
+                            :left-side-text="schemaRevisionChanges[leftRevision] ? JSON.stringify(schemaRevisionChanges[leftRevision]) : ''" 
+                            :right-side-text="schemaRevisionChanges[rightRevision] ? JSON.stringify(schemaRevisionChanges[rightRevision]) : ''" 
+                            :diff-json="true" 
+                            :left-header="schemaRevisionsDrop[leftRevision] ? schemaRevisionsDrop[leftRevision].text : ''" 
+                            :right-header="schemaRevisionsDrop[rightRevision] ? schemaRevisionsDrop[rightRevision].text : ''">
+                        </Comparison>
+                        <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
                     </v-tab-item>
 
                     <v-tab-item key="supplemental" v-if="!creating">
@@ -664,6 +673,8 @@ export default {
             accessKey: '',
             disablePublish: false,
             disableSunset: false,
+            leftRevision: null,
+            rightRevision: null,
         }
     },
     methods: {
@@ -1076,6 +1087,33 @@ export default {
         enabledPhase(){
             let en = this.$store.state.config.items.find(item => item['key'] === 'enabledPhase');
             return (en) ? parseInt(en.value) : 1;
+        },
+
+        schemaRevisionsDrop: function(){
+            let rv = [];
+            for (let i=0; i<this.schemaRevisions.length; i++){
+                let label = "Revision " + this.schemaRevisions[i].revision_number + " (" + this.schemaRevisions[i].updater + ")"
+                rv.push({text: label, value: i})
+            }
+            return rv;
+        },
+
+        schemaRevisionChanges: function(){
+            let rv = [];
+            for (let i=0; i<this.schemaRevisions.length; i++){
+                let item = {}
+                try{
+                    item = JSON.parse(JSON.stringify(this.schemaRevisions[i].changes));
+                    item.resources = JSON.parse(item.resources);
+                    for (let j=0; j<item.resources.length; j++){
+                        item.resources[j].schema = JSON.parse(JSON.stringify(item.resources[j].tableSchema));
+                        delete item.resources[j].tableSchema;
+                    }
+                //eslint-disable-next-line
+                }catch(e){}
+                rv.push(item);
+            }
+            return rv;
         },
 
         canEdit: function(){

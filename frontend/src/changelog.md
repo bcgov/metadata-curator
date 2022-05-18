@@ -11,6 +11,7 @@ May 18, 2022
  - Add new fields to edition page
  - Update labels and helper text on edition files and fields tab
  - Fixed variable classification and highlight filter being unfiltered on files and fields
+ - Changed how file and fields revisions are shown
 
 <br />
 
