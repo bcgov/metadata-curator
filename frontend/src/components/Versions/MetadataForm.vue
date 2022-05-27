@@ -209,7 +209,13 @@ export default {
                     await this.loadSections();
                 }
             }else if ( (this.creating) || (!this.editing) ){
-                this.$router.push({ name: 'versions' });
+                if (!this.skipClose){
+                    this.$router.push({ name: 'versions' });
+                }else{
+                    await this.loadSections();
+                }
+
+                this.skipClose = false;
             }
             this.editing = false;
         },

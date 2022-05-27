@@ -7,13 +7,25 @@ resource "docker_image" "forum_api" {
   pull_triggers = [data.docker_registry_image.forum_api.sha256_digest]
 }
 
+resource "local_file" "forum_email_template" {
+    content = "${file("${path.module}/scripts/forumEmailTemplate.html")}"
+    filename = "${var.hostRootPath}/config/forumEmailTemplate.html"
+}
+
 resource "docker_container" "forum_api" {
   image   = docker_image.forum_api.latest
   name    = "mc_forum_api"
   restart = "on-failure"
+
   networks_advanced {
     name = docker_network.private_network.name
   }
+
+  volumes {
+    host_path = "${var.hostRootPath}/config/forumEmailTemplate.html"
+    container_path = "/app/notifications/emailTemplate.html"
+  }
+
   env = [
     "JWT_SECRET=${random_string.jwtSecret.result}",
     "LOG_LEVEL=debug",

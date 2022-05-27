@@ -1,5 +1,12 @@
 <template>
     <v-container class="comparison">
+        <v-row v-if="error">
+            <v-col cols=12>
+                <v-alert class="mb-0" v-model="error" type="error" dismissible>
+                    {{errorText}}
+                </v-alert>
+            </v-col>
+        </v-row>
         <v-row v-for="(resource, key) in resources" :key="'resources'+key+'-'+redrawResource" :class="displayClass('resources.' + key)">
             <v-col cols=11 :class="'noOverflow' + displayClass('resources.' + key + '.name')">
                 <h1>{{$tc('Resource')}} {{resource.name}}</h1>
@@ -18,7 +25,7 @@
                 </v-row>
             
                 <v-col cols=12 v-if="!collapsed[key] && ( (resource.schema && resource.schema.fields) || (resource.tableSchema && resource.tableSchema.fields))">
-                    <div v-for="(field, fkey) in ((resource.tableSchema && resource.tableSchema.fields) ? resource.tableSchema.fields : resource.schema.fields)" :key="'field-'+fkey+'-'+(field ? field.name : '')" :class="`field` + displayClass('resources.' + key + '.schema.fields.' + fkey.toString())">
+                    <div v-for="(field, fkey) in ((resource.tableSchema && resource.tableSchema.fields) ? resource.tableSchema.fields : resource.schema.fields)" :key="'field-'+fkey+'-'+(field ? field.name : '')" :class="`field` + displayClass('resources.' + key + '.schema.fields.' + fkey.toString()) + (duplicated(key, field.name) ? ' duplicate' : '')">
                         <v-row v-if="field && field.name" :class="'ma-0 noOverflow' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.name')">
                             <v-col cols=1 v-if="collapsedFields && collapsedFields[key]">
                                 <v-btn @click="collapse(key, fkey)"><v-icon>{{collapsedFields[key][fkey] ? 'mdi-plus' : 'mdi-minus'}}</v-icon></v-btn>
@@ -90,6 +97,8 @@ export default {
             collapsed: [],
             collapsedFields: [],
             redrawResource: 0,
+            error: false,
+            errorText: ""
         }
     },
 
@@ -105,6 +114,25 @@ export default {
     },
 
     computed: {
+
+        fieldNameOccurences: function(){
+            let items = {};
+
+            for (let i=0; i<this.resources.length; i++){
+                items[i] = {};
+                for (let j=0; j<this.resources[i].schema.fields.length; j++){
+                    let val = 1;
+                    if (typeof(items[i][this.resources[i].schema.fields[j].name]) !== 'undefined'){
+                        val = items[i][this.resources[i].schema.fields[j].name] + 1;
+                    }
+                    items[i][this.resources[i].schema.fields[j].name] = val;
+                }
+            }
+
+            return items;
+        },
+
+
         rightSideDiff: function(){
             if (this.compareType !== 'right'){
                 return {}
@@ -115,6 +143,15 @@ export default {
     },
 
     methods: {
+
+        duplicated: function(resKey, fieldName){
+            if (this.fieldNameOccurences[resKey][fieldName] > 1){
+                this.error = true;
+                this.errorText = "Some resources have duplicated field names, bordered in red, consider revising"
+                return true;
+            }
+            return false;
+        },
 
         sortedResource: function(resource, key){
             let r = JSON.parse(JSON.stringify(resource));
@@ -275,6 +312,11 @@ export default {
 
     .comparison{
         color: var(--v-text-base);
+    }
+
+    .duplicate{
+        border-color: var(--v-error-base);
+        border-width: 2px;
     }
 
 

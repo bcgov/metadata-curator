@@ -2,20 +2,17 @@
 
 <br />
 
-## Version 1.5.1
-May 18, 2022
- - Update labels and helper text on dataset page
- - Add new fields to dataset page
- - Better organized files
- - Update labels and helper text on edition page
- - Add new fields to edition page
- - Update labels and helper text on edition files and fields tab
- - Fixed variable classification and highlight filter being unfiltered on files and fields
- - Changed how file and fields revisions are shown
+## Version 1.5.2
+May 25, 2022
+ - Fixed a bug causing changing highlight in non edit mode to bail out to the version list.
+ - Added duplicate field name highlight to the comparison mode
+ - Allowed the Terraform setup to change the forum api email contents
+ - Fixes to Terraform related to accessing version directly
 
 <br />
 
 ## Table Of Contents
+- [Version 1.5.2 (May 25 2022)](#version-152)
 - [Version 1.5.1 (May 18 2022)](#version-151)
 - [Version 1.5.0 (May 9 2022)](#version-150)
 - [Version 1.4.6 (April 28 2022)](#version-146)
@@ -38,6 +35,19 @@ May 18, 2022
 - [Version 1.2.4 (February 7 2022)](#version-124)
 - [Version 1.2.3 (February 1 2022)](#version-123)
 - [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
+## Version 1.5.1
+May 18, 2022
+ - Update labels and helper text on dataset page
+ - Add new fields to dataset page
+ - Better organized files
+ - Update labels and helper text on edition page
+ - Add new fields to edition page
+ - Update labels and helper text on edition files and fields tab
+ - Fixed variable classification and highlight filter being unfiltered on files and fields
+ - Changed how file and fields revisions are shown
 
 <br />
 

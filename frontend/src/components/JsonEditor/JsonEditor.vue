@@ -379,7 +379,7 @@
                                                                 :idName="'basicField-' + key + '-' + fKey + '-enum'"
 
                                                                 :editing="editing"
-                                                                :value="(field.constraints && field.constraints.enum) ? field.constraints.enum : ''"
+                                                                :value="(field.constraints && field.constraints.enum) ? (typeof(field.constraints.enum) === 'string' ? field.constraints.enum : field.constraints.enum.join(',')) : ''"
                                                                 helpPrefix="schema"
                                                                 :focusField="focusProp"
                                                                 @focus="onFocusBasic"
