@@ -313,6 +313,12 @@ export default {
         "Linking Results Summary": "Linking Results Summary",
         "Processing Summary": "Processing Summary",
 
+        "profile": "Profile",
+        "mediatype": "Mediatype",
+        "Number of Fields": "Number of Fields",
+        "encoding": "Encoding",
+        "source_system": "Source System",
+
         "help.dataset.name": "The name of the dataset",
         "help.dataset.ministry_organization": "Ministry or organization responsible collecting the data (data provider)",
         "help.dataset.description": "A description of the dataset",

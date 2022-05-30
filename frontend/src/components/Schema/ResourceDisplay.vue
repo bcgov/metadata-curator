@@ -98,7 +98,8 @@ export default {
             collapsedFields: [],
             redrawResource: 0,
             error: false,
-            errorText: ""
+            errorText: "",
+            fieldNameOccurences: {}
         }
     },
 
@@ -111,26 +112,43 @@ export default {
                 this.collapsedFields[i].push(this.fieldsCollapsedByDefault);
             }
         }
+
+        this.fieldNameOccurences = {};
+
+        for (let i=0; i<this.resources.length; i++){
+            this.fieldNameOccurences[i] = {};
+            for (let j=0; j<this.resources[i].schema.fields.length; j++){
+                if ( (this.resources[i].schema.fields[j]) && (this.resources[i].schema.fields[j].name) ){
+                    let val = 1;
+                    if (typeof(this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name]) !== 'undefined'){
+                        val = this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name] + 1;
+                    }
+                    this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name] = val;
+                }
+            }
+        }
+    },
+
+    watch: {
+        resources(){
+            this.fieldNameOccurences = {};
+
+            for (let i=0; i<this.resources.length; i++){
+                this.fieldNameOccurences[i] = {};
+                for (let j=0; j<this.resources[i].schema.fields.length; j++){
+                    if ( (this.resources[i].schema.fields[j]) && (this.resources[i].schema.fields[j].name) ){
+                        let val = 1;
+                        if (typeof(this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name]) !== 'undefined'){
+                            val = this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name] + 1;
+                        }
+                        this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name] = val;
+                    }
+                }
+            }
+        }
     },
 
     computed: {
-
-        fieldNameOccurences: function(){
-            let items = {};
-
-            for (let i=0; i<this.resources.length; i++){
-                items[i] = {};
-                for (let j=0; j<this.resources[i].schema.fields.length; j++){
-                    let val = 1;
-                    if (typeof(items[i][this.resources[i].schema.fields[j].name]) !== 'undefined'){
-                        val = items[i][this.resources[i].schema.fields[j].name] + 1;
-                    }
-                    items[i][this.resources[i].schema.fields[j].name] = val;
-                }
-            }
-
-            return items;
-        },
 
 
         rightSideDiff: function(){
@@ -145,7 +163,7 @@ export default {
     methods: {
 
         duplicated: function(resKey, fieldName){
-            if (this.fieldNameOccurences[resKey][fieldName] > 1){
+            if ( (this.fieldNameOccurences) && (this.fieldNameOccurences[resKey]) && (this.fieldNameOccurences[resKey][fieldName]) && (this.fieldNameOccurences[resKey][fieldName] > 1) ){
                 this.error = true;
                 this.errorText = "Some resources have duplicated field names, bordered in red, consider revising"
                 return true;

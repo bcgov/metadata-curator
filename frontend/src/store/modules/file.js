@@ -121,6 +121,7 @@ const mutations = {
     },
 
     setContent(state, {content, index}){
+        console.log("CONTENT LENGTH OF index: " + index + " is " + content.length, content);
         if (index > state.content.length){
             state.content[index] = content;
         }else{

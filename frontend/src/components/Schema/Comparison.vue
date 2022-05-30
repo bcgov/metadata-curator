@@ -1,6 +1,6 @@
 <template>
     <v-container class="defText">
-        <v-row>
+        <!-- <v-row>
             <v-col cols=3></v-col>
             <v-col cols=3>
                 <v-slider
@@ -13,7 +13,7 @@
                     tick-size="1"
                 ></v-slider>
             </v-col>
-        </v-row>
+        </v-row> -->
         <v-row>
             <v-col cols=1>
                 <span>Legend:</span>
@@ -492,7 +492,7 @@ export default {
             try{
                 if (this.diffJson){
                     this.basicDiff = this.calcJsonDiff(this.workingLeftSideText, this.workingRightSideText);
-                    this.diff = Diff.diffJson(JSON.parse(this.workingLeftSideText), JSON.parse(this.workingRightSideText), {ignoreWhitespace: true})
+                    //this.diff = Diff.diffJson(JSON.parse(this.workingLeftSideText), JSON.parse(this.workingRightSideText), {ignoreWhitespace: true})
                 }else{
                     this.diff = Diff.diffTrimmedLines(this.workingLeftSideText, this.workingRightSideText)
                 }
@@ -736,11 +736,12 @@ export default {
                             }
 
                             //basic diff, has compared against
-                            if (bd && (bd.comparedAgainst || bd.comparedAgainst === 0) ){
+                            if (bd && (bd.comparedAgainst || bd.comparedAgainst === 0) && (r[i].schema.fields[parseInt(bd.comparedAgainst)]) ){
                                 let ind = j;
                                 let compareAgainstInt = parseInt(bd.comparedAgainst)
                                 let removeInd = originalKeys.indexOf(compareAgainstInt.toString())
                                 originalKeys.splice(removeInd, 1);
+                                
                                 newF[ind] = JSON.parse(JSON.stringify(r[i].schema.fields[compareAgainstInt]));
 
                             }else if ( bd &&  bd.added ){
