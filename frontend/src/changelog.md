@@ -3,9 +3,12 @@
 <br />
 
 ## Version 1.5.2
-May 25, 2022
+May 30, 2022
  - Fixed a bug causing changing highlight in non edit mode to bail out to the version list.
  - Added duplicate field name highlight to the comparison mode
+ - Fixed bug with removing a file on upload
+ - Field comments can no longer be expanded or collapsed, they are always expanded
+ - Name search on files and fields is now case insensitive
  - Allowed the Terraform setup to change the forum api email contents
  - Fixes to Terraform related to accessing version directly
 

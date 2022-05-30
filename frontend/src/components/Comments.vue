@@ -37,7 +37,7 @@
                                                 <v-icon>mdi-account</v-icon>
                                             </v-col>
                                             
-                                            <v-col cols=1 v-if="item.content.length >= 75">
+                                            <v-col cols=1 v-if="((item.content.length >= 75) && (type !== 'schema'))">
                                                 <v-btn x-small @click="expand(index)">
                                                     <v-icon>{{expanded[index] ? 'mdi-minus' : 'mdi-plus'}}</v-icon>
                                                 </v-btn>
@@ -178,8 +178,10 @@ const backend = new Backend();
                             self.commentDisplayItems.push({ divider: true, inset: true });
                             self.expanded.push(false);
                         }
+
                         self.commentDisplayItems.push(item);
-                        self.expanded.push(false);
+
+                        self.expanded.push((this.type === 'schema'));
                     }
                 });
             },

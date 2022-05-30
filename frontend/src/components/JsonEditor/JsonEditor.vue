@@ -744,7 +744,7 @@ export default{
                         }
                     }
                 }else if(textFilters.indexOf(filterFieldName) !== -1){
-                    if (!filterFieldName || !field[filterFieldName] || (field[filterFieldName].indexOf(this.filters[filterFieldName]) === -1) ){
+                    if (!filterFieldName || !field[filterFieldName] || (field[filterFieldName].toLowerCase().indexOf(this.filters[filterFieldName].toLowerCase()) === -1) ){
                         rv = true;
                     }
                 }else{
