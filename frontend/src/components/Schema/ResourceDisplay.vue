@@ -31,7 +31,7 @@
                                 <v-btn @click="collapse(key, fkey)"><v-icon>{{collapsedFields[key][fkey] ? 'mdi-plus' : 'mdi-minus'}}</v-icon></v-btn>
                             </v-col>
                             <v-col cols=2></v-col>
-                            <v-col cols=9>
+                            <v-col cols=9 v-if="field && field.name">
                                 <h3>{{field.name}}</h3>
                             </v-col>
                         </v-row>
