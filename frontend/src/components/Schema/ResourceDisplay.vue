@@ -8,7 +8,7 @@
             </v-col>
         </v-row>
         <v-row v-for="(resource, key) in resources" :key="'resources'+key+'-'+redrawResource" :class="displayClass('resources.' + key)">
-            <v-col cols=11 :class="'noOverflow' + displayClass('resources.' + key + '.name')">
+            <v-col v-if="resource && resource.name" cols=11 :class="'noOverflow' + displayClass('resources.' + key + '.name')">
                 <h1>{{$tc('Resource')}} {{resource.name}}</h1>
             </v-col>
             <v-col cols=1>
@@ -25,8 +25,8 @@
                 </v-row>
             
                 <v-col cols=12 v-if="!collapsed[key] && ( (resource.schema && resource.schema.fields) || (resource.tableSchema && resource.tableSchema.fields))">
-                    <div v-for="(field, fkey) in ((resource.tableSchema && resource.tableSchema.fields) ? resource.tableSchema.fields : resource.schema.fields)" :key="'field-'+fkey+'-'+(field ? field.name : '')" :class="`field` + displayClass('resources.' + key + '.schema.fields.' + fkey.toString()) + (duplicated(key, field.name) ? ' duplicate' : '')">
-                        <v-row v-if="field && field.name" :class="'ma-0 noOverflow' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.name')">
+                    <div v-for="(field, fkey) in ((resource.tableSchema && resource.tableSchema.fields) ? resource.tableSchema.fields : resource.schema.fields)" :key="'field-'+fkey+'-'+(field ? field.name : '')" :class="`field` + displayClass('resources.' + key + '.schema.fields.' + fkey.toString()) + (duplicated(key, ((field && field.name) ? field.name : '')) ? ' duplicate' : '')">
+                        <v-row :class="'ma-0 noOverflow' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.name')">
                             <v-col cols=1 v-if="collapsedFields && collapsedFields[key]">
                                 <v-btn @click="collapse(key, fkey)"><v-icon>{{collapsedFields[key][fkey] ? 'mdi-plus' : 'mdi-minus'}}</v-icon></v-btn>
                             </v-col>

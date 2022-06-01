@@ -282,10 +282,6 @@ export default {
                     return {diff: true};
                 }
 
-                if (l[0] && l[0].name === 'Quantity'){
-                    console.trace();
-                }
-
                 
                 let compareAgainst = [];
 
