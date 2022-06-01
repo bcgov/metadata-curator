@@ -415,8 +415,9 @@
                     for (let i=0; i<this.inferredSchema.resources.length; i++){
                         this.inferredSchema.resources[i].name = this.upload.files[i].name.substring(0,this.upload.files[i].name.lastIndexOf('.'));
                     }
-                    console.log("Post name setting");
+                    console.log("Post name setting", this.inferredSchema);
                 }catch(e){
+                    console.log("semantic infer took a bail");
                     this.inferredSchema = inferredSchema;
                     for (let i=0; i<this.inferredSchema.resources.length; i++){
                         this.inferredSchema.resources[i].path = this.inferredSchema.resources[i].saved_path;
@@ -424,15 +425,18 @@
                         delete this.inferredSchema.resources[i].saved_path;
                         delete this.inferredSchema.resources[i].data;
                     }
+                    console.log("reverted stuff", this.inferredSchema);
                     console.error(e);
                 }
 
+                console.log("showdiff false")
                 this.showDiff = false;
                 if (Object.keys(this.schema).length >= 1){
                     this.showDiff = JSON.stringify(this.inferredSchema) !== JSON.stringify(this.schema);
                 }else{
                     this.schema = JSON.parse(JSON.stringify(this.inferredSchema));
                 }
+                console.log("updating jsonRedraw")
                 this.jsonRedraw++;
                 console.log("Moving next");
             },
