@@ -357,8 +357,8 @@
                         if (rows.length > 0){
                             var commaSpaceCount = (rows[0].match(/, /g) || []).length;
                             var commaCount = (rows[0].match(/,/g) || []).length;
-                            var pipeSpaceCount = (rows[0].match(/| /g) || []).length;
-                            var pipeCount = (rows[0].match(/|/g) || []).length;
+                            var pipeSpaceCount = (rows[0].match(/\| /g) || []).length;
+                            var pipeCount = (rows[0].match(/\|/g) || []).length;
 
                             let greatestCount = commaCount;
 
