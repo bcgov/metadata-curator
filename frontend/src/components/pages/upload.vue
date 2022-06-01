@@ -353,6 +353,30 @@
                     try{
                         let string = new TextDecoder().decode(this.inferContent[i]);
                         let rows = string.split("\n");
+                        let delim = ",";
+                        if (rows.length > 0){
+                            var commaSpaceCount = (temp.match(/, /g) || []).length;
+                            var commaCount = (temp.match(/,/g) || []).length;
+                            var pipeSpaceCount = (temp.match(/| /g) || []).length;
+                            var pipeCount = (temp.match(/|/g) || []).length;
+
+                            let greatestCount = commaCount;
+
+                            if (commaSpaceCount >= greatestCount){
+                                greatestCount = commaSpaceCount;
+                                delim = ", ";
+                            }
+
+                            if (pipeSpaceCount >= greatestCount){
+                                greatestCount = pipeSpaceCount;
+                                delim = "| ";
+                            }
+
+                            if (pipeCount >= greatestCount){
+                                greatestCount = pipeCount;
+                                delim = "|";
+                            }
+                        }
                         for (let i=0; i<rows.length; i++){
                             let delim = ",";
                             if (rows[i].indexOf("\", \"") !== -1){
@@ -393,11 +417,14 @@
                     let optUrl = '/js/semantic_infer.json';
                     let opt = await (await fetch(optUrl)).json();
                     
+                    console.log("Beginning inferrence");
                     let r = await semanticInfer.datapackage_infer.infer_datapackage(inferredSchema, false, opt);
+                    console.log("Post inferrence");
                     this.inferredSchema = r;
                     for (let i=0; i<this.inferredSchema.resources.length; i++){
                         this.inferredSchema.resources[i].name = this.upload.files[i].name.substring(0,this.upload.files[i].name.lastIndexOf('.'));
                     }
+                    console.log("Post name setting");
                 }catch(e){
                     this.inferredSchema = inferredSchema;
                     for (let i=0; i<this.inferredSchema.resources.length; i++){
@@ -416,6 +443,7 @@
                     this.schema = JSON.parse(JSON.stringify(this.inferredSchema));
                 }
                 this.jsonRedraw++;
+                console.log("Moving next");
             },
 
             async stepSaveUploadForm(transitionNextStepAfterSave) {
