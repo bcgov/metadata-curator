@@ -493,7 +493,9 @@ export default {
                 if (this.diffJson){
                     this.basicDiff = this.calcJsonDiff(this.workingLeftSideText, this.workingRightSideText);
                     //this.diff = Diff.diffJson(JSON.parse(this.workingLeftSideText), JSON.parse(this.workingRightSideText), {ignoreWhitespace: true})
+                    this.diff = [];
                 }else{
+                    this.basicDiff = {};
                     this.diff = Diff.diffTrimmedLines(this.workingLeftSideText, this.workingRightSideText)
                 }
             }catch(e){
