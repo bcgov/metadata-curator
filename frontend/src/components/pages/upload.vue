@@ -378,15 +378,6 @@
                             }
                         }
                         for (let i=0; i<rows.length; i++){
-                            let delim = ",";
-                            if (rows[i].indexOf("\", \"") !== -1){
-                                delim = "\", \"";
-                            }else if (rows[i].indexOf("\",\"") !== -1){
-                                delim = "\",\"";
-                            }else if (rows[i].indexOf(", ") !== -1){
-                                delim = ", ";
-                            }
-
                             rows[i] = rows[i].split(delim);
                         }
                         let headers = rows.shift();
