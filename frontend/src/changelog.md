@@ -3,7 +3,7 @@
 <br />
 
 ## Version 1.5.2
-May 30, 2022
+June 2, 2022
  - Fixed a bug causing changing highlight in non edit mode to bail out to the version list.
  - Added duplicate field name highlight to the comparison mode
  - Fixed bug with removing a file on upload
@@ -17,7 +17,7 @@ May 30, 2022
 <br />
 
 ## Table Of Contents
-- [Version 1.5.2 (May 25 2022)](#version-152)
+- [Version 1.5.2 (June 2 2022)](#version-152)
 - [Version 1.5.1 (May 18 2022)](#version-151)
 - [Version 1.5.0 (May 9 2022)](#version-150)
 - [Version 1.4.6 (April 28 2022)](#version-146)
