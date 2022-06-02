@@ -353,16 +353,38 @@
                     try{
                         let string = new TextDecoder().decode(this.inferContent[i]);
                         let rows = string.split("\n");
-                        for (let i=0; i<rows.length; i++){
-                            let delim = ",";
-                            if (rows[i].indexOf("\", \"") !== -1){
-                                delim = "\", \"";
-                            }else if (rows[i].indexOf("\",\"") !== -1){
-                                delim = "\",\"";
-                            }else if (rows[i].indexOf(", ") !== -1){
+
+                        let delim = ",";
+                        if (rows.length > 0){
+
+                            if (rows.length > 1001){
+                                rows.length = 1001;
+                            }
+
+                            var commaSpaceCount = (rows[0].match(/, /g) || []).length;
+                            var commaCount = (rows[0].match(/,/g) || []).length;
+                            var pipeSpaceCount = (rows[0].match(/\| /g) || []).length;
+                            var pipeCount = (rows[0].match(/\|/g) || []).length;
+
+                            let greatestCount = commaCount;
+
+                            if (commaSpaceCount >= greatestCount){
+                                greatestCount = commaSpaceCount;
                                 delim = ", ";
                             }
 
+                            if (pipeSpaceCount >= greatestCount){
+                                greatestCount = pipeSpaceCount;
+                                delim = "| ";
+                            }
+
+                            if (pipeCount >= greatestCount){
+                                greatestCount = pipeCount;
+                                delim = "|";
+                            }
+                        }
+                        //cap at 1000 semantic infer isn't happy with files of 1mb in size
+                        for (let i=0; i<rows.length; i++){
                             rows[i] = rows[i].split(delim);
                         }
                         let headers = rows.shift();
@@ -397,13 +419,15 @@
                     this.inferredSchema = r;
                     for (let i=0; i<this.inferredSchema.resources.length; i++){
                         this.inferredSchema.resources[i].name = this.upload.files[i].name.substring(0,this.upload.files[i].name.lastIndexOf('.'));
+                        delete this.inferredSchema.resources[i].saved_path
+                        delete this.inferredSchema.resources[i].data;
                     }
                 }catch(e){
                     this.inferredSchema = inferredSchema;
                     for (let i=0; i<this.inferredSchema.resources.length; i++){
                         this.inferredSchema.resources[i].path = this.inferredSchema.resources[i].saved_path;
                         this.inferredSchema.resources[i].name = this.upload.files[i].name.substring(0,this.upload.files[i].name.lastIndexOf('.'));
-                        delete this.inferredSchema.resources[i].saved_path;
+                        delete this.inferredSchema.resources[i].saved_path
                         delete this.inferredSchema.resources[i].data;
                     }
                     console.error(e);

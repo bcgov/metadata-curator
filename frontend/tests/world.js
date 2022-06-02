@@ -26,6 +26,7 @@ class world extends World {
   async initNightwatch() {
       if (!this.browser){
         this.browser = await nightwatchClient.launchBrowser();
+        this.browser.pause(1000);
       }
   }
 

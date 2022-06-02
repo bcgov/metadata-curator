@@ -1,7 +1,14 @@
 <template>
     <v-container class="comparison">
+        <v-row v-if="error">
+            <v-col cols=12>
+                <v-alert class="mb-0" v-model="error" type="error" dismissible>
+                    {{errorText}}
+                </v-alert>
+            </v-col>
+        </v-row>
         <v-row v-for="(resource, key) in resources" :key="'resources'+key+'-'+redrawResource" :class="displayClass('resources.' + key)">
-            <v-col cols=11 :class="'noOverflow' + displayClass('resources.' + key + '.name')">
+            <v-col v-if="resource && resource.name" cols=11 :class="'noOverflow' + displayClass('resources.' + key + '.name')">
                 <h1>{{$tc('Resource')}} {{resource.name}}</h1>
             </v-col>
             <v-col cols=1>
@@ -18,13 +25,13 @@
                 </v-row>
             
                 <v-col cols=12 v-if="!collapsed[key] && ( (resource.schema && resource.schema.fields) || (resource.tableSchema && resource.tableSchema.fields))">
-                    <div v-for="(field, fkey) in ((resource.tableSchema && resource.tableSchema.fields) ? resource.tableSchema.fields : resource.schema.fields)" :key="'field-'+fkey+'-'+(field ? field.name : '')" :class="`field` + displayClass('resources.' + key + '.schema.fields.' + fkey.toString())">
-                        <v-row v-if="field && field.name" :class="'ma-0 noOverflow' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.name')">
+                    <div v-for="(field, fkey) in ((resource.tableSchema && resource.tableSchema.fields) ? resource.tableSchema.fields : resource.schema.fields)" :key="'field-'+fkey+'-'+(field ? field.name : '')" :class="`field` + displayClass('resources.' + key + '.schema.fields.' + fkey.toString()) + (duplicated(key, ((field && field.name) ? field.name : '')) ? ' duplicate' : '')">
+                        <v-row :class="'ma-0 noOverflow' + displayClass('resources.' + key + '.schema.fields.' + fkey.toString() + '.name')">
                             <v-col cols=1 v-if="collapsedFields && collapsedFields[key]">
                                 <v-btn @click="collapse(key, fkey)"><v-icon>{{collapsedFields[key][fkey] ? 'mdi-plus' : 'mdi-minus'}}</v-icon></v-btn>
                             </v-col>
                             <v-col cols=2></v-col>
-                            <v-col cols=9>
+                            <v-col cols=9 v-if="field && field.name">
                                 <h3>{{field.name}}</h3>
                             </v-col>
                         </v-row>
@@ -90,6 +97,9 @@ export default {
             collapsed: [],
             collapsedFields: [],
             redrawResource: 0,
+            error: false,
+            errorText: "",
+            fieldNameOccurences: {}
         }
     },
 
@@ -97,14 +107,50 @@ export default {
         for (let i=0; i<this.resources.length; i++){
             this.collapsed.push(this.resourcesCollapsedByDefault);
             this.collapsedFields.push([]);
-            let f = (this.resources[i].schema && this.resources[i].schema.fields) ? this.resources[i].schema.fields : this.resources[i].tableSchema.fields
+            let f = (this.resources[i].schema && this.resources[i].schema.fields) ? this.resources[i].schema.fields : [];
             for (let j=0; j<f.length; j++){
                 this.collapsedFields[i].push(this.fieldsCollapsedByDefault);
+            }
+        }
+
+        this.fieldNameOccurences = {};
+
+        for (let i=0; i<this.resources.length; i++){
+            this.fieldNameOccurences[i] = {};
+            for (let j=0; j<this.resources[i].schema.fields.length; j++){
+                if ( (this.resources[i].schema.fields[j]) && (this.resources[i].schema.fields[j].name) ){
+                    let val = 1;
+                    if (typeof(this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name]) !== 'undefined'){
+                        val = this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name] + 1;
+                    }
+                    this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name] = val;
+                }
+            }
+        }
+    },
+
+    watch: {
+        resources(){
+            this.fieldNameOccurences = {};
+
+            for (let i=0; i<this.resources.length; i++){
+                this.fieldNameOccurences[i] = {};
+                for (let j=0; j<this.resources[i].schema.fields.length; j++){
+                    if ( (this.resources[i].schema.fields[j]) && (this.resources[i].schema.fields[j].name) ){
+                        let val = 1;
+                        if (typeof(this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name]) !== 'undefined'){
+                            val = this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name] + 1;
+                        }
+                        this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name] = val;
+                    }
+                }
             }
         }
     },
 
     computed: {
+
+
         rightSideDiff: function(){
             if (this.compareType !== 'right'){
                 return {}
@@ -115,6 +161,15 @@ export default {
     },
 
     methods: {
+
+        duplicated: function(resKey, fieldName){
+            if ( (this.fieldNameOccurences) && (this.fieldNameOccurences[resKey]) && (this.fieldNameOccurences[resKey][fieldName]) && (this.fieldNameOccurences[resKey][fieldName] > 1) ){
+                this.error = true;
+                this.errorText = "Some resources have duplicated field names, bordered in red, consider revising"
+                return true;
+            }
+            return false;
+        },
 
         sortedResource: function(resource, key){
             let r = JSON.parse(JSON.stringify(resource));
@@ -275,6 +330,11 @@ export default {
 
     .comparison{
         color: var(--v-text-base);
+    }
+
+    .duplicate{
+        border-color: var(--v-error-base);
+        border-width: 2px;
     }
 
 

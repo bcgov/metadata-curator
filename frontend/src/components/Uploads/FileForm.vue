@@ -84,8 +84,8 @@
             }),
             
             removeFile(index){
-                delete this.fileReaders.splice(index, 1);
-                delete this.files.splice(index, 1);
+                this.fileReaders.splice(index, 1);
+                this.files.splice(index, 1);
                 this.removeContent(index);
                 this.spanKey++
                 this.$emit('changed', this.files.length);

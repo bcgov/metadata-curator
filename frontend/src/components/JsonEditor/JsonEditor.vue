@@ -379,7 +379,7 @@
                                                                 :idName="'basicField-' + key + '-' + fKey + '-enum'"
 
                                                                 :editing="editing"
-                                                                :value="(field.constraints && field.constraints.enum) ? field.constraints.enum : ''"
+                                                                :value="(field.constraints && field.constraints.enum) ? (typeof(field.constraints.enum) === 'string' ? field.constraints.enum : field.constraints.enum.join(',')) : ''"
                                                                 helpPrefix="schema"
                                                                 :focusField="focusProp"
                                                                 @focus="onFocusBasic"
@@ -744,7 +744,7 @@ export default{
                         }
                     }
                 }else if(textFilters.indexOf(filterFieldName) !== -1){
-                    if (!filterFieldName || !field[filterFieldName] || (field[filterFieldName].indexOf(this.filters[filterFieldName]) === -1) ){
+                    if (!filterFieldName || !field[filterFieldName] || (field[filterFieldName].toLowerCase().indexOf(this.filters[filterFieldName].toLowerCase()) === -1) ){
                         rv = true;
                     }
                 }else{

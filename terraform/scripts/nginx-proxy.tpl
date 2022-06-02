@@ -34,11 +34,6 @@ server {
 
   ssl_certificate           ${sslCertificate};
   ssl_certificate_key       ${sslCertificateKey};
-
-  location /version {
-      root   /www;
-      index  index.html;
-  }
   
   location /minio/ {
     resolver 127.0.0.11 ipv6=off valid=30s;
