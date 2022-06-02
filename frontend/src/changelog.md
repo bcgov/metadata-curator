@@ -8,6 +8,8 @@ May 30, 2022
  - Added duplicate field name highlight to the comparison mode
  - Fixed bug with removing a file on upload
  - Field comments can no longer be expanded or collapsed, they are always expanded
+ - Significantly shrinked the size of data used for inferrence and read from file (.5mb from 1 and 1000 rows from full 1mb)
+ - Changed delimiter support for csv to support ",", ", ", "|", and "| "
  - Name search on files and fields is now case insensitive
  - Allowed the Terraform setup to change the forum api email contents
  - Fixes to Terraform related to accessing version directly
