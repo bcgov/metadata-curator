@@ -107,7 +107,7 @@ export default {
         for (let i=0; i<this.resources.length; i++){
             this.collapsed.push(this.resourcesCollapsedByDefault);
             this.collapsedFields.push([]);
-            let f = (this.resources[i].schema && this.resources[i].schema.fields) ? this.resources[i].schema.fields : this.resources[i].tableSchema.fields
+            let f = (this.resources[i].schema && this.resources[i].schema.fields) ? this.resources[i].schema.fields : [];
             for (let j=0; j<f.length; j++){
                 this.collapsedFields[i].push(this.fieldsCollapsedByDefault);
             }
