@@ -377,7 +377,8 @@
                                 delim = "|";
                             }
                         }
-                        for (let i=0; i<rows.length; i++){
+                        //cap at 1000 semantic infer isn't happy with files of 1mb in size
+                        for (let i=0; ((i<rows.length) && (i<1000) ); i++){
                             rows[i] = rows[i].split(delim);
                         }
                         let headers = rows.shift();
@@ -408,37 +409,30 @@
                     let optUrl = '/js/semantic_infer.json';
                     let opt = await (await fetch(optUrl)).json();
                     
-                    console.log("Beginning inferrence");
                     let r = await semanticInfer.datapackage_infer.infer_datapackage(inferredSchema, false, opt);
-                    console.log("Post inferrence");
                     this.inferredSchema = r;
                     for (let i=0; i<this.inferredSchema.resources.length; i++){
                         this.inferredSchema.resources[i].name = this.upload.files[i].name.substring(0,this.upload.files[i].name.lastIndexOf('.'));
                     }
-                    console.log("Post name setting", this.inferredSchema);
                 }catch(e){
-                    console.log("semantic infer took a bail");
                     this.inferredSchema = inferredSchema;
                     for (let i=0; i<this.inferredSchema.resources.length; i++){
                         this.inferredSchema.resources[i].path = this.inferredSchema.resources[i].saved_path;
                         this.inferredSchema.resources[i].name = this.upload.files[i].name.substring(0,this.upload.files[i].name.lastIndexOf('.'));
                         delete this.inferredSchema.resources[i].saved_path;
+                        this.inferredSchema.resources[i].data = [];
                         delete this.inferredSchema.resources[i].data;
                     }
-                    console.log("reverted stuff", this.inferredSchema);
                     console.error(e);
                 }
 
-                console.log("showdiff false")
                 this.showDiff = false;
                 if (Object.keys(this.schema).length >= 1){
                     this.showDiff = JSON.stringify(this.inferredSchema) !== JSON.stringify(this.schema);
                 }else{
                     this.schema = JSON.parse(JSON.stringify(this.inferredSchema));
                 }
-                console.log("updating jsonRedraw")
                 this.jsonRedraw++;
-                console.log("Moving next");
             },
 
             async stepSaveUploadForm(transitionNextStepAfterSave) {

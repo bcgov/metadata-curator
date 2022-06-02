@@ -445,7 +445,7 @@ export default {
                                 let customChunkSize = navigator.deviceMemory ? Math.ceil(navigator.deviceMemory * 1024 * 1024 * 1024 / 128) : Math.ceil(8 * 1024 * 1024 * 1024 / 128);
                                 this.chunkSize = (customChunkSize > defChunkSize) ? customChunkSize : defChunkSize;
                                 
-                                const chop = Math.ceil(this.chunkSize / 64); //cap at 1mb   
+                                const chop = Math.ceil(this.chunkSize / 64 / 2); //cap at 0.5mb   
                                 let choppedContent = content.slice(0, chop)
 
                                 await self.$store.commit('file/setContent', { content: choppedContent, index: index});
