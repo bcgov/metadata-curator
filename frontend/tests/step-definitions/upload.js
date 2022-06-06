@@ -39,7 +39,7 @@ Given(/^Data provider successfully uploads a data file$/, async function(){
     await client.pause(1000);
     
     await helpers.open(client);
-    
+
     await client.pause(1000);
     
     await helpers.login(client, 'publisher');
@@ -56,6 +56,9 @@ Given(/^Data provider successfully uploads a data file$/, async function(){
     }
 
     await client.click('#next-1');
+
+    await client.execute('window.scrollTo(0,0);');
+    await client.saveScreenshot("./"+path+"/postNext1.png");
     
     await client.pause(3000);
     await client.click('#newDatasetButton');
