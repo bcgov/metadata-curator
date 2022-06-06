@@ -35,8 +35,12 @@ const data1 = {
 
 Given(/^Data provider successfully uploads a data file$/, async function(){
     const client = this.browser;
+
+    await client.pause(1000);
     
     await helpers.open(client);
+    
+    await client.pause(1000);
     
     await helpers.login(client, 'publisher');
     await client.saveScreenshot("./"+path+"/preNewUpload.png");
