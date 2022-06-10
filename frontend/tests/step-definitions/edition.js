@@ -143,7 +143,8 @@ When(/^Data approver makes a new edition$/, async function(){
 
 Then(/^Data approver chooses to see the details of the edition$/, async function(){
     try{
-
+        await client.click('#dataset-editions-tab');
+        await client.pause(1000);
         await client.click('#branch-link-0');
 
     }catch(ex){
