@@ -60,6 +60,19 @@
         </v-row>
 
         <v-row>
+            <v-col cols=4>
+                <Select
+                    :editing="true"
+                    name="sortBy"
+                    :label="$tc('Sort By')"
+                    :items="SORT_BY_OPTS"
+                    :value="sortBy"
+                    @edited=" (newVal) => { sortBy = newVal; }">
+                </Select>
+            </v-col>
+        </v-row>
+
+        <v-row>
             <v-col cols=12>
                 <v-list three-line>
                     <template v-for="(item, index) in datasetDisplayItems">
@@ -130,6 +143,7 @@ export default {
 
     data() {
         return {
+            SORT_BY_OPTS: [{text: 'Create Date Descending', value : 'create_date desc'}, {text: 'Create Date Ascending', value : 'create_date asc'}, {text: 'Name Descending', value : 'name desc'}, {text: 'Name Ascending', value : 'name asc'}, {text: 'Ministry/Org Descending', value : 'ministry_organization desc'}, {text: 'Ministry/Org Ascending', value : 'ministry_organization asc'}],
             message: '',
             filterOrg: [],
             filterName: '',
@@ -142,6 +156,9 @@ export default {
             filterTags: '',
             filteredRepos: [],
             datasetTags: {},
+            sortBy: "create_date desc",
+            sortField: "create_date",
+            sortDir: 'desc'
         }
     },
     async mounted(){
@@ -319,7 +336,24 @@ export default {
         datasetDisplayItems: function(){
             let items = [];
             if (this.filteredRepos){
-                this.filteredRepos.forEach( (repo, index) => {
+                let filtered = JSON.parse(JSON.stringify(this.filteredRepos));
+                filtered.sort( (a,b) => {
+                    
+                    if (this.sortDir === 'desc'){
+                        if (typeof(a[this.sortField]) === 'string'){
+                            return b[this.sortField].localeCompare(a[this.sortField]);
+                        }
+                        return (a[this.sortField] >= b[this.sortField]) ? -1 : 1;
+                    }
+
+                    if (typeof(a[this.sortField]) === 'string'){
+                        return a[this.sortField].localeCompare(b[this.sortField]);
+                    }else{
+                        console.log(a[this.sortField], b[this.sortField], (b[this.sortField] >= a[this.sortField]));
+                        return (b[this.sortField] >= a[this.sortField]) ? 1 : -1;
+                    }
+                });
+                filtered.forEach( (repo, index) => {
                     const item = {
                         title: `${repo.name} ${repo.ministry_organization ? ' - ' + repo.ministry_organization : ''}`,
                         subtitle: repo.create_date,
@@ -327,11 +361,12 @@ export default {
                         branches: repo.branches,
                     };
                     items.push(item);
-                    if(index <= this.filteredRepos.length - 1) {
+                    if(index <= filtered.length - 1) {
                         items.push({ divider: true, inset: true });
                     }
                 });
             }
+            
             return items;
         },
     },
@@ -346,6 +381,11 @@ export default {
         filterTags: function(){
             this.refilter();
         },
+        sortBy: function(){
+            let sortArr = this.sortBy.split(' ');
+            this.sortField = sortArr[0];
+            this.sortDir = sortArr[1];
+        }
         
     },
 };

@@ -319,6 +319,8 @@ export default {
         "encoding": "Encoding",
         "source_system": "Source System",
 
+        "Classification Index": "Classification Indicies | Classification Index | Classification Indicies",
+
         "help.dataset.name": "The name of the dataset",
         "help.dataset.ministry_organization": "Ministry or organization responsible collecting the data (data provider)",
         "help.dataset.description": "A description of the dataset",

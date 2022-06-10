@@ -36,7 +36,7 @@
                 <v-select
                     :name="name"
                     v-model="val"
-                    :items="items"
+                    :items="displayItems"
                     :item-text="itemText"
                     :item-value="itemValue"
                     :id="idName ? idName : ''"
@@ -134,6 +134,11 @@
                 type: Boolean,
                 required: false,
                 default: false,
+            },
+            sorted: {
+                type: Boolean,
+                required: false,
+                default: true
             }
 
         },
@@ -152,6 +157,24 @@
                     t = this.$t(translateKey);
                 }
                 return marked(t);
+            },
+
+            displayItems: function(){
+                if (Array.isArray(this.items)){
+                    let rv = JSON.parse(JSON.stringify(this.items));
+                    if (this.sorted){
+                        
+                        rv.sort( (a,b) => {
+                            if (!a[this.itemText] || !b[this.itemText]){
+                                return 0;
+                            }
+                            return a[this.itemText].localeCompare(b[this.itemText]);
+                        });
+                        
+                    }
+                    return rv;
+                }
+                return [];
             },
 
             displayLabel: function () {

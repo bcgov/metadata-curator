@@ -2,21 +2,18 @@
 
 <br />
 
-## Version 1.5.2
-June 2, 2022
- - Fixed a bug causing changing highlight in non edit mode to bail out to the version list.
- - Added duplicate field name highlight to the comparison mode
- - Fixed bug with removing a file on upload
- - Field comments can no longer be expanded or collapsed, they are always expanded
- - Significantly shrinked the size of data used for inferrence and read from file (.5mb from 1 and 1000 rows from full 1mb)
- - Changed delimiter support for csv to support ",", ", ", "|", and "| "
- - Name search on files and fields is now case insensitive
- - Allowed the Terraform setup to change the forum api email contents
- - Fixes to Terraform related to accessing version directly
+## Version 1.5.3
+June 10, 2022
+ - All selects are now alphabetically sorted by default (can be turned off)
+ - The dataset list now allows sorting by name, create date or ministry / organization ascending or descending
+ - The editions have moved to a tab in the dataset page
+ - Editions can now be sorted by name or create date and ascending or descending on the dataset page
+ - Variable Classifications has been renamed to Classification Ind(ex/icies) in that area of the program
 
 <br />
 
 ## Table Of Contents
+- [Version 1.5.3 (June 10 2022)](#version-153)
 - [Version 1.5.2 (June 2 2022)](#version-152)
 - [Version 1.5.1 (May 18 2022)](#version-151)
 - [Version 1.5.0 (May 9 2022)](#version-150)
@@ -42,6 +39,20 @@ June 2, 2022
 - [Version 1.2.2 (January 27 2022)](#version-122)
 
 <br />
+
+## Version 1.5.2
+June 2, 2022
+ - Fixed a bug causing changing highlight in non edit mode to bail out to the version list.
+ - Added duplicate field name highlight to the comparison mode
+ - Fixed bug with removing a file on upload
+ - Field comments can no longer be expanded or collapsed, they are always expanded
+ - Significantly shrinked the size of data used for inferrence and read from file (.5mb from 1 and 1000 rows from full 1mb)
+ - Changed delimiter support for csv to support ",", ", ", "|", and "| "
+ - Name search on files and fields is now case insensitive
+ - Allowed the Terraform setup to change the forum api email contents
+ - Fixes to Terraform related to accessing version directly
+
+ <br />
 
 ## Version 1.5.1
 May 18, 2022

@@ -2,7 +2,7 @@
     <v-container>
         <v-row>
             <v-col cols=12>
-                <h1 class="display-1 font-weight-thin ml-3 my-3">{{$tc('Variable Classification', 2)}}</h1>
+                <h1 class="display-1 font-weight-thin ml-3 my-3">{{$tc('Classification Index', 2)}}</h1>
             </v-col>
         </v-row>
 
@@ -10,7 +10,7 @@
             <v-col cols=8>
             </v-col>
             <v-col cols=4>
-                <v-btn color="primary" to="/variable-classification/create">{{$tc('New')}} {{$tc('Variable Classification', 1)}}</v-btn>
+                <v-btn color="primary" to="/variable-classification/create">{{$tc('New')}} {{$tc('Classification Index', 1)}}</v-btn>
             </v-col>
         </v-row>
 

@@ -191,7 +191,7 @@ export default {
             }
 
             if ( (this.user) && ( (this.user.isAdmin) || (this.user.isApprover) ) && (this.enabledPhase >= 2) ){
-                t.push({ id: 12, name: "Variable Classification", route: `/variable-classifications`, icon: 'mdi-archive-search', disabled: false });
+                t.push({ id: 12, name: "Classification Indicies", route: `/variable-classifications`, icon: 'mdi-archive-search', disabled: false });
             }
 
             if ( (this.user) && (this.user.isAdmin) ){
