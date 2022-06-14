@@ -172,11 +172,12 @@
             },
 
             displayItems: function(){
-                let items = this.items;
-                if (items === false){
-                    items = this.options.filter((obj) => { return obj.type.toLowerCase() === this.name.toLowerCase()});
-                    items = items.map( (obj) => { return obj.values });
+                let items = this.options.filter((obj) => { return obj.type.toLowerCase() === this.name.toLowerCase()});
+                items = items.map( (obj) => { return obj.values });
+                if (items.length >= 0){
                     items = items[0]; //can only be one match
+                }else{
+                    items = this.items;
                 }
                 
                 if (Array.isArray(items)){
@@ -206,13 +207,15 @@
             displayVal: function(){
                 
                 let displayVal = this.val;
-                let items = this.items;
-                if (items === false){
-                    items = this.options.filter((obj) => { return obj.type.toLowerCase() === this.name.toLowerCase()});
-                    items = items.map( (obj) => { return obj.values });
+                
+                let items = this.options.filter((obj) => { return obj.type.toLowerCase() === this.name.toLowerCase()});
+                items = items.map( (obj) => { return obj.values });
+                if (items.length >= 0){
                     items = items[0]; //can only be one match
+                }else{
+                    items = this.items;
                 }
-
+                
                 for (let i=0; i<items.length; i++){
                     if (items[i][this.itemValue] === this.val){
                         displayVal = items[i][this.itemText];

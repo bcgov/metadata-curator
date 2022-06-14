@@ -70,11 +70,6 @@ var workingSchema = {
         value: "field 0 rdfType",
         selector2: '#basicField-0-0-rdfType',
     },
-    tags: {
-        selector: 'input[name="tags"]',
-        value: "field 0 tag",
-        selector2: '#basicField-0-0-tags',
-    },
     notes: {
         selector: 'textarea[name="notes"]',
         value: "field 0 notes",
