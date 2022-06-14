@@ -456,4 +456,33 @@ export class Backend {
         return axios.get(url, {withCredentials: true}).then(response => response)
     }
 
+
+    getOptions(query){
+        if (typeof(query) === "undefined"){
+            query = {filterBy: false};
+        }
+        let url = '/api/v1/options';
+        if(query.filterBy) {
+            url = `${url}/?filterBy=${query.filterBy}`;
+        }
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+    getOption(id){
+        let url = `/api/v1/options/${id}`;
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+    putOption(option){
+        // console.log("BE putdataUpload: " + dataUpload);
+        const url = `/api/v1/options/${option._id}`;
+        return axios.put(url, option,{withCredentials: true}).then(response => response.data)
+    }
+
+    postOption(option){
+        // console.log("BE putdataUpload: " + dataUpload);
+        const url = `/api/v1/options`
+        return axios.post(url, option,{withCredentials: true}).then(response => response.data)
+    }
+
 }

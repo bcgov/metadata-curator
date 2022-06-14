@@ -66,6 +66,8 @@
 
 <script>
 
+    import { mapState, mapActions } from 'vuex';
+
     import ValidationRules from "../../mixins/ValidationRules";
     let marked = require('marked');
 
@@ -93,7 +95,7 @@
                 default: () => ''
             },
             items: {
-                type: Array,
+                type: [Array, Boolean],
                 required: false,
                 default: () => []
             },
@@ -149,7 +151,17 @@
                 closeOnLeave: true,
             }
         },
+
+        methods: {
+            ...mapActions({
+                getOptions: 'options/getOptions', 
+            }),
+        },
+        
         computed: {
+            ...mapState({
+                options: state => state.options.options,
+            }),
             displayTooltip: function(){
                 let t = ''
                 let translateKey = 'help.'+((this.helpPrefix) ? this.helpPrefix + '.' + this.name : this.name);
@@ -160,8 +172,15 @@
             },
 
             displayItems: function(){
-                if (Array.isArray(this.items)){
-                    let rv = JSON.parse(JSON.stringify(this.items));
+                let items = this.items;
+                if (items === false){
+                    items = this.options.filter((obj) => { return obj.type.toLowerCase() === this.name.toLowerCase()});
+                    items = items.map( (obj) => { return obj.values });
+                    items = items[0]; //can only be one match
+                }
+                
+                if (Array.isArray(items)){
+                    let rv = JSON.parse(JSON.stringify(items));
                     if (this.sorted){
                         
                         rv.sort( (a,b) => {
@@ -185,10 +204,18 @@
             },
 
             displayVal: function(){
+                
                 let displayVal = this.val;
-                for (let i=0; i<this.items.length; i++){
-                    if (this.items[i][this.itemValue] === this.val){
-                        displayVal = this.items[i][this.itemText];
+                let items = this.items;
+                if (items === false){
+                    items = this.options.filter((obj) => { return obj.type.toLowerCase() === this.name.toLowerCase()});
+                    items = items.map( (obj) => { return obj.values });
+                    items = items[0]; //can only be one match
+                }
+
+                for (let i=0; i<items.length; i++){
+                    if (items[i][this.itemValue] === this.val){
+                        displayVal = items[i][this.itemText];
                     }
                 }
                 return displayVal
@@ -200,7 +227,9 @@
                 this.val = newVal
             },
         },
-        mounted(){
+
+        async mounted(){
+            await this.getOptions({/*type: this.filterBy,*/ refresh: false});
             this.val = this.value;
         }
 

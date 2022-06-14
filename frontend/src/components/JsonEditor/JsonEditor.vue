@@ -337,20 +337,18 @@
                                                         </v-col>
 
                                                         <v-col cols=12 v-if="((field && field.tags) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
-                                                            <TextInput
+                                                            <Select
                                                                 :label="$tc('Tags', 2)"
                                                                 placeholder=""
                                                                 name="tags"
                                                                 :refName="'basicField-' + key + '-' + fKey + '-tags'"
                                                                 :idName="'basicField-' + key + '-' + fKey + '-tags'"
-
+                                                                :items="false"
                                                                 :editing="editing"
                                                                 :value="field.tags"
                                                                 helpPrefix="schema"
-                                                                :focusField="focusProp"
-                                                                @focus="onFocusBasic"
-                                                                @blur="(event) => { updateResource(key, fKey, 'tags', event) }"
-                                                            ></TextInput>
+                                                                @edited="(newValue) => { updateResource(key, fKey, 'tags', newValue) }"
+                                                            ></Select>
                                                         </v-col>
 
                                                         <v-col cols=12 v-if="((field && field.notes) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">

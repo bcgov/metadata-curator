@@ -15,6 +15,8 @@ const NotFound = () => import(/* webpackChunkName: "NotFound" */ "../components/
 const LoggedOut = () => import(/* webpackChunkName: "LoggedOut" */ "../components/pages/logout");
 const user = () => import(/* webpackChunkName: "user" */ "../components/pages/user");
 const publishedVersion = () => import(/* webpackChunkName: "publishedVersion" */ "../components/pages/publishedVersion");
+const options = () => import(/* webpackChunkName: "options" */ "../components/pages/options");
+const option = () => import(/* webpackChunkName: "options" */ "../components/pages/option");
 
 const variableClassifications = () => import(/* webpackChunkName: "variableClassifications" */ "../components/pages/variableClassifications");
 const variableClassification = () => import(/* webpackChunkName: "variableClassificationForm" */ "../components/pages/variableClassificationForm");
@@ -193,6 +195,26 @@ let r = new Router({
           title: "Variable Classification",
           requiresAuth: false,
           phase: 2
+      }
+    },
+    {
+      path: '/options',
+      name: 'options',
+      component: options,
+      meta: {
+          title: "Options",
+          requiresAuth: true,
+          phase: 3
+      }
+    },
+    {
+      path: '/option/:id',
+      name: 'optionForm',
+      component: option,
+      meta: {
+          title: "Option",
+          requiresAuth: true,
+          phase: 3
       }
     },
     {
