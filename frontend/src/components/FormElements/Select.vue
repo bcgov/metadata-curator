@@ -174,7 +174,7 @@
             displayItems: function(){
                 let items = this.options.filter((obj) => { return obj.type.toLowerCase() === this.name.toLowerCase()});
                 items = items.map( (obj) => { return obj.values });
-                if (items.length >= 0){
+                if (items.length > 0){
                     items = items[0]; //can only be one match
                 }else{
                     items = this.items;
@@ -210,7 +210,7 @@
                 
                 let items = this.options.filter((obj) => { return obj.type.toLowerCase() === this.name.toLowerCase()});
                 items = items.map( (obj) => { return obj.values });
-                if (items.length >= 0){
+                if (items.length > 0){
                     items = items[0]; //can only be one match
                 }else{
                     items = this.items;
