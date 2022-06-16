@@ -43,19 +43,21 @@ async function encrypt(commit, clear, content, key, replaceIndex){
         commit('clearBlob');
     }
 
-    return openpgp.encrypt({
-        message: await openpgp.message.fromBinary(content), // input as Message object
-        publicKeys: (await openpgp.key.readArmored(key)).keys,
-        compression: openpgp.enums.compression.zip,
-        format: 'binary',
+    let message = await openpgp.createMessage({ binary: content });
 
-    }).then( async (cipherText) => {
-        if (replaceIndex === -1){
-            commit('addBlob', {blob: new Blob([cipherText.data])} );
-        }else{
-            commit('setBlob', {index: replaceIndex, blob: new Blob([cipherText.data])} );
-        }
-    });
+    let cipherText = await openpgp.encrypt({
+        message, // input as Message object
+        encryptionKeys: await openpgp.readKey({ armoredKey: key }),
+        // format: 'binary',
+
+    });//.then( async (cipherText) => {
+    
+    if (replaceIndex === -1){
+        commit('addBlob', {blob: new Blob([cipherText])} );
+    }else{
+        commit('setBlob', {index: replaceIndex, blob: new Blob([cipherText])} );
+    }
+    // });
 }
 
 const actions = {

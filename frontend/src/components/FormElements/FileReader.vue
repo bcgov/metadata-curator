@@ -307,26 +307,26 @@ export default {
                 this.$store.dispatch('file/getUploadUrl');
             }
 
-            let message = await openpgp.message.fromBinary(content)
+            let message = await openpgp.createMessage({ binary: content });
 
-            return openpgp.encrypt({
-                message: message,
-                publicKeys: (await openpgp.key.readArmored(this.key)).keys,
-                compression: openpgp.enums.compression.uncompressed,
-                format: 'binary',
+            const encryptKey = await openpgp.readKey({ armoredKey: this.key });
 
-            }).then( async (cipherText) => {
-                if (index === -1){
-                    this.encContentBlobs.push(new Blob([cipherText.data]));
-                }else{
-                    this.encContentBlobs[index] = new Blob([cipherText.data])
-                }
-                if (index <= 0){
-                    this.$emit("encrypted", this.index);
-                }
-            }).catch( (e)=> {
-                console.error("Error encrypting", e);
-            });
+            let cipherText = await openpgp.encrypt({
+                message,
+                encryptionKeys: encryptKey,    
+            })//.then( async (cipherText) => {
+            
+            if (index === -1){
+                this.encContentBlobs.push(new Blob([cipherText]));
+            }else{
+                this.encContentBlobs[index] = new Blob([cipherText])
+            }
+            if (index <= 0){
+                this.$emit("encrypted", this.index);
+            }
+            // }).catch( (e)=> {
+            //     console.error("Error encrypting", e);
+            // });
         },
 
         openFileSync: async function(resume){
@@ -564,7 +564,7 @@ export default {
                     self.numUploaded += 1;
 
                     if (i < self.numChunks){
-                        let chunkIndex = ((i%2)==0) ? 2 : 1;
+                        let chunkIndex = 1//((i%2)==0) ? 2 : 1;
                         await self.getNextChunk(chunkIndex);
                         self.numEncrypted += 1
                         
@@ -648,7 +648,10 @@ export default {
             }
 
 
+            this.currChunk = 0;
             let initialUpIndex = (this.currChunk > 1) ? 2 : 0;
+            this.offset = 0;
+            
             await this.getNextChunk(initialUpIndex);
             if (this.readFile){
                 u = new tus.Upload(this.blob[initialUpIndex], uploadOptions);
@@ -657,28 +660,28 @@ export default {
             }
             this.uploads.push(u);
 
-            //is more than one chunk do parallel work
-            if (size > ((this.chunkSize*2)-1)){
-                this.getNextChunk(1).then( () => {
-                    self.numEncrypted += 1
-                    let chunkIndex = 1;
-                    i += 1;
+        //     //is more than one chunk do parallel work
+        //     if (size > ((this.chunkSize*2)-1)){
+        //         this.getNextChunk(1).then( () => {
+        //             self.numEncrypted += 1
+        //             let chunkIndex = 1;
+        //             i += 1;
                     
-                    let u2 = null;
-                    let u2Options = JSON.parse(JSON.stringify(uploadOptions));
-                    u2Options.onProgress = function(byteUp, byteTot){
-                        self.up2Progress = byteUp;
-                        self.up2Size = byteTot;
-                    }
-                    if (this.readFile){
-                        u2 = new tus.Upload(self.blob[chunkIndex], u2Options);
-                    }else{
-                        u2 = new tus.Upload(self.encContentBlobs[chunkIndex], u2Options);
-                    }
-                    u2.start();
-                    self.uploads.push(u2);
-                });
-            }
+        //             let u2 = null;
+        //             let u2Options = JSON.parse(JSON.stringify(uploadOptions));
+        //             u2Options.onProgress = function(byteUp, byteTot){
+        //                 self.up2Progress = byteUp;
+        //                 self.up2Size = byteTot;
+        //             }
+        //             if (this.readFile){
+        //                 u2 = new tus.Upload(self.blob[chunkIndex], u2Options);
+        //             }else{
+        //                 u2 = new tus.Upload(self.encContentBlobs[chunkIndex], u2Options);
+        //             }
+        //             u2.start();
+        //             self.uploads.push(u2);
+        //         });
+        //     }
             u.start();
         },
         onImportButtonClicked: async function(){

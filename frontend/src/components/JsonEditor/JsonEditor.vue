@@ -340,6 +340,7 @@
                                                             <Select
                                                                 :label="$tc('Tags', 2)"
                                                                 placeholder=""
+                                                                :multiple="true"
                                                                 name="tags"
                                                                 :refName="'basicField-' + key + '-' + fKey + '-tags'"
                                                                 :idName="'basicField-' + key + '-' + fKey + '-tags'"

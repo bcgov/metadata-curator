@@ -49,13 +49,14 @@
                 </TextInput>
             </v-col>
             <v-col cols=6>
-                <TextInput
+                <Select
                     :editing="true"
                     name="tags"
                     :label="$tc('Field Tags')"
                     :value="filterTags"
-                    @blur=" (newVal) => { filterTags = newVal.target.value; }">
-                </TextInput>
+                    :multiple="true"
+                    @edited=" (newVal) => { filterTags = newVal; }">
+                </Select>
             </v-col>
         </v-row>
 
