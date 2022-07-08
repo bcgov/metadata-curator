@@ -6,6 +6,10 @@
 June 17, 2022
  - Reenabled parallel encyption and chunking
  - Fixed issue with add/remove files showing in incorrect order
+ - Tags now multiselect on schema
+ - Tags now multiselect for filter on dataset page, results will be datasets that have both of the tags present
+ - Selects will now add non existent values to the list of values. This allows for instance tags that are not in the possible list of values to still show up
+ - Temporal fields is a new optional field on upload for data type files.
 
 <br />
 
