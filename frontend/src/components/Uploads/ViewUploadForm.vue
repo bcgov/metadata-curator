@@ -169,7 +169,7 @@
                                 </v-col>
                             </v-row>
 
-                            <v-row v-if="file.start_date">
+                            <v-row v-if="file.start_date && file.end_date">
                                 <v-col cols=12>
                                     <TextInput
                                         :label="$tc('Date Range')"
@@ -177,6 +177,19 @@
                                         name="date_range"
                                         :editing="false"
                                         :value="formatDate(file.start_date) + ' - ' + formatDate(file.end_date)"
+                                        helpPrefix="upload"
+                                    ></TextInput>
+                                </v-col>
+                            </v-row>
+
+                            <v-row v-if="file.temporal_fields">
+                                <v-col cols=12>
+                                    <TextInput
+                                        :label="$tc('Temporal range verification field(s)')"
+                                        placeholder=""
+                                        name="temporal_fields"
+                                        :editing="false"
+                                        :value="file.temporal_fields"
                                         helpPrefix="upload"
                                     ></TextInput>
                                 </v-col>

@@ -2,18 +2,16 @@
 
 <br />
 
-## Version 1.5.3
-June 10, 2022
- - All selects are now alphabetically sorted by default (can be turned off)
- - The dataset list now allows sorting by name, create date or ministry / organization ascending or descending
- - The editions have moved to a tab in the dataset page
- - Editions can now be sorted by name or create date and ascending or descending on the dataset page
- - Variable Classifications has been renamed to Classification Ind(ex/icies) in that area of the program
+## Version 1.5.4
+June 17, 2022
+ - Reenabled parallel encyption and chunking
+ - Fixed issue with add/remove files showing in incorrect order
 
 <br />
 
 ## Table Of Contents
-- [Version 1.5.3 (June 10 2022)](#version-153)
+- [Version 1.5.4 (June 17 2022)](#version-154)
+- [Version 1.5.3 (June 17 2022)](#version-153)
 - [Version 1.5.2 (June 2 2022)](#version-152)
 - [Version 1.5.1 (May 18 2022)](#version-151)
 - [Version 1.5.0 (May 9 2022)](#version-150)
@@ -37,6 +35,17 @@ June 10, 2022
 - [Version 1.2.4 (February 7 2022)](#version-124)
 - [Version 1.2.3 (February 1 2022)](#version-123)
 - [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
+## Version 1.5.3
+June 17, 2022
+ - All selects are now alphabetically sorted by default (can be turned off)
+ - The dataset list now allows sorting by name, create date or ministry / organization ascending or descending
+ - The editions have moved to a tab in the dataset page
+ - Editions can now be sorted by name or create date and ascending or descending on the dataset page
+ - Variable Classifications has been renamed to Classification Ind(ex/icies) in that area of the program
+ - Fixed an issue with large file encryption. This requires decryptor to seperate file on messages
 
 <br />
 

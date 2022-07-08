@@ -192,18 +192,12 @@ export default {
                     for (let i=0; i<repo.resources.length; i++){
                         if (repo.resources[i].tableSchema && repo.resources[i].tableSchema.fields){
                             for (let j=0; j<repo.resources[i].tableSchema.fields.length; j++){
-                                let tagStr = repo.resources[i].tableSchema.fields[j].tags;
-                                let tags = (tagItems[repo.version.repo_id._id]) ? tagItems[repo.version.repo_id._id] : [];
-                                if (tagStr){
-                                    if (tagStr.indexOf(", ") !== -1){
-                                        tags = tagStr.split(", ");
-                                    }else{
-                                        tags = tagStr.split(",")
-                                    }
+                                let tagArr = repo.resources[i].tableSchema.fields[j].tags;
+                                if (tagArr){
                                     if (tagItems[repo.version.repo_id._id]){
-                                        tagItems[repo.version.repo_id._id] = [...new Set([...tagItems[repo.version.repo_id._id], ...tags])];
+                                        tagItems[repo.version.repo_id._id] = [...new Set([...tagItems[repo.version.repo_id._id], ...tagArr])];
                                     }else{
-                                        tagItems[repo.version.repo_id._id] = [...new Set(tags)];
+                                        tagItems[repo.version.repo_id._id] = [...new Set(tagArr)];
                                     }
                                 }
                             }
@@ -217,7 +211,7 @@ export default {
             this.repos.forEach( (repo) => {
                 let add = (this.filterOrg.length === 0 || this.filterOrg.indexOf(repo.ministry_organization) !== -1);
                 add = ( (add) && (!this.filterName || repo.name.indexOf(this.filterName) !== -1) );
-                add = ( (add) && ((!this.filterTags) || ( (!this.datasetTags) || (this.datasetTags[repo._id] && this.datasetTags[repo._id].indexOf(this.filterTags) !== -1)) ));
+                add = ( (add) && ((!this.filterTags) || ( (!this.datasetTags) || (this.datasetTags[repo._id] && this.filterTags.every(element => { return this.datasetTags[repo._id].includes(element); }))) ));
                 if (add){
                     newFiltered.push(repo)
                 }

@@ -86,7 +86,7 @@
             removeFile(index){
                 this.fileReaders.splice(index, 1);
                 this.files.splice(index, 1);
-                this.removeContent(index);
+                this.removeContent({index: index});
                 this.spanKey++
                 this.$emit('changed', this.files.length);
                 this.updateFormSubmission();

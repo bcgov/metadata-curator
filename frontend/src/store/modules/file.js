@@ -131,9 +131,6 @@ const mutations = {
     },
 
     removeContent(state, {index}){
-        //let c = JSON.parse(JSON.stringify(state.content));
-        //c.splice(index, 1);
-
         state.content.splice(index, 1);
         
         Vue.set(state, 'content', state.content);

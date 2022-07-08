@@ -346,7 +346,7 @@
                                                                 :idName="'basicField-' + key + '-' + fKey + '-tags'"
                                                                 :items="false"
                                                                 :editing="editing"
-                                                                :value="field.tags"
+                                                                :value="Array.isArray(field.tags) ? field.tags : [field.tags]"
                                                                 helpPrefix="schema"
                                                                 @edited="(newValue) => { updateResource(key, fKey, 'tags', newValue) }"
                                                             ></Select>

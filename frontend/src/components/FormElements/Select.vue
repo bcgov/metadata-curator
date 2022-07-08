@@ -172,15 +172,59 @@
             },
 
             displayItems: function(){
-                let items = this.options.filter((obj) => { return obj.type.toLowerCase() === this.name.toLowerCase()});
+                let optionFilter = this.name;
+                //if items is false ALWAYS use name, otherwise use help prefix followed by name
+                if ( (this.helpPrefix) && (this.items !== false) ){
+                    optionFilter = this.helpPrefix + "." + this.name
+                }
+                let items = this.options.filter((obj) => { return obj.type.toLowerCase() === optionFilter});
                 items = items.map( (obj) => { return obj.values });
                 if (items.length > 0){
-                    items = items[0]; //can only be one match
+                    items = JSON.parse(JSON.stringify(items[0])); //can only be one match
                 }else{
-                    items = this.items;
+                    items = JSON.parse(JSON.stringify(this.items));
                 }
                 
                 if (Array.isArray(items)){
+                    
+                    //is multiselect
+                    if (Array.isArray(this.val)){
+                        for (let i=0; i<this.val.length; i++){
+                            let found = false;
+                        
+                            for (let j=0; j<items.length; j++){
+                                if (items[j][this.itemValue] === this.val[i]){
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        
+                            if (!found){
+                                let item = {};
+                                item[this.itemText] = this.val[i];
+                                item[this.itemValue] = this.val[i];
+                                items.push(item);
+                            }
+                        }
+                    }else{
+                        if (this.val){
+                            let found = false;
+                            for (let j=0; j<items.length; j++){
+                                if (items[j][this.itemValue] === this.val){
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        
+                            if (!found){
+                                let item = {};
+                                item[this.itemText] = this.val;
+                                item[this.itemValue] = this.val;
+                                items.push(item);
+                            }
+                        }
+                    }
+
                     let rv = JSON.parse(JSON.stringify(items));
                     if (this.sorted){
                         
@@ -193,6 +237,11 @@
                         
                     }
                     return rv;
+                }else if (this.val){
+                    let item = {};
+                    item[this.itemText] = this.val;
+                    item[this.itemValue] = this.val;
+                    return [item];
                 }
                 return [];
             },
@@ -208,20 +257,41 @@
                 
                 let displayVal = this.val;
                 
-                let items = this.options.filter((obj) => { return obj.type.toLowerCase() === this.name.toLowerCase()});
+                let optionFilter = this.name;
+                //if items is false ALWAYS use name, otherwise use help prefix followed by name
+                if ( (this.helpPrefix) && (this.items !== false) ){
+                    optionFilter = this.helpPrefix + "." + this.name
+                }
+                let items = this.options.filter((obj) => { return obj.type.toLowerCase() === optionFilter});
+
                 items = items.map( (obj) => { return obj.values });
                 if (items.length > 0){
                     items = items[0]; //can only be one match
                 }else{
                     items = this.items;
                 }
-                
-                for (let i=0; i<items.length; i++){
-                    if (items[i][this.itemValue] === this.val){
+
+                if (Array.isArray(this.val)){
+                    for (let i=0; i<this.val.length; i++){
+                        let found = false;
+                        displayVal = (i == 0) ? "" : (displayVal + ", ");
+                        for (let j=0; j<items.length; j++){
+                            if (items[j][this.itemValue] === this.val[i]){
+                                displayVal = items[j][this.itemText];
+                                found = true;
+                            }
+                        }
+                        if (!found){
+                            displayVal += this.val[i];
+                        }
+                    }
+                }else{
+                    for (let i=0; i<items.length; i++){
+                        if (items[i][this.itemValue] === this.val)
                         displayVal = items[i][this.itemText];
                     }
                 }
-                return displayVal
+                return displayVal;
             }
 
         },

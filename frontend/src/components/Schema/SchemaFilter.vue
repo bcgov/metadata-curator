@@ -48,6 +48,16 @@
                     @keydown="(event) => { fieldNameFilterOnEnter(event) }"
                 ></TextInput>
             </v-col>
+            <v-col cols=6>
+                <Select
+                    :editing="true"
+                    name="tags"
+                    :label="$tc('Field Tags')"
+                    :value="filterTags"
+                    :multiple="true"
+                    @edited=" (newVal) => { tagFilter(newVal) }">
+                </Select>
+            </v-col>
         </v-row>
     </v-container>
 </template>
@@ -67,7 +77,7 @@ import TextInput from '../FormElements/TextInput';
         },
         data() {
             return {
-                
+                filterTags: '',
             }
         },
         computed: {
@@ -111,6 +121,10 @@ import TextInput from '../FormElements/TextInput';
                 if (event.key === 'Enter' || event.keyCode === 13) {
                     this.fieldNameFilter(event);
                 }
+            },
+
+            tagFilter(val){
+                this.$emit('filter', 'tag', val);
             }
         },
         
