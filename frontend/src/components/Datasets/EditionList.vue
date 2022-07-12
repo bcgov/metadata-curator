@@ -37,6 +37,19 @@
                         </v-card-text>
                     </v-card>
             </v-dialog>
+
+            <v-col cols=12>
+                <TextInput
+                    label=""
+                    :placeholder="$tc('My') + ' ' + $tc('Dataset')"
+                    name="name"
+                    :large="true"
+                    :editing="false"
+                    :value="(dataset) ? dataset.name : ''"
+                    helpPrefix="dataset.editionList"
+                ></TextInput>
+            </v-col>
+
             <v-col cols="12">
                 <v-card outlined>
                     <v-card-text>
@@ -80,6 +93,7 @@
 
 <script>
 import {mapActions, mapMutations, mapState} from "vuex";
+import TextInput from "../FormElements/TextInput"
 import BranchForm from '../Versions/BranchForm';
 import Select from '../FormElements/Select';
 
@@ -92,6 +106,7 @@ export default {
     components:{
         BranchForm,
         Select,
+        TextInput,
     },
 
     props: {

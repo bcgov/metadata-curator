@@ -10,6 +10,10 @@ July 8, 2022
  - Tags now multiselect for filter on dataset page, results will be datasets that have both of the tags present
  - Selects will now add non existent values to the list of values. This allows for instance tags that are not in the possible list of values to still show up
  - Temporal fields is a new optional field on upload for data type files.
+ - Updated edition page to use markdown for all text areas
+ - Updated bcdc push logic to always use data innovation program for published by and to add source system to lineage statement if it has one
+ - Added dataset name to edition tab of datasets
+ - Added dataset name to edition list, it is now the first line of text under the edition name (the edition description is now below dataset name)
 
 <br />
 

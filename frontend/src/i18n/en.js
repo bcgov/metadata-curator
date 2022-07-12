@@ -323,6 +323,8 @@ export default {
 
         "Temporal range verification field(s)": "Temporal range verification field(s)",
         "Temporal range fields are only for data type files": "Temporal range fields are only for data type files",
+        "Classification Indicies": "Classification Indicies",
+        "Options": "Options",
 
         "help.upload.temporal_fields": "Field(s) for verifying the date range.  Fields should be comma separated e.g., field1,field2.",
 

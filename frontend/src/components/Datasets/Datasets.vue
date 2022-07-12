@@ -273,15 +273,8 @@ export default {
                                         let item = JSON.parse(JSON.stringify(repo));
                                         item.field = JSON.parse(JSON.stringify(repo.resources[i].tableSchema.fields[j]));
                                         item.resource = JSON.parse(JSON.stringify(repo.resources[i]));
-                                        let tagStr = item.field.tags;
-                                        let tags = [];
-                                        if (tagStr){
-                                            if (tagStr.indexOf(", ") !== -1){
-                                                tags = tagStr.split(", ");
-                                            }else{
-                                                tags = tagStr.split(",")
-                                            }
-                                        }
+                                        let tags = item.field.tags;
+                                        
                                         if (!this.filterTags || (tags && tags.indexOf(this.filterTags) !== -1)){
                                             items.push(item);
                                         }

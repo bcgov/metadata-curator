@@ -185,6 +185,7 @@
                     items = JSON.parse(JSON.stringify(this.items));
                 }
                 
+                
                 if (Array.isArray(items)){
                     
                     //is multiselect
@@ -254,6 +255,12 @@
             },
 
             displayVal: function(){
+                
+                if (this.val === null){
+                    return '';
+                }else if ( (Array.isArray(this.val)) && ((this.val.length === 0) || (this.val[0] === null)) ){
+                    return '';
+                }
                 
                 let displayVal = this.val;
                 

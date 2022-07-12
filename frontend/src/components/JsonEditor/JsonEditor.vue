@@ -346,7 +346,7 @@
                                                                 :idName="'basicField-' + key + '-' + fKey + '-tags'"
                                                                 :items="false"
                                                                 :editing="editing"
-                                                                :value="Array.isArray(field.tags) ? field.tags : [field.tags]"
+                                                                :value="Array.isArray(field.tags) ? field.tags : (field.tags ? [field.tags] : [])"
                                                                 helpPrefix="schema"
                                                                 @edited="(newValue) => { updateResource(key, fKey, 'tags', newValue) }"
                                                             ></Select>
@@ -708,17 +708,22 @@ export default{
         },
 
         filter: function(key, val){
+            if (key == 'tag'){
+                key = 'tags';
+            }
+            
             if (Array.isArray(val)){
                 if (val.length === 0){
                     delete this.filters[key];
                 }else{
                     this.filters[key] = val;
                 }
-            }
-            if (val === ""){
-                delete this.filters[key];
             }else{
-                this.filters[key] = val;
+                if (val === ""){
+                    delete this.filters[key];
+                }else{
+                    this.filters[key] = val;
+                }
             }
             this.reindexKey++;
             this.redrawIndex++;
@@ -731,12 +736,22 @@ export default{
             }
 
             const textFilters = ['name'];
+            const arrayFilters = ['tags'];
 
             let fKeys = Object.keys(this.filters);
             let rv = false
             for (let i=0; i<fKeys.length; i++){
                 let filterFieldName = fKeys[i];
-                if (Array.isArray(this.filters[filterFieldName])){
+                if (arrayFilters.indexOf(this.filterFieldName)){
+                    if (this.filters && this.filters[filterFieldName].length > 0 && ( (!field) || (!field[filterFieldName])) ){
+                        rv = true;
+                    }else if (this.filters && this.filters[filterFieldName].length > 0){
+                        const intersection = field[filterFieldName].filter(element => this.filters[filterFieldName].includes(element));
+                        if (!filterFieldName || (!field[filterFieldName] && field[filterFieldName] !== 0 && field[filterFieldName] !== false) || (intersection.length <= 0)){
+                            rv = true;
+                        }
+                    }
+                }else if (Array.isArray(this.filters[filterFieldName])){
                     if (this.filters[filterFieldName].length > 0){
                         if (!filterFieldName || (!field[filterFieldName] && field[filterFieldName] !== 0 && field[filterFieldName] !== false) || (this.filters[filterFieldName].indexOf(field[filterFieldName]) === -1)){
                             rv = true;

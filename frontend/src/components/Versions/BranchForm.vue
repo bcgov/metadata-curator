@@ -112,16 +112,16 @@
                                         </v-col>
                                     
                                         <v-col cols=6>
-                                            <TextArea
-                                                :label="$tc('Version Description')"
-                                                :placeholder="$tc('Notes')"
+                                            <Markdown
                                                 name="description"
-                                                validation-rules="required"
-                                                :editing="editing"
                                                 :value="(branch) ? branch.description : ''"
+                                                :label="$tc('Version Description')"
+                                                :editing="editing"
+                                                :placeholder="$tc('Notes')"
+                                                validation-rules="required"
                                                 helpPrefix="edition"
                                                 @edited="(newValue) => { updateValues('description', newValue) }"
-                                            ></TextArea>
+                                            ></Markdown>
                                         </v-col>
 
                                         <v-col cols=6>
@@ -313,15 +313,15 @@
                                         </v-col>
                                     
                                         <v-col cols=6>
-                                            <TextArea
-                                                :label="$tc('Important Additional Information')"
-                                                :placeholder="$tc('Important Additional Information')"
+                                            <Markdown
                                                 name="additional_info"
-                                                :editing="editing"
                                                 :value="(branch) ? branch.additional_info : ''"
+                                                :label="$tc('Important Additional Information')"
+                                                :editing="editing"
+                                                :placeholder="$tc('Important Additional Information')"
                                                 helpPrefix="edition"
                                                 @edited="(newValue) => { updateValues('additional_info', newValue) }"
-                                            ></TextArea>
+                                            ></Markdown>
                                         </v-col>
 
                                         <v-col cols=6>
@@ -594,7 +594,6 @@
 
 import {mapActions, mapMutations, mapState} from "vuex";
 import TextInput from '../FormElements/TextInput';
-import TextArea from '../FormElements/TextArea';
 import Select from '../FormElements/Select';
 import Markdown from '../FormElements/Markdown';
 import Composite from '../FormElements/Composite';
@@ -618,7 +617,6 @@ export default {
     components:{
         TextInput,
         Select,
-        TextArea,
         MetadataForm,
         SimpleCheckbox,
         Composite,
