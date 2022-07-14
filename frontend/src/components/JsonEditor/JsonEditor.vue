@@ -108,20 +108,19 @@
 
                             <v-row v-if="(resource && resource.notes) || editing" class="pb-2">
                                 <v-col cols=12>
-                                    <TextArea
-                                        :label="$tc('Resource Notes')"
-                                        placeholder=""
+                                    <Markdown
                                         name="resNotes"
+                                        :value="resource.notes"
+                                        :label="$tc('Resource Notes')"
+                                        :editing="editing"
+                                        placeholder=""
                                         :refName="'basicField-' + key + '-resNotes'"
                                         :idName="'basicField-' + key + '-resNotes'"
-                                        :large="true"
-                                        :editing="editing"
-                                        :value="resource.notes"
                                         helpPrefix="schema"
                                         :focusField="focusProp"
                                         @focus="onFocusBasic"
-                                        @blur="(event) => { updateResourceBase(key, 'notes', event) }"
-                                    ></TextArea>
+                                        @edited="(newValue) => { updateResourceBase(key, 'notes', newValue) }"
+                                    ></Markdown>
                                 </v-col>
                             </v-row>
 
@@ -269,20 +268,20 @@
                                                         </v-col>
 
                                                         <v-col cols=12 v-if="((field && field.description) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
-                                                            <TextArea
+                                                            <Markdown
                                                                 :label="$tc('Field') + ' ' + $tc('Description')"
                                                                 placeholder=""
                                                                 name="description"
                                                                 :refName="'basicField-' + key + '-' + fKey + '-description'"
                                                                 :idName="'basicField-' + key + '-' + fKey + '-description'"
-
-                                                                :editing="editing"
                                                                 :value="field.description"
+                                                                :editing="editing"
+                                                                
                                                                 helpPrefix="schema"
                                                                 :focusField="focusProp"
                                                                 @focus="onFocusBasic"
-                                                                @blur="(event) => { updateResource(key, fKey, 'description', event) }"
-                                                            ></TextArea>
+                                                                @edited="(newValue) => { updateResource(key, fKey, 'description', newValue) }"
+                                                            ></Markdown>
                                                         </v-col>
 
                                                         <v-col cols=12 v-if="((field && field.format) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
@@ -353,20 +352,20 @@
                                                         </v-col>
 
                                                         <v-col cols=12 v-if="((field && field.notes) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
-                                                            <TextArea
+                                                            <Markdown
                                                                 :label="$tc('Field') + ' ' + $tc('Notes', 2)"
                                                                 placeholder=""
                                                                 name="notes"
                                                                 :refName="'basicField-' + key + '-' + fKey + '-notes'"
                                                                 :idName="'basicField-' + key + '-' + fKey + '-notes'"
-
-                                                                :editing="editing"
                                                                 :value="field.notes"
+                                                                :editing="editing"
+                                                                
                                                                 helpPrefix="schema"
                                                                 :focusField="focusProp"
                                                                 @focus="onFocusBasic"
-                                                                @blur="(event) => { updateResource(key, fKey, 'notes', event) }"
-                                                            ></TextArea>
+                                                                @edited="(newValue) => { updateResource(key, fKey, 'notes', newValue) }"
+                                                            ></Markdown>
                                                         </v-col>
 
                                                         <v-col cols=12 v-if="((field && field.constraints && field.constraints.enum) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
@@ -476,6 +475,7 @@ import TextInput from '../FormElements/TextInput';
 import Select from '../FormElements/Select';
 import DateInput from '../FormElements/DateInput';
 import TextArea from '../FormElements/TextArea';
+import Markdown from '../FormElements/Markdown';
 import Comments from '../Comments';
 import draggable from 'vuedraggable'
 import SchemaFilter from '../Schema/SchemaFilter.vue'
@@ -489,6 +489,7 @@ export default{
         Select,
         Comments,
         draggable,
+        Markdown,
         // SimpleCheckbox,
         DateInput,
         SchemaFilter,

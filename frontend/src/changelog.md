@@ -3,7 +3,7 @@
 <br />
 
 ## Version 1.5.4
-July 13, 2022
+July 14, 2022
  - Reenabled parallel encyption and chunking
  - Fixed issue with add/remove files showing in incorrect order
  - Tags now multiselect on schema
@@ -14,11 +14,13 @@ July 13, 2022
  - Updated bcdc push logic to always use data innovation program for published by and to add source system to lineage statement if it has one
  - Added dataset name to edition tab of datasets
  - Added dataset name to edition list, it is now the first line of text under the edition name (the edition description is now below dataset name)
+ - Added additional fields as markdown to the edition page that were previously text inputs
+ - Notes and description changed to markdown on schema. IF USED THIS WILL AFFECT THE JSON
 
 <br />
 
 ## Table Of Contents
-- [Version 1.5.4 (July 13 2022)](#version-154)
+- [Version 1.5.4 (July 14 2022)](#version-154)
 - [Version 1.5.3 (June 17 2022)](#version-153)
 - [Version 1.5.2 (June 2 2022)](#version-152)
 - [Version 1.5.1 (May 18 2022)](#version-151)

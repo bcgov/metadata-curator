@@ -212,15 +212,15 @@
                                         </v-col>
 
                                         <v-col cols=6>
-                                            <TextInput
-                                                :label="$tc('Specific Instructions for appending or linking')"
-                                                :placeholder="$tc('Specific Instructions for appending or linking')"
+                                            <Markdown
                                                 name="instructions"
-                                                :editing="editing"
                                                 :value="(branch) ? branch.instructions : ''"
+                                                :label="$tc('Specific Instructions for appending or linking')"
+                                                :editing="editing"
+                                                :placeholder="$tc('Specific Instructions for appending or linking')"
                                                 helpPrefix="edition"
                                                 @edited="(newValue) => { updateValues('instructions', newValue) }"
-                                            ></TextInput>
+                                            ></Markdown>
                                         </v-col>
 
                                         <v-col cols=6>
@@ -236,15 +236,15 @@
                                         </v-col>
 
                                         <v-col cols=6>
-                                            <TextInput
-                                                :label="$tc('Processing Summary')"
-                                                :placeholder="$tc('Processing Summary')"
+                                            <Markdown
                                                 name="processing_summary"
-                                                :editing="editing"
                                                 :value="(branch) ? branch.processing_summary : ''"
+                                                :label="$tc('Processing Summary')"
+                                                :editing="editing"
+                                                :placeholder="$tc('Processing Summary')"
                                                 helpPrefix="edition"
                                                 @edited="(newValue) => { updateValues('processing_summary', newValue) }"
-                                            ></TextInput>
+                                            ></Markdown>
                                         </v-col>
 
                                         
@@ -253,63 +253,63 @@
                                         </v-col>
 
                                         <v-col cols=6>
-                                            <TextInput
-                                                :label="$tc('Collection Method')"
-                                                :placeholder="$tc('Collection Method')"
+                                             <Markdown
                                                 name="collectionMethod"
-                                                :editing="editing"
                                                 :value="(branch) ? branch.collectionMethod : ''"
+                                                :label="$tc('Collection Method')"
+                                                :editing="editing"
+                                                :placeholder="$tc('Collection Method')"
                                                 helpPrefix="edition"
                                                 @edited="(newValue) => { updateValues('collectionMethod', newValue) }"
-                                            ></TextInput>
+                                            ></Markdown>
                                         </v-col>
 
                                         <v-col cols=6>
-                                            <TextInput
-                                                :label="$tc('Inclusions')"
-                                                :placeholder="$tc('Inclusions')"
+                                            <Markdown
                                                 name="inclusions"
-                                                :editing="editing"
                                                 :value="(branch) ? branch.inclusions : ''"
+                                                :label="$tc('Inclusions')"
+                                                :editing="editing"
+                                                :placeholder="$tc('Inclusions')"
                                                 helpPrefix="edition"
                                                 @edited="(newValue) => { updateValues('inclusions', newValue) }"
-                                            ></TextInput>
+                                            ></Markdown>
                                         </v-col>
                                     
                                         <v-col cols=6>
-                                            <TextInput
-                                                :label="$tc('Exclusions')"
-                                                :placeholder="$tc('Exclusions')"
+                                            <Markdown
                                                 name="exclusions"
-                                                :editing="editing"
                                                 :value="(branch) ? branch.exclusions : ''"
+                                                :label="$tc('Exclusions')"
+                                                :editing="editing"
+                                                :placeholder="$tc('Exclusions')"
                                                 helpPrefix="edition"
                                                 @edited="(newValue) => { updateValues('exclusions', newValue) }"
-                                            ></TextInput>
+                                            ></Markdown>
                                         </v-col>
 
                                         <v-col cols=6>
-                                            <TextInput
-                                                :label="$tc('Quality / Accuracy of Information')"
-                                                :placeholder="$tc('Quality / Accuracy of Information')"
+                                            <Markdown
                                                 name="quality"
-                                                :editing="editing"
                                                 :value="(branch) ? branch.quality : ''"
+                                                :label="$tc('Quality / Accuracy of Information')"
+                                                :editing="editing"
+                                                :placeholder="$tc('Quality / Accuracy of Information')"
                                                 helpPrefix="edition"
                                                 @edited="(newValue) => { updateValues('quality', newValue) }"
-                                            ></TextInput>
+                                            ></Markdown>
                                         </v-col>
 
                                         <v-col cols=6>
-                                            <TextInput
-                                                :label="$tc('Data changes over time')"
-                                                :placeholder="$tc('Data changes over time')"
+                                            <Markdown
                                                 name="delta_over_time"
-                                                :editing="editing"
                                                 :value="(branch) ? branch.delta_over_time : ''"
+                                                :label="$tc('Data changes over time')"
+                                                :editing="editing"
+                                                :placeholder="$tc('Data changes over time')"
                                                 helpPrefix="edition"
                                                 @edited="(newValue) => { updateValues('delta_over_time', newValue) }"
-                                            ></TextInput>
+                                            ></Markdown>
                                         </v-col>
                                     
                                         <v-col cols=6>
@@ -344,15 +344,15 @@
                                         </v-col>
 
                                         <v-col cols=6>
-                                            <TextInput
-                                                :label="$tc('References / Research that uses data')"
-                                                :placeholder="$tc('References / Research that uses data')"
+                                            <Markdown
                                                 name="references"
-                                                :editing="editing"
                                                 :value="(branch) ? branch.references : ''"
+                                                :label="$tc('References / Research that uses data')"
+                                                :editing="editing"
+                                                :placeholder="$tc('References / Research that uses data')"
                                                 helpPrefix="edition"
                                                 @edited="(newValue) => { updateValues('references', newValue) }"
-                                            ></TextInput>
+                                            ></Markdown>
                                         </v-col>
 
                                         <v-col cols=6>
