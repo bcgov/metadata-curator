@@ -88,5 +88,6 @@
   },
 
   "userIdField": "email",
-  "bcdc": "http://bcdcUrl"
+  "bcdc": "http://bcdcUrl",
+  "ignoreGroups": []
 }

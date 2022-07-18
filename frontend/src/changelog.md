@@ -3,7 +3,7 @@
 <br />
 
 ## Version 1.5.4
-July 14, 2022
+July 18, 2022
  - Reenabled parallel encyption and chunking
  - Fixed issue with add/remove files showing in incorrect order
  - Tags now multiselect on schema
@@ -16,11 +16,15 @@ July 14, 2022
  - Added dataset name to edition list, it is now the first line of text under the edition name (the edition description is now below dataset name)
  - Added additional fields as markdown to the edition page that were previously text inputs
  - Notes and description changed to markdown on schema. IF USED THIS WILL AFFECT THE JSON
+ - Published Edition page now has many more fields that exist on non published one
+ - Published Edition has dataset name larger to closer match non published page
+ - When selecting a group to create an edition/dataset/upload for it now will remove ones that don't match a configurable field
+ - Fixed Edition filters to properly work with all datasets again, also removed sort from the filter boxes on this page as it was confusing having "All" and "None" in the middle of the list
 
 <br />
 
 ## Table Of Contents
-- [Version 1.5.4 (July 14 2022)](#version-154)
+- [Version 1.5.4 (July 18 2022)](#version-154)
 - [Version 1.5.3 (June 17 2022)](#version-153)
 - [Version 1.5.2 (June 2 2022)](#version-152)
 - [Version 1.5.1 (May 18 2022)](#version-151)

@@ -998,6 +998,26 @@ export default {
                     if (index !== -1){
                         this.selectableGroups.splice(index, 1);
                     }
+
+                    let ignoreGroups = await this.$store.dispatch('config/getItem', {field: 'key', value: 'ignoreGroups', def: {key: 'ignoreGroups', value: []}});
+                    ignoreGroups = ignoreGroups.value;
+                    for (var i=0; i<ignoreGroups.length; i++){
+                                                    
+                        if ( (ignoreGroups[i].indexOf("/") == 0) && (ignoreGroups[i].lastIndexOf("/") === (ignoreGroups[i].length -1)) ){
+                            let s = ignoreGroups[i].substring(1, ignoreGroups[i].length-1);
+                            let r = new RegExp(s);      
+                            this.selectableGroups = this.selectableGroups.filter( (el) => {
+                                //console.log("REGEX match", el, s, r, el.match(r));
+                                return el.match(r) === null })
+                        }else{
+                            var ignoreIndex = -1;
+                            ignoreIndex = this.selectableGroups.indexOf(ignoreGroups[i]);
+                            if (ignoreIndex !== -1){
+                                this.selectableGroups.splice(ignoreIndex, 1);
+                            }
+                        }
+                        
+                    }
                 }
                 await this.getVariableClassifications({});
             }else{

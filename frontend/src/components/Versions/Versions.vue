@@ -27,6 +27,7 @@
                             :items="dataUploadsWithAll"
                             itemText="name"
                             itemValue="_id"
+                            :sorted="false"
 
                             :editing="true"
                             :value="filterBy"
@@ -43,6 +44,7 @@
                             :items="reposWithAll"
                             itemText="name"
                             itemValue="_id"
+                            :sorted="false"
 
                             :editing="true"
                             :value="datasetFilter"
@@ -142,14 +144,14 @@ export default {
 
         dataUploadsWithAll: function(){
             var u = this.dataUploads.slice();
-            u.unshift({name: "All", _id: -1});
+            u.unshift({name: "All", _id: '-1'});
             u.unshift({name: "None", _id: ''});
             return u;
         },
 
         reposWithAll: function(){
             var u = this.repos.slice();
-            u.unshift({name: "All", _id: -1});
+            u.unshift({name: "All", _id: '-1'});
             return u;
         },
         

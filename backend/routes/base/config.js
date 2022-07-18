@@ -7,7 +7,7 @@ var buildDynamic = function(db, router, auth, cache){
     //cache keys
     const configListCache = 'config/configs';
     const enabledPhaseCache = 'config/enabledPhase';
-    const safeKeys = ['requiredRoleToCreateRequest']
+    const safeKeys = ['requiredRoleToCreateRequest', 'ignoreGroups']
     const config = require('config');
 
     router.get('/', async function(req, res, next) {

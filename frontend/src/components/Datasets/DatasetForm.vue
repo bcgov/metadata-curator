@@ -484,12 +484,34 @@ export default {
             this.creating = true;
             if ( (this.user.isApprover) || (this.user.isAdmin) ){
                 let requiredRole = await this.$store.dispatch('config/getItem', {field: 'key', value: 'requiredRoleToCreateRequest', def: {key: 'requiredRoleToCreateRequest', value: false}});
+
                 requiredRole = requiredRole.value;
                 this.selectableGroups = JSON.parse(JSON.stringify(this.user.groups));
                 let index = this.selectableGroups.indexOf(requiredRole);
                 if (index !== -1){
                     this.selectableGroups.splice(index, 1);
                 }
+                
+                let ignoreGroups = await this.$store.dispatch('config/getItem', {field: 'key', value: 'ignoreGroups', def: {key: 'ignoreGroups', value: []}});
+                ignoreGroups = ignoreGroups.value;
+                for (var i=0; i<ignoreGroups.length; i++){
+                                                 
+                    if ( (ignoreGroups[i].indexOf("/") == 0) && (ignoreGroups[i].lastIndexOf("/") === (ignoreGroups[i].length -1)) ){
+                        let s = ignoreGroups[i].substring(1, ignoreGroups[i].length-1);
+                        let r = new RegExp(s);      
+                        this.selectableGroups = this.selectableGroups.filter( (el) => {
+                            //console.log("REGEX match", el, s, r, el.match(r));
+                            return el.match(r) === null })
+                    }else{
+                        var ignoreIndex = -1;
+                        ignoreIndex = this.selectableGroups.indexOf(ignoreGroups[i]);
+                        if (ignoreIndex !== -1){
+                            this.selectableGroups.splice(ignoreIndex, 1);
+                        }
+                    }
+                    
+                }
+
             }
         }else{
             this.loadSections();
