@@ -24,18 +24,14 @@ var workingEdition = {
     },
     description: {
         selector: 'textarea[name="description"]',
-        value: 'edition description',
-        selector2: '#description-value'
+        value: "edition description",
+        selector2: '#description-value',
+        expectedValue: "edition description",
     },
     keywords: {
         selector: 'input[name="keywords"]',
         value: 'keyword1,keyword2, keyword3',
         selector2: '#keywords-value'
-    },
-    collectionMethod: {
-        selector: 'input[name="collectionMethod"]',
-        value: 'collectionMethod',
-        selector2: '#collectionMethod-value'
     },
     citation: {
         selector: 'input[name="citation"]',
@@ -43,39 +39,47 @@ var workingEdition = {
         selector2: '#citation-value'
     },
     instructions: {
-        selector: 'input[name="instructions"]',
-        value: 'instructions',
-        selector2: '#instructions-value'
+        selector: 'textarea[name="instructions"]',
+        value: "edition instructions",
+        selector2: '#instructions-value',
+        expectedValue: "edition instructions",
     },
     inclusions: {
-        selector: 'input[name="inclusions"]',
-        value: 'inclusions',
-        selector2: '#inclusions-value'
+        selector: 'textarea[name="inclusions"]',
+        value: "edition inclusions",
+        selector2: '#inclusions-value',
+        expectedValue: "edition inclusions",
     },
     exclusions: {
-        selector: 'input[name="exclusions"]',
-        value: 'exclusions',
-        selector2: '#exclusions-value'
+        selector: 'textarea[name="exclusions"]',
+        value: "edition exclusions",
+        selector2: '#exclusions-value',
+        expectedValue: "edition exclusions",
+        
     },
     quality: {
-        selector: 'input[name="quality"]',
-        value: 'quality',
-        selector2: '#quality-value'
+        selector: 'textarea[name="quality"]',
+        value: "edition quality",
+        selector2: '#quality-value',
+        expectedValue: "edition quality",
     },
     delta_over_time: {
-        selector: 'input[name="delta_over_time"]',
-        value: 'description of how this edition has changed overtime',
-        selector2: '#delta_over_time-value'
+        selector: 'textarea[name="delta_over_time"]',
+        value: "edition delta_over_time",
+        selector2: '#delta_over_time-value',
+        expectedValue: "edition delta_over_time",
     },
     additional_info: {
         selector: 'textarea[name="additional_info"]',
-        value: 'Additional information about this edition',
-        selector2: '#additional_info-value'
+        value: "edition additional_info",
+        selector2: '#additional_info-value',
+        expectedValue: "edition additional_info",
     },
     references: {
-        selector: 'input[name="references"]',
-        value: 'References',
-        selector2: '#references-value'
+        selector: 'textarea[name="references"]',
+        value: "edition references",
+        selector2: '#references-value',
+        expectedValue: "edition references",
     },
     faq: {
         selector: 'textarea[name="faq"]',
@@ -103,6 +107,7 @@ When(/^Data approver makes a new edition$/, async function(){
 
         await client.pause(2000);
         await client.click('#dataset-editions-tab');
+        await client.pause(3000);
         await client.click('#addVersion');
 
         await client.pause(2000);
@@ -144,7 +149,7 @@ When(/^Data approver makes a new edition$/, async function(){
 Then(/^Data approver chooses to see the details of the edition$/, async function(){
     try{
         await client.click('#dataset-editions-tab');
-        await client.pause(1000);
+        await client.pause(2000);
         await client.click('#branch-link-0');
 
     }catch(ex){

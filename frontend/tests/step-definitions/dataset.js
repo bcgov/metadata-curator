@@ -100,9 +100,9 @@ When(/^Data approver chooses to see the details of the dataset$/, async function
         let id = '#dataset-'+workingDataset.name.value.toLowerCase();
         id += '----' + workingDataset.ministry.value.toLowerCase();
         id = id.replace(/[ :.]/g, '-')
-        await client.pause(2000);
+        await client.pause(3000);
         await client.click(id);
-        await client.pause(1000);
+        await client.pause(2000);
     }catch(ex){
         await helpers.logout(client);
         throw ex
