@@ -124,7 +124,7 @@ surnameField = "family_name"
 groupField = "groups"
 
 # When creating a upload/topic these groups should be ignored for group access (normally shared groups)
-ignoreGroups = "\"/researchers\""
+ignoreGroups = "[]"
 
 #Whether or not to install keycloak with this
 makeKeycloak = true
