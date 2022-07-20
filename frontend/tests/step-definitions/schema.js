@@ -56,7 +56,7 @@ var workingSchema = {
         selector2: '#basicField-0-0-type',
     },
     description: {
-        selector: 'textarea[name="description"]',
+        selector: 'textarea[name="basicField-0-0-description"]',
         value: "field description",
         selector2: '#basicField-0-0-description-value',
         expectedValue: "field description",
@@ -72,7 +72,7 @@ var workingSchema = {
         selector2: '#basicField-0-0-rdfType',
     },
     notes: {
-        selector: 'textarea[name="notes"]',
+        selector: 'textarea[name="basicField-0-0-notes"]',
         value: "field 0 notes",
         selector2: '#basicField-0-0-notes-value',
         expectedValue: "field 0 notes",
