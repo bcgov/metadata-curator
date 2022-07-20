@@ -20,6 +20,8 @@ July 20, 2022
  - Published Edition has dataset name larger to closer match non published page
  - When selecting a group to create an edition/dataset/upload for it now will remove ones that don't match a configurable field
  - Fixed Edition filters to properly work with all datasets again, also removed sort from the filter boxes on this page as it was confusing having "All" and "None" in the middle of the list
+ - Added edition name when using "Create from this" for upload creation
+ - Changed Compare tab label to Compare Inferred
 
 <br />
 

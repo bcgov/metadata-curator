@@ -326,6 +326,8 @@ export default {
         "Classification Indicies": "Classification Indicies",
         "Options": "Options",
 
+        "Compare Inferred": "Compare Inferred",
+
         "help.upload.temporal_fields": "Field(s) for verifying the date range.  Fields should be comma separated e.g., field1,field2.",
 
         "help.dataset.name": "The name of the dataset",
