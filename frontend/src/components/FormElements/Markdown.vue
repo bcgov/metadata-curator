@@ -3,7 +3,7 @@
         <label class="label" v-if="displayLabel.length > 0">
             {{$tc(displayLabel)}}:
         </label>
-        <span v-if="!editing" :id="idName ? idName : (name+'-value')" v-html="displayValue" class="value"></span>
+        <span v-if="!editing" :id="name+'-value'" v-html="displayValue" class="value"></span>
         <div v-else>
             <div class="toolbar">
                 <v-btn tabindex="-1" icon small @click="add('#')">H1</v-btn>

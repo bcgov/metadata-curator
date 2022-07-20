@@ -109,7 +109,7 @@
                             <v-row v-if="(resource && resource.notes) || editing" class="pb-2">
                                 <v-col cols=12>
                                     <Markdown
-                                        name="resNotes"
+                                        :name="'basicField-' + key + '-resNotes'"
                                         :value="resource.notes"
                                         :label="$tc('Resource Notes')"
                                         :editing="editing"
@@ -271,7 +271,7 @@
                                                             <Markdown
                                                                 :label="$tc('Field') + ' ' + $tc('Description')"
                                                                 placeholder=""
-                                                                name="description"
+                                                                :name="'basicField-' + key + '-' + fKey + '-description'"
                                                                 :refName="'basicField-' + key + '-' + fKey + '-description'"
                                                                 :idName="'basicField-' + key + '-' + fKey + '-description'"
                                                                 :value="field.description"
@@ -355,7 +355,7 @@
                                                             <Markdown
                                                                 :label="$tc('Field') + ' ' + $tc('Notes', 2)"
                                                                 placeholder=""
-                                                                name="notes"
+                                                                :name="'basicField-' + key + '-' + fKey + '-notes'"
                                                                 :refName="'basicField-' + key + '-' + fKey + '-notes'"
                                                                 :idName="'basicField-' + key + '-' + fKey + '-notes'"
                                                                 :value="field.notes"
