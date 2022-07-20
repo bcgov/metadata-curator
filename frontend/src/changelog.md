@@ -3,7 +3,7 @@
 <br />
 
 ## Version 1.5.4
-July 19, 2022
+July 20, 2022
  - Reenabled parallel encyption and chunking
  - Fixed issue with add/remove files showing in incorrect order
  - Tags now multiselect on schema
@@ -24,7 +24,7 @@ July 19, 2022
 <br />
 
 ## Table Of Contents
-- [Version 1.5.4 (July 19 2022)](#version-154)
+- [Version 1.5.4 (July 20 2022)](#version-154)
 - [Version 1.5.3 (June 17 2022)](#version-153)
 - [Version 1.5.2 (June 2 2022)](#version-152)
 - [Version 1.5.1 (May 18 2022)](#version-151)
