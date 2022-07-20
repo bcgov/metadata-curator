@@ -57,8 +57,9 @@ var workingSchema = {
     },
     description: {
         selector: 'textarea[name="description"]',
-        value: 'field description',
-        selector2: '#basicField-0-0-description'
+        value: "field description",
+        selector2: '#basicField-0-0-description-value',
+        expectedValue: "field description",
     },
     format: {
         selector: 'input[name="format"]',
@@ -73,7 +74,8 @@ var workingSchema = {
     notes: {
         selector: 'textarea[name="notes"]',
         value: "field 0 notes",
-        selector2: '#basicField-0-0-notes',
+        selector2: '#basicField-0-0-notes-value',
+        expectedValue: "field 0 notes",
     },
     enum: {
         selector: 'textarea[name="enum"]',
