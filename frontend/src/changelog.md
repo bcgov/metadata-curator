@@ -23,6 +23,7 @@ July 21, 2022
  - Added edition name when using "Create from this" for upload creation
  - Changed Compare tab label to Compare Inferred
  - Bumped api size limit from 100kb to 50mb
+ - Fixed a bug causing notifications and upload date to change when approvers viewed
 
 <br />
 
