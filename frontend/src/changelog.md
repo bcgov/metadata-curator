@@ -3,7 +3,7 @@
 <br />
 
 ## Version 1.5.4
-July 20, 2022
+July 21, 2022
  - Reenabled parallel encyption and chunking
  - Fixed issue with add/remove files showing in incorrect order
  - Tags now multiselect on schema
@@ -22,11 +22,12 @@ July 20, 2022
  - Fixed Edition filters to properly work with all datasets again, also removed sort from the filter boxes on this page as it was confusing having "All" and "None" in the middle of the list
  - Added edition name when using "Create from this" for upload creation
  - Changed Compare tab label to Compare Inferred
+ - Bumped api size limit from 100kb to 50mb
 
 <br />
 
 ## Table Of Contents
-- [Version 1.5.4 (July 20 2022)](#version-154)
+- [Version 1.5.4 (July 21 2022)](#version-154)
 - [Version 1.5.3 (June 17 2022)](#version-153)
 - [Version 1.5.2 (June 2 2022)](#version-152)
 - [Version 1.5.1 (May 18 2022)](#version-151)
