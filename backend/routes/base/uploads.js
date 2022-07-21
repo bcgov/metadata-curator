@@ -180,17 +180,15 @@ var buildDynamic = function(db, router, auth, forumClient, notify, formioClient)
         if (typeof(updatedData.date_range_end) !== "undefined"){
             dataUpload.date_range_end = updatedData.date_range_end;
         }
-        
-        try{
-            if (dataUpload.status === "submitted"){
-                dataUpload.upload_date = new Date();
-                notify.notify(dataUpload, user);
-            }
-        }catch(ex){
-            log.error("Exception emailing", ex);
-        }
 
         if ( (dataUpload.status === "submitted") && (originalStatus !== "submitted") ){
+            dataUpload.upload_date = new Date();
+            try{
+                notify.notify(dataUpload, user);
+            }catch(ex){
+                log.error("Exception emailing", ex);
+            }
+            
             const confQ = {key: "uploadHook"};
             const configs = await db.ConfigSchema.findOne(confQ);
             try{
