@@ -143,6 +143,10 @@ server {
     proxy_buffering          off;
     proxy_http_version       1.1;
 
+    proxy_read_timeout 14400;
+    proxy_connect_timeout 14400;
+    proxy_send_timeout 14400;
+
     # Add X-Forwarded-* headers
     proxy_set_header X-Forwarded-Host $host;
     proxy_set_header X-Forwarded-Proto $scheme;

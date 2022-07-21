@@ -27,6 +27,7 @@
                             :items="dataUploadsWithAll"
                             itemText="name"
                             itemValue="_id"
+                            :sorted="false"
 
                             :editing="true"
                             :value="filterBy"
@@ -43,6 +44,7 @@
                             :items="reposWithAll"
                             itemText="name"
                             itemValue="_id"
+                            :sorted="false"
 
                             :editing="true"
                             :value="datasetFilter"
@@ -72,8 +74,7 @@
                         >
                             <v-list-item-content>
                                 <v-list-item-title v-html="item.title"></v-list-item-title>
-                                <v-list-item-subtitle>
-                                    {{item.subtitle}}
+                                <v-list-item-subtitle v-html="item.subtitle">
                                 </v-list-item-subtitle>
 
                             </v-list-item-content>
@@ -143,14 +144,14 @@ export default {
 
         dataUploadsWithAll: function(){
             var u = this.dataUploads.slice();
-            u.unshift({name: "All", _id: -1});
+            u.unshift({name: "All", _id: '-1'});
             u.unshift({name: "None", _id: ''});
             return u;
         },
 
         reposWithAll: function(){
             var u = this.repos.slice();
-            u.unshift({name: "All", _id: -1});
+            u.unshift({name: "All", _id: '-1'});
             return u;
         },
         
@@ -159,7 +160,7 @@ export default {
             this.branches.forEach( (branch, index) => {
                 const item = {
                     title: `${branch.name}`,
-                    subtitle: branch.description,
+                    subtitle: `${branch.repo[0].name}${"<br />"}${branch.description}`,
                     id: branch._id,
                 };
                 if ( (this.datasetFilter === "-1") || (branch.repo_id == this.datasetFilter) ){

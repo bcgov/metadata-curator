@@ -36,7 +36,7 @@
                 <v-select
                     :name="name"
                     v-model="val"
-                    :items="items"
+                    :items="displayItems"
                     :item-text="itemText"
                     :item-value="itemValue"
                     :id="idName ? idName : ''"
@@ -66,6 +66,8 @@
 
 <script>
 
+    import { mapState, mapActions } from 'vuex';
+
     import ValidationRules from "../../mixins/ValidationRules";
     let marked = require('marked');
 
@@ -93,7 +95,7 @@
                 default: () => ''
             },
             items: {
-                type: Array,
+                type: [Array, Boolean],
                 required: false,
                 default: () => []
             },
@@ -134,6 +136,11 @@
                 type: Boolean,
                 required: false,
                 default: false,
+            },
+            sorted: {
+                type: Boolean,
+                required: false,
+                default: true
             }
 
         },
@@ -144,7 +151,17 @@
                 closeOnLeave: true,
             }
         },
+
+        methods: {
+            ...mapActions({
+                getOptions: 'options/getOptions', 
+            }),
+        },
+        
         computed: {
+            ...mapState({
+                options: state => state.options.options,
+            }),
             displayTooltip: function(){
                 let t = ''
                 let translateKey = 'help.'+((this.helpPrefix) ? this.helpPrefix + '.' + this.name : this.name);
@@ -152,6 +169,82 @@
                     t = this.$t(translateKey);
                 }
                 return marked(t);
+            },
+
+            displayItems: function(){
+                let optionFilter = this.name;
+                //if items is false ALWAYS use name, otherwise use help prefix followed by name
+                if ( (this.helpPrefix) && (this.items !== false) ){
+                    optionFilter = this.helpPrefix + "." + this.name
+                }
+                let items = this.options.filter((obj) => { return obj.type.toLowerCase() === optionFilter});
+                items = items.map( (obj) => { return obj.values });
+                if (items.length > 0){
+                    items = JSON.parse(JSON.stringify(items[0])); //can only be one match
+                }else{
+                    items = JSON.parse(JSON.stringify(this.items));
+                }
+                
+                
+                if (Array.isArray(items)){
+                    
+                    //is multiselect
+                    if (Array.isArray(this.val)){
+                        for (let i=0; i<this.val.length; i++){
+                            let found = false;
+                        
+                            for (let j=0; j<items.length; j++){
+                                if (items[j][this.itemValue] === this.val[i]){
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        
+                            if (!found){
+                                let item = {};
+                                item[this.itemText] = this.val[i];
+                                item[this.itemValue] = this.val[i];
+                                items.push(item);
+                            }
+                        }
+                    }else{
+                        if (this.val){
+                            let found = false;
+                            for (let j=0; j<items.length; j++){
+                                if (items[j][this.itemValue] === this.val){
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        
+                            if (!found){
+                                let item = {};
+                                item[this.itemText] = this.val;
+                                item[this.itemValue] = this.val;
+                                items.push(item);
+                            }
+                        }
+                    }
+
+                    let rv = JSON.parse(JSON.stringify(items));
+                    if (this.sorted){
+                        
+                        rv.sort( (a,b) => {
+                            if (!a[this.itemText] || !b[this.itemText]){
+                                return 0;
+                            }
+                            return a[this.itemText].localeCompare(b[this.itemText]);
+                        });
+                        
+                    }
+                    return rv;
+                }else if (this.val){
+                    let item = {};
+                    item[this.itemText] = this.val;
+                    item[this.itemValue] = this.val;
+                    return [item];
+                }
+                return [];
             },
 
             displayLabel: function () {
@@ -162,13 +255,50 @@
             },
 
             displayVal: function(){
+                
+                if (this.val === null){
+                    return '';
+                }else if ( (Array.isArray(this.val)) && ((this.val.length === 0) || (this.val[0] === null)) ){
+                    return '';
+                }
+                
                 let displayVal = this.val;
-                for (let i=0; i<this.items.length; i++){
-                    if (this.items[i][this.itemValue] === this.val){
-                        displayVal = this.items[i][this.itemText];
+                
+                let optionFilter = this.name;
+                //if items is false ALWAYS use name, otherwise use help prefix followed by name
+                if ( (this.helpPrefix) && (this.items !== false) ){
+                    optionFilter = this.helpPrefix + "." + this.name
+                }
+                let items = this.options.filter((obj) => { return obj.type.toLowerCase() === optionFilter});
+
+                items = items.map( (obj) => { return obj.values });
+                if (items.length > 0){
+                    items = items[0]; //can only be one match
+                }else{
+                    items = this.items;
+                }
+
+                if (Array.isArray(this.val)){
+                    for (let i=0; i<this.val.length; i++){
+                        let found = false;
+                        displayVal = (i == 0) ? "" : (displayVal + ", ");
+                        for (let j=0; j<items.length; j++){
+                            if (items[j][this.itemValue] === this.val[i]){
+                                displayVal = items[j][this.itemText];
+                                found = true;
+                            }
+                        }
+                        if (!found){
+                            displayVal += this.val[i];
+                        }
+                    }
+                }else{
+                    for (let i=0; i<items.length; i++){
+                        if (items[i][this.itemValue] === this.val)
+                        displayVal = items[i][this.itemText];
                     }
                 }
-                return displayVal
+                return displayVal;
             }
 
         },
@@ -177,7 +307,9 @@
                 this.val = newVal
             },
         },
-        mounted(){
+
+        async mounted(){
+            await this.getOptions({/*type: this.filterBy,*/ refresh: false});
             this.val = this.value;
         }
 

@@ -3,7 +3,7 @@
         <span v-if="!editing">
             <span class="mr-2">
                 <h2 v-if="large" class="inline">
-                    {{displayLabel}}:
+                    {{displayLabel}}{{(displayLabel && displayLabel.length>0) ? ':' : ''}}
                     <v-tooltip right v-model="showTooltip" v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
                         <template v-slot:activator="{}">
                             <v-icon color="label_colour" 
@@ -16,7 +16,7 @@
                     </v-tooltip>
                 </h2>
                 <span v-else>
-                    {{displayLabel}}:
+                    {{displayLabel}}{{(displayLabel && displayLabel.length>0) ? ':' : ''}}
                     <v-tooltip right v-model="showTooltip" v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
                         <template v-slot:activator="{}">
                             <v-icon color="label_colour" 

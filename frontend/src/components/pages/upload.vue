@@ -134,7 +134,7 @@
                                 <FileInfoForm 
                                     v-if="step === steps.step4FileLevelForm" 
                                     ref="fileInfoForm" 
-                                    @update="(s, e, t, ty, d, n) => { fileInfo = {start: s, end: e, title: t, type: ty, description: d, num_records: n} }"
+                                    @update="(s, e, t, ty, d, n, temp) => { setFileInfo(s, e, t, ty, d, n, temp) }"
                                     :modifyStoreNow="fileInfoModify"></FileInfoForm>
                             </v-card>
                             <v-btn text @click="step=steps.step3FileSelection" id="back-4">{{$tc('Back')}}</v-btn>
@@ -241,6 +241,26 @@
                     if (index !== -1){
                         this.selectableGroups.splice(index, 1);
                     }
+
+                    let ignoreGroups = await this.$store.dispatch('config/getItem', {field: 'key', value: 'ignoreGroups', def: {key: 'ignoreGroups', value: []}});
+                    ignoreGroups = ignoreGroups.value;
+                    for (var i=0; i<ignoreGroups.length; i++){
+                                                    
+                        if ( (ignoreGroups[i].indexOf("/") == 0) && (ignoreGroups[i].lastIndexOf("/") === (ignoreGroups[i].length -1)) ){
+                            let s = ignoreGroups[i].substring(1, ignoreGroups[i].length-1);
+                            let r = new RegExp(s);      
+                            this.selectableGroups = this.selectableGroups.filter( (el) => {
+                                //console.log("REGEX match", el, s, r, el.match(r));
+                                return el.match(r) === null })
+                        }else{
+                            var ignoreIndex = -1;
+                            ignoreIndex = this.selectableGroups.indexOf(ignoreGroups[i]);
+                            if (ignoreIndex !== -1){
+                                this.selectableGroups.splice(ignoreIndex, 1);
+                            }
+                        }
+                        
+                    }
                 }
             }
             if(this.uploadId) { 
@@ -344,6 +364,18 @@
                 }else{
                     this.errorAlert = true;
                     this.errorText = "You must select a group"
+                }
+            },
+
+            setFileInfo(s, e, t, ty, d, n, temp){
+                this.fileInfo = {
+                    start: s, 
+                    end: e, 
+                    title: t, 
+                    type: ty, 
+                    description: d,
+                    num_records: n, 
+                    temporal_fields: temp
                 }
             },
 
@@ -581,6 +613,7 @@
                     f.files[i].type = (this.fileInfo && this.fileInfo.type && this.fileInfo.type[i]) ? this.fileInfo.type[i] : '';
                     f.files[i].description = (this.fileInfo && this.fileInfo.description && this.fileInfo.description[i]) ? this.fileInfo.description[i] : '';
                     f.files[i].num_records = (this.fileInfo && this.fileInfo.num_records && this.fileInfo.num_records[i]) ? this.fileInfo.num_records[i] : '';
+                    f.files[i].temporal_fields = (this.fileInfo && this.fileInfo.temporal_fields && this.fileInfo.temporal_fields[i]) ? this.fileInfo.temporal_fields[i] : '';
                 }
                 await this.modifyStoreUpload(f);
 
@@ -861,7 +894,7 @@
                         }
                         if (allGood){
                             //this.step = this.steps.step7UploadSummary;
-                            this.$router.push({ name: 'data-upload-detail', id: this.uploadId });
+                            // this.$router.push({ name: 'data-upload-detail', id: this.uploadId });
                         }
                     }
                     this.loading = false;

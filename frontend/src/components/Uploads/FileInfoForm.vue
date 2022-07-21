@@ -75,6 +75,26 @@
                         </v-col>
                     </v-row>
 
+                    <v-row v-if="type[index] === 'Data'">
+                        <v-col cols=12>
+                            <TextInput
+                                :label="$tc('Temporal range verification field(s)')"
+                                placeholder="create_date, modified"
+                                name="temporal_fields"
+                                :editing="true"
+                                :value="(temporal_fields[index]) ? temporal_fields[index] : ''"
+                                helpPrefix="upload"
+                                :idName="'fileinfo-'+ index + '-temporal_fields'"
+                                @blur="(newValue) => { editFileInfoIndex('temporal_fields', index, newValue.target.value) }"
+                            ></TextInput>
+                        </v-col>
+                    </v-row>
+                    <v-row v-else>
+                        <v-col cols=12 class="empty-col">
+                            {{$tc('Temporal range fields are only for data type files')}}
+                        </v-col>
+                    </v-row>
+
                     <v-row>
                         <v-col cols=12>
                             <TextArea
@@ -106,7 +126,9 @@
                         </v-col>
                     </v-row>
                     <v-row v-else>
-                        {{$tc('Record number is only for data type files')}}
+                        <v-col cols=12 class="empty-col">
+                            {{$tc('Record number is only for data type files')}}
+                        </v-col>
                     </v-row>
                 </v-col>
             </v-row>   
@@ -148,7 +170,7 @@
 
             editFileInfoIndex(key, index, newValue){
                 this[key][index] = newValue;
-                this.$emit('update', this.start, this.end, this.title, this.type, this.description, this.num_records);
+                this.$emit('update', this.start, this.end, this.title, this.type, this.description, this.num_records, this.temporal_fields);
             },
 
             async editFileType(index, newValue){
@@ -167,6 +189,7 @@
                     f.files[i].type = this.type[i];
                     f.files[i].description = this.description[i];
                     f.files[i].num_records = this.num_records[i];
+                    f.files[i].temporal_fields = this.temporal_fields[i];
                 }
                 await this.modifyStoreUpload(f);
             },
@@ -185,6 +208,7 @@
                     f.files[i].type = this.type[i];
                     f.files[i].description = this.description[i];
                     f.files[i].num_records = this.num_records[i];
+                    f.files[i].temporal_fields = this.temporal_fields[i];
                 }
 
                 if (modifyStore){
@@ -207,6 +231,7 @@
                             let start = (this.formSubmission.files[i].start_date) ? this.formSubmission.files[i].start_date : "";
                             let end = (this.formSubmission.files[i].end_date) ? this.formSubmission.files[i].end_date :  "";
                             let num_records = ( (this.formSubmission.files[i].num_records) || (this.formSubmission.files[i].num_records === 0) ) ? this.formSubmission.files[i].num_records :  "";
+                            let temporal_fields = (this.formSubmission.files[i].temporal_fields) ? this.formSubmission.files[i].temporal_fields :  "";
 
                             // if (start){
                             //     let formST = start.indexOf("T");
@@ -271,6 +296,7 @@
                             this.type[i] = type;
                             this.description[i] = this.formSubmission.files[i].description;
                             this.num_records[i] = num_records
+                            this.temporal_fields[i] = temporal_fields;
                         }
                     }
                     if (usingADefault){
@@ -292,6 +318,7 @@
                 description: [],
                 title: [],
                 end: [],
+                temporal_fields: [],
                 start: [],
                 type: [],
                 num_records: [],
@@ -340,5 +367,10 @@
         width: 100%;
         white-space: nowrap;
         height: 24px;
+    }
+
+    .empty-col{
+        height: 70px;
+        box-sizing: content-box;
     }
 </style>

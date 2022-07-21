@@ -1,6 +1,6 @@
 {
   "name": "metadata-curator",
-  "version": "1.5.2",
+  "version": "1.5.4",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -37,7 +37,7 @@
     "moment": "^2.29.3",
     "node-gyp": "^8.4.1",
     "node-sass": "^6.0.1",
-    "openpgp": "4.10.4",
+    "openpgp": "^5.3.0",
     "pdfvuer": "^1.9.2",
     "postcss-loader": "^3.0.0",
     "semantic_infer": "^1.6.1",
@@ -84,7 +84,7 @@
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.5",
     "babel-preset-vue": "^2.0.2",
-    "chromedriver": "^101.0.0",
+    "chromedriver": "^103.0.0",
     "edgedriver": "^4.17134.1",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.2.3",

@@ -37,6 +37,7 @@ db.init = async function (_connString = null) {
     db.User = require('./model/user');
     db.ConfigSchema = require('./model/config');
     db.VariableClassification = require('./model/variableClassification');
+    db.Options = require('./model/option');
 };
 
 module.exports = db;

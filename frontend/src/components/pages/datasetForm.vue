@@ -3,6 +3,7 @@
         <v-row dense>
             <v-tabs v-model="tab">
                 <v-tab key="dataset">{{$tc('Datasets', 1)}}</v-tab>
+                <v-tab key="editions" id="dataset-editions-tab" v-if="!creating">{{$tc('Version', 2)}}</v-tab>
                 <v-tab key="schema" v-if="!creating">{{$tc('Schema', 1)}}</v-tab>
                 <v-tab key="compareS" v-if="!creating">{{$tc('Compare', 1)}} {{$tc('Schema', 1)}}</v-tab>
                 <v-tab key="uploads" v-if="!creating && (uploads.length>0)">{{$tc('Uploads', 2)}}</v-tab>
@@ -12,16 +13,19 @@
                 <v-tab-item key="dataset">
                     <DatasetForm></DatasetForm>
                 </v-tab-item>
-                <v-tab-item key="schema">
+                <v-tab-item key="editions" v-if="!creating">
+                    <EditionList :id="this.id"></EditionList>
+                </v-tab-item>
+                <v-tab-item key="schema" v-if="!creating">
                     <v-select :items="versionDrop" v-model="viewVersion"></v-select>
                     <SchemaView :key="'schema-view-'+viewVersion+'-'+redrawIndex" :editing="false" :branchId="viewVersion" :editable="false" :schema="schema"></SchemaView>
                 </v-tab-item>
-                <v-tab-item key="compareS">
+                <v-tab-item key="compareS" v-if="!creating">
                     <v-select :items="versionDrop" v-model="leftSchema"></v-select>
                     <v-select :items="versionDrop" v-model="rightSchema"></v-select>
                     <Comparison :key="'compareTool-'+reDrawCompareIndex" :left-side-text="leftSchemaString" :right-side-text="rightSchemaString" :diff-json="true" :left-header="leftHeader" :right-header="rightHeader"></Comparison>
                 </v-tab-item>
-                <v-tab-item key="uploads" v-if="uploads.length>0">
+                <v-tab-item key="uploads" v-if="uploads.length>0 && !creating">
                     <span>
                         <v-row class="mt-3" v-for="dataUpload in uploads" :key="'uploadRow-'+dataUpload._id">
                             <v-col cols=4>{{$tc('Version')}}: {{versionDrop[dataUpload.versionIndex].text}}</v-col>
@@ -29,7 +33,7 @@
                         </v-row>
                     </span>
                 </v-tab-item>
-                <v-tab-item key="revisions" v-if="revisionsLoading === false && revisions.length>0">
+                <v-tab-item key="revisions" v-if="revisionsLoading === false && revisions.length>0 && !creating">
                     <Revisions :revisions="revisions"></Revisions>
                 </v-tab-item>
             </v-tabs-items>
@@ -52,6 +56,7 @@
 <script>
 
 import DatasetForm from '../Datasets/DatasetForm';
+import EditionList from '../Datasets/EditionList';
 import SchemaView from '../Schema/SchemaView';
 import Comments from '../Comments';
 import Comparison from '../Schema/Comparison';
@@ -67,6 +72,7 @@ export default {
         Comments,
         Comparison,
         Revisions,
+        EditionList,
     },
     
     data () {

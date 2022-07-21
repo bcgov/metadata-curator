@@ -319,6 +319,17 @@ export default {
         "encoding": "Encoding",
         "source_system": "Source System",
 
+        "Classification Index": "Classification Indicies | Classification Index | Classification Indicies",
+
+        "Temporal range verification field(s)": "Temporal range verification field(s)",
+        "Temporal range fields are only for data type files": "Temporal range fields are only for data type files",
+        "Classification Indicies": "Classification Indicies",
+        "Options": "Options",
+
+        "Compare Inferred": "Compare Inferred",
+
+        "help.upload.temporal_fields": "Field(s) for verifying the date range.  Fields should be comma separated e.g., field1,field2.",
+
         "help.dataset.name": "The name of the dataset",
         "help.dataset.ministry_organization": "Ministry or organization responsible collecting the data (data provider)",
         "help.dataset.description": "A description of the dataset",

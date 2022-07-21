@@ -109,6 +109,7 @@ EOF
     adminGroup = "\"adminGroup\": \"${var.adminGroup}\""
     userIdField = "\"userIdField\": \"${var.userIdField}\""
     bcdc = "\"bcdc\": \"${var.bcdc}\""
+    ignoreGroups = "\"ignoreGroups\": ${var.ignoreGroups}"
   }
   depends_on = [data.null_data_source.oidcConfig]
 }
@@ -140,7 +141,8 @@ data "null_data_source" "configValues" {
   ${data.null_data_source.feIndConfig.outputs["email"]},
   ${data.null_data_source.feIndConfig.outputs["adminGroup"]},
   ${data.null_data_source.feIndConfig.outputs["userIdField"]},
-  ${data.null_data_source.feIndConfig.outputs["bcdc"]}
+  ${data.null_data_source.feIndConfig.outputs["bcdc"]},
+  ${data.null_data_source.feIndConfig.outputs["ignoreGroups"]}
 
 }
 EOF

@@ -14,6 +14,8 @@ import upload from "./modules/createUpload/upload";
 import repos from "./modules/repos";
 import version from "./modules/version";
 
+import options from "./modules/options";
+
 import { build } from './modules/items';
 
 const permissions = build('getPermissions', 'newPermission', 'putPermission', 'deletePermission');
@@ -52,6 +54,7 @@ export default new Vuex.Store({
     adminDatasets,
     adminVersions,
     variableClassifications,
+    options,
   },
   plugins: [createPersistedState({
     paths: [

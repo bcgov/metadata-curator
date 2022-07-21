@@ -88,6 +88,12 @@ module.exports = (router, cache) => {
     vcRouter = varClassRoutes.buildDynamic(db, vcRouter, auth, forumClient);
     router.use('/varclass', vcRouter);
 
+    var optionRoutes = require('../base/options');
+    var optRouter = new Router();
+    optRouter = optionRoutes.buildStatic(db, optRouter);
+    optRouter = optionRoutes.buildDynamic(db, optRouter, auth, forumClient);
+    router.use('/options', optRouter);
+
     var userRoutes = require('../base/user');
     var uRouter = new Router();
     uRouter = userRoutes.buildStatic(db, uRouter);

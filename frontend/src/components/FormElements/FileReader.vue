@@ -307,26 +307,26 @@ export default {
                 this.$store.dispatch('file/getUploadUrl');
             }
 
-            let message = await openpgp.message.fromBinary(content)
+            let message = await openpgp.createMessage({ binary: content });
 
-            return openpgp.encrypt({
-                message: message,
-                publicKeys: (await openpgp.key.readArmored(this.key)).keys,
-                compression: openpgp.enums.compression.uncompressed,
-                format: 'binary',
+            const encryptKey = await openpgp.readKey({ armoredKey: this.key });
 
-            }).then( async (cipherText) => {
-                if (index === -1){
-                    this.encContentBlobs.push(new Blob([cipherText.data]));
-                }else{
-                    this.encContentBlobs[index] = new Blob([cipherText.data])
-                }
-                if (index <= 0){
-                    this.$emit("encrypted", this.index);
-                }
-            }).catch( (e)=> {
-                console.error("Error encrypting", e);
-            });
+            let cipherText = await openpgp.encrypt({
+                message,
+                encryptionKeys: encryptKey,    
+            })//.then( async (cipherText) => {
+            
+            if (index === -1){
+                this.encContentBlobs.push(new Blob([cipherText]));
+            }else{
+                this.encContentBlobs[index] = new Blob([cipherText])
+            }
+            if (index <= 0){
+                this.$emit("encrypted", this.index);
+            }
+            // }).catch( (e)=> {
+            //     console.error("Error encrypting", e);
+            // });
         },
 
         openFileSync: async function(resume){
@@ -648,7 +648,10 @@ export default {
             }
 
 
+            this.currChunk = 0;
             let initialUpIndex = (this.currChunk > 1) ? 2 : 0;
+            this.offset = 0;
+            
             await this.getNextChunk(initialUpIndex);
             if (this.readFile){
                 u = new tus.Upload(this.blob[initialUpIndex], uploadOptions);

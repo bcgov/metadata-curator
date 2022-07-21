@@ -56,9 +56,10 @@ var workingSchema = {
         selector2: '#basicField-0-0-type',
     },
     description: {
-        selector: 'textarea[name="description"]',
-        value: 'field description',
-        selector2: '#basicField-0-0-description'
+        selector: 'textarea[name="basicField-0-0-description"]',
+        value: "field description",
+        selector2: '#basicField-0-0-description-value',
+        expectedValue: "field description",
     },
     format: {
         selector: 'input[name="format"]',
@@ -70,15 +71,11 @@ var workingSchema = {
         value: "field 0 rdfType",
         selector2: '#basicField-0-0-rdfType',
     },
-    tags: {
-        selector: 'input[name="tags"]',
-        value: "field 0 tag",
-        selector2: '#basicField-0-0-tags',
-    },
     notes: {
-        selector: 'textarea[name="notes"]',
+        selector: 'textarea[name="basicField-0-0-notes"]',
         value: "field 0 notes",
-        selector2: '#basicField-0-0-notes',
+        selector2: '#basicField-0-0-notes-value',
+        expectedValue: "field 0 notes",
     },
     enum: {
         selector: 'textarea[name="enum"]',
@@ -183,7 +180,7 @@ When(/^the user is on the files and fields tab$/, async function(){
 Then(/^They should be able to upload a data package$/, async function(){
     client = this.browser;
     try{
-        await client.pause(3000);
+        await client.pause(5000);
         await client.assert.elementPresent("input[type='file'][accept='.json,application/json,application/JSON']");
         await client.assert.elementPresent("#create-without-import");
     }catch(ex){

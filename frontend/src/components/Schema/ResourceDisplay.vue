@@ -117,13 +117,15 @@ export default {
 
         for (let i=0; i<this.resources.length; i++){
             this.fieldNameOccurences[i] = {};
-            for (let j=0; j<this.resources[i].schema.fields.length; j++){
-                if ( (this.resources[i].schema.fields[j]) && (this.resources[i].schema.fields[j].name) ){
-                    let val = 1;
-                    if (typeof(this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name]) !== 'undefined'){
-                        val = this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name] + 1;
+            if (this.resources[i].schema && this.resources[i].schema.fields){
+                for (let j=0; j<this.resources[i].schema.fields.length; j++){
+                    if ( (this.resources[i].schema.fields[j]) && (this.resources[i].schema.fields[j].name) ){
+                        let val = 1;
+                        if (typeof(this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name]) !== 'undefined'){
+                            val = this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name] + 1;
+                        }
+                        this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name] = val;
                     }
-                    this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name] = val;
                 }
             }
         }
@@ -135,13 +137,15 @@ export default {
 
             for (let i=0; i<this.resources.length; i++){
                 this.fieldNameOccurences[i] = {};
-                for (let j=0; j<this.resources[i].schema.fields.length; j++){
-                    if ( (this.resources[i].schema.fields[j]) && (this.resources[i].schema.fields[j].name) ){
-                        let val = 1;
-                        if (typeof(this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name]) !== 'undefined'){
-                            val = this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name] + 1;
+                if (this.resources[i].schema && this.resources[i].schema.fields){
+                    for (let j=0; j<this.resources[i].schema.fields.length; j++){
+                        if ( (this.resources[i].schema.fields[j]) && (this.resources[i].schema.fields[j].name) ){
+                            let val = 1;
+                            if (typeof(this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name]) !== 'undefined'){
+                                val = this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name] + 1;
+                            }
+                            this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name] = val;
                         }
-                        this.fieldNameOccurences[i][this.resources[i].schema.fields[j].name] = val;
                     }
                 }
             }

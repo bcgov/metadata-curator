@@ -108,20 +108,19 @@
 
                             <v-row v-if="(resource && resource.notes) || editing" class="pb-2">
                                 <v-col cols=12>
-                                    <TextArea
+                                    <Markdown
+                                        :name="'basicField-' + key + '-resNotes'"
+                                        :value="resource.notes"
                                         :label="$tc('Resource Notes')"
+                                        :editing="editing"
                                         placeholder=""
-                                        name="resNotes"
                                         :refName="'basicField-' + key + '-resNotes'"
                                         :idName="'basicField-' + key + '-resNotes'"
-                                        :large="true"
-                                        :editing="editing"
-                                        :value="resource.notes"
                                         helpPrefix="schema"
                                         :focusField="focusProp"
                                         @focus="onFocusBasic"
-                                        @blur="(event) => { updateResourceBase(key, 'notes', event) }"
-                                    ></TextArea>
+                                        @edited="(newValue) => { updateResourceBase(key, 'notes', newValue) }"
+                                    ></Markdown>
                                 </v-col>
                             </v-row>
 
@@ -269,20 +268,20 @@
                                                         </v-col>
 
                                                         <v-col cols=12 v-if="((field && field.description) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
-                                                            <TextArea
+                                                            <Markdown
                                                                 :label="$tc('Field') + ' ' + $tc('Description')"
                                                                 placeholder=""
-                                                                name="description"
+                                                                :name="'basicField-' + key + '-' + fKey + '-description'"
                                                                 :refName="'basicField-' + key + '-' + fKey + '-description'"
                                                                 :idName="'basicField-' + key + '-' + fKey + '-description'"
-
-                                                                :editing="editing"
                                                                 :value="field.description"
+                                                                :editing="editing"
+                                                                
                                                                 helpPrefix="schema"
                                                                 :focusField="focusProp"
                                                                 @focus="onFocusBasic"
-                                                                @blur="(event) => { updateResource(key, fKey, 'description', event) }"
-                                                            ></TextArea>
+                                                                @edited="(newValue) => { updateResource(key, fKey, 'description', newValue) }"
+                                                            ></Markdown>
                                                         </v-col>
 
                                                         <v-col cols=12 v-if="((field && field.format) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
@@ -337,37 +336,36 @@
                                                         </v-col>
 
                                                         <v-col cols=12 v-if="((field && field.tags) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
-                                                            <TextInput
+                                                            <Select
                                                                 :label="$tc('Tags', 2)"
                                                                 placeholder=""
+                                                                :multiple="true"
                                                                 name="tags"
                                                                 :refName="'basicField-' + key + '-' + fKey + '-tags'"
                                                                 :idName="'basicField-' + key + '-' + fKey + '-tags'"
-
+                                                                :items="false"
                                                                 :editing="editing"
-                                                                :value="field.tags"
+                                                                :value="Array.isArray(field.tags) ? field.tags : (field.tags ? [field.tags] : [])"
                                                                 helpPrefix="schema"
-                                                                :focusField="focusProp"
-                                                                @focus="onFocusBasic"
-                                                                @blur="(event) => { updateResource(key, fKey, 'tags', event) }"
-                                                            ></TextInput>
+                                                                @edited="(newValue) => { updateResource(key, fKey, 'tags', newValue) }"
+                                                            ></Select>
                                                         </v-col>
 
                                                         <v-col cols=12 v-if="((field && field.notes) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
-                                                            <TextArea
+                                                            <Markdown
                                                                 :label="$tc('Field') + ' ' + $tc('Notes', 2)"
                                                                 placeholder=""
-                                                                name="notes"
+                                                                :name="'basicField-' + key + '-' + fKey + '-notes'"
                                                                 :refName="'basicField-' + key + '-' + fKey + '-notes'"
                                                                 :idName="'basicField-' + key + '-' + fKey + '-notes'"
-
-                                                                :editing="editing"
                                                                 :value="field.notes"
+                                                                :editing="editing"
+                                                                
                                                                 helpPrefix="schema"
                                                                 :focusField="focusProp"
                                                                 @focus="onFocusBasic"
-                                                                @blur="(event) => { updateResource(key, fKey, 'notes', event) }"
-                                                            ></TextArea>
+                                                                @edited="(newValue) => { updateResource(key, fKey, 'notes', newValue) }"
+                                                            ></Markdown>
                                                         </v-col>
 
                                                         <v-col cols=12 v-if="((field && field.constraints && field.constraints.enum) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
@@ -477,6 +475,7 @@ import TextInput from '../FormElements/TextInput';
 import Select from '../FormElements/Select';
 import DateInput from '../FormElements/DateInput';
 import TextArea from '../FormElements/TextArea';
+import Markdown from '../FormElements/Markdown';
 import Comments from '../Comments';
 import draggable from 'vuedraggable'
 import SchemaFilter from '../Schema/SchemaFilter.vue'
@@ -490,6 +489,7 @@ export default{
         Select,
         Comments,
         draggable,
+        Markdown,
         // SimpleCheckbox,
         DateInput,
         SchemaFilter,
@@ -709,17 +709,22 @@ export default{
         },
 
         filter: function(key, val){
+            if (key == 'tag'){
+                key = 'tags';
+            }
+            
             if (Array.isArray(val)){
                 if (val.length === 0){
                     delete this.filters[key];
                 }else{
                     this.filters[key] = val;
                 }
-            }
-            if (val === ""){
-                delete this.filters[key];
             }else{
-                this.filters[key] = val;
+                if (val === ""){
+                    delete this.filters[key];
+                }else{
+                    this.filters[key] = val;
+                }
             }
             this.reindexKey++;
             this.redrawIndex++;
@@ -732,12 +737,22 @@ export default{
             }
 
             const textFilters = ['name'];
+            const arrayFilters = ['tags'];
 
             let fKeys = Object.keys(this.filters);
             let rv = false
             for (let i=0; i<fKeys.length; i++){
                 let filterFieldName = fKeys[i];
-                if (Array.isArray(this.filters[filterFieldName])){
+                if (arrayFilters.indexOf(this.filterFieldName)){
+                    if (this.filters && this.filters[filterFieldName].length > 0 && ( (!field) || (!field[filterFieldName])) ){
+                        rv = true;
+                    }else if (this.filters && this.filters[filterFieldName].length > 0){
+                        const intersection = field[filterFieldName].filter(element => this.filters[filterFieldName].includes(element));
+                        if (!filterFieldName || (!field[filterFieldName] && field[filterFieldName] !== 0 && field[filterFieldName] !== false) || (intersection.length <= 0)){
+                            rv = true;
+                        }
+                    }
+                }else if (Array.isArray(this.filters[filterFieldName])){
                     if (this.filters[filterFieldName].length > 0){
                         if (!filterFieldName || (!field[filterFieldName] && field[filterFieldName] !== 0 && field[filterFieldName] !== false) || (this.filters[filterFieldName].indexOf(field[filterFieldName]) === -1)){
                             rv = true;

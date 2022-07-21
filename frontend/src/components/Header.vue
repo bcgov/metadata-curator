@@ -191,11 +191,15 @@ export default {
             }
 
             if ( (this.user) && ( (this.user.isAdmin) || (this.user.isApprover) ) && (this.enabledPhase >= 2) ){
-                t.push({ id: 12, name: "Variable Classification", route: `/variable-classifications`, icon: 'mdi-archive-search', disabled: false });
+                t.push({ id: 12, name: "Classification Indicies", route: `/variable-classifications`, icon: 'mdi-archive-search', disabled: false });
+            }
+
+            if ( (this.user) && ( (this.user.isAdmin) || (this.user.isApprover) ) && (this.enabledPhase >= 3) ){
+                t.push({ id: 13, name: "Options", route: `/options`, icon: 'mdi-clipboard-list', disabled: false });
             }
 
             if ( (this.user) && (this.user.isAdmin) ){
-                t.push({ id: 13, name: "Admin", route: `/admin`, icon: 'mdi-cog', disabled: false });
+                t.push({ id: 14, name: "Admin", route: `/admin`, icon: 'mdi-cog', disabled: false });
             }
 
             return t;

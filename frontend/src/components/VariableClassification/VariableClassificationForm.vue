@@ -16,7 +16,7 @@
                 <v-card outlined>
                     <v-card-text>
                         <v-row>
-                            <h1 class="display-1 font-weight-thin ml-3 my-3">{{creating ? $tc("New") + " " + $tc("Variable Classification") : $tc("Variable Classification") + " " + variableClassification.name}}</h1>
+                            <h1 class="display-1 font-weight-thin ml-3 my-3">{{creating ? $tc("New") + " " + $tc("Classification Index") : $tc("Classification Index") + " " + variableClassification.name}}</h1>
                         </v-row>
 
                         <v-row v-if="!creating && editable">

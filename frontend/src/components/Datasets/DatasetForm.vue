@@ -25,17 +25,6 @@
         </v-row>
 
         <v-row v-else>
-            <v-dialog 
-                v-model="branchDia"
-                fullscreen
-                hide-overlay
-                transition="dialog-bottom-transition">
-                    <v-card>
-                        <v-card-text>
-                            <BranchForm :dialog="true" @close="closeBranchDia()" :branchId="branch"></BranchForm>
-                        </v-card-text>
-                    </v-card>
-            </v-dialog>
             <v-col cols="12">
                 <v-card outlined>
                     <v-card-text>
@@ -348,31 +337,13 @@
                             </v-col>
                         </v-row>
 
-                        <v-row wrap v-if="!creating && !hideEditions">
-                            <v-col cols=3>
-                                <h2>{{$tc('Versions', 2)}}</h2>
-                            </v-col>
-                            <v-col cols=9>
-                                <v-btn v-if="allowAddEdition" id="addVersion" color="primary" @click="addVersion">{{$tc('Add')}} {{$tc('Version')}}</v-btn>
-                            </v-col>
-
-                            <v-col cols=12 v-for="(branch, i) in branches" :key="'branch-'+i">
-                                <span @click="editVersion(branch._id)" :id="'branch-link-'+i" class="pointer">
-                                    {{branch.name}} 
-                                    - {{branch.type.charAt(0).toUpperCase() + branch.type.slice(1)}} 
-                                    - {{$tc('Created')}} {{branch.create_date | formatDate}} 
-                                </span>
-                                <v-btn color="success" v-if="allowAddEdition" @click="copyVersion(branch)">{{$tc('Create')}} {{$tc('Version')}} {{$tc('from this')}}</v-btn>
-                            </v-col>
-                        </v-row>
-
                     </v-card-text>
                 </v-card>
-                <v-card-actions v-if="editing && !hideEditions && allowAddEdition">
+                <v-card-actions v-if="editing">
                     <v-btn @click="routeToHome()" class="mt-1">{{$tc('Cancel')}}</v-btn>
                     <v-btn @click="save" id="saveDataset" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
                 </v-card-actions>
-                <v-card-actions v-else-if="!editing && !hideEditions && allowAddEdition">
+                <v-card-actions v-else-if="!editing">
                     <v-btn @click="routeToHome()" class="mt-1">{{$tc('Back')}}</v-btn>
                     <v-btn @click="editing=!editing" id="editDatasetBtn" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                 </v-card-actions>
@@ -384,19 +355,15 @@
 <script>
 import {mapActions, mapMutations, mapState} from "vuex";
 import TextInput from '../FormElements/TextInput';
-import BranchForm from '../Versions/BranchForm';
 import SimpleCheckbox from '../FormElements/SimpleCheckbox';
 import Select from '../FormElements/Select';
 import Repeating from '../FormElements/Repeating';
-import { Backend } from '../../services/backend';
-const backend = new Backend();
 
 export default {
     name: "DatasetForm",
 
     components:{
         TextInput,
-        BranchForm,
         SimpleCheckbox,
         Select,
         Repeating
@@ -407,14 +374,6 @@ export default {
             required: false,
             default: false,
         },
-        hideEditions: {
-            required: false,
-            default: false,
-        },
-        allowAddEdition: {
-            required: false,
-            default: true,
-        }
     },
 
     data () {
@@ -422,8 +381,6 @@ export default {
             id: null,
             editing: false,
             creating: false,
-            branchDia: false,
-            branch: "create",
             alert: false,
             alertText: "",
             alertType: "success",
@@ -463,11 +420,6 @@ export default {
             this.loading = false;
         },
 
-        closeBranchDia(){
-            this.branchDia = false;
-            this.loadSections();
-        },
-
         routeToHome() {
             // console.log("routeToHome uploadId");
             this.$router.push({ name: 'datasets' });
@@ -475,90 +427,6 @@ export default {
 
         updateValues(name, value){
             this.editDataset({name: name, value: value});
-        },
-
-        async addVersion(){
-            await this.clearBranch();
-            await this.clearTableSchema();
-            await this.clearDataPackageSchema();
-            this.branch = "";
-            this.$nextTick(() => {
-                this.branch = "create";
-                this.branchDia = true;
-            });
-            //this.$router.push({name: 'version_form', params: { id: "create" }});
-        },
-
-        async copyVersion(branch){
-            if (!branch._id){
-                this.alertType = "error";
-                this.alertText = "This "+this.$tc('Version', 1)+" has no id"
-                this.alert = true;
-                window.scrollTo(0,0);
-                return;
-            }
-            
-            let schemaExists;
-            try{
-                await this.getDataPackage({id: branch._id});
-                schemaExists = (this.dataPackageSchema && (typeof(this.dataPackageSchema) === 'object') && (Object.keys(this.dataPackageSchema).length > 0));
-            }catch(ex){
-                schemaExists = false;
-            }
-            
-            if (!schemaExists){
-                this.alertType = "error";
-                this.alertText = "Only "+this.$tc('Version', 2)+" with "+this.$tc("Schema", 2)+" specified may be copied";
-                this.alert = true;
-                window.scrollTo(0,0);
-                return;
-            }
-
-            let keys = Object.keys(branch);
-            for (let i=0; i<keys.length; i++){
-                if (keys[i] === "name"){
-                    let d = new Date();
-                    this.editBranch({name: keys[i], value: branch[keys[i]] + " " + d.toISOString().split('T')[0]});
-                }else if (keys[i] === "author_groups"){
-                    this.editBranch({name: "providerGroup", value: branch[keys[i]][0]});
-                }else if ( (keys[i] === 'approved') || (keys[i] === 'published') ){
-                    this.editBranch({name: keys[i], value: false});
-                }else if (keys[i] !== "_id"){
-                    this.editBranch({name: keys[i], value: branch[keys[i]]});
-                }else{
-                    this.editBranch({name: keys[i], value: ""});
-                }
-            }
-            
-            this.saveBranch().then( async (branchRes) => {
-                await backend.copyRepoBranchSchema(branch._id, branchRes.id);
-                await this.getBranches({repoId: this.id});
-
-                this.branch = branchRes.id;
-                this.branchDia = true;
-
-
-            }).catch( err => {
-                this.alertType = "error"
-                if (err.response && err.response.data && err.response.data.error){
-                    this.alertText = "Error: " + err.response.data.error;
-                }else{
-                    this.alertText = err.message;
-                }
-                this.alert = true;
-                window.scrollTo(0,0);
-            });
-
-        },
-
-        async editVersion(id){
-            // this.branch = id;
-            // this.branchDia = true;
-            let reload = (this.$route.name === 'version_form');
-            await this.$router.push({name: "version_form", params: {id: id}})
-            if (reload){
-                window.location.reload();
-            }
         },
 
         save(){
@@ -616,12 +484,34 @@ export default {
             this.creating = true;
             if ( (this.user.isApprover) || (this.user.isAdmin) ){
                 let requiredRole = await this.$store.dispatch('config/getItem', {field: 'key', value: 'requiredRoleToCreateRequest', def: {key: 'requiredRoleToCreateRequest', value: false}});
+
                 requiredRole = requiredRole.value;
                 this.selectableGroups = JSON.parse(JSON.stringify(this.user.groups));
                 let index = this.selectableGroups.indexOf(requiredRole);
                 if (index !== -1){
                     this.selectableGroups.splice(index, 1);
                 }
+                
+                let ignoreGroups = await this.$store.dispatch('config/getItem', {field: 'key', value: 'ignoreGroups', def: {key: 'ignoreGroups', value: []}});
+                ignoreGroups = ignoreGroups.value;
+                for (var i=0; i<ignoreGroups.length; i++){
+                                                 
+                    if ( (ignoreGroups[i].indexOf("/") == 0) && (ignoreGroups[i].lastIndexOf("/") === (ignoreGroups[i].length -1)) ){
+                        let s = ignoreGroups[i].substring(1, ignoreGroups[i].length-1);
+                        let r = new RegExp(s);      
+                        this.selectableGroups = this.selectableGroups.filter( (el) => {
+                            //console.log("REGEX match", el, s, r, el.match(r));
+                            return el.match(r) === null })
+                    }else{
+                        var ignoreIndex = -1;
+                        ignoreIndex = this.selectableGroups.indexOf(ignoreGroups[i]);
+                        if (ignoreIndex !== -1){
+                            this.selectableGroups.splice(ignoreIndex, 1);
+                        }
+                    }
+                    
+                }
+
             }
         }else{
             this.loadSections();

@@ -49,13 +49,27 @@
                 </TextInput>
             </v-col>
             <v-col cols=6>
-                <TextInput
+                <Select
                     :editing="true"
                     name="tags"
                     :label="$tc('Field Tags')"
                     :value="filterTags"
-                    @blur=" (newVal) => { filterTags = newVal.target.value; }">
-                </TextInput>
+                    :multiple="true"
+                    @edited=" (newVal) => { filterTags = newVal; }">
+                </Select>
+            </v-col>
+        </v-row>
+
+        <v-row>
+            <v-col cols=4>
+                <Select
+                    :editing="true"
+                    name="sortBy"
+                    :label="$tc('Sort By')"
+                    :items="SORT_BY_OPTS"
+                    :value="sortBy"
+                    @edited=" (newVal) => { sortBy = newVal; }">
+                </Select>
             </v-col>
         </v-row>
 
@@ -130,6 +144,7 @@ export default {
 
     data() {
         return {
+            SORT_BY_OPTS: [{text: 'Create Date Descending', value : 'create_date desc'}, {text: 'Create Date Ascending', value : 'create_date asc'}, {text: 'Name Descending', value : 'name desc'}, {text: 'Name Ascending', value : 'name asc'}, {text: 'Ministry/Org Descending', value : 'ministry_organization desc'}, {text: 'Ministry/Org Ascending', value : 'ministry_organization asc'}],
             message: '',
             filterOrg: [],
             filterName: '',
@@ -142,6 +157,9 @@ export default {
             filterTags: '',
             filteredRepos: [],
             datasetTags: {},
+            sortBy: "create_date desc",
+            sortField: "create_date",
+            sortDir: 'desc'
         }
     },
     async mounted(){
@@ -174,18 +192,12 @@ export default {
                     for (let i=0; i<repo.resources.length; i++){
                         if (repo.resources[i].tableSchema && repo.resources[i].tableSchema.fields){
                             for (let j=0; j<repo.resources[i].tableSchema.fields.length; j++){
-                                let tagStr = repo.resources[i].tableSchema.fields[j].tags;
-                                let tags = (tagItems[repo.version.repo_id._id]) ? tagItems[repo.version.repo_id._id] : [];
-                                if (tagStr){
-                                    if (tagStr.indexOf(", ") !== -1){
-                                        tags = tagStr.split(", ");
-                                    }else{
-                                        tags = tagStr.split(",")
-                                    }
+                                let tagArr = repo.resources[i].tableSchema.fields[j].tags;
+                                if (tagArr){
                                     if (tagItems[repo.version.repo_id._id]){
-                                        tagItems[repo.version.repo_id._id] = [...new Set([...tagItems[repo.version.repo_id._id], ...tags])];
+                                        tagItems[repo.version.repo_id._id] = [...new Set([...tagItems[repo.version.repo_id._id], ...tagArr])];
                                     }else{
-                                        tagItems[repo.version.repo_id._id] = [...new Set(tags)];
+                                        tagItems[repo.version.repo_id._id] = [...new Set(tagArr)];
                                     }
                                 }
                             }
@@ -199,7 +211,7 @@ export default {
             this.repos.forEach( (repo) => {
                 let add = (this.filterOrg.length === 0 || this.filterOrg.indexOf(repo.ministry_organization) !== -1);
                 add = ( (add) && (!this.filterName || repo.name.indexOf(this.filterName) !== -1) );
-                add = ( (add) && ((!this.filterTags) || ( (!this.datasetTags) || (this.datasetTags[repo._id] && this.datasetTags[repo._id].indexOf(this.filterTags) !== -1)) ));
+                add = ( (add) && ((!this.filterTags) || ( (!this.datasetTags) || (this.datasetTags[repo._id] && this.filterTags.every(element => { return this.datasetTags[repo._id].includes(element); }))) ));
                 if (add){
                     newFiltered.push(repo)
                 }
@@ -261,15 +273,8 @@ export default {
                                         let item = JSON.parse(JSON.stringify(repo));
                                         item.field = JSON.parse(JSON.stringify(repo.resources[i].tableSchema.fields[j]));
                                         item.resource = JSON.parse(JSON.stringify(repo.resources[i]));
-                                        let tagStr = item.field.tags;
-                                        let tags = [];
-                                        if (tagStr){
-                                            if (tagStr.indexOf(", ") !== -1){
-                                                tags = tagStr.split(", ");
-                                            }else{
-                                                tags = tagStr.split(",")
-                                            }
-                                        }
+                                        let tags = item.field.tags;
+                                        
                                         if (!this.filterTags || (tags && tags.indexOf(this.filterTags) !== -1)){
                                             items.push(item);
                                         }
@@ -319,7 +324,24 @@ export default {
         datasetDisplayItems: function(){
             let items = [];
             if (this.filteredRepos){
-                this.filteredRepos.forEach( (repo, index) => {
+                let filtered = JSON.parse(JSON.stringify(this.filteredRepos));
+                filtered.sort( (a,b) => {
+                    
+                    if (this.sortDir === 'desc'){
+                        if (typeof(a[this.sortField]) === 'string'){
+                            return b[this.sortField].localeCompare(a[this.sortField]);
+                        }
+                        return (a[this.sortField] >= b[this.sortField]) ? -1 : 1;
+                    }
+
+                    if (typeof(a[this.sortField]) === 'string'){
+                        return a[this.sortField].localeCompare(b[this.sortField]);
+                    }else{
+                        console.log(a[this.sortField], b[this.sortField], (b[this.sortField] >= a[this.sortField]));
+                        return (b[this.sortField] >= a[this.sortField]) ? 1 : -1;
+                    }
+                });
+                filtered.forEach( (repo, index) => {
                     const item = {
                         title: `${repo.name} ${repo.ministry_organization ? ' - ' + repo.ministry_organization : ''}`,
                         subtitle: repo.create_date,
@@ -327,11 +349,12 @@ export default {
                         branches: repo.branches,
                     };
                     items.push(item);
-                    if(index <= this.filteredRepos.length - 1) {
+                    if(index <= filtered.length - 1) {
                         items.push({ divider: true, inset: true });
                     }
                 });
             }
+            
             return items;
         },
     },
@@ -346,6 +369,11 @@ export default {
         filterTags: function(){
             this.refilter();
         },
+        sortBy: function(){
+            let sortArr = this.sortBy.split(' ');
+            this.sortField = sortArr[0];
+            this.sortDir = sortArr[1];
+        }
         
     },
 };

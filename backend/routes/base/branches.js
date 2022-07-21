@@ -176,7 +176,12 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             { published: true }
         ]
 
-        let res = await db.RepoBranchSchema.find(q).sort({ create_date: "desc"});
+        let res = await db.RepoBranchSchema.aggregate([{$match: q},{$lookup:
+            { from: 'repo',
+              localField: 'repo_id',
+              foreignField: '_id',
+              as: 'repo'
+            }}, {$sort: { create_date: -1 }}])
         return res;
     }
     
@@ -451,6 +456,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             const branches = await getBranches(req.user, req.query.data_upload_id);
             res.status(200).json(branches);
         }catch(ex){
+            console.log(ex);
             res.status(500).json({error: ex});
         }
     });
@@ -696,6 +702,11 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
                 return res.status(400).json({error: "Dataset name is required for bcdc publishing"});
             }
             ckanDataset.title = 'Metadata for ' + repo.name.trim() + " - " + branch.name.trim();
+
+            if (ckanDataset.title.length > 100){
+                return res.status(400).json({error: "Name would exceed 100 characters: " + ckanDataset.title});
+            }
+
             ckanDataset.name = ckanDataset.title.toLowerCase().replace(/ /g, "-");
 
             if (!repo.ministry_organization){
@@ -703,13 +714,14 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             }
 
             //need guid for owner org
+            let dipOrg = "data-innovation-program-dip"
             let orgUrl = config.get('bcdc');
             orgUrl += orgUrl[orgUrl.length-1] === "/" ? '' : "/";
-            orgUrl += "api/3/action/organization_show?id=" + repo.ministry_organization.replace(/ /g, "-").toLowerCase();
+            orgUrl += "api/3/action/organization_show?id=" + dipOrg.replace(/ /g, "-").toLowerCase();
             let ckanOrgRes = await axios.get(orgUrl, axiosConfig);
 
             if (!ckanOrgRes || !ckanOrgRes.data || !ckanOrgRes.data.result || !ckanOrgRes.data.result.id){
-                return res.status(400).json({error: "Could not find organization for '"+repo.ministry_organization+"' in catalogue"});
+                return res.status(400).json({error: "Could not find organization for 'data-innovationn-program-dip' in catalogue"});
             }
             ckanDataset.owner_org = ckanOrgRes.data.result.id;
 
@@ -745,6 +757,18 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             
             ckanDataset.lineage_statement = "The data was extracted from the ";
             ckanDataset.lineage_statement += repo.ministry_organization;
+            
+            let sourceSystem = false;
+            for (let i=0; i<files.length; i++){
+                if (files[i].source_system){
+                    sourceSystem = files[i].source_system;
+                    break;
+                }
+            }
+
+            if (sourceSystem){
+                ckanDataset.lineage_statement += " from " + sourceSystem;
+            }
             ckanDataset.lineage_statement += " and provided to the Data Innovation Program for use and stewardship";
             
 
@@ -907,7 +931,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             
         }catch(e){
             console.log("bcdc e", e);
-            res.status(500).json(e);
+            res.status(500).json({error: e});
         }
     });
 

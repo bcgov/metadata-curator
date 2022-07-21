@@ -35,8 +35,12 @@ const data1 = {
 
 Given(/^Data provider successfully uploads a data file$/, async function(){
     const client = this.browser;
+
+    await client.pause(1000);
     
     await helpers.open(client);
+
+    await client.pause(1000);
     
     await helpers.login(client, 'publisher');
     await client.saveScreenshot("./"+path+"/preNewUpload.png");
@@ -52,6 +56,9 @@ Given(/^Data provider successfully uploads a data file$/, async function(){
     }
 
     await client.click('#next-1');
+
+    await client.execute('window.scrollTo(0,0);');
+    await client.saveScreenshot("./"+path+"/postNext1.png");
     
     await client.pause(3000);
     await client.click('#newDatasetButton');

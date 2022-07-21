@@ -1,6 +1,6 @@
 {
   "name": "metadata_curator",
-  "version": "1.5.2",
+  "version": "1.5.4",
   "author": "Brandon Sharratt",
   "description": "Metadata Curator is a simple web app to edit csvs and to help describe, validate and share usable open data",
   "repository": "https://github.com/bcgov/metadata-curator",
@@ -9,7 +9,8 @@
     "test": "NODE_ENV=test nyc --reporter=lcov mocha --exit --timeout 10000",
     "serve": "nodemon ./bin/www",
     "formioMigration": "node ./scripts/moveFromFormio.mjs",
-    "editionMigration": "node ./scripts/migrateEditions.mjs"
+    "editionMigration": "node ./scripts/migrateEditions.mjs",
+    "schemaTagMigration": "node ./scripts/migrateTags.mjs"
   },
   "dependencies": {
     "atob": "^2.1.2",

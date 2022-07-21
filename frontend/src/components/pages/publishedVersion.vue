@@ -17,7 +17,7 @@
 
                                 <v-row>
                                     <v-col cols=12 v-if="branch && branch.repo_id && branch.repo_id.name">
-                                        Dataset Name: {{branch.repo_id.name}}
+                                        <h2 class="font-weight-thin largerFont">Dataset Name: {{branch.repo_id.name}}</h2>
                                     </v-col>
                                 </v-row>
 
@@ -28,54 +28,110 @@
                                 </v-row>
 
                                 <v-row>
-                                    <v-col cols=12 v-if="branch && branch.name">
-                                        Name: {{branch.name}}
-                                    </v-col>
-                                </v-row>
-
-                                <v-row>
                                     <v-col cols=12 v-if="branch && branch.short_title">
                                         Short Title: {{branch.short_title}}
                                     </v-col>
-                                </v-row>
-
-                                <v-row>
-                                    <v-col cols=12 v-if="branch && branch.type">
+                                
+                                    <v-col cols=6 v-if="branch && branch.type">
                                         Type: {{branch.type}}
                                     </v-col>
-                                </v-row>
-
-                                <v-row>
-                                    <v-col cols=12 v-if="branch && branch.description">
-                                        Description: {{branch.description}}
+                                
+                                    <v-col cols=6 v-if="branch && branch.description">
+                                        <Markdown
+                                            name="description"
+                                            :value="(branch) ? branch.description : ''"
+                                            :label="$tc('Version Description')"
+                                            :editing="false"
+                                            :placeholder="$tc('Notes')"
+                                        ></Markdown>
                                     </v-col>
-                                </v-row>
-
-                                <v-row>
-                                    <v-col cols=12 v-if="branch && branch.availability">
-                                        Availability: {{branch.availability}}
-                                    </v-col>
-                                </v-row>
-
-                                <v-row>
-                                    <v-col cols=12 v-if="variableClassification && variableClassification.name">
+                                
+                                    <v-col cols=6 v-if="branch && branch.variable_classification && variableClassification && variableClassification.name">
                                         {{$tc('Variable Classification Index')}}: {{variableClassification.name}}
                                     </v-col>
-                                </v-row>
 
-                                <v-row>
-                                    <v-col cols=12 v-if="branch && branch.notes">
-                                        Notes: {{branch.notes}}
+                                    <v-col cols=6 v-if="branch && branch.keywords">
+                                        Keywords: {{branch.keywords}}
                                     </v-col>
-                                </v-row>
 
-                                <v-row>
-                                    <v-col cols=12 v-if="branch && branch.citation">
+                                    <v-col cols=6 v-if="branch && branch.citation">
                                         Citation: {{branch.citation}}
                                     </v-col>
-                                </v-row>
 
-                                <v-row>
+                                    <v-col cols=6 v-if="branch && branch.lifecycle">
+                                        <v-row>
+                                            <v-col cols=12>
+                                                {{$tc('Version') + ' ' + $tc('Lifecycle')}}
+                                            </v-col>
+                                        </v-row>
+                                        <v-row>
+                                            <v-col cols=12>
+                                                <Composite
+                                                    :label="{
+                                                        date: 'Date',
+                                                        comment: 'Comment'
+                                                    }"
+                                                    :placeholder="{
+                                                        date: new Date().toISOString(),
+                                                        comment: 'Comment'
+                                                    }"
+                                                    name="lifecycle"
+                                                    :editing="false"
+                                                    helpPrefix=""
+                                                    :value="branch && branch.lifecycle ? branch.lifecycle : {}"
+                                                    :schema="{
+                                                        date: new Date(),
+                                                        comment: 'Comment',
+                                                    }">
+                                                </Composite>
+                                            </v-col>
+                                        </v-row>
+                                    </v-col>
+
+                                    <v-col cols=12 v-if="branch && branch.repo_id && (branch.repo_id.description || branch.repo_id.description === '')">
+                                        Dataset Description: {{branch.repo_id.description}}
+                                    </v-col>
+
+                                    <v-col cols=6 v-if="branch && branch.additional_info">
+                                        <Markdown
+                                            name="additional_info"
+                                            :value="(branch) ? branch.additional_info : ''"
+                                            :label="$tc('Important Additional Information')"
+                                            :editing="false"
+                                            :placeholder="$tc('Important Additional Information')"
+                                            helpPrefix=""
+                                        ></Markdown>
+                                    </v-col>
+
+                                    <v-col cols=6 v-if="branch && branch.more_information">
+                                        <Repeating
+                                            name="more_information"
+                                            :label="$tc('Related Links')"
+                                            :value="(branch) ? branch.more_information : ''"
+                                            :editing="false"
+                                            helpPrefix=""
+                                            innerType="Composite"
+                                            :innerLabel="{name: 'Title of Web Asset', url: 'Hyperlink to more information'}"
+                                            :inner-validation-rules="{url: 'required'}"
+                                            :innerPlaceholder="{name: 'Google', url: 'https://google.ca'}"
+                                            :defaults="{
+                                                name: 'Google',
+                                                url: 'https://google.ca',
+                                            }"
+                                        ></Repeating>
+                                    </v-col>
+
+                                    <v-col cols=6 v-if="branch && branch.references">
+                                        <Markdown
+                                            name="references"
+                                            :value="(branch) ? branch.references : ''"
+                                            :label="$tc('References / Research that uses data')"
+                                            :editing="false"
+                                            :placeholder="$tc('References / Research that uses data')"
+                                            helpPrefix=""
+                                        ></Markdown>
+                                    </v-col>
+
                                     <v-col cols=12>
                                         <SimpleCheckbox
                                             :label="$tc('Published')"
@@ -85,6 +141,10 @@
                                             :editing="false"
                                             :checked="(branch) ? branch.published : false"
                                         ></SimpleCheckbox>
+                                    </v-col>
+
+                                    <v-col cols=12 v-if="branch && branch.bcdc_record">
+                                        Catalogue: <a :href="branch.bcdc_record">{{branch.bcdc_record}}</a>
                                     </v-col>
                                 </v-row>
                             </v-card-text>
@@ -111,6 +171,9 @@ import {mapActions, mapState} from "vuex";
 import SchemaView from '../Schema/SchemaView';
 import Markdown from '../FormElements/Markdown';
 import SimpleCheckbox from '../FormElements/SimpleCheckbox';
+import Composite from '../FormElements/Composite';
+import Repeating from '../FormElements/Repeating';
+
 
 export default {
     
@@ -118,6 +181,8 @@ export default {
         SchemaView,
         Markdown,
         SimpleCheckbox,
+        Composite,
+        Repeating,
     },
 
     data(){
@@ -194,6 +259,10 @@ export default {
         height: 36px;
         line-height: 36px;
         vertical-align: middle;
+    }
+
+    .largerFont{
+        font-size: 1.75rem;
     }
 
 </style>
