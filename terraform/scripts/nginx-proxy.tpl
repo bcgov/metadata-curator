@@ -111,7 +111,7 @@ server {
         return 405;
     }
     
-    proxy_pass http://mc_tusd_supplemental:1080/files;
+    proxy_pass http://mc_tusd_supplemental:1080/files_supplemental;
 
     # Disable request and response buffering
     proxy_request_buffering  off;

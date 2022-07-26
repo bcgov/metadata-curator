@@ -2,32 +2,14 @@
 
 <br />
 
-## Version 1.5.4
-July 21, 2022
- - Reenabled parallel encyption and chunking
- - Fixed issue with add/remove files showing in incorrect order
- - Tags now multiselect on schema
- - Tags now multiselect for filter on dataset page, results will be datasets that have both of the tags present
- - Selects will now add non existent values to the list of values. This allows for instance tags that are not in the possible list of values to still show up
- - Temporal fields is a new optional field on upload for data type files.
- - Updated edition page to use markdown for all text areas
- - Updated bcdc push logic to always use data innovation program for published by and to add source system to lineage statement if it has one
- - Added dataset name to edition tab of datasets
- - Added dataset name to edition list, it is now the first line of text under the edition name (the edition description is now below dataset name)
- - Added additional fields as markdown to the edition page that were previously text inputs
- - Notes and description changed to markdown on schema. IF USED THIS WILL AFFECT THE JSON
- - Published Edition page now has many more fields that exist on non published one
- - Published Edition has dataset name larger to closer match non published page
- - When selecting a group to create an edition/dataset/upload for it now will remove ones that don't match a configurable field
- - Fixed Edition filters to properly work with all datasets again, also removed sort from the filter boxes on this page as it was confusing having "All" and "None" in the middle of the list
- - Added edition name when using "Create from this" for upload creation
- - Changed Compare tab label to Compare Inferred
- - Bumped api size limit from 100kb to 50mb
- - Fixed a bug causing notifications and upload date to change when approvers viewed
+## Version 1.5.5
+July 26, 2022
+ - Terraform fixes for supplemental files
 
 <br />
 
 ## Table Of Contents
+- [Version 1.5.5 (July 26 2022)](#version-155)
 - [Version 1.5.4 (July 21 2022)](#version-154)
 - [Version 1.5.3 (June 17 2022)](#version-153)
 - [Version 1.5.2 (June 2 2022)](#version-152)
@@ -55,6 +37,31 @@ July 21, 2022
 - [Version 1.2.2 (January 27 2022)](#version-122)
 
 <br />
+
+## Version 1.5.4
+July 21, 2022
+ - Reenabled parallel encyption and chunking
+ - Fixed issue with add/remove files showing in incorrect order
+ - Tags now multiselect on schema
+ - Tags now multiselect for filter on dataset page, results will be datasets that have both of the tags present
+ - Selects will now add non existent values to the list of values. This allows for instance tags that are not in the possible list of values to still show up
+ - Temporal fields is a new optional field on upload for data type files.
+ - Updated edition page to use markdown for all text areas
+ - Updated bcdc push logic to always use data innovation program for published by and to add source system to lineage statement if it has one
+ - Added dataset name to edition tab of datasets
+ - Added dataset name to edition list, it is now the first line of text under the edition name (the edition description is now below dataset name)
+ - Added additional fields as markdown to the edition page that were previously text inputs
+ - Notes and description changed to markdown on schema. IF USED THIS WILL AFFECT THE JSON
+ - Published Edition page now has many more fields that exist on non published one
+ - Published Edition has dataset name larger to closer match non published page
+ - When selecting a group to create an edition/dataset/upload for it now will remove ones that don't match a configurable field
+ - Fixed Edition filters to properly work with all datasets again, also removed sort from the filter boxes on this page as it was confusing having "All" and "None" in the middle of the list
+ - Added edition name when using "Create from this" for upload creation
+ - Changed Compare tab label to Compare Inferred
+ - Bumped api size limit from 100kb to 50mb
+ - Fixed a bug causing notifications and upload date to change when approvers viewed
+
+ <br />
 
 ## Version 1.5.3
 June 17, 2022
