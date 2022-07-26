@@ -96,7 +96,7 @@ resource "docker_container" "tusd_supplemental" {
     "JWT_SECRET=${random_string.jwtSecret.result}",
     "JWT_AUD=aud",
     "S3_ENDPOINT=http://mc_minio:9000",
-    "S3_BUCKET=supplemental -behind-proxy",
+    "S3_BUCKET=supplemental -behind-proxy -base-path /files_supplemental/",
   ]
 }
 
