@@ -127,7 +127,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: terraform
         env:
-          TERRAFORM_VERSION: "0.13.6"
+          TERRAFORM_VERSION: "0.13.5"
           KATALON_VERSION: "6.0.5"
         run: |
           export WD=`pwd`
