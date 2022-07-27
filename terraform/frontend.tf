@@ -79,9 +79,9 @@ EOF
     supplementalUploadUrl = "\"supplementalUploadUrl\": \"${var.host}/files_supplemental/\"",
     minio = <<-EOF
   "minio":  {
-    "url": "${var.host}/minio",
-      "port": 80,
-      "ssl": true,
+      "url": "mc_minio",
+      "port": 9000,
+      "ssl": false,
       "key": "${random_id.accessKey.hex}",
       "secret": "${random_string.secretKey.result}",
       "bucket": "supplemental"
