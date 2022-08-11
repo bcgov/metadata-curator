@@ -1110,7 +1110,13 @@ export default {
         schemaRevisionsDrop: function(){
             let rv = [];
             for (let i=0; i<this.schemaRevisions.length; i++){
-                let label = "Revision " + this.schemaRevisions[i].revision_number + " (" + this.schemaRevisions[i].updater + ")"
+                
+                
+                
+                let label = "Revision " + this.schemaRevisions[i].revision_number;
+                let d = new Date(this.revisions[i].create_date);
+                label +=  " - " + d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate();
+                label += " (" + this.schemaRevisions[i].updater + ")";
                 rv.push({text: label, value: i})
             }
             return rv;

@@ -92,6 +92,18 @@ const actions = {
         }
     },
 
+    async deleteSupplementalFile({commit}, {branchId, fileId}){
+        commit('setSupplementalFile', {file: null});
+        commit('setSupHeaders', {headers: null});
+        commit('setSupError', {error: ''});
+
+        try {
+            await backend.deleteSuppFile(branchId, fileId);
+        }catch(e){
+            commit('setSupError', {error: e});
+        }
+    },
+
     async encryptContent({commit, state}, {index, clear, content}){
 
         if (state.publicKey == null){

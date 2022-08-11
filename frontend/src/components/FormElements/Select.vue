@@ -34,6 +34,7 @@
         <span v-else :id="(idName ? idName : 'name')+'-span'">
             <ValidationProvider :rules="validationRules" v-slot="{ errors }" :name="label ? ($te(label) ? $tc(label) : label) : ($te(name) ? $tc(name) : name)">
                 <v-select
+                    v-if="!autocomplete"
                     :name="name"
                     v-model="val"
                     :items="displayItems"
@@ -59,6 +60,20 @@
                         </v-tooltip>
                     </template>
                 </v-select>
+                <v-autocomplete
+                    v-else
+                    :name="name"
+                    v-model="val"
+                    :items="displayItems"
+                    :item-text="itemText"
+                    :item-value="itemValue"
+                    :id="idName ? idName : ''"
+                    :multiple="multiple"
+                    auto-select-first
+                    :error-messages="errors.length > 0 ? [errors[0]] : []"
+                    @change="$emit('edited', val)"
+                    outlined>
+                </v-autocomplete>
             </ValidationProvider>
         </span>
     </div>
@@ -141,6 +156,11 @@
                 type: Boolean,
                 required: false,
                 default: true
+            },
+            autocomplete: {
+                type: Boolean,
+                required: false,
+                default: false,
             }
 
         },

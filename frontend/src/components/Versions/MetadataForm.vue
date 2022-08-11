@@ -84,7 +84,7 @@
                             <v-btn @click="closeOrBack()" class="mt-1">{{$tc('Cancel')}}</v-btn>
                             <v-btn @click="save" id="saveMetadata" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
                         </v-card-actions>
-                        <v-card-actions v-else>
+                        <v-card-actions class="fixed" v-else>
                             <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
                             <v-btn v-if="canEdit" @click="editing=!editing; viewSchemaType = 'Provided'" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                         </v-card-actions>

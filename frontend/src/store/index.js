@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import createPersistedState from 'vuex-persistedstate';
+import vClickOutside from 'v-click-outside'
 
 import user from './modules/user'
 import file from './modules/file'
@@ -31,6 +32,9 @@ const adminVersions = build('getBranches', 'postRepoBranch', 'putRepoBranch', 'd
 const variableClassifications = build('getVariableClassifications', 'newVariableClassification', 'putVariableClassification', 'deleteVariableClassification', 'getVariableClassification');
 
 Vue.use(Vuex)
+
+Vue.use(vClickOutside)
+
 
 export default new Vuex.Store({
   modules: {

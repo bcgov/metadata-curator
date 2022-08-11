@@ -172,6 +172,7 @@ export default {
             pleaseWait: false,
             confirmChange: false,
             confirmResume: false,
+            checksum: null
         }
     },
 
@@ -424,15 +425,21 @@ export default {
 
                 var reader = new FileReader();
                 var self = this;
+                const SparkMD5 = require('spark-md5');
+                if (this.currChunk === 0){
+                    this.checksum = new SparkMD5.ArrayBuffer();
+                }
                 reader.onerror = function(e){
                     reject(e);
                 }
 
                 reader.onload = async function(e){
                     let content = new Uint8Array(e.target.result);
+                    
+                    
+                    await self.checksum.append(e.target.result);
 
                     if (self.readFile === true){
-                        // console.log("watch filename: " + self.file.name);
 
                         if ((self.offset === 0) || (self.offset === self.chunkSize)){
                             let finger = self.getFinger;
@@ -521,7 +528,7 @@ export default {
                     ...this.appendMetadata,
                     filename: this.file.name,
                     filetype: this.file.type,
-                    jwt: this.jwt
+                    jwt: this.jwt,
                 },
                 jwt: this.jwt,
                 filename: this.file.name,
@@ -604,7 +611,7 @@ export default {
                         while (!succeeded && attempt<5){
                             try {
                                 let upUrl = self.uploadUrlOverride ? self.uploadUrlOverride : self.uploadUrl;
-                                let concatResponse = await backendApi.concatenateUpload(joinIds, upUrl, self.jwt, "1.0.0", self.file.name, self.file.type);
+                                let concatResponse = await backendApi.concatenateUpload(joinIds, upUrl, self.jwt, "1.0.0", self.file.name, self.file.type, self.checksum.end());
                                 self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
                                 
                                 let concatLocation = concatResponse.headers.location;
@@ -645,6 +652,7 @@ export default {
             let size = this.readFile ? this.blob[0].size : this.encContentBlobs[0].size;
             if (size <= this.chunkSize){
                 uploadOptions.headers = {};
+                uploadOptions.metadata.checksum = this.checksum.end();
             }
 
 
