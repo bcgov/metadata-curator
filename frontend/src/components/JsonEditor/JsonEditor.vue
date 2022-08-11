@@ -267,7 +267,7 @@
                                                             ></Select>
                                                         </v-col>
 
-                                                        <v-col cols=12 v-if="((field && field.description) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
+                                                        <v-col cols=12 v-if="((field && field.description) || editing)" class="pt-0 pb-1">
                                                             <Markdown
                                                                 :label="$tc('Field') + ' ' + $tc('Description')"
                                                                 placeholder=""
@@ -276,6 +276,7 @@
                                                                 :idName="'basicField-' + key + '-' + fKey + '-description'"
                                                                 :value="field.description"
                                                                 :editing="editing"
+                                                                :class="expandedBasic[key][fKey] ? '' : 'capWidth'"
                                                                 
                                                                 helpPrefix="schema"
                                                                 :focusField="focusProp"
@@ -301,7 +302,7 @@
                                                             ></TextInput>
                                                         </v-col>
 
-                                                        <v-col cols=12 v-if="((field && field.var_class) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
+                                                        <v-col cols=12 v-if="((field && field.var_class) || editing)" class="pt-0 pb-1">
                                                             <Select
                                                                 :label="$tc('Var Class')"
                                                                 placeholder=""
@@ -1153,6 +1154,13 @@ export default{
     .duplicate{
         border-color: var(--v-error-base);
         border-width: 2px;
+    }
+
+    .capWidth{
+        max-width: 100%;
+        max-height: 26px;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
 </style>>

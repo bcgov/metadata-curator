@@ -13,6 +13,7 @@
                 <v-tooltip right v-model="showTooltip" v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
                     <template v-slot:activator="{}">
                         <v-icon color="label_colour" 
+                            class="withPointer"
                             @mouseenter="showTooltip = true"
                             @mouseleave="closeOnLeave ? (showTooltip = false) : false">
                             mdi-help-circle-outline
@@ -139,6 +140,11 @@
 
     .v-input.bolded .v-label{
         font-weight: bold;
+    }
+
+    .withPointer{
+        pointer-events: all;
+        cursor: default;
     }
 
 </style>

@@ -70,7 +70,7 @@
         </v-row>
 
         <v-row v-for="(file, index) in branch.supplemental_files" :key="'supp-file-'+index">
-            <v-col cols=10>
+            <v-col cols=8>
                 <v-icon>
                     {{ 
                         (fileType(file.name) === 'csv') ? 'mdi-file-delimited' : (
@@ -80,9 +80,10 @@
                 </v-icon>
                 {{file.name}}
             </v-col>
-            <v-col cols=2 class="text-right">
-                <v-btn text v-if="previewable(file)" @click="getFile(file)"><v-icon>mdi-eye</v-icon></v-btn>
-                <v-btn text @click="getFile(file, true)"><v-icon>mdi-download</v-icon></v-btn>
+            <v-col cols=4 class="text-right">
+                <v-btn text :disabled="disabled" v-if="previewable(file)" @click="getFile(file)"><v-icon>mdi-eye</v-icon></v-btn>
+                <v-btn text :disabled="disabled" @click="getFile(file, true)"><v-icon>mdi-download</v-icon></v-btn>
+                <ConfirmButton :text="true" color="error" :disabled="disabled" v-if="deleteable()" @click="deleteFile(file)" :useIcon="true" icon='mdi-delete' label="Delete"></ConfirmButton>
             </v-col>
         </v-row>
 
@@ -108,6 +109,7 @@ import pdfvuer from 'pdfvuer';
 import { mapState, mapActions, mapMutations } from 'vuex';
 
 import BasicFileReader from '../FormElements/BasicFileReader';
+import ConfirmButton from '../FormElements/ConfirmButton';
 
 export default {
     mixins: [],
@@ -115,6 +117,7 @@ export default {
     components:{
         BasicFileReader,
         pdf: pdfvuer,
+        ConfirmButton: ConfirmButton
     },
 
     props: {
@@ -144,6 +147,7 @@ export default {
             getBranchById: 'repos/getBranchById',
             getSupplementalUploadUrl: 'file/getSupplementalUploadUrl',
             getSuppFile: 'file/getSupplementalFile',
+            deleteSuppFile: 'file/deleteSupplementalFile',
         }),
         ...mapMutations({    
             editBranch: 'repos/editBranch',
@@ -155,12 +159,39 @@ export default {
             return (previewableTypes.indexOf(type) !== -1)
         },
 
+        deleteable: function(){
+            return this.user.isApprover || this.user.isAdmin;
+        },
+
         fileType: function(filename){
             let type = null;
             if (filename.indexOf(".") !== -1){
                 type = filename.substring(filename.lastIndexOf(".")+1).toLowerCase();
             }
             return type;
+        },
+
+        deleteFile: async function(file){
+            if (!this.disabled){
+                this.disabled = true;
+
+                await this.deleteSuppFile({branchId: this.branch._id, fileId: file.id});
+                if (this.supError){
+                    this.alertType = 'error';
+                    this.alertText = this.supError;
+                    this.alert = true;
+                    return;
+                }
+
+                this.alertType = "success"
+                this.alertText = "Successfully deleted file";
+                this.alert = true;
+
+                await this.getBranchById({id: this.branch._id});
+
+                this.disabled = false;
+            }
+
         },
 
         getFile: async function(file, forceDownload){

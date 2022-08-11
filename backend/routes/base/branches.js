@@ -1056,7 +1056,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
     });
 
-    router.get('/:branchId/file/:fileId', auth.requireLoggedIn, async function(req, res, next){
+    router.get('/:branchId/file/:fileId', auth.requireLoggedIn, auth.isApprover, async function(req, res, next){
         //version check
         if (!util.phaseCheck(cache, bcdcPhase, db)){
             return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.branchId+"/file/"+req.params.fileId)));
@@ -1076,6 +1076,22 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
 
         if (!branch){
             return res.status(400).json({error: "No such edition " + req.params.branchId});
+        }
+
+        if (!branch.supplemental_files){
+            return res.status(400).json({error: "Incorrect edition " + req.params.branchId});
+        }
+
+        let foundId = false;
+        for (let i=0; i<branch.supplemental_files.length; i++){
+            if (branch.supplemental_files[i].id === req.params.fileId){
+                foundId = true;
+                break;
+            }
+        }
+
+        if (!foundId){
+            return res.status(400).json({error: "Not Found"});
         }
 
         if (!config.has('minio')){
@@ -1113,6 +1129,80 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         stream.on('error', function(err) {
             res.json({error: err});
         });
+    });
+
+    router.delete('/:branchId/file/:fileId', auth.requireLoggedIn, auth.isApprover, async function(req, res, next){
+        //version check
+        if (!util.phaseCheck(cache, bcdcPhase, db)){
+            return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.branchId+"/file/"+req.params.fileId)));
+        }
+
+        let topicResponse = null;;
+        if (req.user){
+            topicResponse = await forumClient.getTopics(req.user, {name: req.params.branchId+"branch"});
+            if (!topicResponse || !topicResponse.data || topicResponse.data.length < 1){
+                return res.status(404).json({error: '404'})
+            }
+        }else{
+            return res.status(404).json({error: '404'})
+        }
+
+        let branch = await db.RepoBranchSchema.findOne({_id: req.params.branchId});
+
+        if (!branch){
+            return res.status(400).json({error: "No such edition " + req.params.branchId});
+        }
+
+        if (!config.has('minio')){
+            return res.status(500).json({error: "Not configured"});
+        }
+
+        var minioConf = config.get('minio');
+        
+        var Minio = require('minio')
+        var minioClient = new Minio.Client({
+            endPoint: minioConf.url,
+            port: minioConf.port,
+            useSSL: minioConf.ssl,
+            accessKey: minioConf.key,
+            secretKey: minioConf.secret
+        });
+        
+        try{
+            
+            let newSupp = JSON.parse(JSON.stringify(branch.supplemental_files));
+            let spliceIndex = -1;
+            for (let i=0; i<newSupp.length; i++){
+                if (newSupp[i].id === req.params.fileId){
+                    spliceIndex = i;
+                    break;                    
+                }
+            }
+            if (spliceIndex != -1){
+                let x = await minioClient.removeObject(minioConf.bucket, req.params.fileId);
+                newSupp.splice(spliceIndex,1);
+                let existingRevisions = await db.RevisionSchema.find({source_id: mongoose.Types.ObjectId(branch._id), type: 'branch'});
+                let revision = new db.RevisionSchema();
+                revision.old_content = JSON.parse(JSON.stringify(branch));
+                revision.source_id = mongoose.Types.ObjectId(branch._id);
+                revision.updater = req.user.id;
+                revision.type = "branch";
+                revision.revision_number = (existingRevisions && existingRevisions.length) ? existingRevisions.length : 0;
+                revision.create_date = new Date();
+                revision.revise('supplemental_files', branch.supplemental_files, newSupp);
+                branch.supplemental_files = newSupp;
+                console.log("remove?", x);
+                await db.RepoBranchSchema.updateOne({_id: mongoose.Types.ObjectId(branch._id)}, branch);
+                await revision.save();
+                res.status(202).json({success: "ok"});
+            }
+            res.status(404).json({error: "Not Found"});
+            
+        }catch(err){
+            console.error(err.message);
+            res.status(500).json({error: err.message});
+        }
+
     });
 
     return router;

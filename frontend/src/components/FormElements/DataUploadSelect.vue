@@ -259,7 +259,7 @@
                 let datasetName = (this.repo.name) ? this.repo.name : "";
                 datasetName = (this.branch.repo_id && this.branch.repo_id.name) ? this.branch.repo_id.name : datasetName;
 
-                let branchName = (this.branch.name) ? (" " +this.branchName) : ""
+                let branchName = (this.branch.name) ? (" " +this.branch.name) : ""
                 
                 let data = {
                     "ministry_organization": ministry_organization,

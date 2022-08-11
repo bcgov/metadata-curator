@@ -45,6 +45,7 @@
                             itemText="name"
                             itemValue="_id"
                             :sorted="false"
+                            :autocomplete="true"
 
                             :editing="true"
                             :value="datasetFilter"

@@ -34,12 +34,12 @@ export class Backend {
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 
-    concatenateUpload(joinIds, uploadUrl, jwt, resumable, filename, filetype){
+    concatenateUpload(joinIds, uploadUrl, jwt, resumable, filename, filetype, checksum){
         let uploadOptions = {}
         uploadOptions.headers = {
             "Tus-Resumable": resumable,
             "Upload-Concat": "final;" + joinIds.join(" "),
-            "Upload-Metadata": "filename "+btoa(filename)+",filetype "+btoa(filetype)+",jwt " + btoa(jwt)
+            "Upload-Metadata": "filename "+btoa(filename)+",filetype "+btoa(filetype)+",checksum "+btoa(checksum)+",jwt " + btoa(jwt)
         };
         return axios.post(uploadUrl, {}, uploadOptions);
     }
@@ -456,6 +456,10 @@ export class Backend {
         return axios.get(url, {withCredentials: true}).then(response => response)
     }
 
+    deleteSuppFile(branchId, fileId){
+        const url = `/api/v1/repobranches/${branchId}/file/${fileId}`;
+        return axios.delete(url, {withCredentials: true}).then(response => response)
+    }
 
     getOptions(query){
         if (typeof(query) === "undefined"){
