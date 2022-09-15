@@ -2,19 +2,17 @@
 
 <br />
 
-## Version 1.6.0
-August 11, 2022
- - Added a way to delete supplemental files
- - Added a confirm button, this is used to make sure you want to delete the file noted above
- - Added checksums (md5) for uploaded files, these will be present in the .info files
- - Added support for Selects to be typeahead, and used this on the edition list page for filter
- - Made field description and variable classification show in the collapsed view mode
- - Field description will show ellipsisd in collapsed view only when longer than one line
- - Made the edit/close/save buttons float in view mode for files and fields
+## Version 1.6.1
+September 11, 2022
+ - Added support for ignore groups
+ - Added "Not classified" to filter on files & fields filter
+ - Fixed issue with viewing editions with schema revisions
+ - Fixed losing place when updating highlight on files and fields in non edit mode
 
 <br />
 
 ## Table Of Contents
+- [Version 1.6.1 (September 15 2022)](#version-161)
 - [Version 1.6.0 (August 11 2022)](#version-160)
 - [Version 1.5.5 (July 26 2022)](#version-155)
 - [Version 1.5.4 (July 21 2022)](#version-154)
@@ -44,6 +42,18 @@ August 11, 2022
 - [Version 1.2.2 (January 27 2022)](#version-122)
 
 <br />
+
+## Version 1.6.0
+August 11, 2022
+ - Added a way to delete supplemental files
+ - Added a confirm button, this is used to make sure you want to delete the file noted above
+ - Added checksums (md5) for uploaded files, these will be present in the .info files
+ - Added support for Selects to be typeahead, and used this on the edition list page for filter
+ - Made field description and variable classification show in the collapsed view mode
+ - Field description will show ellipsisd in collapsed view only when longer than one line
+ - Made the edit/close/save buttons float in view mode for files and fields
+
+ <br />
 
 ## Version 1.5.5
 July 26, 2022

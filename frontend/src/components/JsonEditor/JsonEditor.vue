@@ -744,7 +744,7 @@ export default{
             let rv = false
             for (let i=0; i<fKeys.length; i++){
                 let filterFieldName = fKeys[i];
-                if (arrayFilters.indexOf(this.filterFieldName)){
+                if (arrayFilters.indexOf(this.filterFieldName) !== -1){
                     if (this.filters && this.filters[filterFieldName].length > 0 && ( (!field) || (!field[filterFieldName])) ){
                         rv = true;
                     }else if (this.filters && this.filters[filterFieldName].length > 0){
@@ -757,6 +757,9 @@ export default{
                     if (this.filters[filterFieldName].length > 0){
                         if (!filterFieldName || (!field[filterFieldName] && field[filterFieldName] !== 0 && field[filterFieldName] !== false) || (this.filters[filterFieldName].indexOf(field[filterFieldName]) === -1)){
                             rv = true;
+                        }
+                        if ( (this.filters[filterFieldName].indexOf("") !== -1) && (rv) && (!field[filterFieldName] || field[filterFieldName] === '') ){
+                            rv = false;
                         }
                     }
                 }else if(textFilters.indexOf(filterFieldName) !== -1){
@@ -941,8 +944,9 @@ export default{
             
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
-            this.$emit('edited', this.workingVal);
+            this.$emit('edited', this.workingVal, true);
             this.$emit('editedHighlight', this.editing);
+            
         },
 
         updateResourceEnum: function(key, fieldKey, nested, path, event){

@@ -185,7 +185,7 @@ export default {
                 await this.getSchema({id: this.id});
             }catch(e){
                 console.err(e);
-                this.loading = true;
+                //this.loading = true;
                 return;
             }
             this.loading = false;
@@ -220,7 +220,14 @@ export default {
             this.editing = false;
         },
 
-        updatedObj: function(newVal){
+        updatedObj: function(newVal, highlight){
+            if (typeof(highlight) === 'undefined'){
+                highlight = false;
+            }
+
+            if (highlight){
+                this.skipClose = true;
+            }
             this.schemaObj = newVal;
         },
 
@@ -246,53 +253,58 @@ export default {
         },
 
         async save(){
-            await this.setTableSchema({schema: this.schemaObj});
-            if (this.schemaError){
-                this.alertType = "error"
-                this.alertText = this.schemaError;
-                this.alert = true;
-                window.scrollTo(0,0);
-                return;
-            }
-
-            if (this.creating){
-                this.saveTableSchema();
-                this.updateBranch().then( () => {
-                    this.alertType = "success"
-                    this.alertText = this.$tc('Sucessfully updated') + " " + this.$tc('version');
-                    this.alert = true;
-                    this.closeOrBack();
-
-                }).catch( err => {
+            console.log("CALLING SAVE");
+            if (this.schemaObj){
+                console.log("DOING SAVE");
+                await this.setTableSchema({schema: this.schemaObj});
+                if (this.schemaError){
                     this.alertType = "error"
-                    this.alertText = err.message;
+                    this.alertText = this.schemaError;
                     this.alert = true;
                     window.scrollTo(0,0);
-                });
-                
-            }else{
-                try{
-                    await this.updateDataPackageSchema();
-                    // this.updateBranch().then( () => {
-                    if (this.schemaError){
-                        this.alertType = "error"
-                        this.alertText = (this.schemaError && typeof(this.schemaError) === 'string') ? this.schemaError : JSON.stringify(this.schemaError);
-                        this.alert = true;
-                        window.scrollTo(0,0);
-                    }else{
+                    return;
+                }
+
+                if (this.creating){
+                    this.saveTableSchema();
+                    this.updateBranch().then( () => {
                         this.alertType = "success"
                         this.alertText = this.$tc('Sucessfully updated') + " " + this.$tc('version');
                         this.alert = true;
                         this.closeOrBack();
-                    }
 
-                }catch(err){
-                    this.alertType = "error"
-                    this.alertText = err.message;
-                    this.alert = true;
-                    window.scrollTo(0,0);
+                    }).catch( err => {
+                        this.alertType = "error"
+                        this.alertText = err.message;
+                        this.alert = true;
+                        window.scrollTo(0,0);
+                    });
+                    
+                }else{
+                    try{
+                        await this.updateDataPackageSchema();
+                        // this.updateBranch().then( () => {
+                        if (this.schemaError){
+                            this.alertType = "error"
+                            this.alertText = (this.schemaError && typeof(this.schemaError) === 'string') ? this.schemaError : JSON.stringify(this.schemaError);
+                            this.alert = true;
+                            window.scrollTo(0,0);
+                        }else{
+                            this.alertType = "success"
+                            this.alertText = this.$tc('Sucessfully updated') + " " + this.$tc('version');
+                            this.alert = true;
+                            //this.closeOrBack();
+                        }
+
+                    }catch(err){
+                        this.alertType = "error"
+                        this.alertText = err.message;
+                        this.alert = true;
+                        window.scrollTo(0,0);
+                    }
                 }
             }
+            console.log("ENDING SAVE");
         },
 
         async importButtonClicked(content) {
@@ -338,9 +350,9 @@ export default {
         }
     },
     watch: {
-        rawSchema: function(){
-            this.$forceUpdate();
-        },
+        // rawSchema: function(){
+        //     this.$forceUpdate();
+        // },
 
         branchId: function(){
             this.load();

@@ -1082,7 +1082,7 @@ export default {
                     this.alert = true;
                 });
             }
-            this.load();
+            //this.load();
             
             
         }
@@ -1114,7 +1114,7 @@ export default {
                 
                 
                 let label = "Revision " + this.schemaRevisions[i].revision_number;
-                let d = new Date(this.revisions[i].create_date);
+                let d = new Date(this.schemaRevisions[i].create_date);
                 label +=  " - " + d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate();
                 label += " (" + this.schemaRevisions[i].updater + ")";
                 rv.push({text: label, value: i})

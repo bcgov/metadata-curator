@@ -135,10 +135,13 @@ import JsonEditor from '../JsonEditor/JsonEditor';
                 };
             },
 
-            jsonEdited: function(newVal){
+            jsonEdited: function(newVal, highlight){
+                if (typeof(highlight) === 'undefined'){
+                    highlight = false;
+                }
                 this.rawSchema = newVal;
                 // this.redrawIndex++;
-                this.$emit("edited", newVal);
+                this.$emit("edited", newVal, highlight);
             },
 
             editedHighlight: function(editing){
@@ -147,9 +150,9 @@ import JsonEditor from '../JsonEditor/JsonEditor';
 
         },
         watch: {
-            schema: async function(){
-                this.computeSchema();
-            },
+            // schema: async function(){
+            //     this.computeSchema();
+            // },
 
             // editing: function(){
             //     this.redrawIndex++;

@@ -326,6 +326,10 @@ export default {
         "Classification Indicies": "Classification Indicies",
         "Options": "Options",
 
+        "Field Description": "Field Description",
+        "Edition Notes": "Edition Notes",
+        "References to research that uses this data": "References to research that uses this data",
+
         "Compare Inferred": "Compare Inferred",
 
         "help.upload.temporal_fields": "Field(s) for verifying the date range.  Fields should be comma separated e.g., field1,field2.",
