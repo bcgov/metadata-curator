@@ -312,7 +312,7 @@
                 }else{
                     items = this.items;
                 }
-                console.log("DISPLAY VAL", this.val, this.name);
+                
                 if (Array.isArray(this.val)){
                     for (let i=0; i<this.val.length; i++){
                         let found = false;

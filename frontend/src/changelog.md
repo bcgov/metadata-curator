@@ -6,7 +6,9 @@
 September 19, 2022
  - Ministry / Organization field converted to select typeahead settable via options as ministry_organization
  - Moved and renamed In BC Data Catalogue field on the dataset page to BCDC and the allow publish section
- 
+ - Added ability to see the selected data provider group on datasets/editions
+ - Added Role to dataset contacts
+
 
 <br />
 
