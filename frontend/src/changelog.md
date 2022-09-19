@@ -2,17 +2,17 @@
 
 <br />
 
-## Version 1.6.1
-September 11, 2022
- - Added support for ignore groups
- - Added "Not classified" to filter on files & fields filter
- - Fixed issue with viewing editions with schema revisions
- - Fixed losing place when updating highlight on files and fields in non edit mode
+## Version 1.6.2
+September 19, 2022
+ - Ministry / Organization field converted to select typeahead settable via options as ministry_organization
+ - Moved and renamed In BC Data Catalogue field on the dataset page to BCDC and the allow publish section
+ 
 
 <br />
 
 ## Table Of Contents
-- [Version 1.6.1 (September 15 2022)](#version-161)
+- [Version 1.6.2 (September 19 2022)](#version-162)
+- [Version 1.6.1 (September 16 2022)](#version-161)
 - [Version 1.6.0 (August 11 2022)](#version-160)
 - [Version 1.5.5 (July 26 2022)](#version-155)
 - [Version 1.5.4 (July 21 2022)](#version-154)
@@ -40,6 +40,15 @@ September 11, 2022
 - [Version 1.2.4 (February 7 2022)](#version-124)
 - [Version 1.2.3 (February 1 2022)](#version-123)
 - [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
+## Version 1.6.1
+September 16, 2022
+ - Added support for ignore groups
+ - Added "Not classified" to filter on files & fields filter
+ - Fixed issue with viewing editions with schema revisions
+ - Fixed losing place when updating highlight on files and fields in non edit mode
 
 <br />
 

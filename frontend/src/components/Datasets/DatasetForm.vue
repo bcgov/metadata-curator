@@ -40,12 +40,12 @@
                             <span>{{id}}</span>
                         </v-row>
 
-                        <v-row v-else-if="user.isApprover || user.isAdmin">
+                        <v-row v-if="user.isApprover || user.isAdmin">
                             <v-col cols=12>
                                 <Select
-                                    :label="$tc('Select Data Provider Group')"
+                                    :label="creating ? $tc('Select Data Provider Group') : $tc('Data Provider Group')"
                                     name="providerGroup"
-                                    :editing="true"
+                                    :editing="creating"
                                     :value="(dataset) ? dataset.providerGroup : ''"
                                     :items="selectableGroups"
                                     validation-rules="required"
@@ -53,7 +53,7 @@
                                     @edited="(newValue) => { updateValues('providerGroup', newValue) }"
                                 ></Select>
                             </v-col>
-                            <v-col cols=12>
+                            <v-col cols=12 v-if="creating">
                                 <span>{{$tc('NOTE: you will be unable to change this after initial creation')}}</span>
                             </v-col>
                         </v-row>
@@ -76,17 +76,19 @@
 
                         <v-row>
                             <v-col cols=12>
-                                <TextInput
+                                <Select
                                     :label="$tc('Ministry / Organization')"
                                     placeholder=""
                                     name="ministry_organization"
+                                    :autocomplete="true"
+                                    :items="false"
                                     :large="true"
                                     :editing="editing"
                                     :value="(dataset) ? dataset.ministry_organization : ''"
                                     validation-rules="required"
                                     helpPrefix="dataset"
                                     @edited="(newValue) => { updateValues('ministry_organization', newValue) }"
-                                ></TextInput>
+                                ></Select>
                             </v-col>
                         </v-row>
 
@@ -196,6 +198,20 @@
                                     @edited="(newValue) => { updateValues('aca_allow_publish', newValue) }">
                                 </SimpleCheckbox>
                             </v-col>
+
+                            <v-col cols=12>
+                                <SimpleCheckbox
+                                    :label="$tc('BCDC')"
+                                    name="in_bc_catalogue"
+                                    :large="true"
+                                    :editing="editing"
+                                    :disabled="!editing"
+                                    :checked="(dataset) ? dataset.in_bc_catalogue : ''"
+                                    helpPrefix="dataset"
+                                    @edited="(newValue) => { updateValues('in_bc_catalogue', newValue) }">
+                                </SimpleCheckbox>
+                            </v-col>
+                        
                         </v-row>
 
                         <v-row class="outline">
@@ -241,32 +257,28 @@
                                     :large="true"
                                     helpPrefix="dataset"
                                     innerType="Composite"
-                                    :innerLabel="{name: 'Name', email: 'Email', phone: 'Phone'}"
+                                    :innerLabel="{name: 'Name', email: 'Email', phone: 'Phone', role: 'Role'}"
                                     :inner-validation-rules="{name: 'required'}"
-                                    :innerPlaceholder="{name: 'John Doe', email: 'jdoe@gmail.com', phone: '1-555-123-4567'}"
+                                    :innerPlaceholder="{name: 'John Doe', email: 'jdoe@gmail.com', phone: '1-555-123-4567', role: 'Role'}"
+                                    :items="{
+                                        role: [
+                                            {text: 'DAR Approver', value: 'DAR Approver'},
+                                            {text: 'Acquisition Approver (ISA/LOC)', value: 'Acquisition Approver (ISA/LOC)'},
+                                            {text: 'Data Subject Matter Expert', value: 'Data Subject Matter Expert'},
+                                            {text: 'Technical Expert (data transfer)', value: 'Technical Expert (data transfer)'},
+                                        ]
+                                    }"
+                                    :multiple="{
+                                        role: true
+                                    }"
                                     :defaults="{
                                         name: 'John Doe',
                                         email: 'jdoe@gmail.com',
                                         phone: '1-555-123-4567',
+                                        role: 'DAR Approver'
                                     }"
                                     @edited="(newValue) => { updateValues('contact', newValue) }"
                                 ></Repeating>
-                            </v-col>
-                        </v-row>
-
-                        <v-row>
-                            <v-col cols=12>
-                                <SimpleCheckbox
-                                    :label="$tc('Metadata listed in B.C. Data Catalogue')"
-                                    :placeholder="$tc('Metadata listed in B.C. Data Catalogue')"
-                                    name="in_bc_catalogue"
-                                    :large="true"
-                                    :editing="editing"
-                                    :disabled="!editing"
-                                    :checked="(dataset) ? dataset.in_bc_catalogue : ''"
-                                    helpPrefix="dataset"
-                                    @edited="(newValue) => { updateValues('in_bc_catalogue', newValue) }">
-                                </SimpleCheckbox>
                             </v-col>
                         </v-row>
 

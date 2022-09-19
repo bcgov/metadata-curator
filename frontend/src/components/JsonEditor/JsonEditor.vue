@@ -28,6 +28,11 @@
                     @filter="(field, newValue) => { filter(field, newValue) }"
                 ></SchemaFilter>
             </v-row>
+            <v-row>
+                <v-col cols=3>
+                    Number of resources: {{(workingVal && workingVal.resources) ? workingVal.resources.length : 0 }}
+                </v-col>
+            </v-row>
             <v-row v-if="(stateType == 0 && editing) || (stateType == 1 && !editing)" :key="'basicState-editing-'+reindexKey">
                 <span v-if="workingVal && workingVal.resources" style="width: 100%">
                     <v-col cols=12 v-if="title && !editing">

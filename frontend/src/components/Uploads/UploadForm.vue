@@ -2,7 +2,7 @@
     <v-container>
         <v-row>
             <v-col cols=6>
-                <TextInput
+                <Select
                     :label="$tc('Ministry / Organization')"
                     placeholder="Ministry or organization the data upload is coming from"
                     name="ministry_organization"
@@ -10,9 +10,10 @@
                     :value="upload && upload.ministry_organization ? upload.ministry_organization : ''"
                     validation-rules="required"
                     helpPrefix="upload"
-                    
+                    :autocomplete="true"
+                    :items="false"
                     @blur="(event) => { updateUpload('ministry_organization', event) }"
-                ></TextInput>
+                ></Select>
             </v-col>
             <v-col cols=6>
                 <TextInput

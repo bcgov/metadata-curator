@@ -361,6 +361,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             if (user && (user.isApprover || user.isAdmin) ){
                 res = JSON.parse(JSON.stringify(res));
                 res.author_groups = topicResponse.data[0].author_groups;
+                res.providerGroup = topicResponse.data[0].author_groups;
             }
             return res;
         } catch (e) {

@@ -57,6 +57,7 @@
                     :large="large"
                     :schema="defaults"
                     :items="items"
+                    :multiple="multiple"
                     :conditions="conditions"
                     :validation-rules="innerValidationRules"
                     @edited="(newValue) => { updateVal(key, newValue) }">
@@ -147,6 +148,11 @@ import Composite from './Composite';
             },
             innerPlaceholder: {
                 type: [String, Object],
+                required: false,
+                default: () => {}
+            },
+            multiple: {
+                type: [Object],
                 required: false,
                 default: () => {}
             },

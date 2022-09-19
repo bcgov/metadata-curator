@@ -299,7 +299,7 @@ export default {
         "Sector": "Sector",
         "Data Type": "Data Type",
         "Restrictions Comments": "Restrictions Comments",
-        "Send Approval Requests To": "Send Approval Requests To",
+        "Send Approval Requests To": "Data Provider Contacts",
         "Refresh Schedule": "Refresh Schedule",
         "Lifecycle Status": "Lifecycle Status",
         "Lifecycle Dates": "Lifecycle Dates",

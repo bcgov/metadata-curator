@@ -25,6 +25,10 @@ var contactSchema = mongoose.Schema({
     phone: {
         type: String,
         required: false,
+    },
+    role: {
+        type: [String],
+        required: false,
     }
 }, { _id : false });
 
