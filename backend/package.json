@@ -1,6 +1,6 @@
 {
   "name": "metadata_curator",
-  "version": "1.6.2",
+  "version": "1.5.5",
   "author": "Brandon Sharratt",
   "description": "Metadata Curator is a simple web app to edit csvs and to help describe, validate and share usable open data",
   "repository": "https://github.com/bcgov/metadata-curator",
@@ -35,11 +35,11 @@
     "node-cache": "^5.1.0",
     "nodemailer": "^6.6.1",
     "npmlog": "^4.1.2",
-    "passport": "^0.6.0",
+    "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
-    "passport-openidconnect": "^0.1.1",
+    "passport-openidconnect": "0.0.2",
     "semantic_infer": "^1.3.1",
-    "swagger-ui-express": "^4.5.0",
+    "swagger-ui-express": "^4.1.4",
     "tableschema": "^1.12.4",
     "ws": "^8.5.0",
     "y18n": "^5.0.8"
@@ -49,9 +49,8 @@
     "chai-http": "^4.3.0",
     "mocha": "^7.1.0",
     "mongodb-memory-server": "^6.9.6",
-    "nodemon": "^2.0.20",
+    "nodemon": "^2.0.4",
     "nyc": "^14.1.1",
-    "request": "^2.88.2",
     "rewire": "^5.0.0",
     "sinon": "^9.0.2"
   }
