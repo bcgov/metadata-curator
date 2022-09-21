@@ -7,9 +7,10 @@ const path = helpers.confGet('screenshotPath');
 
 const data1 = {
     ministry_organization: {
-        selector: 'input[name="ministry_organization"]',
+        selector: '//input[@name="ministry_organization"]/..',
+        select: true,
+        value: "test",
         selector2: '#ministry_organization-value',
-        value: "Metadata Curator",
     },
     name: {
         selector: 'input[name="name"]',

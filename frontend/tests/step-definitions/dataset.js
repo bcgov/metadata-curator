@@ -10,9 +10,10 @@ var workingDataset = {
         selector2: '#name-value'
     },
     ministry: {
-        selector: 'input[name="ministry_organization"]',
-        value: 'Ministry of Metadata Curation',
-        selector2: '#ministry_organization-value'
+        selector: '//input[@name="ministry_organization"]/..',
+        select: true,
+        value: "test",
+        selector2: '#ministry_organization-value',
     },
     description: {
         selector: 'input[name="description"]',
