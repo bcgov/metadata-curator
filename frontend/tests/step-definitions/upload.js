@@ -53,7 +53,15 @@ Given(/^Data provider successfully uploads a data file$/, async function(){
     await client.saveScreenshot("./"+path+"/postNewUpload.png");
     
     for (const property in data1){
-        await client.setValue(data1[property].selector, data1[property].value)
+        if (workingDataset[property].select){
+
+            await client.click('xpath', workingDataset[property].selector);
+            await client.pause(100);
+            await client.click('xpath', '//div[@class="v-list-item__title"][contains(.,"' + workingDataset[property].value+'")]');
+            
+        }else{
+            await client.setValue(data1[property].selector, data1[property].value)
+        }
     }
 
     await client.click('#next-1');
