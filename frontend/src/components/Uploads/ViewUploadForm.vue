@@ -7,15 +7,14 @@
             <v-col cols="12">
                 <v-row>
                     <v-col cols=6>
-                        <Select
+                        <TextInput
                             :label="$tc('Ministry / Organization')"
                             name="ministry_organization"
                             :editing="false"
                             :autocomplete="true"
-                            :items="false"
                             :value="upload && upload.ministry_organization ? upload.ministry_organization : ''"
                             helpPrefix="upload"
-                        ></Select>
+                        ></TextInput>
                     </v-col>
                     <v-col cols=6>
                         <TextInput

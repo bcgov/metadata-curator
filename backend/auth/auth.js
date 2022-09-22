@@ -242,7 +242,9 @@ var buildActivity = async function(profile){
   return profile;
 }
 
-var strategy = new OidcStrategy(config.get('oidc'), async function(issuer, sub, profile, accessToken, refreshToken, done){
+let oidcConfig = {passReqToCallback: false, ...config.get('oidc')};
+
+var strategy = new OidcStrategy(oidcConfig, async function(issuer, sub, profile, accessToken, refreshToken, done){
     
     if ( (typeof(accessToken) === "undefined") || (accessToken === null) || (typeof(refreshToken) === "undefined") || (refreshToken === null) ){
       console.log("No token");
@@ -284,7 +286,7 @@ var strategy = new OidcStrategy(config.get('oidc'), async function(issuer, sub, 
     }
     
   
-    console.log("setting profile");
+    console.log("setting profile", profile);
     done(null, profile);
 });
   

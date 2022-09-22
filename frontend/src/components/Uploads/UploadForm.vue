@@ -12,7 +12,7 @@
                     helpPrefix="upload"
                     :autocomplete="true"
                     :items="false"
-                    @blur="(event) => { updateUpload('ministry_organization', event) }"
+                    @edited="(newValue) => { updateUpload('ministry_organization', newValue) }"
                 ></Select>
             </v-col>
             <v-col cols=6>
@@ -140,6 +140,7 @@
 <script>
     import { mapActions, mapState} from "vuex";
     import TextInput from '../FormElements/TextInput';
+    import Select from '../FormElements/Select';
     import TextArea from '../FormElements/TextArea';
     import DateInput from '../FormElements/DateInput';
 
@@ -149,6 +150,7 @@
             TextInput,
             TextArea,
             DateInput,
+            Select
         },
         props: {
         },
@@ -166,7 +168,12 @@
             }),
 
             updateUpload: async function(key, event){
-                let value = event.target.value;
+                let value = event;
+                try{
+                    value = event.target.value;
+                }catch(e){
+                    //pass
+                }
                 this.updateUploadE(key, value);
             },
 

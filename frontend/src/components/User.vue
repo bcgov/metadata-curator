@@ -1,6 +1,5 @@
 <template>
     <span>
-
         <v-dialog v-model="aboutDia">
             <v-card>
                 <v-card-title>
@@ -32,12 +31,13 @@
             indeterminate
         ></v-progress-circular>
         <v-btn primary class="" v-else-if="!loggedIn" @click="login">{{$tc('Login')}}</v-btn>
-        <v-menu v-else offset-y>
+        <v-menu v-else offset-y :key="'menu-'+redrawKey">
+            
             <template v-slot:activator="{ on }">
                 <v-img id="userMenu" v-if="showImage" ma-0 pa-0 :src="buttonImage" :alt="alt" :height="height+'px'" :width="width+'px'" contain v-on="on" v-on:error="onImgError"></v-img>
-                <v-btn id="userMenu" v-else-if="!showImage" text v-on="on"><v-icon>fa-user</v-icon></v-btn>
+                <v-btn id="userMenu" v-if="!showImage" text v-on="on"><v-icon>fa-user</v-icon></v-btn>
             </template>
-            <v-list>
+            <v-list>                
                 <v-list-item id="toUserPage" @click="$router.push('/user')">
                     <v-list-item-title>{{$tc('Signed in as')}} {{user._json.preferred_username}}</v-list-item-title>
                 </v-list-item>
@@ -85,7 +85,9 @@ export default {
             showImage: true,
             aboutDia: false,
             changesDia: false,
+            redrawKey: 0,
         }
+
     },
 
     computed: {
@@ -138,7 +140,8 @@ export default {
 
     methods: {
         onImgError(){
-            this.showImage = false
+            this.showImage = false;
+            this.redrawKey++;
         },
         login(){
             this.$router.push({name: "login"})
