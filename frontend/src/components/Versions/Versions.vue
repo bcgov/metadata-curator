@@ -161,7 +161,7 @@ export default {
             this.branches.forEach( (branch, index) => {
                 const item = {
                     title: `${branch.name}`,
-                    subtitle: `${branch.repo[0].name}${"<br />"}${branch.description}`,
+                    subtitle: `${(branch.repo && branch.repo[0] && branch.repo[0].name) ? branch.repo[0].name : ''}${"<br />"}${branch.description}`,
                     id: branch._id,
                 };
                 if ( (this.datasetFilter === "-1") || (branch.repo_id == this.datasetFilter) ){

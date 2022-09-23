@@ -22,6 +22,7 @@
                     :large="large"
                     :items="items[key]"
                     :editing="editing"
+                    :multiple="(multiple && multiple[key]) ? multiple[key] : false"
                     :value="innerVal"
                     :helpPrefix="helpPrefix"
                     :validation-rules="(validationRules && validationRules[key]) ? validationRules[key] : ''"
@@ -83,6 +84,11 @@
                 type: Object,
                 required: false,
                 default: () => ''
+            },
+            multiple: {
+                type: Object,
+                required: false,
+                default: () => {}
             },
             editing: {
                 type: Boolean,

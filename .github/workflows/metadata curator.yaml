@@ -160,7 +160,7 @@ jobs:
           terraform apply -var hostRootPath=`pwd`/_tmp -auto-approve
 
       - name: test
-        timeout-minutes: 20
+        timeout-minutes: 30
         run: |
           docker ps
           sleep 45

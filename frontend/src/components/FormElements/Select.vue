@@ -73,6 +73,19 @@
                     :error-messages="errors.length > 0 ? [errors[0]] : []"
                     @change="$emit('edited', val)"
                     outlined>
+                    <template v-slot:prepend>
+                        {{displayLabel}}&nbsp;
+                        <v-tooltip right v-model="showTooltip" v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
+                            <template v-slot:activator="{}">
+                                <v-icon color="label_colour" 
+                                    @mouseenter="showTooltip = true"
+                                    @mouseleave="closeOnLeave ? (showTooltip = false) : false">
+                                    mdi-help-circle-outline
+                                </v-icon>
+                            </template>
+                            <span v-html="displayTooltip"></span>
+                        </v-tooltip>
+                    </template>
                 </v-autocomplete>
             </ValidationProvider>
         </span>
@@ -281,6 +294,8 @@
                 }else if ( (Array.isArray(this.val)) && ((this.val.length === 0) || (this.val[0] === null)) ){
                     return '';
                 }
+
+                
                 
                 let displayVal = this.val;
                 
@@ -297,14 +312,14 @@
                 }else{
                     items = this.items;
                 }
-
+                
                 if (Array.isArray(this.val)){
                     for (let i=0; i<this.val.length; i++){
                         let found = false;
                         displayVal = (i == 0) ? "" : (displayVal + ", ");
                         for (let j=0; j<items.length; j++){
                             if (items[j][this.itemValue] === this.val[i]){
-                                displayVal = items[j][this.itemText];
+                                displayVal += items[j][this.itemText];
                                 found = true;
                             }
                         }

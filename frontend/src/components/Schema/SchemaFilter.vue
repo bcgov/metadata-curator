@@ -12,7 +12,7 @@
                     placeholder=""
                     name="var_class"
                     :items="variableClassificationValues"
-                    itemText="code"
+                    itemText="label"
                     itemValue="code"
                     :large="false"
                     :multiple="true"
@@ -88,11 +88,12 @@ import TextInput from '../FormElements/TextInput';
 
             variableClassificationValues: function(){
                 let rv = [];
+                rv.push({code: "", label: "Not classified"})
                 if (this.variableClassification && this.variableClassification.values){
                     let k = Object.keys(this.variableClassification.values);
-                    // rv.push({code: ""})
                     for (let i=0; i<k.length; i++){
-                        rv.push({code: this.variableClassification.values[k[i]].code + ". " + this.variableClassification.values[k[i]].title})
+                        let c = this.variableClassification.values[k[i]].code + ". " + this.variableClassification.values[k[i]].title
+                        rv.push({code: c, label: c});
                     }
                 }
                 return rv;

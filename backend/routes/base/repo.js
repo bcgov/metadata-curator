@@ -408,6 +408,11 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
                 return (item && String(item).length > 0)
             });
 
+            let authorGroupsLookup = {};
+            for (let i=0; i<topics.length; i++){
+                authorGroupsLookup[topics[i]._id] = topics[i].author_groups;
+            }
+
             if(query && query.upload_id) {
                 //return await db.RepoSchema.find({data_upload_id: mongoose.Types.ObjectId(query.filterBy)}).sort({ "create_date": 1});
                 let data = await db.RepoBranchSchema.find({repo_id: {$in: repoIds}, data_upload_id: query.upload_id}).populate('repo_id').sort({ "create_date": -1});
@@ -419,10 +424,25 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
                 for (let i=0; i<data.length; i++){
                     res.push(data[i].repo_id);
                 }
+                
                 return res;
                 //return await db.RepoSchema.find({_id: {$in: repoIds}}).sort({ "create_date": 1});
             }else{
-                return await db.RepoSchema.find({_id: {$in: repoIds}}).sort({ "create_date": -1});
+                
+                let results = await db.RepoSchema.find({_id: {$in: repoIds}}).sort({ "create_date": -1});
+                if (user && (user.isApprover || user.isAdmin) ){
+                    for (let i=0; i<results.length; i++){
+                        
+                        if (results[i].topic_id){
+                            let res = JSON.parse(JSON.stringify(results[i]));
+                            let topicStr = res.topic_id.toString();
+                            res.author_groups = authorGroupsLookup[topicStr];
+                            res.providerGroup = authorGroupsLookup[topicStr];
+                            results[i] = res;
+                        }
+                    }
+                }
+                return results
             }
         } catch (e) {
             log.error(e);

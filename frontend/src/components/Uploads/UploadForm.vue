@@ -2,7 +2,7 @@
     <v-container>
         <v-row>
             <v-col cols=6>
-                <TextInput
+                <Select
                     :label="$tc('Ministry / Organization')"
                     placeholder="Ministry or organization the data upload is coming from"
                     name="ministry_organization"
@@ -10,9 +10,10 @@
                     :value="upload && upload.ministry_organization ? upload.ministry_organization : ''"
                     validation-rules="required"
                     helpPrefix="upload"
-                    
-                    @blur="(event) => { updateUpload('ministry_organization', event) }"
-                ></TextInput>
+                    :autocomplete="true"
+                    :items="false"
+                    @edited="(newValue) => { updateUpload('ministry_organization', newValue) }"
+                ></Select>
             </v-col>
             <v-col cols=6>
                 <TextInput
@@ -139,6 +140,7 @@
 <script>
     import { mapActions, mapState} from "vuex";
     import TextInput from '../FormElements/TextInput';
+    import Select from '../FormElements/Select';
     import TextArea from '../FormElements/TextArea';
     import DateInput from '../FormElements/DateInput';
 
@@ -148,6 +150,7 @@
             TextInput,
             TextArea,
             DateInput,
+            Select
         },
         props: {
         },
@@ -165,7 +168,12 @@
             }),
 
             updateUpload: async function(key, event){
-                let value = event.target.value;
+                let value = event;
+                try{
+                    value = event.target.value;
+                }catch(e){
+                    //pass
+                }
                 this.updateUploadE(key, value);
             },
 

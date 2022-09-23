@@ -11,6 +11,7 @@
                             :label="$tc('Ministry / Organization')"
                             name="ministry_organization"
                             :editing="false"
+                            :autocomplete="true"
                             :value="upload && upload.ministry_organization ? upload.ministry_organization : ''"
                             helpPrefix="upload"
                         ></TextInput>

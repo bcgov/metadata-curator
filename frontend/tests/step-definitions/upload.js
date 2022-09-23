@@ -7,9 +7,10 @@ const path = helpers.confGet('screenshotPath');
 
 const data1 = {
     ministry_organization: {
-        selector: 'input[name="ministry_organization"]',
+        selector: '//input[@name="ministry_organization"]/..',
+        select: true,
+        value: "test",
         selector2: '#ministry_organization-value',
-        value: "Metadata Curator",
     },
     name: {
         selector: 'input[name="name"]',
@@ -48,11 +49,20 @@ Given(/^Data provider successfully uploads a data file$/, async function(){
     client.click('#toUserPage').pause(100).saveScreenshot('./'+confGet('screenshotPath')+'/uploadUserInfo.png');
     
     await helpers.newUpload(client);
-    await client.pause(5000);
+    await client.pause(10000);
     await client.saveScreenshot("./"+path+"/postNewUpload.png");
     
     for (const property in data1){
-        await client.setValue(data1[property].selector, data1[property].value)
+        if (data1[property].select){
+
+            await client.click('xpath', data1[property].selector);
+            await client.pause(1000);
+            await client.click('xpath', '//div[@class="v-list-item__title"][contains(.,"' + data1[property].value+'")]');
+            await client.pause(1000);
+            
+        }else{
+            await client.setValue(data1[property].selector, data1[property].value)
+        }
     }
 
     await client.click('#next-1');

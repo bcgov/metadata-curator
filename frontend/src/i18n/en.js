@@ -299,7 +299,7 @@ export default {
         "Sector": "Sector",
         "Data Type": "Data Type",
         "Restrictions Comments": "Restrictions Comments",
-        "Send Approval Requests To": "Send Approval Requests To",
+        "Send Approval Requests To": "Data Provider Contacts",
         "Refresh Schedule": "Refresh Schedule",
         "Lifecycle Status": "Lifecycle Status",
         "Lifecycle Dates": "Lifecycle Dates",
@@ -325,6 +325,10 @@ export default {
         "Temporal range fields are only for data type files": "Temporal range fields are only for data type files",
         "Classification Indicies": "Classification Indicies",
         "Options": "Options",
+
+        "Field Description": "Field Description",
+        "Edition Notes": "Edition Notes",
+        "References to research that uses this data": "References to research that uses this data",
 
         "Compare Inferred": "Compare Inferred",
 

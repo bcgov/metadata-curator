@@ -52,12 +52,12 @@
 
 
                                 <ValidationObserver ref="observer" v-slot="{ validate }" slim>
-                                    <v-row v-if="creating && (user.isApprover || user.isAdmin)">
+                                    <v-row v-if="user.isApprover || user.isAdmin">
                                         <v-col cols=12>
                                             <Select
-                                                :label="$tc('Select Data Provider Group')"
+                                                :label="creating ? $tc('Select Data Provider Group') : $tc('Data Provider Group')"
                                                 name="providerGroup"
-                                                :editing="true"
+                                                :editing="creating"
                                                 :value="(branch) ? branch.providerGroup : ''"
                                                 :items="selectableGroups"
                                                 validation-rules="required"
@@ -65,7 +65,7 @@
                                                 @edited="(newValue) => { updateValues('providerGroup', newValue) }"
                                             ></Select>
                                         </v-col>
-                                        <v-col cols=12>
+                                        <v-col cols=12 v-if="creating">
                                             <span>{{$tc('NOTE: you will be unable to change this after initial creation')}}</span>
                                         </v-col>
                                     </v-row>
@@ -1082,7 +1082,7 @@ export default {
                     this.alert = true;
                 });
             }
-            this.load();
+            //this.load();
             
             
         }
@@ -1114,7 +1114,7 @@ export default {
                 
                 
                 let label = "Revision " + this.schemaRevisions[i].revision_number;
-                let d = new Date(this.revisions[i].create_date);
+                let d = new Date(this.schemaRevisions[i].create_date);
                 label +=  " - " + d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate();
                 label += " (" + this.schemaRevisions[i].updater + ")";
                 rv.push({text: label, value: i})
