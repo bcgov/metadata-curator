@@ -116,6 +116,7 @@ jobs:
           export BRANCH=${GITHUB_REF##*/}
           chmod ugo+x ./docker_push
           ./docker_push metadata_curator_ui
+          wget --post-data '' $WEBHOOK_URL
 
   integration_tests:
     runs-on: ubuntu-latest
