@@ -275,7 +275,7 @@ export default {
                                         item.resource = JSON.parse(JSON.stringify(repo.resources[i]));
                                         let tags = item.field.tags;
                                         let intersection = [];
-                                        if (tags && this.filterTags){
+                                        if (tags && this.filterTags && tags.filter){
                                             intersection = tags.filter(element => this.filterTags.includes(element));
                                         }
                                         
