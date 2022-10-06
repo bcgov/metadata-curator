@@ -274,8 +274,12 @@ export default {
                                         item.field = JSON.parse(JSON.stringify(repo.resources[i].tableSchema.fields[j]));
                                         item.resource = JSON.parse(JSON.stringify(repo.resources[i]));
                                         let tags = item.field.tags;
+                                        let intersection = [];
+                                        if (tags && this.filterTags){
+                                            intersection = tags.filter(element => this.filterTags.includes(element));
+                                        }
                                         
-                                        if (!this.filterTags || (tags && tags.indexOf(this.filterTags) !== -1)){
+                                        if (!this.filterTags || (tags && intersection && intersection.length > 0)){
                                             items.push(item);
                                         }
                                     }

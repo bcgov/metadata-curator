@@ -2,12 +2,9 @@
 
 <br />
 
-## Version 1.6.2
-September 19, 2022
- - Ministry / Organization field converted to select typeahead settable via options as ministry_organization
- - Moved and renamed In BC Data Catalogue field on the dataset page to BCDC and the allow publish section
- - Added ability to see the selected data provider group on datasets/editions
- - Added Role to dataset contacts
+## Version 1.6.3
+October 12, 2022
+ - Fixed bug with tagged report not filtering properly since the change to multiselect.
 
 
 <br />
@@ -44,6 +41,15 @@ September 19, 2022
 - [Version 1.2.2 (January 27 2022)](#version-122)
 
 <br />
+
+## Version 1.6.2
+September 19, 2022
+ - Ministry / Organization field converted to select typeahead settable via options as ministry_organization
+ - Moved and renamed In BC Data Catalogue field on the dataset page to BCDC and the allow publish section
+ - Added ability to see the selected data provider group on datasets/editions
+ - Added Role to dataset contacts
+
+ <br />
 
 ## Version 1.6.1
 September 16, 2022
