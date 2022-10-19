@@ -1165,11 +1165,22 @@ export default{
         border-width: 2px;
     }
 
-    .capWidth{
-        max-width: 100%;
-        max-height: 26px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+</style>
 
-</style>>
+<style >
+.capWidth span p{
+    max-width: 100%;
+    max-height: 26px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0px;
+}
+
+.capWidth span p:hover{
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    max-height: unset;
+}
+</style>

@@ -1,18 +1,13 @@
 <template>
     <v-container fluid>
         <v-row>
-            <v-col cols=12>
+            <v-col cols="12">
                 <v-alert
                     :type="alertType"
                     dismissible
                     v-model="alert">
                         {{alertText}}
                 </v-alert>
-            </v-col>
-        </v-row>
-
-        <v-row>
-            <v-col cols="12">
                 <v-card outlined>
                     <v-card-text>
                         <v-row>

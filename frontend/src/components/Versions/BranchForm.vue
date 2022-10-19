@@ -18,15 +18,13 @@
         </span>
 
         <v-row v-else dense>
-            <v-col cols=12>
+            <v-col cols="12">
                 <v-alert
                     :type="alertType"
                     dismissible
                     v-model="alert">
                         {{alertText}}
                 </v-alert>
-            </v-col>
-            <v-col cols="12">
                 <v-tabs v-model="tab" @change="changeTab">
                     <v-tab key="version" id="version-tab">{{$tc('Version')}}</v-tab>
                     <v-tab v-if="dataset && !creating" key="dataset" id="dataset-tab">{{$tc('Dataset')}}</v-tab>
@@ -416,8 +414,14 @@
 
                             </v-card-text>
                              <v-card-actions v-if="editing">
-                                <v-btn @click="closeOrBack()" class="mt-1">{{$tc('Cancel')}}</v-btn>
-                                <v-btn @click="save" class="mt-1" id="saveVersion" color="primary">{{$tc('Save')}}</v-btn>
+                                <v-btn @click="closeOrBack()"  :disabled="disableSave" class="mt-1">{{$tc('Cancel')}}</v-btn>
+                                <v-btn @click="save" class="mt-1" id="saveVersion" :disabled="disableSave" color="primary">
+                                    {{!disableSave ? $tc('Save') : $tc("Please Wait")}}
+                                    <v-progress-circular
+                                        indeterminate
+                                        v-if="disableSave"
+                                    ></v-progress-circular>
+                                </v-btn>
                             </v-card-actions>
                             <v-card-actions v-else>
                                 <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
@@ -673,6 +677,8 @@ export default {
             disableSunset: false,
             leftRevision: null,
             rightRevision: null,
+            disableSave: false,
+
         }
     },
     methods: {
@@ -950,6 +956,7 @@ export default {
             this.editing = false;
             this.creating = false;
             this.alert = false;
+            this.disableSave = false;
             if (this.dialog){
                 if (!this.editing){
                     this.$emit('close');
@@ -964,6 +971,7 @@ export default {
             }else{
                 this.$router.push({ name: 'versions' });
             }
+            
         },
 
         updateCommentRefs: function(e){
@@ -1041,6 +1049,7 @@ export default {
                 this.alert = true;
                 return;
             }
+            this.disableSave = true;
 
             if (this.creating){
                 
@@ -1063,6 +1072,7 @@ export default {
                         this.alertText = err.message;
                     }
                     this.alert = true;
+                    this.disableSave = false;
                 });
             }else{
                 this.updateBranch().then( () => {
@@ -1071,6 +1081,7 @@ export default {
                     this.alert = true;
                     //this.closeOrBack();
                     this.editing = false;
+                    this.disableSave = false;
 
                 }).catch( err => {
                     this.alertType = "error"
@@ -1080,6 +1091,7 @@ export default {
                         this.alertText = err.message;
                     }
                     this.alert = true;
+                    this.disableSave = false;
                 });
             }
             //this.load();
@@ -1209,6 +1221,10 @@ export default {
 
     .largerFont{
         font-size: 1.75rem;
+    }
+    .fullWidth{
+        width: 100%;
+        overflow: visible;
     }
     
 

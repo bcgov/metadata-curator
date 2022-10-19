@@ -1,11 +1,5 @@
 <template>
     <v-container fluid>
-        <v-alert
-            :type="alertType"
-            dismissible
-            v-model="alert">
-                {{alertText}}
-        </v-alert>
         <span v-if="(!branch || loading) && !creating">
             <v-row dense>
                 {{$tc('Loading')}}...
@@ -13,6 +7,22 @@
         </span>
         <v-row v-else dense>
             <v-col cols="12">
+                <v-alert
+                    :type="alertType"
+                    dismissible
+                    v-model="alert">
+                        {{alertText}}
+                </v-alert>
+                <div v-if="loading || !schema">
+                </div>
+                <div class="fixed" v-else-if="editing">
+                    <v-btn @click="closeOrBack()" class="mt-1">{{$tc('Cancel')}}</v-btn>
+                    <v-btn @click="save" id="saveMetadata" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
+                </div>
+                <div class="fixed" v-else>
+                    <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
+                    <v-btn v-if="canEdit" @click="editing=!editing; viewSchemaType = 'Provided'" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
+                </div>
                 <v-card outlined>
                     <v-card-text>
                         <v-row v-if="editing">
@@ -78,16 +88,6 @@
                             </v-col>
                         </v-row>
                     </v-card-text>
-                        <v-card-actions v-if="loading || !schema">
-                        </v-card-actions>
-                        <v-card-actions class="fixed" v-else-if="editing">
-                            <v-btn @click="closeOrBack()" class="mt-1">{{$tc('Cancel')}}</v-btn>
-                            <v-btn @click="save" id="saveMetadata" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
-                        </v-card-actions>
-                        <v-card-actions class="fixed" v-else>
-                            <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
-                            <v-btn v-if="canEdit" @click="editing=!editing; viewSchemaType = 'Provided'" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
-                        </v-card-actions>
                 </v-card>
             </v-col>
 
@@ -377,10 +377,12 @@ export default {
         position: relative;
         padding-bottom: 15px;
     }
-    .v-card__actions.fixed {
+    
+    .fixed {
         position: fixed;
-        bottom: 300px;
-        
+        bottom: 100px;
+        right: 0px;
+        z-index: 100;
     }
     
     .fixedHeight{

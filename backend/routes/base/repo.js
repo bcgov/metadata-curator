@@ -9,9 +9,6 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
     const util = require('./util');
     const requiredPhase = 2;
 
-    const VALID_LIFECYCLE_STATUS = ['active','semiactive', 'destroyed'];
-    const VALID_LIFECYCLE_DATES = ['created','published', 'modified', 'archived', 'destroyed', 'comment'];
-
     const getRepoById = async function(user, id){
         let record = await db.RepoSchema.findOne({_id: mongoose.Types.ObjectId(id)});
         if (!record){
@@ -77,7 +74,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         const config = require('config');
 
         if (!user.groups.some( (el) => el === config.get('requiredRoleToCreateRequest'))){
-            throw new Error("Not permitted to create an repo");
+            throw new Error("Not permitted to create a repo");
         }
 
         if (!fields.ministry_organization){
@@ -176,7 +173,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             revision.revise('refresh_schedule', '', fields.refresh_schedule);
             repoSchema.refresh_schedule = fields.refresh_schedule;
         }
-        if ((typeof(fields.lifecycle_status) !== 'undefined') && (VALID_LIFECYCLE_STATUS.indexOf(fields.lifecycle_status) !== -1) ){
+        if (typeof(fields.lifecycle_status) !== 'undefined'){
             revision.revise('lifecycle_status', '', fields.lifecycle_status);
             repoSchema.lifecycle_status = fields.lifecycle_status;
         }
@@ -185,9 +182,6 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             let valid = true;
             
             for (let i=0; i<fields.lifecycle_dates.length; i++){
-                if (VALID_LIFECYCLE_DATES.indexOf(fields.lifecycle_dates[i].type) === -1){
-                    valid = false;
-                }
                 if (fields.lifecycle_dates[i].type !== 'comment'){
                     fields.lifecycle_dates[i].date_comments = new Date(fields.lifecycle_dates[i].date_comments);
                 }
@@ -198,6 +192,13 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             }
         }
         //done fields added may 11 2022
+
+        //fields added oct 11 2022
+        if (typeof(fields.refresh_status) !== 'undefined'){
+            revision.revise('refresh_status', '', fields.refresh_status);
+            repoSchema.refresh_status = fields.refresh_status;
+        }
+        //done fields added oct 11 2022
     
     
         let r = await repoSchema.save();
@@ -302,7 +303,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             revision.revise('refresh_schedule', record.refresh_schedule, fields.refresh_schedule);
             record.refresh_schedule = fields.refresh_schedule;
         }
-        if ((typeof(fields.lifecycle_status) !== 'undefined') && (VALID_LIFECYCLE_STATUS.indexOf(fields.lifecycle_status) !== -1) ){
+        if (typeof(fields.lifecycle_status) !== 'undefined'){
             revision.revise('lifecycle_status', record.lifecycle_status, fields.lifecycle_status);
             record.lifecycle_status = fields.lifecycle_status;
         }
@@ -311,9 +312,6 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             let valid = true;
             
             for (let i=0; i<fields.lifecycle_dates.length; i++){
-                if (VALID_LIFECYCLE_DATES.indexOf(fields.lifecycle_dates[i].type) === -1){
-                    valid = false;
-                }
                 if (fields.lifecycle_dates[i].type !== 'comment'){
                     fields.lifecycle_dates[i].date_comments = new Date(fields.lifecycle_dates[i].date_comments);
                 }
@@ -324,6 +322,13 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             }
         }
         //done fields added may 11 2022
+
+        //fields added oct 11 2022
+        if (typeof(fields.refresh_status) !== 'undefined'){
+            revision.revise('refresh_status', '', fields.refresh_status);
+            record.refresh_status = fields.refresh_status;
+        }
+        //done fields added oct 11 2022
     
         let r = {};
         //if change_summary is set there is at least one change
@@ -377,7 +382,31 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             fullDPS = fullDPS.filter( (item) => {
                 let id = String(item.version.repo_id._id);
                 return (item && repoIds.indexOf(id) !== -1);
-            })
+            });
+
+            let authorGroupsLookup = {};
+            for (let i=0; i<topics.length; i++){
+                authorGroupsLookup[topics[i]._id] = topics[i].author_groups;
+            }
+
+            for (let i=0; i<fullDPS.length; i++){
+                        
+                if (fullDPS[i].version && fullDPS[i].version.topic_id){
+                    let res = JSON.parse(JSON.stringify(fullDPS[i]));
+                    let topicStr = res.version.topic_id.toString();
+                    res.version.author_groups = authorGroupsLookup[topicStr];
+                    res.version.providerGroup = authorGroupsLookup[topicStr];
+                    fullDPS[i] = res;
+                }
+
+                if (fullDPS[i].version && fullDPS[i].version.repo_id && fullDPS[i].version.repo_id.topic_id){
+                    let res = JSON.parse(JSON.stringify(fullDPS[i]));
+                    let topicStr = res.version.repo_id.topic_id.toString();
+                    res.version.repo_id.author_groups = authorGroupsLookup[topicStr];
+                    res.version.repo_id.providerGroup = authorGroupsLookup[topicStr];
+                    fullDPS[i] = res;
+                }
+            }
 
             return fullDPS;
             //.sort({ "create_date": -1});

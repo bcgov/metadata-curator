@@ -264,6 +264,11 @@ export default {
     .largerFont{
         font-size: 1.75rem;
     }
+    
+    .fullWidth{
+        width: 100%;
+        overflow: visible;
+    }
 
 </style>
 
@@ -274,5 +279,6 @@ export default {
     .v-label.v-label--is-disabled.theme--dark{
         color: var(--v-text-base);
     }
+    
 </style>
 

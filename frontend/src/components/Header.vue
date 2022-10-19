@@ -455,4 +455,16 @@ export default {
     vertical-align: top;
 }
 
+div.v-alert.v-sheet{
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+html{
+    overflow: visible;
+    height: auto;
+}
+
 </style>

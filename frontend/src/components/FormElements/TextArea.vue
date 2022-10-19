@@ -2,19 +2,38 @@
     <div>
          <span v-if="!editing">
             <span class="mr-2">
-                {{displayLabel}}:
-                <v-tooltip right v-model="showTooltip" v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
-                    <template v-slot:activator="{}">
-                        <v-icon color="label_colour" 
-                            @mouseenter="showTooltip = true"
-                            @mouseleave="closeOnLeave ? (showTooltip = false) : false">
-                            mdi-help-circle-outline
-                        </v-icon>
-                    </template>
-                    <span v-html="displayTooltip"></span>
-                </v-tooltip>
+                <h2 v-if="large" class="inline">
+                    {{displayLabel}}:
+                    <v-tooltip right v-model="showTooltip" v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
+                        <template v-slot:activator="{}">
+                            <v-icon color="label_colour" 
+                                @mouseenter="showTooltip = true"
+                                @mouseleave="closeOnLeave ? (showTooltip = false) : false">
+                                mdi-help-circle-outline
+                            </v-icon>
+                        </template>
+                        <span v-html="displayTooltip"></span>
+                    </v-tooltip>
+                </h2>
+            
+                <span v-else>
+                    {{displayLabel}}:
+                    <v-tooltip right v-model="showTooltip" v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
+                        <template v-slot:activator="{}">
+                            <v-icon color="label_colour" 
+                                @mouseenter="showTooltip = true"
+                                @mouseleave="closeOnLeave ? (showTooltip = false) : false">
+                                mdi-help-circle-outline
+                            </v-icon>
+                        </template>
+                        <span v-html="displayTooltip"></span>
+                    </v-tooltip>
+                </span>
             </span>
-            <span :id="idName ? idName : (name+'-value')">{{val}}</span>
+            <span>
+                <h2 v-if="large" class='inline' :id="idName ? idName : (name+'-value')">{{val}}</h2>
+                <span v-else :id="idName ? idName : (name+'-value')">{{val}}</span>
+            </span>
         </span>
 
         <span v-else>
@@ -97,6 +116,11 @@
                 required: false,
                 default: () => true
             },
+            large: {
+                type: Boolean,
+                required: false,
+                default: () => false
+            },
             editing: {
                 type: Boolean,
                 required: false,
@@ -163,6 +187,9 @@
     };
 </script>
 
-<style>
+<style scoped>
+    .inline{
+        display: inline-block;
+    }
 
 </style>

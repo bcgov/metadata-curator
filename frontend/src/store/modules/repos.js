@@ -209,7 +209,7 @@ const mutations = {
         state.repos = repos;
     },
     setReposFull(state, {repos}){
-        state.reposFull = repos;
+        Vue.set(state, 'reposFull', repos);
     },
     setAllRepos(state, {repos}){
         state.allRepos = repos;
