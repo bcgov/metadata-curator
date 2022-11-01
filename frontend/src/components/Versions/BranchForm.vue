@@ -50,7 +50,7 @@
 
 
                                 <ValidationObserver ref="observer" v-slot="{ validate }" slim>
-                                    <v-row v-if="user.isApprover || user.isAdmin">
+                                    <v-row v-if="user.isApprover || user.isAdmin" :key="'rerender-group-sel'+reRenderGroupSel">
                                         <v-col cols=12>
                                             <Select
                                                 :label="creating ? $tc('Select Data Provider Group') : $tc('Data Provider Group')"
@@ -678,7 +678,7 @@ export default {
             leftRevision: null,
             rightRevision: null,
             disableSave: false,
-
+            reRenderGroupSel: 0
         }
     },
     methods: {
@@ -1027,6 +1027,10 @@ export default {
                         
                     }
                 }
+                for (let i=0; i<this.selectableGroups.length; i++){
+                    this.selectableGroups[i] = {value: this.selectableGroups[i], text: this.selectableGroups[i]}
+                }
+                this.reRenderGroupSel++
                 await this.getVariableClassifications({});
             }else{
                 await this.loadSections();

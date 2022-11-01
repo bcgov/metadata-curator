@@ -3,7 +3,7 @@
 <br />
 
 ## Version 1.6.3
-October 19, 2022
+November 2, 2022
  - Fixed bug with tagged report not filtering properly since the change to multiselect.
  - Added Dataset refresh status field to datasets, reworked several fields and possible values
  - Fixed position of edit save floating buttons on schema page
@@ -11,12 +11,17 @@ October 19, 2022
  - Fixed issue with ellipsis and visibility of description when not expanded on files and fields
  - Files and fields field description shows full description when hovered in the collapsed view
  - Added all fields report to dataset list
+ - Enhanced support for text selection on resource fields
+ - Added ability to copy a field between resources on the files and fields tab
+ - Changed functionality of search dataset name on the dataset list screen to typeahead with dataset names selectable
+ - Changed caption of filter box to Search/Filter on the dataset list screen
+ - Sorted the data provider groups on the dataset and edition create page.
 
 
 <br />
 
 ## Table Of Contents
-- [Version 1.6.2 (October 19 2022)](#version-163)
+- [Version 1.6.3 (November 2 2022)](#version-163)
 - [Version 1.6.2 (September 19 2022)](#version-162)
 - [Version 1.6.1 (September 16 2022)](#version-161)
 - [Version 1.6.0 (August 11 2022)](#version-160)

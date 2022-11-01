@@ -37,7 +37,7 @@
                             <span>{{id}}</span>
                         </v-row>
 
-                        <v-row v-if="user.isApprover || user.isAdmin">
+                        <v-row v-if="user.isApprover || user.isAdmin" :key="'rerender-group-sel'+reRenderGroupSel">
                             <v-col cols=12>
                                 <Select
                                     :label="creating ? $tc('Select Data Provider Group') : $tc('Data Provider Group')"
@@ -418,6 +418,7 @@ export default {
             selectableGroups: [],
             loading: false,
             notFound: false,
+            reRenderGroupSel: 0
         }
     },
     methods: {
@@ -540,6 +541,11 @@ export default {
                     }
                     
                 }
+
+                for (let i=0; i<this.selectableGroups.length; i++){
+                    this.selectableGroups[i] = {value: this.selectableGroups[i], text: this.selectableGroups[i]}
+                }
+                this.reRenderGroupSel++
 
             }
         }else{

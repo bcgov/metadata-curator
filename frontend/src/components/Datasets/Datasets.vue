@@ -26,7 +26,7 @@
         </v-row>
 
         <v-row class="bordered">
-            <v-col cols=4>Filter By:</v-col>
+            <v-col cols=4>Search/Filter By:</v-col>
             <v-col cols=8></v-col>
             <v-col cols=6>
                 <Select
@@ -35,18 +35,26 @@
                     :label="$tc('Ministry / Organization')"
                     :multiple="true"
                     :items="filterOrgItems"
-                    :value="filterOrg"
+                    :value="filterOrg"                    
                     @edited=" (newVal) => { filterOrg = newVal; }">
                 </Select>
             </v-col>
             <v-col cols=6>
-                <TextInput
-                    :editing="true"
+                <Select
+                    :label="$tc('Datasets') + ' ' + $tc('Name')"
+                    placeholder=""
                     name="name"
-                    :label="$tc('Name')"
+                    :items="repoNames"
+                    itemText="name"
+                    itemValue="name"
+                    :sorted="false"
+                    :combobox="true"
+
+                    :editing="true"
                     :value="filterName"
-                    @blur=" (newVal) => { filterName = newVal.target.value; }">
-                </TextInput>
+                    @edited="(newVal) => { filterNameEdit(newVal) }"
+                    @blur="(newVal) => { filterNameBlur(newVal) }"
+                ></Select>
             </v-col>
             <v-col cols=6>
                 <Select
@@ -130,7 +138,7 @@
 import Vue from 'vue';
 import {mapActions, mapState, mapMutations} from "vuex";
 import Select from '../FormElements/Select';
-import TextInput from '../FormElements/TextInput';
+// import TextInput from '../FormElements/TextInput';
 import TableReport from '../Reports/TableReport';
 
 const taggedFieldsRep = 'Tagged fields';
@@ -139,7 +147,7 @@ const allFieldsExp = "All fields";
 export default {
     components:{
         Select,
-        TextInput,
+        // TextInput,
         TableReport
     },
 
@@ -160,7 +168,8 @@ export default {
             datasetTags: {},
             sortBy: "create_date desc",
             sortField: "create_date",
-            sortDir: 'desc'
+            sortDir: 'desc',
+            repoNames: []
         }
     },
     async mounted(){
@@ -175,11 +184,24 @@ export default {
         ...mapMutations({
             setSelectedFilterBy: 'repos/setSelectedFilterBy',
         }),
+
+        filterNameBlur(newVal){
+            this.filterName = newVal
+        },
+
+        filterNameEdit(newVal){
+            this.filterName = typeof(newVal) === 'string' ? newVal : newVal.name;
+        },
+
         async loadRepos() {
             this.message = this.$tc('Loading') + ' ' + this.$tc('Datasets', 2) + '...';
             
             await this.getRepos({filterBy: false});
             this.filteredRepos = this.repos;
+            this.repoNames = [{name: ''}];
+            for (let i=0; i<this.repos.length; i++){
+                this.repoNames.push({name: this.repos[i].name});
+            }
 
             this.getReposFull({});
             this.message = '';

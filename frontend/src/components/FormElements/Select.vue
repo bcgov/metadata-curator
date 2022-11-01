@@ -34,7 +34,7 @@
         <span v-else :id="(idName ? idName : 'name')+'-span'">
             <ValidationProvider :rules="validationRules" v-slot="{ errors }" :name="label ? ($te(label) ? $tc(label) : label) : ($te(name) ? $tc(name) : name)">
                 <v-select
-                    v-if="!autocomplete"
+                    v-if="!autocomplete && !combobox"
                     :name="name"
                     v-model="val"
                     :items="displayItems"
@@ -60,6 +60,34 @@
                         </v-tooltip>
                     </template>
                 </v-select>
+                <v-combobox
+                    v-else-if="combobox"
+                    :name="name"
+                    v-model="val"
+                    :items="displayItems"
+                    :item-text="itemText"
+                    :item-value="itemValue"
+                    :id="idName ? idName : ''"
+                    :multiple="multiple"
+                    auto-select-first
+                    :error-messages="errors.length > 0 ? [errors[0]] : []"
+                    @change="$emit('edited', val)"
+                    @blur="(e) => {$emit('blur', e.currentTarget.value)}"
+                    outlined>
+                    <template v-slot:prepend>
+                        {{displayLabel}}&nbsp;
+                        <v-tooltip right v-model="showTooltip" v-if="$te('help.'+((helpPrefix) ? helpPrefix + '.' + name : name))">
+                            <template v-slot:activator="{}">
+                                <v-icon color="label_colour" 
+                                    @mouseenter="showTooltip = true"
+                                    @mouseleave="closeOnLeave ? (showTooltip = false) : false">
+                                    mdi-help-circle-outline
+                                </v-icon>
+                            </template>
+                            <span v-html="displayTooltip"></span>
+                        </v-tooltip>
+                    </template>
+                </v-combobox>
                 <v-autocomplete
                     v-else
                     :name="name"
@@ -171,6 +199,11 @@
                 default: true
             },
             autocomplete: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            combobox: {
                 type: Boolean,
                 required: false,
                 default: false,
