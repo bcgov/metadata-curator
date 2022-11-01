@@ -6,6 +6,7 @@ RUN npm ci --no-optional
 
 COPY ./ ./	
 ENV NODE_ENV "production"
+RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
 RUN npm run build	
 
 
