@@ -2,7 +2,7 @@
 FROM node:lts-alpine as build-stage	
 WORKDIR /app	
 COPY ./package*.json ./	
-RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
+RUN apk add --update g++ make py-pip
 RUN npm ci --no-optional	
 
 COPY ./ ./	
