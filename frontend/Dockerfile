@@ -1,5 +1,5 @@
 #Build production frontend	
-FROM node:lts-alpine as build-stage	
+FROM node:16.14.2-alpine3.15 as build-stage	
 WORKDIR /app	
 COPY ./package*.json ./	
 RUN apk add --update g++ make py-pip
