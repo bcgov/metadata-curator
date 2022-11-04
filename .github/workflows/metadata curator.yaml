@@ -13,6 +13,7 @@ env:
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   QUAYIO_PASSWORD: ${{ secrets.QUAYIO_PASSWORD }}
   QUAYIO_USERNAME: ${{ secrets.QUAYIO_USERNAME }}
+  NODE_VERSION: 14.18.1
 jobs:
   # audit:
   #   runs-on: ubuntu-latest
@@ -125,6 +126,9 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{env.NODE_VERSION}}
       - name: terraform
         env:
           TERRAFORM_VERSION: "0.13.6"

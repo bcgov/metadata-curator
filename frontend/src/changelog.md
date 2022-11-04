@@ -2,17 +2,26 @@
 
 <br />
 
-## Version 1.6.2
-September 19, 2022
- - Ministry / Organization field converted to select typeahead settable via options as ministry_organization
- - Moved and renamed In BC Data Catalogue field on the dataset page to BCDC and the allow publish section
- - Added ability to see the selected data provider group on datasets/editions
- - Added Role to dataset contacts
+## Version 1.6.3
+November 2, 2022
+ - Fixed bug with tagged report not filtering properly since the change to multiselect.
+ - Added Dataset refresh status field to datasets, reworked several fields and possible values
+ - Fixed position of edit save floating buttons on schema page
+ - Changed alert success/error banners to be sticky to that you can see them no matter where you are on the page
+ - Fixed issue with ellipsis and visibility of description when not expanded on files and fields
+ - Files and fields field description shows full description when hovered in the collapsed view
+ - Added all fields report to dataset list
+ - Enhanced support for text selection on resource fields
+ - Added ability to copy a field between resources on the files and fields tab
+ - Changed functionality of search dataset name on the dataset list screen to typeahead with dataset names selectable
+ - Changed caption of filter box to Search/Filter on the dataset list screen
+ - Sorted the data provider groups on the dataset and edition create page.
 
 
 <br />
 
 ## Table Of Contents
+- [Version 1.6.3 (November 2 2022)](#version-163)
 - [Version 1.6.2 (September 19 2022)](#version-162)
 - [Version 1.6.1 (September 16 2022)](#version-161)
 - [Version 1.6.0 (August 11 2022)](#version-160)
@@ -44,6 +53,15 @@ September 19, 2022
 - [Version 1.2.2 (January 27 2022)](#version-122)
 
 <br />
+
+## Version 1.6.2
+September 19, 2022
+ - Ministry / Organization field converted to select typeahead settable via options as ministry_organization
+ - Moved and renamed In BC Data Catalogue field on the dataset page to BCDC and the allow publish section
+ - Added ability to see the selected data provider group on datasets/editions
+ - Added Role to dataset contacts
+
+ <br />
 
 ## Version 1.6.1
 September 16, 2022

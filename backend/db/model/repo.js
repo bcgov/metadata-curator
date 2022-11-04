@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 var lifecycleDateSchema = mongoose.Schema({
     type: {
         type: String,
-        enum : ['created','published', 'modified', 'archived', 'destroyed', 'comment'],
+        // enum : ['created','published', 'modified', 'archived', 'destroyed', 'comment'],
         required: true
     },
     date_comments: {
@@ -112,14 +112,16 @@ var repoSchema = new Schema({
     },
     lifecycle_status: {
         type: String,
-        enum : ['active','semiactive', 'destroyed'],
-        default: 'active',
         required: true
     },
     lifecycle_dates: {
         type: [lifecycleDateSchema],
         required: false,
         default: [],
+    },
+    refresh_status: {
+        type: String,
+        required: false,
     }
 });
 

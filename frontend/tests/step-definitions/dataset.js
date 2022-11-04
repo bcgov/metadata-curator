@@ -51,6 +51,12 @@ var workingDataset = {
         ariaChecked: "true",
         selector2: '#in_bc_catalogue-id i'
     },
+    lifecycle_status: {
+        selector: '//input[@name="lifecycle_status"]/..',
+        select: true,
+        value: "Active",
+        selector2: '#lifecycle_status-value',
+    },
     
     
 };
@@ -69,8 +75,9 @@ Given(/^Data approver successfully creates a dataset$/, async function(){
         const groupSel = helpers.confGet('providerGroup');
 
         await client.click('xpath', '//input[@name="providerGroup"]/..');
-        await client.pause(100);
+        await client.pause(200);
         await client.click('xpath', '//div[@class="v-list-item__title"][contains(.,"' + groupSel+'")]');
+        await client.pause(200);
         
         for (property in workingDataset){
             if (workingDataset[property].select){

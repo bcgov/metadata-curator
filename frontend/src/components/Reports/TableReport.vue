@@ -39,6 +39,11 @@
                     :items="items"
                     :items-per-page="-1"
                 >
+                    <template v-slot:item="{ item }">
+                        <tr>
+                            <td v-for="(header, hInd) in headers" :key="`td-${hInd}`">{{computeValue(item, header.value)}}</td>
+                        </tr>
+                    </template>
                 </v-data-table>
             </v-col>
         </v-row>
@@ -100,6 +105,19 @@ import autoTable from 'jspdf-autotable';
                 }else{
                     this.$router.back();
                 }
+            },
+
+            computeValue(item, stringIndex){
+                let indexAt = stringIndex.split(".");
+                let rv = item;
+                try{
+                    for (let i=0; i<indexAt.length; i++){
+                        rv = rv[indexAt[i]];
+                    }
+                }catch(e){
+                    // pass
+                }
+                return rv;
             },
 
             async goExport(type){

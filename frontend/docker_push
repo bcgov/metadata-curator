@@ -22,13 +22,13 @@ if [ $BRANCH == "main" ]; then
     docker push $BCGOV_BASE/$REPO:latest
     docker push $BCGOV_BASE/$REPO:$GITHUB_SHA
     echo "latest and $GITHUB_SHA pushed successfully"
-    curl -d '' $WEBHOOK_URL
+    curl -d '{}' $WEBHOOK_URL
 elif [ $BRANCH == "develop" ]; then
     docker tag $QUAYIO_BASE/$REPO $BCGOV_BASE/$REPO:edge
     echo "dockerfile tagged pushing now"
     docker push $BCGOV_BASE/$REPO:edge
     echo "edge (develop) pushed successfully"
-    curl -d "" $WEBHOOK_URL
+    curl -d '{}' $WEBHOOK_URL
 else
     docker tag $QUAYIO_BASE/$REPO $BCGOV_BASE/$REPO:$BRANCH
     echo "dockerfile tagged pushing now"

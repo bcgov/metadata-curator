@@ -8,6 +8,49 @@
                 </v-alert>
             </v-col>
         </v-row>
+
+        <v-dialog
+            v-model="copyDialog"
+            max-width="500"
+        >
+            <v-card>
+                <v-card-title>
+                    Copy to resource...
+                </v-card-title>
+
+                <v-card-text>
+                    <v-row>
+                        <v-col cols=12 v-for="(resource, index) in workingVal.resources" :key="'copy-check-'+index">
+                            <SimpleCheckbox
+                                :label="`To ${resource.name}`"
+                                :name="resource.name"
+                                @edited="(newValue) => { updateCopyTo(index, newValue) }"
+                                helpPrefix="schemaCopy"
+                                :editing="true">
+                            </SimpleCheckbox>
+                        </v-col>
+                    </v-row>
+                </v-card-text>
+
+                <v-card-actions>
+                <v-spacer></v-spacer>
+
+                <v-btn
+                    color="error"
+                    text
+                    @click.stop="copyDialog = false">
+                    Cancel
+                </v-btn>
+
+                <v-btn
+                    color="success"
+                    text
+                    @click.stop="copyField">
+                    Copy
+                </v-btn>
+                </v-card-actions>
+            </v-card>
+            </v-dialog>
         <v-row :key="'JsonEditor'+redrawIndex">
             <v-col cols=3>
                 <v-slider
@@ -188,7 +231,7 @@
 
 
                             <span v-if="resource.schema && resource.schema.fields" style="width: 100%">
-                                <draggable v-bind:disabled="!editing" @end="dragEnd(key, $event)">
+                                <draggable v-bind:disabled="!editing || inTextField" @end="dragEnd(key, $event)">
                                     <v-row 
                                         :id="'fieldHeader-'+key+'-'+fKey"
                                         no-gutters
@@ -413,6 +456,9 @@
                                                             <v-btn v-if="editing" class="error" @click="removeField(key, fKey)"><v-icon>mdi-delete</v-icon></v-btn>
                                                         </v-col>
                                                     </v-row>
+                                                    <v-row v-if="expandedBasic[key][fKey] && editing">
+                                                        <v-btn color="success" @click.stop="() => { copyResourceIndex = key; copyFieldIndex = fKey; copyDialog = true; }">Copy to another resource</v-btn>
+                                                    </v-row>
                                                 </v-col>
                                                 
                                                 <v-col v-if="expandedBasic[key][fKey] && loggedIn" cols=5 class="borderLeft">
@@ -477,7 +523,7 @@ import RepeatingObject from './RepeatingObject';
 import JsonProcessor from '../../mixins/JsonProcessor';
 
 import TextInput from '../FormElements/TextInput';
-// import SimpleCheckbox from '../FormElements/SimpleCheckbox';
+import SimpleCheckbox from '../FormElements/SimpleCheckbox';
 import Select from '../FormElements/Select';
 import DateInput from '../FormElements/DateInput';
 import TextArea from '../FormElements/TextArea';
@@ -496,7 +542,7 @@ export default{
         Comments,
         draggable,
         Markdown,
-        // SimpleCheckbox,
+        SimpleCheckbox,
         DateInput,
         SchemaFilter,
         TextArea
@@ -674,6 +720,24 @@ export default{
             this.$forceUpdate();
         },
 
+        updateCopyTo: function(index, newValue){
+            while (this.copyTo.length < this.workingVal.resources.length) {
+                this.copyTo.push(false);
+            }
+
+            this.copyTo[index] = newValue;
+        },
+
+        copyField: function(){
+            let copyField = JSON.stringify(this.workingVal.resources[this.copyResourceIndex].schema.fields[this.copyFieldIndex]);
+            for (let i=0; i<this.copyTo.length; i++){
+                if (this.copyTo[i]){
+                    this.workingVal.resources[i].schema.fields.push(JSON.parse(copyField));
+                }
+            }
+            this.copyDialog = false;
+        },
+
         duplicated: function(resKey, fieldName){
             if (this.fieldNameOccurences[resKey][fieldName] > 1){
                 this.error = true;
@@ -749,7 +813,7 @@ export default{
             let rv = false
             for (let i=0; i<fKeys.length; i++){
                 let filterFieldName = fKeys[i];
-                if (arrayFilters.indexOf(this.filterFieldName) !== -1){
+                if (arrayFilters.indexOf(filterFieldName) !== -1){
                     if (this.filters && this.filters[filterFieldName].length > 0 && ( (!field) || (!field[filterFieldName])) ){
                         rv = true;
                     }else if (this.filters && this.filters[filterFieldName].length > 0){
@@ -971,6 +1035,7 @@ export default{
             
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
+            this.inTextField = false;
             this.$emit('edited', this.workingVal);
         },
 
@@ -1039,6 +1104,7 @@ export default{
 
         onFocusBasic: function(event){
             this.focus = event.target.id
+            this.inTextField = true;
             this.$emit("focus", this.focus);
         }
     },
@@ -1076,6 +1142,11 @@ export default{
             expandedBasic: [],
             filters: {},
             expandedBasicResource: [],
+            inTextField: false,
+            copyDialog: false,
+            copyResourceIndex: -1,
+            copyFieldIndex: -1,
+            copyTo: [],
         };
     },
 
@@ -1165,11 +1236,22 @@ export default{
         border-width: 2px;
     }
 
-    .capWidth{
-        max-width: 100%;
-        max-height: 26px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+</style>
 
-</style>>
+<style >
+.capWidth span p{
+    max-width: 100%;
+    max-height: 26px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0px;
+}
+
+.capWidth span p:hover{
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    max-height: unset;
+}
+</style>

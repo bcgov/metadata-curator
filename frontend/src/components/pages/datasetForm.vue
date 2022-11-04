@@ -193,6 +193,7 @@ export default {
 <style scoped>
     .fullWidth{
         width: 100%;
+        overflow: visible;
     }
 
 </style>

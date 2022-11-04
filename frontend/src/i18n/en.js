@@ -351,7 +351,7 @@ export default {
         "help.dataset.contact[0].phone": "The contacts phone number",
         "help.dataset.in_bc_catalogue": "Is this listed in the bc data catalogue (https://catalogue.data.gov.bc.ca/)",
         "help.dataset.refresh_schedule": "Expected refresh schedule of the data. Indicate in DI Program's FY quarter, or month (e.g. Q1,Q2, March).",
-        "help.dataset.lifecycle_status": "Is this dataset active, semi-active or destroyed",
+        "help.dataset.lifecycle_status": "Is this dataset active, semi-active or final disposition",
         "help.dataset.lifecycle_comments": "Add projected disposition date of semi-active dataset. Add final disposition date for destroyed datasets",
         "help.dataset.lifecycle_dates[0].date_comments": "Either the date of the previously selected type or some comment about the lifecycle",
         "help.dataset.lifecycle_dates[0].type": "The type of date, if you select 'Comment' then the following field is a text field",

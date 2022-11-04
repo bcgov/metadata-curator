@@ -1,15 +1,6 @@
 <template>
     <v-container fluid>
-        <v-row>
-            <v-col cols=12>
-                <v-alert
-                    :type="alertType"
-                    dismissible
-                    v-model="alert">
-                        {{alertText}}
-                </v-alert>
-            </v-col>
-        </v-row>
+        
 
         <v-row v-if="loading">
             <v-col cols=12>
@@ -26,6 +17,12 @@
 
         <v-row v-else>
             <v-col cols="12">
+                <v-alert
+                    :type="alertType"
+                    dismissible
+                    v-model="alert">
+                        {{alertText}}
+                </v-alert>
                 <v-card outlined>
                     <v-card-text>
                         <v-row v-if="creating">
@@ -40,7 +37,7 @@
                             <span>{{id}}</span>
                         </v-row>
 
-                        <v-row v-if="user.isApprover || user.isAdmin">
+                        <v-row v-if="user.isApprover || user.isAdmin" :key="'rerender-group-sel'+reRenderGroupSel">
                             <v-col cols=12>
                                 <Select
                                     :label="creating ? $tc('Select Data Provider Group') : $tc('Data Provider Group')"
@@ -284,16 +281,31 @@
 
                         <v-row>
                             <v-col cols=12>
-                                <TextInput
-                                    :label="$tc('Dataset') + ' ' + $tc('Refresh Schedule')"
-                                    :placeholder="$tc('Refresh Schedule')"
-                                    name="refresh_schedule"
-                                    :large="true"
+                                <Select
+                                    :label="$tc('Dataset') + ' ' + $tc('Refresh Status')"
+                                    name="refresh_status"
                                     :editing="editing"
+                                    :large="true"
+                                    :value="(dataset) ? dataset.refresh_status : ''"
+                                    :items="[{text: 'On Going', value: 'ongoing'},{text: 'Static', value: 'static'}, {text: 'Obsolete', value: 'obsolete'}]"
+                                    helpPrefix="dataset"
+                                    @edited="(newValue) => { updateValues('refresh_status', newValue) }"
+                                ></Select>
+                            </v-col>
+                        </v-row>
+
+                        <v-row>
+                            <v-col cols=12>
+                                <Select
+                                    :label="$tc('Dataset') + ' ' + $tc('Refresh Schedule')"
+                                    name="refresh_schedule"
+                                    :editing="editing"
+                                    :large="true"
                                     :value="(dataset) ? dataset.refresh_schedule : ''"
+                                    :items="schedules"
                                     helpPrefix="dataset"
                                     @edited="(newValue) => { updateValues('refresh_schedule', newValue) }"
-                                ></TextInput>
+                                ></Select>
                             </v-col>
                         </v-row>
 
@@ -306,7 +318,7 @@
                                     :large="true"
                                     validation-rules="required"
                                     :editing="editing"
-                                    :items="[{text: 'Active', value: 'active'}, {text: 'Semi-active', value: 'semiactive'}, {text: 'Destroyed', value: 'destroyed'}]"
+                                    :items="[{text: 'Active', value: 'active'}, {text: 'Semi-active', value: 'semiactive'}, {text: 'Final Disposition', value: 'final_disposition'}]"
                                     :value="(dataset) ? dataset.lifecycle_status : ''"
                                     helpPrefix="dataset"
                                     @edited="(newValue) => { updateValues('lifecycle_status', newValue) }"
@@ -332,11 +344,14 @@
                                     }"
                                     :items="{
                                         type: [
-                                            {text: 'Created', value: 'created'},
-                                            {text: 'Published', value: 'published'},
-                                            {text: 'Modified', value: 'modified'},
-                                            {text: 'Archived', value: 'archived'},
-                                            {text: 'Destroyed', value: 'destroyed'},
+                                            //{text: 'Created', value: 'created'},
+                                            //{text: 'Published', value: 'published'},
+                                            //{text: 'Modified', value: 'modified'},
+                                            //{text: 'Archived', value: 'archived'},
+                                            //{text: 'Destroyed', value: 'destroyed'},
+                                            {text: 'SO Date', value: 'so_date'},
+                                            {text: 'FD Date', value: 'fd_date'},
+                                            {text: 'DE Date', value: 'de_date'},
                                             {text: 'Comment', value: 'comment'}
                                         ]
                                     }"
@@ -350,15 +365,16 @@
                         </v-row>
 
                     </v-card-text>
+                
+                    <v-card-actions v-if="editing">
+                        <v-btn @click="routeToHome()" class="mt-1">{{$tc('Cancel')}}</v-btn>
+                        <v-btn @click="save" id="saveDataset" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
+                    </v-card-actions>
+                    <v-card-actions v-else-if="!editing">
+                        <v-btn @click="routeToHome()" class="mt-1">{{$tc('Back')}}</v-btn>
+                        <v-btn @click="editing=!editing" id="editDatasetBtn" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
+                    </v-card-actions>
                 </v-card>
-                <v-card-actions v-if="editing">
-                    <v-btn @click="routeToHome()" class="mt-1">{{$tc('Cancel')}}</v-btn>
-                    <v-btn @click="save" id="saveDataset" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
-                </v-card-actions>
-                <v-card-actions v-else-if="!editing">
-                    <v-btn @click="routeToHome()" class="mt-1">{{$tc('Back')}}</v-btn>
-                    <v-btn @click="editing=!editing" id="editDatasetBtn" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
-                </v-card-actions>
             </v-col>
         </v-row>
     </v-container>
@@ -397,10 +413,12 @@ export default {
             alertText: "",
             alertType: "success",
             types: [ {text: 'Main', value: 'main'}, {text: 'Reserve', value: 'reserve'}, {text: 'Restricted', value: 'restricted'} ],
+            schedules: [ {text: "Q1", value: "q1"}, {text: "Q2", value: "q2"}, {text: "Q3", value: "q3"}, {text: "Q4", value: "q4"}, {text: "N/A", value: "na"} ],
             providerGroup: null,
             selectableGroups: [],
             loading: false,
             notFound: false,
+            reRenderGroupSel: 0
         }
     },
     methods: {
@@ -523,6 +541,11 @@ export default {
                     }
                     
                 }
+
+                for (let i=0; i<this.selectableGroups.length; i++){
+                    this.selectableGroups[i] = {value: this.selectableGroups[i], text: this.selectableGroups[i]}
+                }
+                this.reRenderGroupSel++
 
             }
         }else{
