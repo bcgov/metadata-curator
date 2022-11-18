@@ -1112,11 +1112,10 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
 
         const { metaData } = await minioClient.statObject(minioConf.bucket, req.params.fileId);
         const stream = await minioClient.getObject(minioConf.bucket, req.params.fileId);
-        let data = [];
+        let fileData = Buffer.concat([]);
 
-        stream.on('data', chunk => data.push(chunk));
+        stream.on('data', chunk => fileData = Buffer.concat([fileData, chunk]));
         stream.on('end', () => {
-            const fileData = Buffer.concat(data);
       
             res.writeHead(200, {
               'Content-Type': metaData.filetype || metaData['content-type'],
