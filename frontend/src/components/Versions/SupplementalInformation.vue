@@ -82,7 +82,7 @@
             </v-col>
             <v-col cols=4 class="text-right">
                 <v-btn text :disabled="disabled" v-if="previewable(file)" @click="getFile(file)"><v-icon>mdi-eye</v-icon></v-btn>
-                <v-btn text :disabled="disabled" @click="getFile(file, true)"><v-icon>mdi-download</v-icon></v-btn>
+                <v-btn text :disabled="disabled" :href="`/api/v1/repobranches/${branch._id}/file/${file.id}`"><v-icon>mdi-download</v-icon></v-btn>
                 <ConfirmButton :text="true" color="error" :disabled="disabled" v-if="deleteable()" @click="deleteFile(file)" :useIcon="true" icon='mdi-delete' label="Delete"></ConfirmButton>
             </v-col>
         </v-row>
@@ -197,6 +197,15 @@ export default {
         getFile: async function(file, forceDownload){
             if (!this.disabled){
                 this.disabled = true;
+
+                if (forceDownload){
+                    this.renderContent = `/api/v1/repobranches/${this.branch._id}/file/${file.id}`
+                    let download = require('downloadjs');
+                    download(this.renderContent);
+                    this.disabled = false;
+                    return;
+                }
+
                 let expressedType = this.fileType(file.name);
 
                 if (expressedType !== 'pdf'){
@@ -206,13 +215,6 @@ export default {
                     this.alertType = 'error';
                     this.alertText = this.supError;
                     this.alert = true;
-                    return;
-                }
-
-                if (forceDownload){
-                    let download = require('downloadjs');
-                    download(this.supplementalFile, file.name);
-                    this.disabled = false;
                     return;
                 }
 
