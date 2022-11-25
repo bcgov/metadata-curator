@@ -948,6 +948,7 @@ export default{
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.$emit('edited', this.workingVal);
+            this.inTextField = false;
         },
 
         updateResourceName: function(key, event){
@@ -964,6 +965,7 @@ export default{
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.$emit('edited', this.workingVal);
+            this.inTextField = false;
         },
 
         updateResourceBase: function(key, field, event){
@@ -984,6 +986,7 @@ export default{
             }
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
+            this.inTextField = false
             this.$emit('edited', this.workingVal);
         },
 
@@ -1001,6 +1004,7 @@ export default{
             
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
+            this.inTextField = false;
             this.$emit('edited', this.workingVal);
         },
 

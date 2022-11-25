@@ -2,13 +2,17 @@
 
 <br />
 
-## Version 1.6.4
-November 18, 2022
- - Fixed bug with supplemental files
+## Version 1.6.5
+December 1, 2022
+ - Added all files report to dataset which is the same as all fields without the field information from files and fields
+ - Fixed issue preventing dragging fields around for reordering on files and fields after entering a text field
+ - Tentative fix for edition full 500 error
+
 
 <br />
 
 ## Table Of Contents
+- [Version 1.6.5 (December 1 2022)](#version-165)
 - [Version 1.6.4 (November 18 2022)](#version-164)
 - [Version 1.6.3 (November 2 2022)](#version-163)
 - [Version 1.6.2 (September 19 2022)](#version-162)
@@ -42,6 +46,12 @@ November 18, 2022
 - [Version 1.2.2 (January 27 2022)](#version-122)
 
 <br />
+
+## Version 1.6.4
+November 18, 2022
+ - Fixed bug with supplemental files
+
+ <br />
 
 ## Version 1.6.3
 November 2, 2022

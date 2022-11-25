@@ -392,7 +392,10 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             for (let i=0; i<fullDPS.length; i++){
                         
                 if (fullDPS[i].version && fullDPS[i].version.topic_id){
-                    let res = JSON.parse(JSON.stringify(fullDPS[i]));
+                    let res = fullDPS[i];
+                    try{
+                        res = JSON.parse(JSON.stringify(fullDPS[i]));
+                    }catch(e){}
                     let topicStr = res.version.topic_id.toString();
                     res.version.author_groups = authorGroupsLookup[topicStr];
                     res.version.providerGroup = authorGroupsLookup[topicStr];
@@ -400,7 +403,10 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
                 }
 
                 if (fullDPS[i].version && fullDPS[i].version.repo_id && fullDPS[i].version.repo_id.topic_id){
-                    let res = JSON.parse(JSON.stringify(fullDPS[i]));
+                    let res = fullDPS[i];
+                    try{
+                        res = JSON.parse(JSON.stringify(fullDPS[i]));
+                    }catch(e){}
                     let topicStr = res.version.repo_id.topic_id.toString();
                     res.version.repo_id.author_groups = authorGroupsLookup[topicStr];
                     res.version.repo_id.providerGroup = authorGroupsLookup[topicStr];
@@ -502,7 +508,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             let repos = await listRepositoriesEditionFull(req.user, req.query);
             res.status(200).json(repos);
         }catch(ex){
-            res.status(500).json({error: ex});
+            res.status(500).json({error: ex.message});
         }
     });
 
