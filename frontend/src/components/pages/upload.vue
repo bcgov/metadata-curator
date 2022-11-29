@@ -287,12 +287,14 @@
                     this.selectedVersion = '-1';
 
                     if (this.schemaState && this.schemaState.version){
+                        console.log("setting created");
                         this.selectedVersion = this.schemaState.version
                         // this.getBranchesByUpload({uploadId: this.uploadId})
                     }
                 
                     if (this.versions && this.versions[0] && this.versions[0].repo_id){
                         this.selectedDataset = this.versions[0].repo_id;
+                        console.log("setting 2 created");
                         this.selectedVersion = this.versions[0]._id;
                         this.allowSelect = false;
                         if (this.versions[0].variable_classification){
@@ -503,6 +505,10 @@
                 }
 
                 this.errorAlert = false;
+
+                if ((typeof(this.enabledPhase) === 'undefined') || (!this.enabledPhase) ){
+                    await this.$store.dispatch('config/getItem', {field: 'key', value: 'enabledPhase', def: {key: 'enabledPhase', value: 1}});
+                }
 
                 if(transitionNextStepAfterSave) { 
                     if (this.user.isApprover || this.user.isAdmin){
@@ -835,6 +841,7 @@
                             if (this.versions[0].variable_classification){
                                 this.getVariableClassification({field: '_id', value: this.versions[0].variable_classification});
                             }
+                            console.log("setting version in selected dataset");
                             this.selectedVersion = this.versions[0]._id;
                         }else{
                             this.selectedVersion = "-1";
@@ -874,14 +881,16 @@
                         await this.getAllRepos();
                         await this.getBranchesByUpload({uploadId: this.uploadId})
                         if (this.schemaState && this.schemaState.version){
+                            console.log("setting 1 upload")
                             this.selectedVersion = this.schemaState.version
                         }
                     
-                        if (this.versions && this.versions[0] && this.versions[0].repo_id){
-                            this.selectedDataset = this.versions[0].repo_id;
-                            this.allowSelect = false;
-                            this.selectedVersion = this.versions[0]._id;
-                        }
+                        // if (this.versions && this.versions[0] && this.versions[0].repo_id){
+                        //     this.selectedDataset = this.versions[0].repo_id;
+                        //     this.allowSelect = false;
+                        //     console.log("setting 2 upload")
+                        //     this.selectedVersion = this.versions[0]._id;
+                        // }
 
                     }
                     

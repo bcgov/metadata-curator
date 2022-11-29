@@ -7,7 +7,7 @@ December 1, 2022
  - Added all files report to dataset which is the same as all fields without the field information from files and fields
  - Fixed issue preventing dragging fields around for reordering on files and fields after entering a text field
  - Tentative fix for edition full 500 error
-
+ - Fixed an issue that allowed uploaders to create an upload without an approver if they did it in a fresh session (incognito)
 
 <br />
 

@@ -245,14 +245,32 @@ export default {
         },
 
         jwt(){
-            if (this.jwt){
-                this.forumApiWS = new WebSocket(this.forumWSUrl, this.jwt);
-                this.forumApiWS.onmessage = this.forumApiMessage;
-                this.forumApiWS.onopen = this.forumWSOpen;
+            this.initSockets();
+        },
 
-                this.mcWS = new WebSocket(this.mcWSUrl, this.jwt);
-                this.mcWS.onmessage = this.mcMessage;
-                this.mcWS.onopen = this.mcWSOpen
+        forumWSUrl(){
+            this.initSockets();
+        },
+
+        mcWSUrl(){
+            this.initSockets();
+        }
+    },
+
+    methods: {
+
+        initSockets: function(){
+            if (this.jwt){
+                if (this.forumWSUrl && !this.forumApiWS){
+                    this.forumApiWS = new WebSocket(this.forumWSUrl, this.jwt);
+                    this.forumApiWS.onmessage = this.forumApiMessage;
+                    this.forumApiWS.onopen = this.forumWSOpen;
+                }
+                if (this.mcWSUrl && !this.mcWS){
+                    this.mcWS = new WebSocket(this.mcWSUrl, this.jwt);
+                    this.mcWS.onmessage = this.mcMessage;
+                    this.mcWS.onopen = this.mcWSOpen
+                }
             }else{
                 if (this.forumApiWS){
                     this.forumApiWS.close();
@@ -263,10 +281,8 @@ export default {
                 this.forumApiWS = null;
                 this.mcWS = null;
             }
-        }
-    },
+        },
 
-    methods: {
         preserveToken: function(){
             let timeOut = 1000 * 60 // 1 minute
             // timeOut *= 5; // 5 minutes
