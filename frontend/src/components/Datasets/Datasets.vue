@@ -255,17 +255,19 @@ export default {
                             if (repo.resources[i].tableSchema && repo.resources[i].tableSchema.fields){
 
                                 for (let j=0; j<repo.resources[i].tableSchema.fields.length; j++){
-                                    let item = JSON.parse(JSON.stringify(repo));
-                                    item.field = JSON.parse(JSON.stringify(repo.resources[i].tableSchema.fields[j]));
-                                    item.resource = JSON.parse(JSON.stringify(repo.resources[i]));
-                                    let tags = item.field.tags;
-                                    let intersection = [];
-                                    if (tags && this.filterTags && tags.filter){
-                                        intersection = tags.filter(element => this.filterTags.includes(element));
-                                    }
-                                    
-                                    if (!this.filterTags || (tags && intersection && intersection.length > 0)){
-                                        items.push(item);
+                                    if ( (j===0) || (report !== allFilesExp) ){
+                                        let item = JSON.parse(JSON.stringify(repo));
+                                        item.field = JSON.parse(JSON.stringify(repo.resources[i].tableSchema.fields[j]));
+                                        item.resource = JSON.parse(JSON.stringify(repo.resources[i]));
+                                        let tags = item.field.tags;
+                                        let intersection = [];
+                                        if (tags && this.filterTags && tags.filter){
+                                            intersection = tags.filter(element => this.filterTags.includes(element));
+                                        }
+                                        
+                                        if (!this.filterTags || (tags && intersection && intersection.length > 0)){
+                                            items.push(item);
+                                        }
                                     }
                                 }
                             }
