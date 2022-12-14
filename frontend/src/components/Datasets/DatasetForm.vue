@@ -1,6 +1,5 @@
 <template>
     <v-container fluid>
-        
 
         <v-row v-if="loading">
             <v-col cols=12>
@@ -208,7 +207,6 @@
                                     @edited="(newValue) => { updateValues('in_bc_catalogue', newValue) }">
                                 </SimpleCheckbox>
                             </v-col>
-                        
                         </v-row>
 
                         <v-row class="outline">
@@ -365,7 +363,6 @@
                         </v-row>
 
                     </v-card-text>
-                
                     <v-card-actions v-if="editing">
                         <v-btn @click="routeToHome()" class="mt-1">{{$tc('Cancel')}}</v-btn>
                         <v-btn @click="save" id="saveDataset" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
@@ -430,7 +427,7 @@ export default {
             saveBranch: 'repos/saveBranch',
             getDataPackage: 'schemaImport/getDataPackage',
         }),
-        ...mapMutations({    
+        ...mapMutations({
             editDataset: 'repos/editRepo',
             clearDataset: 'repos/clearRepo',
             editBranch: 'repos/editBranch',
@@ -461,7 +458,14 @@ export default {
 
         save(){
             if (this.creating){
-                this.saveDataset().then( () => {
+                this.saveDataset({repo: this.dataset}).then( async() => {
+                        if((this.datasetError !== null) && (this.datasetError !== "")){
+                            this.alertType = "error"
+                            this.alertText = this.datasetError;
+                            this.alert = true;
+                            window.scrollTo(0,0);
+                            return;
+                        }
                         this.alertType = "success"
                         this.alertText = this.$tc("Sucessfully created dataset");
                         this.alert = true;
@@ -490,7 +494,6 @@ export default {
                         window.scrollTo(0,0);
                     });
             }
-                
         }
     },
     computed: {
@@ -499,12 +502,13 @@ export default {
             dataset: state => state.repos.repo,
             branches: state => state.repos.branches,
             dataPackageSchema: state => state.schemaImport.dataPackageSchema,
+            datasetError: state => state.repos.error,
         }),
     },
     async created() {
         this.clearDataset();
         // console.log("dataUpload id: " + this.$route.params.id);
-        
+
         this.id = this.$route.params.id;
         if (this.idOverride){
             this.id = this.idOverride;
@@ -521,14 +525,12 @@ export default {
                 if (index !== -1){
                     this.selectableGroups.splice(index, 1);
                 }
-                
                 let ignoreGroups = await this.$store.dispatch('config/getItem', {field: 'key', value: 'ignoreGroups', def: {key: 'ignoreGroups', value: []}});
                 ignoreGroups = ignoreGroups.value;
                 for (var i=0; i<ignoreGroups.length; i++){
-                                                 
                     if ( (ignoreGroups[i].indexOf("/") == 0) && (ignoreGroups[i].lastIndexOf("/") === (ignoreGroups[i].length -1)) ){
                         let s = ignoreGroups[i].substring(1, ignoreGroups[i].length-1);
-                        let r = new RegExp(s);      
+                        let r = new RegExp(s);
                         this.selectableGroups = this.selectableGroups.filter( (el) => {
                             //console.log("REGEX match", el, s, r, el.match(r));
                             return el.match(r) === null })
@@ -539,7 +541,6 @@ export default {
                             this.selectableGroups.splice(ignoreIndex, 1);
                         }
                     }
-                    
                 }
 
                 for (let i=0; i<this.selectableGroups.length; i++){
