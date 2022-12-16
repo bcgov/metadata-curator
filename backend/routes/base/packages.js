@@ -28,6 +28,11 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
                     if (!rsrcValid) {
                     }
                 }
+
+                const uniqueResources = new Set(descriptor.resources.map(v => v.name));
+                if(uniqueResources.size < descriptor.resources.length){
+                    throw new Error("Resource Names Must Be Unique");
+                }
             } else {
                 let newVal = [];
                 resourceErrsMap.set('package', newVal);
@@ -196,10 +201,8 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
     const getDataPackageByBranchId = async function (id, user, inferred) {
         // Return a lean() object - simple javascript object, rather than the Model
         // so we can transform the document into a valid data package
-
         inferred = (typeof(inferred) !== 'undefined') ? inferred : false;
         const branch = await db.RepoBranchSchema.findOne({_id: id});
-
         id = mongoose.Types.ObjectId(id);
 
         if ( (!branch || !branch.published) && (!user) ){
