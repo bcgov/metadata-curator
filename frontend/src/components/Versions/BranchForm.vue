@@ -95,7 +95,7 @@
                                                 @edited="(newValue) => { updateValues('short_title', newValue) }"
                                             ></TextInput>
                                         </v-col>
-                                    
+
                                         <v-col cols=6>
                                             <Select
                                                 :label="$tc('Version') + ' ' + $tc('Type')"
@@ -108,7 +108,7 @@
                                                 @edited="(newValue) => { updateValues('type', newValue) }"
                                             ></Select>
                                         </v-col>
-                                    
+
                                         <v-col cols=6>
                                             <Markdown
                                                 name="description"
@@ -137,7 +137,7 @@
                                             >
                                             </Select>
                                         </v-col>
-                                    
+
                                         <v-col cols=6>
                                             <TextInput
                                                 :label="$tc('Keywords')"
@@ -162,7 +162,7 @@
                                                 @edited="(newValue) => { updateValues('citation', newValue) }"
                                             ></TextInput>
                                         </v-col>
-                                    
+
                                         <v-col cols=6>
                                             <DataUploadSelect
                                                 :label="$tc('Data Upload')"
@@ -245,7 +245,7 @@
                                             ></Markdown>
                                         </v-col>
 
-                                        
+
                                         <v-col cols=12 v-if="branch && branch.repo_id && (branch.repo_id.description || branch.repo_id.description === '')">
                                             Dataset Description: {{branch.repo_id.description}}
                                         </v-col>
@@ -273,7 +273,7 @@
                                                 @edited="(newValue) => { updateValues('inclusions', newValue) }"
                                             ></Markdown>
                                         </v-col>
-                                    
+
                                         <v-col cols=6>
                                             <Markdown
                                                 name="exclusions"
@@ -309,7 +309,7 @@
                                                 @edited="(newValue) => { updateValues('delta_over_time', newValue) }"
                                             ></Markdown>
                                         </v-col>
-                                    
+
                                         <v-col cols=6>
                                             <Markdown
                                                 name="additional_info"
@@ -367,7 +367,7 @@
 
                                         <v-col cols=6>
                                         </v-col>
-                                    
+
                                         <v-col cols=6>
                                             <SimpleCheckbox
                                                 :label="$tc('Published')"
@@ -381,7 +381,7 @@
                                             ></SimpleCheckbox>
                                             <router-link v-if="branch.published && location" :to="{ name: 'published_version', params: { id: id }}">{{location.protocol + "//" + location.host + $router.resolve({name: 'published_version', params: { id: id } }).href }}</router-link>
                                         </v-col>
-                                    
+
                                         <v-col cols=6>
                                             <SimpleCheckbox
                                                 :label="$tc('Approved')"
@@ -394,7 +394,7 @@
                                                 @edited="(newValue) => { updateValues('approved', newValue) }"
                                             ></SimpleCheckbox>
                                         </v-col>
-                                    
+
                                     </v-row>
 
                                     <v-row v-if="enabledPhase >= 3 && branch && branch.bcdc_record">
@@ -438,12 +438,12 @@
                     </v-tab-item>
 
                     <v-tab-item key="schema" v-if="!creating">
-                        <MetadataForm 
-                            @setComment="(e) => { setComment(e) }" 
-                            :branch-approved="(branch && branch.approved) ? branch.approved : false" 
-                            @commentRefs="(e) => updateCommentRefs(e)" :branchId="id" 
-                            @close="closeOrBack" 
-                            @filter="filter" 
+                        <MetadataForm
+                            @setComment="(e) => { setComment(e) }"
+                            :branch-approved="(branch && branch.approved) ? branch.approved : false"
+                            @commentRefs="(e) => updateCommentRefs(e)" :branchId="id"
+                            @close="closeOrBack"
+                            @filter="filter"
                             :dialog="dialog"></MetadataForm>
                     </v-tab-item>
 
@@ -459,11 +459,11 @@
                     <v-tab-item key="schemaRevisions" v-if="schemaRevisionsLoading === false && schemaRevisions.length>0">
                         <v-select :items="schemaRevisionsDrop" v-model="leftRevision"></v-select>
                         <v-select :items="schemaRevisionsDrop" v-model="rightRevision"></v-select>
-                        <Comparison 
-                            :left-side-text="schemaRevisionChanges[leftRevision] ? JSON.stringify(schemaRevisionChanges[leftRevision]) : ''" 
-                            :right-side-text="schemaRevisionChanges[rightRevision] ? JSON.stringify(schemaRevisionChanges[rightRevision]) : ''" 
-                            :diff-json="true" 
-                            :left-header="schemaRevisionsDrop[leftRevision] ? schemaRevisionsDrop[leftRevision].text : ''" 
+                        <Comparison
+                            :left-side-text="schemaRevisionChanges[leftRevision] ? JSON.stringify(schemaRevisionChanges[leftRevision]) : ''"
+                            :right-side-text="schemaRevisionChanges[rightRevision] ? JSON.stringify(schemaRevisionChanges[rightRevision]) : ''"
+                            :diff-json="true"
+                            :left-header="schemaRevisionsDrop[leftRevision] ? schemaRevisionsDrop[leftRevision].text : ''"
                             :right-header="schemaRevisionsDrop[rightRevision] ? schemaRevisionsDrop[rightRevision].text : ''">
                         </Comparison>
                         <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
@@ -495,7 +495,7 @@
                             </v-col>
 
                             <v-col cols=3 v-if="enabledPhase >= 3 && user && (user.isAdmin || user.isApprover) && user.bcdcSet">
-                                    
+
                                 <v-btn
                                     color="success"
                                     :disabled="disablePublish"
@@ -552,7 +552,7 @@
                                     <v-col cols=4>
                                     </v-col>
                                 </v-row>
-                                
+
                                 <v-row>
                                     <v-col cols=6 v-for="(checked, key) in exportFields" :key="'export-field-'+key">
                                         <SimpleCheckbox
@@ -591,6 +591,7 @@
                 <Comments :commentValue="forceCommentVal" :id="id" :type="'branch'" :refable="commentRefs"></Comments>
             </v-col>
         </v-row>
+        <scroll-to-top-bottom/>
     </v-container>
 </template>
 
@@ -612,6 +613,7 @@ import { ValidationObserver } from "vee-validate";
 import Vue from 'vue';
 import SimpleCheckbox from '../FormElements/SimpleCheckbox';
 import DataUploadSelect from '../FormElements/DataUploadSelect';
+import ScrollToTopBottom from "@/components/ScrollToTopBottom";
 
 import { Backend } from '../../services/backend';
 
@@ -632,7 +634,8 @@ export default {
         DatasetForm: () => import('../Datasets/DatasetForm'),
         Revisions,
         ValidationObserver,
-        SupplementalInformation
+        SupplementalInformation,
+        ScrollToTopBottom
     },
     props: {
         dialog: {
@@ -695,7 +698,7 @@ export default {
             getVariableClassifications: 'variableClassifications/getItems',
             clearVariableClassifications: 'variableClassifications/clearItems',
         }),
-        ...mapMutations({    
+        ...mapMutations({
             editBranch: 'repos/editBranch',
             clearBranch: 'repos/clearBranch',
             clearTableSchema: 'schemaImport/clearTableSchema',
@@ -810,11 +813,11 @@ export default {
                 //this.exportFields[this.RESOURCE_PREFIX] = true
                 let sKeys = Object.keys(this.schema.resources[0]);
                 for (let i=0; i<sKeys.length; i++){
-                    this.exportFields[this.RESOURCE_PREFIX+'.'+sKeys[i]] = true;   
+                    this.exportFields[this.RESOURCE_PREFIX+'.'+sKeys[i]] = true;
                 }
 
                 if (this.schema.resources[0].schema && this.schema.resources[0].schema.fields && this.schema.resources[0].schema.fields[0]){
-                    
+
                     let fKeys = Object.keys(this.schema.resources[0].schema.fields[0]);
                     for (let i=0; i<fKeys.length; i++){
                         this.exportFields[this.FIELD_PREFIX+'.'+fKeys[i]] = true;
@@ -828,7 +831,7 @@ export default {
             let filterKeys = Object.keys(this.filters);
             let json = {};
             if (this.exportFields['all']){
-                if ( (typeof(this.schema) !== 'undefined') && (this.schema) ){                    
+                if ( (typeof(this.schema) !== 'undefined') && (this.schema) ){
                     json = JSON.parse(JSON.stringify(this.schema));
                 }else{
                     json = {};
@@ -909,7 +912,7 @@ export default {
                     }
                 }
             }
-            
+
             let download = require('downloadjs');
             download(JSON.stringify(json, null, 4), "export.json", "application/json");
 
@@ -919,7 +922,7 @@ export default {
             this.forceCommentVal = "";
             this.$nextTick(() => {
                 this.forceCommentVal = e;
-            }) 
+            })
             if (this.dialog){
                 document
                     .getElementById("commentArea")
@@ -947,7 +950,7 @@ export default {
             }catch(e){
                 this.errorLoading = true;
             }
-            
+
             this.reIndex++;
             this.loading = false;
         },
@@ -971,7 +974,7 @@ export default {
             }else{
                 this.$router.push({ name: 'versions' });
             }
-            
+
         },
 
         updateCommentRefs: function(e){
@@ -990,10 +993,10 @@ export default {
         },
 
         async load(){
-            
+
             //this.branchId = (this.branchId) ? this.branchId : this.$route.params.id;
             this.id = (this.branchId) ? this.branchId : this.$route.params.id;
-            
+
             await this.getDataUploads("team");
             if (this.id === 'create'){
                 this.editing = true;
@@ -1010,10 +1013,10 @@ export default {
                     let ignoreGroups = await this.$store.dispatch('config/getItem', {field: 'key', value: 'ignoreGroups', def: {key: 'ignoreGroups', value: []}});
                     ignoreGroups = ignoreGroups.value;
                     for (var i=0; i<ignoreGroups.length; i++){
-                                                    
+
                         if ( (ignoreGroups[i].indexOf("/") == 0) && (ignoreGroups[i].lastIndexOf("/") === (ignoreGroups[i].length -1)) ){
                             let s = ignoreGroups[i].substring(1, ignoreGroups[i].length-1);
-                            let r = new RegExp(s);      
+                            let r = new RegExp(s);
                             this.selectableGroups = this.selectableGroups.filter( (el) => {
                                 //console.log("REGEX match", el, s, r, el.match(r));
                                 return el.match(r) === null })
@@ -1024,7 +1027,7 @@ export default {
                                 this.selectableGroups.splice(ignoreIndex, 1);
                             }
                         }
-                        
+
                     }
                 }
                 for (let i=0; i<this.selectableGroups.length; i++){
@@ -1036,7 +1039,7 @@ export default {
                 await this.loadSections();
             }
 
-            this.$nextTick(function () {     
+            this.$nextTick(function () {
                 let anchorRegex = /#([^.]+\.\S+)/g;
                 if ((this.$route.hash) && (this.$route.hash.match(anchorRegex))){
                     this.tab = 2;
@@ -1056,7 +1059,7 @@ export default {
             this.disableSave = true;
 
             if (this.creating){
-                
+
                 this.saveBranch().then( (data) => {
                     this.alertType = "success"
                     this.alertText = this.$tc("Sucessfully created ") + this.$tc("version", 1);
@@ -1066,7 +1069,7 @@ export default {
                     this.creating = false;
                     this.id=data.id;
                     this.closeOrBack();
-                    
+
 
                 }).catch( err => {
                     this.alertType = "error"
@@ -1099,8 +1102,8 @@ export default {
                 });
             }
             //this.load();
-            
-            
+
+
         }
     },
     computed: {
@@ -1126,9 +1129,9 @@ export default {
         schemaRevisionsDrop: function(){
             let rv = [];
             for (let i=0; i<this.schemaRevisions.length; i++){
-                
-                
-                
+
+
+
                 let label = "Revision " + this.schemaRevisions[i].revision_number;
                 let d = new Date(this.schemaRevisions[i].create_date);
                 label +=  " - " + d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate();
@@ -1184,9 +1187,9 @@ export default {
         schema: function(){
             this.setExportFields()
         }
-        
+
     },
-    
+
     created() {
         this.clearBranch();
         this.clearTableSchema();
@@ -1216,7 +1219,7 @@ export default {
         bottom: 0;
         right: 0;
     }
-    
+
     .fixedHeight{
         height: 36px;
         line-height: 36px;
@@ -1230,7 +1233,7 @@ export default {
         width: 100%;
         overflow: visible;
     }
-    
+
 
 </style>
 
