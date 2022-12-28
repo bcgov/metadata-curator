@@ -165,7 +165,7 @@ When(/^Data provider chooses to see the details of the upload$/, async function(
 
 Then(/^Data provider should see information on the characteristics of the data upload$/, async function(){
     const client = this.browser;
-    await client.pause(5000);//
+    await client.pause(30000);//
     await client.saveScreenshot("./"+path+"/uploadSummary1.png");//
     await client.assert.textContains('#uploadDetail-name', data1.name.value);
     //await client.click('#uploadDetail-showInfo');
