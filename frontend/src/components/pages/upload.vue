@@ -203,7 +203,7 @@
 
     import JsonEditor from '../JsonEditor/JsonEditor';
 
-    const TEST_ACCOUNT = "atticus"
+    const TEST_ACCOUNT = "provider_1"
     var semanticInfer = require('semantic_infer');
 
     export default {
@@ -716,6 +716,7 @@
                 this.clearDataset();
                 this.editDataset({name: 'name', value: this.upload.name});
                 this.editDataset({name: 'ministry_organization', value: this.upload.ministry_organization});
+                this.editDataset({name: 'lifecycle_status', value: 'active'});
                 let d = await this.saveDataset();
                 await this.getAllRepos();
                 this.setRepo({repo: {_id: d.id}});
