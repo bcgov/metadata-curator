@@ -98,19 +98,20 @@ When(/^they provide schema information$/, async function(){
 
         await client.click('#addFileResource');
         await client.click('#addField');
-        
+
         for (property in workingSchema){
             if (workingSchema[property].select){
-
+                await client.saveScreenshot('./'+path+'/provideSchemaSelect-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
                 await client.click('xpath', workingSchema[property].selector);
                 await client.pause(100);
                 await client.click('xpath', '//div[@class="v-list-item__title"][contains(.,"' + workingSchema[property].value+'")]');
-                
+
             }else if (workingSchema[property].value){
+                await client.saveScreenshot('./'+path+'/provideSchemaValue-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
                 await client.setValue(workingSchema[property].selector, workingSchema[property].value)
             }
         }
-        
+
         await client.pause(1000);
         await client.saveScreenshot('./'+path+'/preSchemaSave-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
         await client.click('#saveMetadata');
@@ -203,12 +204,12 @@ When(/^they create without import$/, async function(){
 When(/^they choose to view schema information$/, async function(){
     client = this.browser;
     try{
-        
+
         // await client.refresh();
         await client.click('#tab-versions');
         await client.pause(3000);
         await client.click('.v-list-item--link')
-        
+
         await client.pause(3000)
         await client.click('#schema-tab');
         await client.pause(3000);
