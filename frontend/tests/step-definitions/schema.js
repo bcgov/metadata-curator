@@ -95,7 +95,8 @@ When(/^they provide schema information$/, async function(){
     client = this.browser;
 
     try{
-
+        await client.pause(5000);
+        await client.saveScreenshot('./'+path+'/preAddFileResource-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
         await client.click('#addFileResource');
         await client.click('#addField');
 
