@@ -32,6 +32,7 @@ class world extends World {
 
   async endNightwatch() {
     if (this.browser) {
+      await this.browser.close();
       await this.browser.quit()
     }
   }
