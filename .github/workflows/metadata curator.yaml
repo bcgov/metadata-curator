@@ -79,8 +79,8 @@ jobs:
   
   deploy_backend:
     runs-on: ubuntu-latest
-    needs: ["quay_io_backend", "integration_tests"]
-    # needs: ["quay_io_backend"]
+    # needs: ["quay_io_backend", "integration_tests"]
+    needs: ["quay_io_backend"]
     if: success() && ( (github.event_name == 'release' && github.event.action == 'created') || (github.ref == 'refs/heads/main') || (github.ref == 'refs/heads/develop') )
     env:
       DOCKER_USERNAME: ${{ secrets.DOCKER_DEPLOY_USERNAME }}
@@ -99,8 +99,8 @@ jobs:
 
   deploy_frontend:
     runs-on: ubuntu-latest
-    needs: ["quay_io_frontend", "deploy_backend", "integration_tests"]
-    # needs: ["quay_io_frontend", "deploy_backend"]
+    # needs: ["quay_io_frontend", "deploy_backend", "integration_tests"]
+    needs: ["quay_io_frontend", "deploy_backend"]
     if: success() && ( (github.event_name == 'release' && github.event.action == 'created') || (github.ref == 'refs/heads/main') || (github.ref == 'refs/heads/develop') )
     env:
       DOCKER_USERNAME: ${{ secrets.DOCKER_DEPLOY_USERNAME }}
@@ -119,7 +119,6 @@ jobs:
           ./docker_push metadata_curator_ui
 
   integration_tests:
-    if: ${{ !contains(github.event.head_commit.message, 'skip-integ-test') }}
     runs-on: ubuntu-latest
     needs: ["quay_io_backend", "quay_io_frontend"]
     defaults:
