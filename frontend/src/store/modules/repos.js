@@ -51,13 +51,12 @@ const actions = {
         if (uploadId == -1){
             const data = await backend.getBranches();
             commit('setBranches', {branches: data});
-            return state.branches; 
+            return state.branches;
         }else{
             const data = await backend.getBranches({upload_id: uploadId});
             commit('setBranches', {branches: data});
             return state.branches;
         }
-        
     },
 
     async getBranch({state, commit, dispatch}, {id}) {
@@ -131,8 +130,13 @@ const actions = {
 
     },
 
-    async saveRepo({state}){
-        return backend.postRepo(state.repo);
+    async saveRepo({commit}, {repo}){
+        try {
+            const data = await backend.postRepo(repo);
+            commit('setRepo', {repo: data});
+        }catch(e){
+            commit('setError', {error: e.response.data.error});
+        }
     },
 
     async updateRepo({state}){
@@ -149,7 +153,6 @@ const actions = {
     },
 
     async getComments({ commit }, repoId) {
-        
         try {
             const data = await backend.getCommentsByRepo(repoId);
             commit('clearComments');
@@ -160,7 +163,6 @@ const actions = {
         }
     },
     async addComment({ commit, dispatch }, {repoId, comment}) {
-        
         try {
             await backend.postCommentByRepo(repoId, comment);
             dispatch('getComments', repoId);
@@ -177,7 +179,6 @@ const actions = {
 
         try {
             let now = new Date();
-            
             if (force || (now-state.recentlyFetchedBranchComments) >= 5000){ //force or not checked in last 5 seconds
                 commit('setRecentlyFetchedBranchComments')
                 const data = await backend.getCommentsByBranch(branchId);
@@ -192,7 +193,6 @@ const actions = {
         }
     },
     async addBranchComment({ commit, dispatch }, {branchId, comment}) {
-        
         try {
             await backend.postCommentByBranch(branchId, comment);
             dispatch('getBranchComments', {branchId: branchId});
@@ -229,7 +229,7 @@ const mutations = {
     clearRepos(state){
         state.repos = null;
     },
-    
+
     setSelectedFilterBy(state, selectedFilterBy){
         state.selectedFilterBy = selectedFilterBy
     },
