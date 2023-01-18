@@ -519,9 +519,19 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
         
         let fields = {...req.body};
+        let error = [];
 
+        if(!fields.providerGroup){
+            error.push("Data Provider Group is Required.");
+        }
         if (!fields.name){
-            return res.status(400).json({error: "Name is required"});
+            error.push("Dataset Name is Required.")
+        }
+
+        if(error.length > 0){
+            console.log('Error array contains errors');
+            console.log(error);
+            return res.status(400).json({error: error});
         }
     
         try{
