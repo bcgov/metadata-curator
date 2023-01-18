@@ -980,15 +980,7 @@ export default{
                 schema: {
                     fields: [],
                     primaryKey: '',
-                    foreignKeys: [
-                        {
-                            fields: '',
-                            reference: {
-                                resource: '',
-                                fields: ''
-                            }
-                        }
-                    ]
+                    foreignKeys: []
                 }
             });
             //}
