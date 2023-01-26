@@ -65,14 +65,14 @@ const actions = {
                 delete schema.profile;
                 delete schema.__v;
                 delete schema.version;
-                
+
                 await DSchema.load(schema);
             }else if (schema){
                 let s = schema;
                 if (typeof(s) === "string"){
                     s = JSON.parse(s);
                 }
-                
+
                 await Schema.load(s);
             }
             commit('setTableSchemaM', {schema: schema})
