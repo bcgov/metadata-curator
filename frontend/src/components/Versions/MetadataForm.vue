@@ -38,14 +38,14 @@
                         </v-row>
                         <v-row v-if="!loading && schema && schema !== {}" key="">
                             <v-select v-if="inferredSchema && !editing" :items="['Provided', 'Inferred']" v-model="viewSchemaType"></v-select>
-                            <SchemaView 
-                                @commentRefs="(e) => $emit('commentRefs', e)" 
+                            <SchemaView
+                                @commentRefs="(e) => $emit('commentRefs', e)"
                                 @setComment="(e) => { $emit('setComment', e) }"
-                                :branchId="branchId" 
-                                :editing="editing" 
-                                @edited="updatedObj" 
+                                :branchId="branchId"
+                                :editing="editing"
+                                @edited="updatedObj"
                                 @filter="(k, v) => { filter(k,v) }"
-                                @editedHighlight="editedHighlight" 
+                                @editedHighlight="editedHighlight"
                                 :schema=" (viewSchemaType === 'Provided') ? schema : inferredSchema">
                             </SchemaView>
                         </v-row>
@@ -154,7 +154,7 @@ export default {
             getInferredSchema: 'schemaImport/getInferredSchema',
             setTableSchema: 'schemaImport/setTableSchema',
         }),
-        ...mapMutations({    
+        ...mapMutations({
             editBranch: 'repos/editBranch',
             clearBranch: 'repos/clearBranch',
             resetSchemaImportState: 'schemaImport/resetState',
@@ -266,25 +266,35 @@ export default {
                 }
 
                 if (this.creating){
+                    console.log('CREATING');
                     this.saveTableSchema();
                     this.updateBranch().then( () => {
-                        this.alertType = "success"
-                        this.alertText = this.$tc('Sucessfully updated') + " " + this.$tc('version');
-                        this.alert = true;
-                        this.closeOrBack();
-
+                        if (this.schemaError){
+                            console.log('CREATE_ERROR');
+                            this.alertType = "error"
+                            this.alertText = (this.schemaError && typeof(this.schemaError) === 'string') ? this.schemaError : JSON.stringify(this.schemaError);
+                            this.alert = true;
+                            window.scrollTo(0,0);
+                        }else {
+                            this.alertType = "success"
+                            this.alertText = this.$tc('Sucessfully updated') + " " + this.$tc('version');
+                            this.alert = true;
+                            this.closeOrBack();
+                        }
                     }).catch( err => {
                         this.alertType = "error"
                         this.alertText = err.message;
                         this.alert = true;
                         window.scrollTo(0,0);
                     });
-                    
+
                 }else{
+                    console.log('UPDATING');
                     try{
                         await this.updateDataPackageSchema();
                         // this.updateBranch().then( () => {
                         if (this.schemaError){
+                            console.log('UPDATE_ERROR');
                             this.alertType = "error"
                             this.alertText = (this.schemaError && typeof(this.schemaError) === 'string') ? this.schemaError : JSON.stringify(this.schemaError);
                             this.alert = true;
@@ -313,7 +323,7 @@ export default {
                 content.version = this.id;
                 content = JSON.stringify(content);
 
-                if(this.metadataType == 'table') {    
+                if(this.metadataType == 'table') {
                     this.setTableSchema({schema: content});
                     this.saveTableSchema();
                     this.loading = true;
@@ -358,7 +368,7 @@ export default {
             this.load();
         }
     },
-    
+
     created() {
         this.load()
     },
@@ -377,14 +387,14 @@ export default {
         position: relative;
         padding-bottom: 15px;
     }
-    
+
     .fixed {
         position: fixed;
         bottom: 100px;
         right: 0px;
         z-index: 100;
     }
-    
+
     .fixedHeight{
         height: 36px;
         line-height: 36px;
