@@ -154,7 +154,7 @@ const actions = {
         });
 
     },
-
+/*
     async updateDataPackageSchema({commit, state}){
 
         commit('clearSuccessMsg');
@@ -166,6 +166,18 @@ const actions = {
         }catch(e){
             commit('setError', {error: e.response.data.error});
         }
+    }*/
+
+    async updateDataPackageSchema({commit, state}){
+
+        commit('clearSuccessMsg');
+        commit('clearError');
+
+        await backend.putDataPackageSchema(state.tableSchemaId, state.tableSchema).then(() => {
+            commit('setSuccessMsg', {message: "Successfully updated data package schema"});
+        }).catch((e) => {
+            commit('setError', {error: {message:e.response.data.error}});
+        });
     }
 
 }

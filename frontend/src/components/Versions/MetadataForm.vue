@@ -296,7 +296,7 @@ export default {
                         if (this.schemaError){
                             console.log('UPDATE_ERROR');
                             this.alertType = "error"
-                            this.alertText = (this.schemaError && typeof(this.schemaError) === 'string') ? this.schemaError : JSON.stringify(this.schemaError);
+                            this.alertText = (this.schemaError && typeof(this.schemaError) === 'string') ? this.schemaError : JSON.stringify(this.schemaError.message);
                             this.alert = true;
                             window.scrollTo(0,0);
                         }else{
