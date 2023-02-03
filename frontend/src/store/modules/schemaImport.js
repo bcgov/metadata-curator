@@ -166,6 +166,8 @@ const actions = {
             console.log(res);
             commit('setSuccessMsg', {message: "Successfully updated data package schema"});
         }catch(e){
+            console.log('UPDATE_DATA_PACKAGE_SCHEMA_ERROR:==');
+            console.log(e);
             commit('setError', {error: e.response.data.error});
         }
     }
