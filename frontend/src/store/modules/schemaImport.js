@@ -49,6 +49,9 @@ const actions = {
         if (s && s._id){
             commit('setTableSchemaId', {id: s._id});
             dispatch('getRevisions', {id: s._id});
+            for (let i = 0; i < s.resources.length; i++){
+                s.resources[i].path = s.resources[i].path.join(', ');
+            }
         }
         commit('setTableSchemaM', {schema: s});
         return s;
@@ -65,7 +68,10 @@ const actions = {
                 delete schema.profile;
                 delete schema.__v;
                 delete schema.version;
-
+                for (let i = 0; i < schema.resources.length; i++){
+                    //s.resources[i].path = s.resources[i].path.toString();
+                    schema.resources[i].path = schema.resources[i].path.split(/[ ,]+/);
+                }
                 await DSchema.load(schema);
             }else if (schema){
                 let s = schema;

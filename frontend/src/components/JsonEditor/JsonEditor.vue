@@ -1349,13 +1349,16 @@ export default{
                 this.expandedBasic[i] = [];
                 this.expandedBasicFK[i] = [];
                 this.expandedBasicResource[i] = false;
-                if (this.workingVal.resources[i] && this.workingVal.resources[i].schema && this.workingVal.resources[i].schema.fields){
-                    for (let j=0; j<this.workingVal.resources[i].schema.fields.length; j++){
-                        this.expandedBasic[i][j] = false;
-                        if (typeof(this.workingVal.resources[i].schema.fields[j].constraints) === 'undefined'){
-                            this.workingVal.resources[i].schema.fields[j].constraints = {};
+                if (this.workingVal.resources[i]) {
+                    if (this.workingVal.resources[i].schema && this.workingVal.resources[i].schema.fields) {
+                        for (let j = 0; j < this.workingVal.resources[i].schema.fields.length; j++) {
+                            this.expandedBasic[i][j] = false;
+                            if (typeof (this.workingVal.resources[i].schema.fields[j].constraints) === 'undefined') {
+                                this.workingVal.resources[i].schema.fields[j].constraints = {};
+                            }
                         }
                     }
+                    this.workingVal.resources[i].path = this.workingVal.resources[i].path.toString();
                 }
             }
         }
