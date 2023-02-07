@@ -9,6 +9,7 @@ November 18, 2022
 <br />
 
 ## Table Of Contents
+- [Version 1.6.5 (January 2023)](#version-165)
 - [Version 1.6.4 (November 18 2022)](#version-164)
 - [Version 1.6.3 (November 2 2022)](#version-163)
 - [Version 1.6.2 (September 19 2022)](#version-162)
@@ -40,6 +41,13 @@ November 18, 2022
 - [Version 1.2.4 (February 7 2022)](#version-124)
 - [Version 1.2.3 (February 1 2022)](#version-123)
 - [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
+## Version 1.6.5
+January 7, 2023
+ - Updated Terraform deployment reference to new updated tusd_py3 docker image
+ - Updated syntax in pre-create tusd_py3 hook script
 
 <br />
 
@@ -259,7 +267,7 @@ March 18, 2022
 ## Version 1.4.0
 March 16, 2022
  - Fixed about page crashing server
- - Fully removed formio 
+ - Fully removed formio
  - Added highlight filter to edition file & field info page
  - Changed Schema label to files & fields
  - Redesigned user page, feature BCDC fields if phase 3 is enabled
@@ -444,7 +452,7 @@ February 1, 2022
 
  <br />
 
-## Version 1.2.2 
+## Version 1.2.2
 January 27, 2022
  - Ability to toggle highlighting from the basic view screen
  - Saving changes to an edition stays on the edition page
