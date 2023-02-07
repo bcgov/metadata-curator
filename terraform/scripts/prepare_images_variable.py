@@ -7,7 +7,7 @@ images = {
     owner = "quay.io/h3brandon"
     forum_api = "bcgovimages/ocwa_forum_api:latest"
     frontend = ":${TAG}"
-    tusd = ":68385adc0cba"
+    tusd = ":latest"
     minio = ":RELEASE.2019-04-23T23-50-36Z"
     frontend_bridge = ":${TAG}"    
 }
