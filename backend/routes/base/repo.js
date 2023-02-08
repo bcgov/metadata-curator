@@ -77,9 +77,6 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             throw new Error("Not permitted to create a repo");
         }
 
-        if (!fields.ministry_organization){
-            throw new Error("Ministry / Organization is required");
-        }
 
         let originalGroups = JSON.parse(JSON.stringify(user.groups));
         let originalJWT = user.jwt;
@@ -526,6 +523,13 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
         if (!fields.name){
             error.push("Dataset Name is Required.")
+        }
+        if (!fields.ministry_organization){
+            error.push("Ministry / Organization is required");
+        }
+
+        if(!fields.lifecycle_status){
+            error.push("Dataset Lifecycle Status is required");
         }
 
         if(error.length > 0){

@@ -16,12 +16,13 @@
 
         <v-row v-else>
             <v-col cols="12">
-                <v-alert
-                    :type="alertType"
-                    dismissible
-                    v-model="alert">
-                        {{alertText}}
-                </v-alert>
+                <v-row v-for="a in alertText" :key="a">
+                    <v-alert
+                        :type="alertType"
+                        dismissible>
+                        {{a}}
+                    </v-alert>
+                </v-row>
                 <v-card outlined>
                     <v-card-text>
                         <v-row v-if="creating">
