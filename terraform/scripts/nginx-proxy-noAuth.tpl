@@ -24,6 +24,7 @@ server {
     proxy_send_timeout 14400;
 
     proxy_pass http://mc_minio:9000;
+    client_max_body_size     0;
   }
 
   location /files {
@@ -91,6 +92,8 @@ server {
     # Add X-Forwarded-* headers
     proxy_set_header X-Forwarded-Host $host;
     proxy_set_header X-Forwarded-Proto $scheme;
+    add_header Access-Control-Allow-Origin *;
+    add_header Access-Control-Allow-Headers x-http-method-override;
 
     proxy_set_header        Host            $host;
     proxy_set_header        X-Real-IP       $remote_addr;

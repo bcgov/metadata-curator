@@ -91,16 +91,17 @@
 
                         <v-row>
                             <v-col cols=12>
-                                <TextInput
+                                <TextArea
                                     :label="$tc('Dataset') + ' ' + $tc('Description')"
                                     :placeholder="$tc('Description')"
                                     name="description"
                                     :large="true"
+                                    :autogrow="false"
                                     :editing="editing"
                                     :value="(dataset) ? dataset.description : ''"
                                     helpPrefix="dataset"
                                     @edited="(newValue) => { updateValues('description', newValue) }"
-                                ></TextInput>
+                                ></TextArea>
                             </v-col>
                         </v-row>
 
@@ -381,6 +382,7 @@
 <script>
 import {mapActions, mapMutations, mapState} from "vuex";
 import TextInput from '../FormElements/TextInput';
+import TextArea from '../FormElements/TextArea';
 import SimpleCheckbox from '../FormElements/SimpleCheckbox';
 import Select from '../FormElements/Select';
 import Repeating from '../FormElements/Repeating';
@@ -390,6 +392,7 @@ export default {
 
     components:{
         TextInput,
+        TextArea,
         SimpleCheckbox,
         Select,
         Repeating
