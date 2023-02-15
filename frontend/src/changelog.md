@@ -2,12 +2,11 @@
 
 <br />
 
-## Version 1.6.5
-December 1, 2022
- - Added all files report to dataset which is the same as all fields without the field information from files and fields
- - Fixed issue preventing dragging fields around for reordering on files and fields after entering a text field
- - Tentative fix for edition full 500 error
- - Fixed an issue that allowed uploaders to create an upload without an approver if they did it in a fresh session (incognito)
+## Version 1.6.6
+February 21, 2023
+ - Created script in util folder that takes parameters to delete files older than a certain date
+ - Changed dataset description field to be a text area instead of a text input so that it can be expanded
+ - Added handling for brackets "()" in the BCDC functionality
 
 <br />
 
@@ -44,6 +43,15 @@ December 1, 2022
 - [Version 1.2.4 (February 7 2022)](#version-124)
 - [Version 1.2.3 (February 1 2022)](#version-123)
 - [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
+## Version 1.6.5
+December 1, 2022
+ - Added all files report to dataset which is the same as all fields without the field information from files and fields
+ - Fixed issue preventing dragging fields around for reordering on files and fields after entering a text field
+ - Tentative fix for edition full 500 error
+ - Fixed an issue that allowed uploaders to create an upload without an approver if they did it in a fresh session (incognito)
 
 <br />
 
