@@ -535,7 +535,8 @@ export default {
                 filetype: this.file.type,
                 overridePatchMethod: true,
                 retryDelays: [0, 1000, 3000, 5000],
-                chunkSize: this.chunkSize*10,
+                //chunkSize: this.chunkSize*10,
+                chunkSize: 9999, //trying to make sure we fit under the 1mb nginx default 
                 onError: error => {
                     // eslint-disable-next-line
                     console.error("Upload error", error)
