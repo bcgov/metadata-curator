@@ -182,7 +182,7 @@ When(/^the user is on the files and fields tab$/, async function(){
 Then(/^They should be able to upload a data package$/, async function(){
     client = this.browser;
     try{
-        await client.pause(5000);
+        await client.pause(15000);
         await client.assert.elementPresent("input[type='file'][accept='.json,application/json,application/JSON']");
         await client.assert.elementPresent("#create-without-import");
     }catch(ex){

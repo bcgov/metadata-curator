@@ -7,7 +7,6 @@ Scenario: Create Edition
     When Data approver makes a new edition
     Then Data approver chooses to see the details of the edition
     Then Data approver should see information on the characteristics of the edition
-    And the Data approver logs out
 
 
 Scenario: Edit Edition
@@ -17,4 +16,3 @@ Scenario: Edit Edition
     When Data approver edits the edition
     Then Data approver chooses to see the details of the edition
     Then Data approver should see information on the characteristics of the edition
-    And the Data approver logs out

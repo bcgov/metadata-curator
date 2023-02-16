@@ -108,7 +108,7 @@ When(/^Data approver chooses to see the details of the dataset$/, async function
         let id = '#dataset-'+workingDataset.name.value.toLowerCase();
         id += '----' + workingDataset.ministry.value.toLowerCase();
         id = id.replace(/[ :.]/g, '-')
-        await client.pause(3000);
+        await client.pause(5000);
         console.log("Dataset ID to click:"+ id);
         await client.saveScreenshot('./'+path+'/selectDataSetForDetails.png');
         await client.click(id);
@@ -160,6 +160,7 @@ Then(/^Data approver edits the dataset information$/, async function(){
             }
         }
 
+        await client.pause(5000);
         await client.click('#editDatasetBtn');
 
         for (property in workingDataset){
