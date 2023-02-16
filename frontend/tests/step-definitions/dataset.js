@@ -16,7 +16,7 @@ var workingDataset = {
         selector2: '#ministry_organization-value',
     },
     description: {
-        selector: 'input[name="description"]',
+        selector: 'textarea[name="description"]',
         value: 'this is a description',
         selector2: '#description-value'
     },
