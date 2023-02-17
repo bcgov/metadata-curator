@@ -108,8 +108,7 @@ When(/^Data approver chooses to see the details of the dataset$/, async function
         let id = '#dataset-'+workingDataset.name.value.toLowerCase();
         id += '----' + workingDataset.ministry.value.toLowerCase();
         id = id.replace(/[ :.]/g, '-')
-        await client.pause(5000);
-        console.log("Dataset ID to click:"+ id);
+        await client.waitForElementPresent(id, 15000);
         await client.saveScreenshot('./'+path+'/selectDataSetForDetails.png');
         await client.click(id);
         await client.pause(2000);

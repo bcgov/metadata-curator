@@ -144,10 +144,10 @@ Then(/^they should see the schema information$/, async function(){
             }else if (workingSchema[property].selector2){
                 let text = await client.getText(workingSchema[property].selector2);
                 if (workingSchema[property].expectedValue){
-                    console.log(workingSchema[property].selector2 + " = " + text + "; expected " + workingSchema[property].expectedValue);
+                    client.waitForElementPresent(workingSchema[property].selector2, 3000);
                     success = (success && await client.assert.textContains(workingSchema[property].selector2, workingSchema[property].expectedValue));
                 }else{
-                    console.log(workingSchema[property].selector2 + " = " + text + "; expected " + workingSchema[property].value);
+                    client.waitForElementPresent(workingSchema[property].selector2, 3000);
                     success = (success && await client.assert.textContains(workingSchema[property].selector2, workingSchema[property].value));
                 }
             }else if (workingSchema[property].value){
@@ -170,7 +170,7 @@ Then(/^they should see the schema information$/, async function(){
 When(/^the user is on the files and fields tab$/, async function(){
     client = this.browser;
     try{
-        await client.pause(3000);
+        await client.waitForElementPresent('#schema-tab', 30000);
         await client.click('#schema-tab');
         await client.pause(3000);
     }catch(ex){

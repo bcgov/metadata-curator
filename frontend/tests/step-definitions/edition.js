@@ -105,9 +105,10 @@ When(/^Data approver makes a new edition$/, async function(){
 
     try{
 
-        await client.pause(2000);
+        await client.pause(5000);
         await client.click('#dataset-editions-tab');
-        await client.pause(3000);
+        await client.waitForElementPresent('#addVersion', 25000);
+        console.log("add version clickable");
         await client.click('#addVersion');
 
         await client.pause(2000);
