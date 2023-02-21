@@ -39,8 +39,6 @@ server {
     proxy_read_timeout 14400;
     proxy_connect_timeout 14400;
     proxy_send_timeout 14400;
-    add_header Access-Control-Allow-Origin *;
-    add_header Access-Control-Allow-Headers x-http-method-override;
 
     if ($request_method = DELETE)
     {
@@ -68,8 +66,6 @@ server {
     resolver 127.0.0.11 ipv6=off valid=30s;
     
     proxy_hide_header Access-Control-Allow-Origin;
-    add_header Access-Control-Allow-Origin *;
-    add_header Access-Control-Allow-Headers x-http-method-override;
     proxy_read_timeout 14400;
     proxy_connect_timeout 14400;
     proxy_send_timeout 14400;
@@ -94,8 +90,6 @@ server {
     # Add X-Forwarded-* headers
     proxy_set_header X-Forwarded-Host $host;
     proxy_set_header X-Forwarded-Proto $scheme;
-    add_header Access-Control-Allow-Origin *;
-    add_header Access-Control-Allow-Headers x-http-method-override;
 
     proxy_set_header        Host            $host;
     proxy_set_header        X-Real-IP       $remote_addr;

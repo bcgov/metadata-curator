@@ -536,7 +536,7 @@ export default {
                 overridePatchMethod: true,
                 retryDelays: [0, 1000, 3000, 5000],
                 //chunkSize: this.chunkSize*10,
-                chunkSize: 50000,
+                chunkSize: 710000,
                 onError: error => {
                     // eslint-disable-next-line
                     console.error("Upload error", error)
