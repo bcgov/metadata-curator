@@ -18,7 +18,7 @@ if 'MetaData' in js:
         jwtSecret = os.environ['JWT_SECRET']
         aud = os.environ['JWT_AUD']
         try:
-            jwt.decode(tok, jwtSecret, audience=aud)
+            jwt.decode(tok, jwtSecret, audience=aud, options={'verify_exp': False})
             #Valid JWT
             exit(0)
         except Exception as e:
