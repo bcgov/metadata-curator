@@ -128,9 +128,9 @@ Then(/^they should see the schema information$/, async function(){
     client = this.browser;
     await client.pause(4000);
     await client.click('button.expandResource');
-    await client.pause(1000);
+    await client.pause(7000);
     await client.click('button.expandField');
-    await client.pause(1000);
+    await client.pause(5000);
 
     await client.saveScreenshot('./'+path+'/preSchemaReview-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     await client.execute('window.scrollTo(0,(document.body.scrollHeight-150));');
@@ -170,6 +170,7 @@ Then(/^they should see the schema information$/, async function(){
 When(/^the user is on the files and fields tab$/, async function(){
     client = this.browser;
     try{
+        await client.pause(10000);
         await client.waitForElementPresent('#schema-tab', 30000);
         await client.click('#schema-tab');
         await client.pause(3000);
@@ -182,7 +183,7 @@ When(/^the user is on the files and fields tab$/, async function(){
 Then(/^They should be able to upload a data package$/, async function(){
     client = this.browser;
     try{
-        await client.pause(15000);
+        await client.waitForElementPresent('#create-without-import', 50000);
         await client.assert.elementPresent("input[type='file'][accept='.json,application/json,application/JSON']");
         await client.assert.elementPresent("#create-without-import");
     }catch(ex){
@@ -205,15 +206,21 @@ When(/^they create without import$/, async function(){
 When(/^they choose to view schema information$/, async function(){
     client = this.browser;
     try{
-
+        await client.pause(5000);
+        await client.click('#cancelSaveMetadata')
+        await client.pause(5000);
+        await client.click('button.expandResource');
+        await client.pause(7000);
+        await client.click('button.expandField');
+        await client.pause(5000);
         // await client.refresh();
-        await client.click('#tab-versions');
-        await client.pause(3000);
-        await client.click('.v-list-item--link')
+        // await client.click('#tab-versions');
+        // await client.pause(15000);
+        // await client.click('.v-list-item--link')
 
-        await client.pause(3000)
-        await client.click('#schema-tab');
-        await client.pause(3000);
+        // await client.waitForElementPresent('#schema-tab', 30000)
+        // await client.click('#schema-tab');
+        // await client.pause(3000);
     }catch(ex){
         await helpers.logout(client);
         throw ex;

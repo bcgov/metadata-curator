@@ -16,7 +16,7 @@
                 <div v-if="loading || !schema">
                 </div>
                 <div class="fixed" v-else-if="editing">
-                    <v-btn @click="closeOrBack()" class="mt-1">{{$tc('Cancel')}}</v-btn>
+                    <v-btn @click="closeOrBack()" id="cancelSaveMetadata" class="mt-1">{{$tc('Cancel')}}</v-btn>
                     <v-btn @click="save" id="saveMetadata" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
                 </div>
                 <div class="fixed" v-else>

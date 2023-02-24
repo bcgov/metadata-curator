@@ -8,7 +8,6 @@ Scenario: Create Dataset
 
 
 Scenario: Edit Dataset
-  Given Data approver successfully creates a dataset
     When Data approver chooses to see the details of the dataset
 		Then Data approver edits the dataset information
     When Data approver chooses to see the details of the dataset

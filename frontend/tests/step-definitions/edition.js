@@ -105,18 +105,20 @@ When(/^Data approver makes a new edition$/, async function(){
 
     try{
 
-        await client.pause(5000);
+        await client.waitForElementPresent('#dataset-editions-tab', 30000);
         await client.click('#dataset-editions-tab');
+        await client.pause(10000)
         await client.waitForElementPresent('#addVersion', 25000);
-        console.log("add version clickable");
+        await client.pause(10000)
         await client.click('#addVersion');
-
-        await client.pause(2000);
 
         const groupSel = helpers.confGet('providerGroup');
 
+        await client.waitForElementPresent('input[name="name"]', 20000);
+
+        await client.pause(2000);
         await client.click('xpath', '//input[@name="providerGroup"]/..');
-        await client.pause(100);
+        await client.pause(5000);
         await client.click('xpath', '//div[@class="v-list-item__title"][contains(.,"' + groupSel+'")]');
         
         for (property in workingEdition){
@@ -149,9 +151,12 @@ When(/^Data approver makes a new edition$/, async function(){
 
 Then(/^Data approver chooses to see the details of the edition$/, async function(){
     try{
+        await client.waitForElementPresent('#dataset-editions-tab', 20000);
         await client.click('#dataset-editions-tab');
-        await client.pause(2000);
+        await client.pause(5000);
+        await client.waitForElementPresent('#branch-link-0', 20000);
         await client.click('#branch-link-0');
+        await client.pause(5000);
 
     }catch(ex){
         await helpers.logout(client);
@@ -161,7 +166,7 @@ Then(/^Data approver chooses to see the details of the edition$/, async function
 
 Then(/^Data approver should see information on the characteristics of the edition$/, async function(){
     client = this.browser;
-    await client.pause(6000);
+    await client.waitForElementPresent('#name-value', 30000);
     await client.saveScreenshot('./'+path+'/preEditionReview-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     try{
         let success = true;
@@ -183,6 +188,7 @@ Then(/^Data approver should see information on the characteristics of the editio
             }else{
                 success = false;
             }
+            await client.pause(200);
         }
 
         return success;
@@ -195,6 +201,7 @@ Then(/^Data approver should see information on the characteristics of the editio
 
 When(/^Data approver edits the edition$/, async function(){
     client = this.browser;
+    await client.waitForElementPresent('#name-value', 30000)
     try{
         for (var property in workingEdition){
             if (workingEdition[property].value && !workingEdition[property].select){
@@ -204,8 +211,10 @@ When(/^Data approver edits the edition$/, async function(){
             }
         }
 
-        await client.pause(5000);
+        await client.waitForElementPresent('#edit-btn-version-info', 30000);
         await client.click('#edit-btn-version-info');
+
+        await client.waitForElementPresent('input[name="name"]', 30000);
 
         for (property in workingEdition){
             if (workingEdition[property].value && !workingEdition[property].select){
@@ -224,6 +233,7 @@ When(/^Data approver edits the edition$/, async function(){
         
         await client.saveScreenshot('./'+path+'/preEditEditionSave-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
         await client.click('#saveVersion');
+        await client.pause(3000);
     }catch(ex){
         await helpers.logout(client);
         throw ex;
@@ -236,9 +246,9 @@ Given(/^the browser is dataset ready$/, async function(){
         await helpers.open(client);
         await helpers.login(client, 'approver');
         await client.click('#tab-datasets');
-        await client.pause(3000);
+        await client.waitForElementPresent('div[role="list"] a', 30000);
         await client.click('div[role="list"] a');
-        await client.pause(3000);
+        await client.pause(5000);
     }catch(ex){
         await helpers.logout(client);
         throw ex;

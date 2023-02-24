@@ -414,7 +414,7 @@
 
                             </v-card-text>
                              <v-card-actions v-if="editing">
-                                <v-btn @click="closeOrBack()"  :disabled="disableSave" class="mt-1">{{$tc('Cancel')}}</v-btn>
+                                <v-btn @click="closeOrBack()"  id="cancelSaveVersion" :disabled="disableSave" class="mt-1">{{$tc('Cancel')}}</v-btn>
                                 <v-btn @click="save" class="mt-1" id="saveVersion" :disabled="disableSave" color="primary">
                                     {{!disableSave ? $tc('Save') : $tc("Please Wait")}}
                                     <v-progress-circular

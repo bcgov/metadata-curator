@@ -16,12 +16,20 @@
 
         <v-row v-else>
             <v-col cols="12">
-                <v-row v-for="a in alertText" :key="a">
+                <v-row v-if="alert">
                     <v-alert
+                        v-if="typeof(alertText) === 'string'"
                         :type="alertType"
                         dismissible>
-                        {{a}}
+                        {{alertText}}
                     </v-alert>
+                    <v-row v-else v-for="a in alertText" :key="a">
+                        <v-alert
+                            :type="alertType"
+                            dismissible>
+                            {{a}}
+                        </v-alert>
+                    </v-row>
                 </v-row>
                 <v-card outlined>
                     <v-card-text>

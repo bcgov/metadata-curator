@@ -74,8 +74,11 @@ Given(/^Data approver successfully creates a dataset$/, async function(){
 
         const groupSel = helpers.confGet('providerGroup');
 
+        await client.waitForElementPresent('input[name="name"]', 30000)
+
+        await client.pause(2000);
         await client.click('xpath', '//input[@name="providerGroup"]/..');
-        await client.pause(200);
+        await client.pause(5000);
         await client.click('xpath', '//div[@class="v-list-item__title"][contains(.,"' + groupSel+'")]');
         await client.pause(200);
 
@@ -108,7 +111,7 @@ When(/^Data approver chooses to see the details of the dataset$/, async function
         let id = '#dataset-'+workingDataset.name.value.toLowerCase();
         id += '----' + workingDataset.ministry.value.toLowerCase();
         id = id.replace(/[ :.]/g, '-')
-        await client.waitForElementPresent(id, 15000);
+        await client.waitForElementPresent(id, 30000);
         await client.saveScreenshot('./'+path+'/selectDataSetForDetails.png');
         await client.click(id);
         await client.pause(2000);
@@ -121,6 +124,7 @@ When(/^Data approver chooses to see the details of the dataset$/, async function
 Then(/^Data approver should see information on the characteristics of the dataset$/, async function(){
     client = this.browser;
     await client.pause(5000);
+    await client.waitForElementPresent('#name-value', 30000);
     await client.saveScreenshot('./'+path+'/preDatasetReview-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     try{
         let success = true;
@@ -150,6 +154,7 @@ Then(/^Data approver should see information on the characteristics of the datase
 
 Then(/^Data approver edits the dataset information$/, async function(){
     client = this.browser;
+    await client.waitForElementPresent('#name-value', 30000);
     try{
         for (var property in workingDataset){
             if (workingDataset[property].value && !workingDataset[property].select){
@@ -180,6 +185,7 @@ Then(/^Data approver edits the dataset information$/, async function(){
         await client.saveScreenshot('./'+path+'/preDatasetEditSave-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
         await client.click('#saveDataset');
         await client.pause(2000);
+        await client.click('#tab-datasets');
     }catch(ex){
         await helpers.logout(client);
         throw ex;
