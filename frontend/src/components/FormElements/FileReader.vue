@@ -534,7 +534,7 @@ export default {
                 filename: this.file.name,
                 filetype: this.file.type,
                 overridePatchMethod: true,
-                retryDelays: [0, 1000, 3000, 5000],
+                retryDelays: [0, 1000, 3000, 5000, 10000, 60000, 100000],
                 //chunkSize: this.chunkSize*10,
                 chunkSize: 710000,
                 onError: error => {

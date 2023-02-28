@@ -8,7 +8,8 @@ Scenario: Create Dataset
 
 
 Scenario: Edit Dataset
+  Given An open dataset ready browser
     When Data approver chooses to see the details of the dataset
 		Then Data approver edits the dataset information
-    When Data approver chooses to see the details of the dataset
+        When Data approver chooses to see the details of the dataset
 		Then Data approver should see information on the characteristics of the dataset

@@ -717,10 +717,30 @@
                 this.editDataset({name: 'name', value: this.upload.name});
                 this.editDataset({name: 'ministry_organization', value: this.upload.ministry_organization});
                 this.editDataset({name: 'lifecycle_status', value: 'active'});
-                let d = await this.saveDataset();
+
+                let selectableGroups = JSON.parse(JSON.stringify(this.user.groups));
+                let ignoreGroups = await this.$store.dispatch('config/getItem', {field: 'key', value: 'ignoreGroups', def: {key: 'ignoreGroups', value: []}});
+                ignoreGroups = ignoreGroups.value;
+                for (var i=0; i<ignoreGroups.length; i++){
+
+                    if ( (ignoreGroups[i].indexOf("/") == 0) && (ignoreGroups[i].lastIndexOf("/") === (ignoreGroups[i].length -1)) ){
+                        let s = ignoreGroups[i].substring(1, ignoreGroups[i].length-1);
+                        let r = new RegExp(s);
+                        selectableGroups = selectableGroups.filter( (el) => {
+                            return el.match(r) === null })
+                    }else{
+                        var ignoreIndex = -1;
+                        ignoreIndex = selectableGroups.indexOf(ignoreGroups[i]);
+                        if (ignoreIndex !== -1){
+                            selectableGroups.splice(ignoreIndex, 1);
+                        }
+                    }
+
+                }
+                this.editDataset({name: 'providerGroup', value: selectableGroups[0]});
+                await this.saveDataset({repo: this.dataset});
                 await this.getAllRepos();
-                this.setRepo({repo: {_id: d.id}});
-                this.selectedDataset = d.id;
+                this.selectedDataset = this.dataset.id;
 
                 this.allowCreate = false;
                 this.allowSelect = false;
@@ -782,6 +802,7 @@
                 inferContent: state => state.file.content,
                 variableClassifications: state => state.variableClassifications.items,
                 variableClassification: state => state.variableClassifications.wipItem,
+                dataset: state => state.repos.repo
 
             }),
 

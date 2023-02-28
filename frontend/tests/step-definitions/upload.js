@@ -72,12 +72,12 @@ Given(/^Data provider successfully uploads a data file$/, async function(){
 
     await client.pause(3000);
     await client.click('#newDatasetButton');
-    await client.pause(7500);
+    await client.pause(20000);
     await client.click('#newVersionButton');
-    await client.pause(7500);
+    await client.pause(30000);
     await client.saveScreenshot("./"+path+"/preNext2.png");
     await client.click('#next-2');
-    await client.pause(300);
+    await client.pause(3000);
     await client.saveScreenshot("./"+path+"/postNext2.png");
     await client.pause(3000);
 
