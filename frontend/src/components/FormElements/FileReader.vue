@@ -670,27 +670,27 @@ export default {
             this.uploads.push(u);
 
             //is more than one chunk do parallel work
-            if (size > ((this.chunkSize*2)-1)){
-                this.getNextChunk(1).then( () => {
-                    self.numEncrypted += 1
-                    let chunkIndex = 1;
-                    i += 1;
+            // if (size > ((this.chunkSize*2)-1)){
+            //     this.getNextChunk(1).then( () => {
+            //         self.numEncrypted += 1
+            //         let chunkIndex = 1;
+            //         i += 1;
                     
-                    let u2 = null;
-                    let u2Options = JSON.parse(JSON.stringify(uploadOptions));
-                    u2Options.onProgress = function(byteUp, byteTot){
-                        self.up2Progress = byteUp;
-                        self.up2Size = byteTot;
-                    }
-                    if (this.readFile){
-                        u2 = new tus.Upload(self.blob[chunkIndex], u2Options);
-                    }else{
-                        u2 = new tus.Upload(self.encContentBlobs[chunkIndex], u2Options);
-                    }
-                    u2.start();
-                    self.uploads.push(u2);
-                });
-            }
+            //         let u2 = null;
+            //         let u2Options = JSON.parse(JSON.stringify(uploadOptions));
+            //         u2Options.onProgress = function(byteUp, byteTot){
+            //             self.up2Progress = byteUp;
+            //             self.up2Size = byteTot;
+            //         }
+            //         if (this.readFile){
+            //             u2 = new tus.Upload(self.blob[chunkIndex], u2Options);
+            //         }else{
+            //             u2 = new tus.Upload(self.encContentBlobs[chunkIndex], u2Options);
+            //         }
+            //         u2.start();
+            //         self.uploads.push(u2);
+            //     });
+            // }
             u.start();
         },
         onImportButtonClicked: async function(){
