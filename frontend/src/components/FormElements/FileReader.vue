@@ -162,7 +162,6 @@ export default {
             encContentBlobs: [],
             error: false,
             key: null,
-            reader: new FileReader(),
 
             numUploaded: 0,
             up1Size: 0,
@@ -430,11 +429,12 @@ export default {
                 if (this.currChunk === 0){
                     this.checksum = new SparkMD5.ArrayBuffer();
                 }
-                this.reader.onerror = function(e){
+                var reader = new FileReader();
+                reader.onerror = function(e){
                     reject(e);
                 }
 
-                this.reader.onload = async function(e){
+                reader.onload = async function(e){
                     let content = new Uint8Array(e.target.result);
                     
                     
@@ -485,7 +485,7 @@ export default {
                 if (this.currChunk < this.numChunks){
                     let sli = this.file.slice(this.offset, (this.offset + this.chunkSize));
                     this.offset += this.chunkSize;
-                    this.reader.readAsArrayBuffer(sli);
+                    reader.readAsArrayBuffer(sli);
 
                 }else{
                     let sli = this.file.slice(this.offset);
@@ -494,7 +494,7 @@ export default {
                     //be at least 5mb due to s3/minio restrictions
                     //and with ceil that can't be guaranteed
                     //note it can be at most (2*chunkSize)-1
-                    this.reader.readAsArrayBuffer(sli);
+                    reader.readAsArrayBuffer(sli);
                 }
             });
 
@@ -537,7 +537,7 @@ export default {
                 overridePatchMethod: true,
                 retryDelays: [0, 1000, 3000, 5000, 10000, 60000, 100000],
                 //chunkSize: this.chunkSize*10,
-                chunkSize: 710000,
+                //chunkSize: 710000,
                 onError: error => {
                     // eslint-disable-next-line
                     console.error("Upload error", error)
@@ -569,6 +569,7 @@ export default {
                 },
                 onSuccess: async() => {
                     self.$store.commit('file/setSuccessfullyUploadedChunk', {fing: this.getFinger, index: i, success: true});
+                    self.uploads[i].file = null;
                     i += 1;
                     self.numUploaded += 1;
 
@@ -619,7 +620,7 @@ export default {
                                 let concatLocation = concatResponse.headers.location;
                                 let slashInd = concatLocation.lastIndexOf("/");
                                 let plusInd = concatLocation.lastIndexOf("+");
-                                
+                                self.uploads = [];
                                 self.$emit('upload-finished', concatLocation.substring(slashInd+1, plusInd), this.file.name, this.file.size);
                                 self.numUploaded += 1;
                                 if (!self.disabledProp){
