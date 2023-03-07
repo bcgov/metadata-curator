@@ -162,6 +162,7 @@ export default {
             encContentBlobs: [],
             error: false,
             key: null,
+            reader: new FileReader(),
 
             numUploaded: 0,
             up1Size: 0,
@@ -423,17 +424,17 @@ export default {
         getNextChunk: function(index){
             return new Promise((resolve, reject) => {
 
-                var reader = new FileReader();
+                
                 var self = this;
                 const SparkMD5 = require('spark-md5');
                 if (this.currChunk === 0){
                     this.checksum = new SparkMD5.ArrayBuffer();
                 }
-                reader.onerror = function(e){
+                this.reader.onerror = function(e){
                     reject(e);
                 }
 
-                reader.onload = async function(e){
+                this.reader.onload = async function(e){
                     let content = new Uint8Array(e.target.result);
                     
                     
@@ -484,7 +485,7 @@ export default {
                 if (this.currChunk < this.numChunks){
                     let sli = this.file.slice(this.offset, (this.offset + this.chunkSize));
                     this.offset += this.chunkSize;
-                    reader.readAsArrayBuffer(sli);
+                    this.reader.readAsArrayBuffer(sli);
 
                 }else{
                     let sli = this.file.slice(this.offset);
@@ -493,7 +494,7 @@ export default {
                     //be at least 5mb due to s3/minio restrictions
                     //and with ceil that can't be guaranteed
                     //note it can be at most (2*chunkSize)-1
-                    reader.readAsArrayBuffer(sli);
+                    this.reader.readAsArrayBuffer(sli);
                 }
             });
 
