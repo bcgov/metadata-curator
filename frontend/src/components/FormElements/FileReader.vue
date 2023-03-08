@@ -537,7 +537,7 @@ export default {
                 overridePatchMethod: true,
                 retryDelays: [0, 1000, 3000, 5000, 10000, 60000, 100000],
                 //chunkSize: this.chunkSize*10,
-                //chunkSize: 710000,
+                chunkSize: 710000,
                 onError: error => {
                     // eslint-disable-next-line
                     console.error("Upload error", error)
@@ -616,16 +616,20 @@ export default {
                                 let upUrl = self.uploadUrlOverride ? self.uploadUrlOverride : self.uploadUrl;
                                 let concatResponse = await backendApi.concatenateUpload(joinIds, upUrl, self.jwt, "1.0.0", self.file.name, self.file.type, self.checksum.end());
                                 self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
+                                self.$store.commit('file/clearContent');
                                 
                                 let concatLocation = concatResponse.headers.location;
                                 let slashInd = concatLocation.lastIndexOf("/");
                                 let plusInd = concatLocation.lastIndexOf("+");
                                 self.uploads = [];
+                                self.encContentBlobs = [];
+                                self.checksum = null;
                                 self.$emit('upload-finished', concatLocation.substring(slashInd+1, plusInd), this.file.name, this.file.size);
                                 self.numUploaded += 1;
                                 if (!self.disabledProp){
                                     self.disabled = false;
                                 }
+                                self.file = null;
                                 succeeded = true;
                             }catch(e){
                                 // eslint-disable-next-line
