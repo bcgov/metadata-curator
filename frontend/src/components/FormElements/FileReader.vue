@@ -387,7 +387,7 @@ export default {
                 var self = this;
                 this.pleaseWait = true;
                 this.offset = 0;
-                this.getNextChunk(0).then( async() => {
+                this.getNextChunk(0, false).then( async() => {
                     self.numEncrypted += 1
                     if ( (resume) && (this.successfullyUploadedChunks[this.getFinger]) ){
                         let i = 0;
@@ -402,7 +402,7 @@ export default {
                             self.numEncrypted = self.currChunk - 1;
                             self.numUploaded = self.currChunk - 1;
                             self.offset += (self.chunkSize * diff);
-                            await this.getNextChunk(2);
+                            await this.getNextChunk(2, false);
                         }
 
                         if (this.currChunk<0){
@@ -420,7 +420,10 @@ export default {
             }
         },
 
-        getNextChunk: function(index){
+        getNextChunk: function(index, encrypt){
+            if (typeof(encrypt) === 'undefined'){
+                encrypt = true;
+            }
             return new Promise((resolve, reject) => {
 
                 
@@ -470,10 +473,12 @@ export default {
                         });
 
                     }else{
-                        self.encrypt(content, index).then ( () => {
-                            resolve(e.target.result);
-                            self.$emit('encrypted', self.index, index);
-                        })
+                        if (encrypt){
+                            self.encrypt(content, index).then ( () => {
+                                resolve(e.target.result);
+                                self.$emit('encrypted', self.index, index);
+                            })
+                        }
 
                     }
                     

@@ -2,7 +2,7 @@
     <v-container>
         <span :key="'uploadForm-'+spanKey">
             <v-row v-for="(val, index) in files" :key="'fileReader'+index">
-                <v-col cols=12 v-if="!fileIds[index] || fileIds[index] === ''">
+                <v-col cols=12>
                     <FileReader
                         :show-encrypt-button="false"
                         :show-upload-button="false"

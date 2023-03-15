@@ -3,11 +3,12 @@
 <br />
 
 ## Version 1.6.6
-February 21, 2023
+March 15, 2023
  - Created script in util folder that takes parameters to delete files older than a certain date
  - Changed dataset description field to be a text area instead of a text input so that it can be expanded
  - Added handling for brackets "()" in the BCDC functionality
  - Fixed script for noauth to also have cors allowed on files and removed body limit for minio
+ - Fixed large upload issue which was caused by tus-js-client keeping the encrypted file contents in memory
 
 <br />
 
