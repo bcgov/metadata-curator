@@ -9,11 +9,12 @@ March 15, 2023
  - Added handling for brackets "()" in the BCDC functionality
  - Fixed script for noauth to also have cors allowed on files and removed body limit for minio
  - Fixed large upload issue which was caused by tus-js-client keeping the encrypted file contents in memory
+ - Updated tus-js-client to newest
 
 <br />
 
 ## Table Of Contents
-- [Version 1.6.5 (December 1 2022)](#version-165)
+- [Version 1.6.5 (January 7 2023)](#version-165)
 - [Version 1.6.4 (November 18 2022)](#version-164)
 - [Version 1.6.3 (November 2 2022)](#version-163)
 - [Version 1.6.2 (September 19 2022)](#version-162)
@@ -49,19 +50,20 @@ March 15, 2023
 <br />
 
 ## Version 1.6.5
-December 1, 2022
+January 7, 2023
  - Added all files report to dataset which is the same as all fields without the field information from files and fields
  - Fixed issue preventing dragging fields around for reordering on files and fields after entering a text field
  - Tentative fix for edition full 500 error
  - Fixed an issue that allowed uploaders to create an upload without an approver if they did it in a fresh session (incognito)
-
+ - Updated Terraform deployment reference to new updated tusd_py3 docker image
+ - Updated syntax in pre-create tusd_py3 hook script
 <br />
 
 ## Version 1.6.4
 November 18, 2022
  - Fixed bug with supplemental files
 
- <br />
+<br />
 
 ## Version 1.6.3
 November 2, 2022
@@ -279,7 +281,7 @@ March 18, 2022
 ## Version 1.4.0
 March 16, 2022
  - Fixed about page crashing server
- - Fully removed formio 
+ - Fully removed formio
  - Added highlight filter to edition file & field info page
  - Changed Schema label to files & fields
  - Redesigned user page, feature BCDC fields if phase 3 is enabled
@@ -464,7 +466,7 @@ February 1, 2022
 
  <br />
 
-## Version 1.2.2 
+## Version 1.2.2
 January 27, 2022
  - Ability to toggle highlighting from the basic view screen
  - Saving changes to an edition stays on the edition page

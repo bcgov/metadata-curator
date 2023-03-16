@@ -27,7 +27,6 @@ if 'MetaData' in js:
         except Exception as e:
             print(e)
 
-
 print ('Either no JWT Or invalid JWT given')
 #Forbidden because jwt not specified or invalid
 exit(403)
