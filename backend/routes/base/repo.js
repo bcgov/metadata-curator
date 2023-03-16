@@ -533,8 +533,6 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
 
         if(error.length > 0){
-            console.log('Error array contains errors');
-            console.log(error);
             return res.status(400).json({error: error});
         }
     

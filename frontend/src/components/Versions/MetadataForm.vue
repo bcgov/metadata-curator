@@ -253,9 +253,7 @@ export default {
         },
 
         async save(){
-            console.log("CALLING SAVE");
             if (this.schemaObj){
-                console.log("DOING SAVE");
                 await this.setTableSchema({schema: this.schemaObj});
                 if (this.schemaError){
                     this.alertType = "error"
@@ -266,11 +264,9 @@ export default {
                 }
 
                 if (this.creating){
-                    console.log('CREATING');
                     this.saveTableSchema();
                     this.updateBranch().then( () => {
                         if (this.schemaError){
-                            console.log('CREATE_ERROR');
                             this.alertType = "error"
                             this.alertText = (this.schemaError && typeof(this.schemaError) === 'string') ? this.schemaError : JSON.stringify(this.schemaError);
                             this.alert = true;
@@ -289,12 +285,10 @@ export default {
                     });
 
                 }else{
-                    console.log('UPDATING');
                     try{
                         await this.updateDataPackageSchema();
                         // this.updateBranch().then( () => {
                         if (this.schemaError){
-                            console.log('UPDATE_ERROR');
                             this.alertType = "error"
                             this.alertText = (this.schemaError && typeof(this.schemaError) === 'string') ? this.schemaError : JSON.stringify(this.schemaError.message);
                             this.alert = true;
@@ -314,7 +308,6 @@ export default {
                     }
                 }
             }
-            console.log("ENDING SAVE");
         },
 
         async importButtonClicked(content) {

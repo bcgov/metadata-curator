@@ -47,7 +47,7 @@ export class Backend {
     getTableSchema(id, byUploadId, inferred){
         byUploadId = typeof(byUploadId) !== 'undefined' ? byUploadId : false;
         inferred = typeof(inferred) !== 'undefined' ? inferred : false;
-        
+
         let url = `/api/v1/datapackages/branch/${id}`
         if (byUploadId){
             url = `/api/v1/datapackages/branch?upload_id=${id}`
@@ -71,6 +71,11 @@ export class Backend {
 
     getDataPackageRevs(id){
         let url = `/api/v1/datapackages/${id}/revisions`;
+        return axios.get(url, {withCredentials: true}).then(response => response.data)
+    }
+
+    getDataPackageByResourceField(name){
+        let url = `/api/v1/datapackages/resource/${name}`;
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 
@@ -203,12 +208,12 @@ export class Backend {
         let r = await axios.get(url,{withCredentials: true})
         if (r.data && r.data.length >= 100){
             let page = 2;
-            let u = url + "?page=" + page; 
+            let u = url + "?page=" + page;
             let r2 = await axios.get(u,{withCredentials: true})
             while (r2.data && r2.data.length >= 100){
                 r.data = r.data.concat(r2.data);
                 page++;
-                u = url + "?page=" + page; 
+                u = url + "?page=" + page;
                 r2 = await axios.get(u,{withCredentials: true})
             }
             r.data = r.data.concat(r2.data)

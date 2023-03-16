@@ -69,7 +69,6 @@ const actions = {
                 delete schema.__v;
                 delete schema.version;
                 for (let i = 0; i < schema.resources.length; i++){
-                    //s.resources[i].path = s.resources[i].path.toString();
                     schema.resources[i].path = schema.resources[i].path.split(/[ ,]+/);
                 }
                 await DSchema.load(schema);
@@ -160,25 +159,7 @@ const actions = {
         });
 
     },
-
     async updateDataPackageSchema({commit, state}){
-
-        commit('clearSuccessMsg');
-        commit('clearError');
-
-        try{
-            let res = await backend.putDataPackageSchema(state.tableSchemaId, state.tableSchema);
-            console.log('UPDATE_RESULT:= ');
-            console.log(res);
-            commit('setSuccessMsg', {message: "Successfully updated data package schema"});
-        }catch(e){
-            console.log('UPDATE_DATA_PACKAGE_SCHEMA_ERROR:==');
-            console.log(e);
-            commit('setError', {error: e.response.data.error});
-        }
-    }
-
-/*    async updateDataPackageSchema({commit, state}){
 
         commit('clearSuccessMsg');
         commit('clearError');
@@ -186,10 +167,9 @@ const actions = {
         await backend.putDataPackageSchema(state.tableSchemaId, state.tableSchema).then(() => {
             commit('setSuccessMsg', {message: "Successfully updated data package schema"});
         }).catch((e) => {
-            commit('setError', {error: {message:e.response.data.error}});
+            commit('setError', {error: e.response.data.error});
         });
     }
-*/
 }
 
 

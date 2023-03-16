@@ -21,6 +21,7 @@ const option = () => import(/* webpackChunkName: "options" */ "../components/pag
 const variableClassifications = () => import(/* webpackChunkName: "variableClassifications" */ "../components/pages/variableClassifications");
 const variableClassification = () => import(/* webpackChunkName: "variableClassificationForm" */ "../components/pages/variableClassificationForm");
 const publishedVariableClassificationForm = () => import(/* webpackChunkName: "publishedVariableClassification" */ "../components/pages/publishedVariableClassification");
+const Search = () => import(/* webpackChunkName: "Search" */ "../components/pages/Search");
 
 Vue.use(Router)
 let r = new Router({
@@ -218,6 +219,15 @@ let r = new Router({
       }
     },
     {
+        path: '/search',
+        name: 'search',
+        component: Search,
+        meta: {
+            title: "Search",
+            requiresAuth: true
+        }
+      },
+    {
       path: '*',
       component: NotFound,
       meta: {
@@ -242,10 +252,10 @@ r.beforeEach(async(to, from, next) => {
     await store.dispatch('user/getCurrentUser');
     let enabledPhase = await store.dispatch('config/getItem', {field: 'key', value: 'enabledPhase', def: {key: 'enabledPhase', value: '1'}});
     let loggedIn = store.state.user.loggedIn;
-    
+
     //document.title = i18n.tc(to.meta.title);
     // document.title = "Metadata Curator - " + to.meta.title;
-    
+
     let requiresAuth = to.meta.requiresAuth;
 
     let requiresNoUser = to.meta.requiresNoUser;
@@ -261,7 +271,7 @@ r.beforeEach(async(to, from, next) => {
     if (enabledPhase.value < phase){
       return next('/uploads');
     }
-    
+
     next();
   }
 

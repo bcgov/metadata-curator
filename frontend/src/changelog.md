@@ -10,6 +10,12 @@ March 15, 2023
  - Fixed script for noauth to also have cors allowed on files and removed body limit for minio
  - Fixed large upload issue which was caused by tus-js-client keeping the encrypted file contents in memory
  - Updated tus-js-client to newest
+ - Create dataset validation error fixed to show field specific errors.
+ - Fixed comments to show beside their corresponding resource when the resource name contains a space.
+ - Prevent edition files and fields from being saved when two resources have the same name.
+ - Added ability to scroll to the top of edition files and fields.
+ - Added ability to denote primary anf foreign keys in resources
+ - Added ability to specify more than one file per resource.
 
 <br />
 
