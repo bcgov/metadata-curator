@@ -140,7 +140,7 @@ export default {
     mounted() {
         if (this.loadFromStore !== ""){
             this.file = this.handles[this.loadFromStore];
-            this.openFile(true);
+            this.openFile(false);
         }
     },
 
@@ -234,7 +234,7 @@ export default {
                 this.offset = 0;
                 //if (this.readFile){
                     this.pleaseWait = true;
-                    await this.openFileSync(true);
+                    await this.openFileSync(false);
                     this.pleaseWait = false;
                 //}
                 this.upload();
@@ -272,7 +272,7 @@ export default {
                 this.confirmChange = false;
                 //if (this.loadFromStore){
                     this.confirmResume = false;
-                    await this.openFile(true);
+                    await this.openFile(false);
                 //}
 
             }else{
@@ -289,7 +289,7 @@ export default {
         resumeConfirmed: function(){
             this.confirmChange = false;
             this.confirmResume = false;
-            this.openFile(true);
+            this.openFile(false);
         },
 
         changeConfirmed: function(){
@@ -700,7 +700,7 @@ export default {
             u.start();
         },
         onImportButtonClicked: async function(){
-            await this.openFileSync(true);
+            await this.openFileSync(false);
             const content = this.getStringContent();
             this.$emit('import-button-clicked', content);
         },
