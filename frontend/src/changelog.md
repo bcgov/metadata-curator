@@ -2,24 +2,16 @@
 
 <br />
 
-## Version 1.6.6
-March 15, 2023
- - Created script in util folder that takes parameters to delete files older than a certain date
- - Changed dataset description field to be a text area instead of a text input so that it can be expanded
- - Added handling for brackets "()" in the BCDC functionality
- - Fixed script for noauth to also have cors allowed on files and removed body limit for minio
- - Fixed large upload issue which was caused by tus-js-client keeping the encrypted file contents in memory
- - Updated tus-js-client to newest
- - Create dataset validation error fixed to show field specific errors.
- - Fixed comments to show beside their corresponding resource when the resource name contains a space.
- - Prevent edition files and fields from being saved when two resources have the same name.
- - Added ability to scroll to the top of edition files and fields.
- - Added ability to denote primary anf foreign keys in resources
- - Added ability to specify more than one file per resource.
+## Version 1.6.7
+March 21, 2023
+ - Disable resume on file upload the logic is complicated and doesn't work properly
 
-<br />
+ <br />
+
 
 ## Table Of Contents
+- [Version 1.6.7 (March 31 2023)](#version-167)
+- [Version 1.6.6 (March 15 2023)](#version-166)
 - [Version 1.6.5 (January 7 2023)](#version-165)
 - [Version 1.6.4 (November 18 2022)](#version-164)
 - [Version 1.6.3 (November 2 2022)](#version-163)
@@ -52,6 +44,23 @@ March 15, 2023
 - [Version 1.2.4 (February 7 2022)](#version-124)
 - [Version 1.2.3 (February 1 2022)](#version-123)
 - [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
+## Version 1.6.6
+March 15, 2023
+ - Created script in util folder that takes parameters to delete files older than a certain date
+ - Changed dataset description field to be a text area instead of a text input so that it can be expanded
+ - Added handling for brackets "()" in the BCDC functionality
+ - Fixed script for noauth to also have cors allowed on files and removed body limit for minio
+ - Fixed large upload issue which was caused by tus-js-client keeping the encrypted file contents in memory
+ - Updated tus-js-client to newest
+ - Create dataset validation error fixed to show field specific errors.
+ - Fixed comments to show beside their corresponding resource when the resource name contains a space.
+ - Prevent edition files and fields from being saved when two resources have the same name.
+ - Added ability to scroll to the top of edition files and fields.
+ - Added ability to denote primary anf foreign keys in resources
+ - Added ability to specify more than one file per resource.
 
 <br />
 
