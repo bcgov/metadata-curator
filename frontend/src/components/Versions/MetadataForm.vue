@@ -16,7 +16,7 @@
                 <div v-if="loading || !schema">
                 </div>
                 <div class="fixed" v-else-if="editing">
-                    <v-btn @click="closeOrBack()" class="mt-1">{{$tc('Cancel')}}</v-btn>
+                    <v-btn @click="closeOrBack()" id="cancelSaveMetadata" class="mt-1">{{$tc('Cancel')}}</v-btn>
                     <v-btn @click="save" id="saveMetadata" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
                 </div>
                 <div class="fixed" v-else>
@@ -38,14 +38,14 @@
                         </v-row>
                         <v-row v-if="!loading && schema && schema !== {}" key="">
                             <v-select v-if="inferredSchema && !editing" :items="['Provided', 'Inferred']" v-model="viewSchemaType"></v-select>
-                            <SchemaView 
-                                @commentRefs="(e) => $emit('commentRefs', e)" 
+                            <SchemaView
+                                @commentRefs="(e) => $emit('commentRefs', e)"
                                 @setComment="(e) => { $emit('setComment', e) }"
-                                :branchId="branchId" 
-                                :editing="editing" 
-                                @edited="updatedObj" 
+                                :branchId="branchId"
+                                :editing="editing"
+                                @edited="updatedObj"
                                 @filter="(k, v) => { filter(k,v) }"
-                                @editedHighlight="editedHighlight" 
+                                @editedHighlight="editedHighlight"
                                 :schema=" (viewSchemaType === 'Provided') ? schema : inferredSchema">
                             </SchemaView>
                         </v-row>
@@ -154,7 +154,7 @@ export default {
             getInferredSchema: 'schemaImport/getInferredSchema',
             setTableSchema: 'schemaImport/setTableSchema',
         }),
-        ...mapMutations({    
+        ...mapMutations({
             editBranch: 'repos/editBranch',
             clearBranch: 'repos/clearBranch',
             resetSchemaImportState: 'schemaImport/resetState',
@@ -253,9 +253,7 @@ export default {
         },
 
         async save(){
-            console.log("CALLING SAVE");
             if (this.schemaObj){
-                console.log("DOING SAVE");
                 await this.setTableSchema({schema: this.schemaObj});
                 if (this.schemaError){
                     this.alertType = "error"
@@ -268,25 +266,31 @@ export default {
                 if (this.creating){
                     this.saveTableSchema();
                     this.updateBranch().then( () => {
-                        this.alertType = "success"
-                        this.alertText = this.$tc('Sucessfully updated') + " " + this.$tc('version');
-                        this.alert = true;
-                        this.closeOrBack();
-
+                        if (this.schemaError){
+                            this.alertType = "error"
+                            this.alertText = (this.schemaError && typeof(this.schemaError) === 'string') ? this.schemaError : JSON.stringify(this.schemaError);
+                            this.alert = true;
+                            window.scrollTo(0,0);
+                        }else {
+                            this.alertType = "success"
+                            this.alertText = this.$tc('Sucessfully updated') + " " + this.$tc('version');
+                            this.alert = true;
+                            this.closeOrBack();
+                        }
                     }).catch( err => {
                         this.alertType = "error"
                         this.alertText = err.message;
                         this.alert = true;
                         window.scrollTo(0,0);
                     });
-                    
+
                 }else{
                     try{
                         await this.updateDataPackageSchema();
                         // this.updateBranch().then( () => {
                         if (this.schemaError){
                             this.alertType = "error"
-                            this.alertText = (this.schemaError && typeof(this.schemaError) === 'string') ? this.schemaError : JSON.stringify(this.schemaError);
+                            this.alertText = (this.schemaError && typeof(this.schemaError) === 'string') ? this.schemaError : JSON.stringify(this.schemaError.message);
                             this.alert = true;
                             window.scrollTo(0,0);
                         }else{
@@ -304,7 +308,6 @@ export default {
                     }
                 }
             }
-            console.log("ENDING SAVE");
         },
 
         async importButtonClicked(content) {
@@ -313,7 +316,7 @@ export default {
                 content.version = this.id;
                 content = JSON.stringify(content);
 
-                if(this.metadataType == 'table') {    
+                if(this.metadataType == 'table') {
                     this.setTableSchema({schema: content});
                     this.saveTableSchema();
                     this.loading = true;
@@ -358,7 +361,7 @@ export default {
             this.load();
         }
     },
-    
+
     created() {
         this.load()
     },
@@ -377,14 +380,14 @@ export default {
         position: relative;
         padding-bottom: 15px;
     }
-    
+
     .fixed {
         position: fixed;
         bottom: 100px;
         right: 0px;
         z-index: 100;
     }
-    
+
     .fixedHeight{
         height: 36px;
         line-height: 36px;

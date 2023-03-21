@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+const log = require("npmlog");
 var buildStatic = function(db, router){
     return router;
 }
@@ -27,6 +29,11 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
 
                     if (!rsrcValid) {
                     }
+                }
+
+                const uniqueResources = new Set(descriptor.resources.map(v => v.name));
+                if(uniqueResources.size < descriptor.resources.length){
+                    throw new Error("Resource Names Must Be Unique");
                 }
             } else {
                 let newVal = [];
@@ -193,13 +200,50 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         return current;
     }
 
+    const getDataPackageByResourceNameValue = async function (fieldOrValue) {
+        var dataPackages = [];
+        var uploads = [];
+
+        var dataPackagesWValueInName = await db.DataPackageSchema.find({'resources.tableSchema.fields.name': {'$regex': fieldOrValue, '$options': 'i'}}).lean().catch(e => {
+            log.error(e);
+            throw new Error(e.message)
+        });
+        dataPackages.push.apply(dataPackages, dataPackagesWValueInName);
+        var dataPackagesWValueInValue = await db.DataPackageSchema.find({'resources.tableSchema.fields.constraints.enum': {'$regex': fieldOrValue, '$options': 'i'}}).lean().catch(e => {
+            log.error(e);
+            throw new Error(e.message)
+        });
+        dataPackages.push.apply(dataPackages, dataPackagesWValueInValue);
+
+        for (const dataPackage of dataPackages){
+            const repo_branch = await db.RepoBranchSchema.findOne({_id: dataPackage.version}).lean().catch(e => {
+                log.error(e);
+                throw new Error(e.message)
+            });
+            const data_upload = await db.DataUploadSchema.findOne({_id: repo_branch.data_upload_id}).lean().catch(e => {
+                log.error(e);
+                throw new Error(e.message)
+            });
+            uploads.push(data_upload);
+        }
+
+        const seen = new Set();
+        const uniqueUploads = uploads.filter(el => {
+            if (el !== null) {
+                const duplicate = seen.has(el.name);
+                seen.add(el.name);
+                return !duplicate;
+            }
+        });
+
+        return uniqueUploads;
+    }
+
     const getDataPackageByBranchId = async function (id, user, inferred) {
         // Return a lean() object - simple javascript object, rather than the Model
         // so we can transform the document into a valid data package
-
         inferred = (typeof(inferred) !== 'undefined') ? inferred : false;
         const branch = await db.RepoBranchSchema.findOne({_id: id});
-
         id = mongoose.Types.ObjectId(id);
 
         if ( (!branch || !branch.published) && (!user) ){
@@ -363,6 +407,15 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         try{
             const id = req.params.dataPackageId;
             res.status(200).json(await getDataPackageById(id));
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
+    });
+
+    router.get('/resource/:fieldNameValue', auth.requireLoggedIn, async function(req, res, next){
+        try{
+            const nameOrValue = req.params.fieldNameValue;
+            return res.status(200).json(await getDataPackageByResourceNameValue(nameOrValue));
         }catch(ex){
             res.status(500).json({error: ex});
         }

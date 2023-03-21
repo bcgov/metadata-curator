@@ -16,7 +16,7 @@ var workingDataset = {
         selector2: '#ministry_organization-value',
     },
     description: {
-        selector: 'input[name="description"]',
+        selector: 'textarea[name="description"]',
         value: 'this is a description',
         selector2: '#description-value'
     },
@@ -57,9 +57,18 @@ var workingDataset = {
         value: "Active",
         selector2: '#lifecycle_status-value',
     },
-    
-    
+
+
 };
+
+Given(/^An open dataset ready browser$/, async function(){
+    client = this.browser;
+    await helpers.open(client);
+    await helpers.login(client, 'approver');
+    await client.pause(3000);
+    await client.click('#tab-datasets');
+    await client.pause(3000);
+})
 
 Given(/^Data approver successfully creates a dataset$/, async function(){
     client = this.browser;
@@ -69,30 +78,33 @@ Given(/^Data approver successfully creates a dataset$/, async function(){
     try{
         await helpers.open(client);
         await helpers.login(client, 'approver');
-        
+
         await helpers.newDataset(client);
 
         const groupSel = helpers.confGet('providerGroup');
 
+        await client.waitForElementPresent('input[name="name"]', 30000)
+
+        await client.pause(2000);
         await client.click('xpath', '//input[@name="providerGroup"]/..');
-        await client.pause(200);
+        await client.pause(5000);
         await client.click('xpath', '//div[@class="v-list-item__title"][contains(.,"' + groupSel+'")]');
         await client.pause(200);
-        
+
         for (property in workingDataset){
             if (workingDataset[property].select){
 
                 await client.click('xpath', workingDataset[property].selector);
                 await client.pause(100);
                 await client.click('xpath', '//div[@class="v-list-item__title"][contains(.,"' + workingDataset[property].value+'")]');
-                
+
             }else if (workingDataset[property].value){
                 await client.setValue(workingDataset[property].selector, workingDataset[property].value)
             }else if (workingDataset[property].ariaChecked === 'true'){
                 await client.click(workingDataset[property].selector);
             }
         }
-        
+
         await client.saveScreenshot('./'+path+'/preSaveDataset-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
         await client.click('#saveDataset');
         await client.pause(5000);
@@ -108,6 +120,8 @@ When(/^Data approver chooses to see the details of the dataset$/, async function
         let id = '#dataset-'+workingDataset.name.value.toLowerCase();
         id += '----' + workingDataset.ministry.value.toLowerCase();
         id = id.replace(/[ :.]/g, '-')
+        await client.waitForElementPresent(id, 30000);
+        await client.saveScreenshot('./'+path+'/selectDataSetForDetails.png');
         await client.pause(3000);
         await client.click(id);
         await client.pause(2000);
@@ -119,20 +133,25 @@ When(/^Data approver chooses to see the details of the dataset$/, async function
 
 Then(/^Data approver should see information on the characteristics of the dataset$/, async function(){
     client = this.browser;
+    await client.waitForElementPresent('#name-value', 30000);
+    //await client.saveScreenshot('./'+path+'/preDatasetReview-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     await client.pause(5000);
-    await client.saveScreenshot('./'+path+'/preDatasetReview-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     try{
         let success = true;
         for (var property in workingDataset){
 
             if ( (workingDataset[property].ariaChecked) || (workingDataset[property].ariaChecked === 'false') ){
-                
-                let contains = workingDataset[property].ariaChecked === 'true' ? 'fa-check-square' : 'fa-square'
 
+                let contains = workingDataset[property].ariaChecked === 'true' ? 'fa-check-square' : 'fa-square'
+                await client.pause(1000)
                 success = (success && await client.assert.attributeContains(workingDataset[property].selector2, 'class', contains));
             }else if (workingDataset[property].selector2){
+                await client.waitForElementPresent(workingDataset[property].selector2, 30000);
+                await client.pause(1000)
                 success = (success && await client.assert.textContains(workingDataset[property].selector2, workingDataset[property].value));
             }else if (workingDataset[property].value){
+                await client.waitForElementPresent(workingDataset[property].selector, 30000);
+                await client.pause(1000)
                 success = (success && await client.assert.value(workingDataset[property].selector, workingDataset[property].value));
             }else{
                 success = false;
@@ -149,6 +168,7 @@ Then(/^Data approver should see information on the characteristics of the datase
 
 Then(/^Data approver edits the dataset information$/, async function(){
     client = this.browser;
+    await client.waitForElementPresent('#name-value', 30000);
     try{
         for (var property in workingDataset){
             if (workingDataset[property].value && !workingDataset[property].select){
@@ -158,13 +178,15 @@ Then(/^Data approver edits the dataset information$/, async function(){
             }
         }
 
+        await client.waitForElementPresent('#editDatasetBtn', 30000);
+        await client.pause(3000);
         await client.click('#editDatasetBtn');
 
         for (property in workingDataset){
             if (workingDataset[property].value && !workingDataset[property].select){
                 client.getValue(workingDataset[property].selector, (textValue) => {
                     for(let i = 0; i < textValue.value.length; i ++) {
-                        client.setValue(workingDataset[property].selector, '\u0008'); 
+                        client.setValue(workingDataset[property].selector, '\u0008');
                     }
                 });
                 await client.setValue(workingDataset[property].selector, workingDataset[property].value)
@@ -174,10 +196,11 @@ Then(/^Data approver edits the dataset information$/, async function(){
         }
 
         await client.pause(5000);
-        
+
         await client.saveScreenshot('./'+path+'/preDatasetEditSave-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
         await client.click('#saveDataset');
         await client.pause(2000);
+        await client.click('#tab-datasets');
     }catch(ex){
         await helpers.logout(client);
         throw ex;

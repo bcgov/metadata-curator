@@ -65,10 +65,10 @@
                                 ></Select>
                                 <span>{{$tc('NOTE: you will be unable to change this after the next form')}}</span>
                             </v-card>
-                            
+
                             <v-btn text @click="stepSavePreCreate" id="next-0">{{$tc('Next')}}</v-btn>
                         </v-stepper-content>
-                        
+
                         <v-stepper-content :step="steps.step1UploadForm">
                             <v-card class="mb-12">
                                 <UploadForm ref="uploadForm"></UploadForm>
@@ -81,9 +81,9 @@
                             <v-card class="mb-12">
                                 <v-row>
                                     <v-col cols=9>
-                                        <v-select 
-                                            v-model="selectedDataset" 
-                                            :items="datasetList"  
+                                        <v-select
+                                            v-model="selectedDataset"
+                                            :items="datasetList"
                                             item-text="name"
                                             item-value="_id"
                                             :label="$tc('Datasets')">
@@ -95,10 +95,10 @@
                                 </v-row>
                                 <v-row>
                                     <v-col cols=9>
-                                        <v-select 
+                                        <v-select
                                             v-model="selectedVersion"
-                                            :disabled="versionListLoading" 
-                                            :items="versionList"  
+                                            :disabled="versionListLoading"
+                                            :items="versionList"
                                             item-text="name"
                                             item-value="_id"
                                             :label="$tc('Versions')">
@@ -123,23 +123,23 @@
                             <v-card class="mb-12">
                                 <FileForm v-if="step === steps.step3FileSelection" ref="fileForm" @changed="step2Changed"></FileForm>
                             </v-card>
-                            
+
                             <v-btn text @click="step=((enabledPhase >= 2 && (user.isAdmin || user.isApprover)) ? steps.step2EditionForm : steps.step1UploadForm)" id="back-3">{{$tc('Back')}}</v-btn>
                             <v-btn :disabled="!validStep3" @click="stepSaveFileForm(true)" id="next-3">{{$tc('Next')}}</v-btn>
-                            
+
                         </v-stepper-content>
 
                         <v-stepper-content :step="steps.step4FileLevelForm">
                             <v-card class="mb-12">
-                                <FileInfoForm 
-                                    v-if="step === steps.step4FileLevelForm" 
-                                    ref="fileInfoForm" 
+                                <FileInfoForm
+                                    v-if="step === steps.step4FileLevelForm"
+                                    ref="fileInfoForm"
                                     @update="(s, e, t, ty, d, n, temp) => { setFileInfo(s, e, t, ty, d, n, temp) }"
                                     :modifyStoreNow="fileInfoModify"></FileInfoForm>
                             </v-card>
                             <v-btn text @click="step=steps.step3FileSelection" id="back-4">{{$tc('Back')}}</v-btn>
                             <v-btn @click="stepSaveFileInfoForm(true)" id="next-4">{{$tc('Next')}}</v-btn>
-                            
+
                         </v-stepper-content>
 
                         <v-stepper-content :step="steps.step5SchemaInformation" v-if="enabledPhase >= 2">
@@ -166,10 +166,10 @@
                                     </v-col>
                                 </v-row>
                             </v-card>
-                            
+
                             <v-btn text @click="leaveSchemaForm" id="back-5">{{$tc('Back')}}</v-btn>
                             <v-btn @click="stepSaveSchemaForm(true)" id="next-5">{{$tc('Next')}}</v-btn>
-                            
+
                         </v-stepper-content>
 
                         <v-stepper-content :step="steps.step6UploadProgress">
@@ -182,7 +182,7 @@
 
                         <v-stepper-content :step="steps.step7UploadSummary">
                             <v-card class="mb-12">
-                                
+
                             </v-card>
                         </v-stepper-content>
                     </v-stepper-items>
@@ -221,8 +221,8 @@
             this.$store.commit('file/clearContent');
             this.modifyStoreUpload({});
             await this.getAllRepos();
-            if(this.$route.params.id && this.$route.params.id != 'new') { 
-                this.uploadId = this.$route.params.id; 
+            if(this.$route.params.id && this.$route.params.id != 'new') {
+                this.uploadId = this.$route.params.id;
             }else{
                 //this.resetState();
             }
@@ -245,10 +245,10 @@
                     let ignoreGroups = await this.$store.dispatch('config/getItem', {field: 'key', value: 'ignoreGroups', def: {key: 'ignoreGroups', value: []}});
                     ignoreGroups = ignoreGroups.value;
                     for (var i=0; i<ignoreGroups.length; i++){
-                                                    
+
                         if ( (ignoreGroups[i].indexOf("/") == 0) && (ignoreGroups[i].lastIndexOf("/") === (ignoreGroups[i].length -1)) ){
                             let s = ignoreGroups[i].substring(1, ignoreGroups[i].length-1);
-                            let r = new RegExp(s);      
+                            let r = new RegExp(s);
                             this.selectableGroups = this.selectableGroups.filter( (el) => {
                                 //console.log("REGEX match", el, s, r, el.match(r));
                                 return el.match(r) === null })
@@ -259,13 +259,13 @@
                                 this.selectableGroups.splice(ignoreIndex, 1);
                             }
                         }
-                        
+
                     }
                 }
             }
-            if(this.uploadId) { 
-                
-                await this.getUpload(this.uploadId); 
+            if(this.uploadId) {
+
+                await this.getUpload(this.uploadId);
                 if (this.upload === null){
                     this.loading = false;
                     this.notFound = true;
@@ -287,12 +287,14 @@
                     this.selectedVersion = '-1';
 
                     if (this.schemaState && this.schemaState.version){
+                        console.log("setting created");
                         this.selectedVersion = this.schemaState.version
                         // this.getBranchesByUpload({uploadId: this.uploadId})
                     }
-                
+
                     if (this.versions && this.versions[0] && this.versions[0].repo_id){
                         this.selectedDataset = this.versions[0].repo_id;
+                        console.log("setting 2 created");
                         this.selectedVersion = this.versions[0]._id;
                         this.allowSelect = false;
                         if (this.versions[0].variable_classification){
@@ -369,12 +371,12 @@
 
             setFileInfo(s, e, t, ty, d, n, temp){
                 this.fileInfo = {
-                    start: s, 
-                    end: e, 
-                    title: t, 
-                    type: ty, 
+                    start: s,
+                    end: e,
+                    title: t,
+                    type: ty,
                     description: d,
-                    num_records: n, 
+                    num_records: n,
                     temporal_fields: temp
                 }
             },
@@ -437,7 +439,7 @@
                             temporal_start: this.upload.files[i].start_date,
                             temporal_end: this.upload.files[i].end_date,
                         });
-                        
+
                     }catch(ex){
                         console.error("Error inferring:", ex);
                     }
@@ -446,7 +448,7 @@
 
                     let optUrl = '/js/semantic_infer.json';
                     let opt = await (await fetch(optUrl)).json();
-                    
+
                     let r = await semanticInfer.datapackage_infer.infer_datapackage(inferredSchema, false, opt);
                     this.inferredSchema = r;
                     for (let i=0; i<this.inferredSchema.resources.length; i++){
@@ -487,14 +489,14 @@
                 }
                 modifiedUpload.provider_group = this.providerGroup;
                 await this.modifyStoreUpload(modifiedUpload);
-                
+
                 if (!this.upload || !this.upload._id){
                     let u = await this.createInitialUpload(this.upload);
                     await this.$router.push({name: 'upload_view', params: {id: u._id}});
                 }else{
                     await this.updateUpload(this.upload);
                 }
-                
+
                 if ( (this.uploadError) && (this.uploadError !== null) ){
                     transitionNextStepAfterSave = false;
                     this.errorAlert = true;
@@ -504,7 +506,11 @@
 
                 this.errorAlert = false;
 
-                if(transitionNextStepAfterSave) { 
+                if ((typeof(this.enabledPhase) === 'undefined') || (!this.enabledPhase) ){
+                    await this.$store.dispatch('config/getItem', {field: 'key', value: 'enabledPhase', def: {key: 'enabledPhase', value: 1}});
+                }
+
+                if(transitionNextStepAfterSave) {
                     if (this.user.isApprover || this.user.isAdmin){
                         this.step = (this.enabledPhase >= 2) ? this.steps.step2EditionForm : this.steps.step3FileSelection;
                     }else{
@@ -516,7 +522,7 @@
                         if (this.user._json.preferred_username === TEST_ACCOUNT){
                             this.step = (this.enabledPhase >= 2) ? this.steps.step2EditionForm : this.steps.step3FileSelection;
                         }else{
-                            this.step = this.steps.step3FileSelection; 
+                            this.step = this.steps.step3FileSelection;
                         }
                     }
                 }
@@ -527,8 +533,8 @@
                     transitionNextStepAfterSave = false;
                 }
                 await this.updateUpload(this.upload);
-                if(transitionNextStepAfterSave) { 
-                    this.step = this.steps.step4FileLevelForm; 
+                if(transitionNextStepAfterSave) {
+                    this.step = this.steps.step4FileLevelForm;
                 }
             },
 
@@ -587,7 +593,7 @@
                 this.inferredSchema.version = this.selectedVersion;
                 this.setDataPackageSchema({schema: this.inferredSchema});
                 await this.createDataPackageSchemaInferred();
-                
+
                 if (oSchema === null || Object.keys(oSchema).length === 0){
                     if (this.schemaState && this.schemaState._id){
                         this.schema._id = this.schemaState._id;
@@ -600,7 +606,7 @@
                     this.setDataPackageSchema({schema: this.schema});
                     await this.createDataPackageSchema();
                 }
-                
+
                 if(transitionNextStepAfterSave) { this.step = this.steps.step6UploadProgress; }
             },
 
@@ -619,7 +625,7 @@
 
                 let valid = true;
                 if (this.upload.files){
-                    
+
                     for (let i=0; i<this.upload.files.length; i++){
                         if ((!this.upload.files[i].start_date) || (!this.upload.files[i].end_date)){
                             this.errorAlert = true;
@@ -647,11 +653,11 @@
                     this.errorText = "";
                     try{
                         await this.updateUpload(this.upload);
-                        
-                        if(transitionNextStepAfterSave) { 
+
+                        if(transitionNextStepAfterSave) {
                             await this.infer();
-                            this.step = (this.enabledPhase >= 2) ? this.steps.step5SchemaInformation : this.steps.step6UploadProgress; 
-                            
+                            this.step = (this.enabledPhase >= 2) ? this.steps.step5SchemaInformation : this.steps.step6UploadProgress;
+
                         }
                     }catch(e){
                         this.errorAlert = true;
@@ -676,7 +682,7 @@
                 if (this.user._json.preferred_username !== TEST_ACCOUNT){
                     return false;
                 }
-                
+
                 if (!this.selectedDataset){
                     this.errorAlert = true;
                     this.errorText = "Must select a " + this.$tc("Datasets") + " first"
@@ -687,13 +693,13 @@
                 this.editBranch({name: 'name', value: this.upload.name});
                 let desc = ( (this.upload) && (this.upload.description)) ? this.upload.description : this.upload.name;
                 let keyw = " ";
-                
+
                 this.editBranch({name: 'description', value: desc});
                 this.editBranch({name: 'type', value: 'standard'});
                 this.editBranch({name: 'data_upload_id', value: this.uploadId});
                 this.editBranch({name: "repo_id", value: this.selectedDataset});
                 this.editBranch({name: "keywords", value: keyw});
-                
+
                 let b = await this.saveBranch();
                 this.selectedVersion = b.id;
                 this.editBranch({name: "_id", value: this.selectedVersion});
@@ -710,11 +716,32 @@
                 this.clearDataset();
                 this.editDataset({name: 'name', value: this.upload.name});
                 this.editDataset({name: 'ministry_organization', value: this.upload.ministry_organization});
-                let d = await this.saveDataset();
+                this.editDataset({name: 'lifecycle_status', value: 'active'});
+
+                let selectableGroups = JSON.parse(JSON.stringify(this.user.groups));
+                let ignoreGroups = await this.$store.dispatch('config/getItem', {field: 'key', value: 'ignoreGroups', def: {key: 'ignoreGroups', value: []}});
+                ignoreGroups = ignoreGroups.value;
+                for (var i=0; i<ignoreGroups.length; i++){
+
+                    if ( (ignoreGroups[i].indexOf("/") == 0) && (ignoreGroups[i].lastIndexOf("/") === (ignoreGroups[i].length -1)) ){
+                        let s = ignoreGroups[i].substring(1, ignoreGroups[i].length-1);
+                        let r = new RegExp(s);
+                        selectableGroups = selectableGroups.filter( (el) => {
+                            return el.match(r) === null })
+                    }else{
+                        var ignoreIndex = -1;
+                        ignoreIndex = selectableGroups.indexOf(ignoreGroups[i]);
+                        if (ignoreIndex !== -1){
+                            selectableGroups.splice(ignoreIndex, 1);
+                        }
+                    }
+
+                }
+                this.editDataset({name: 'providerGroup', value: selectableGroups[0]});
+                await this.saveDataset({repo: this.dataset});
                 await this.getAllRepos();
-                this.setRepo({repo: {_id: d.id}});
-                this.selectedDataset = d.id;
-                
+                this.selectedDataset = this.dataset.id;
+
                 this.allowCreate = false;
                 this.allowSelect = false;
 
@@ -775,7 +802,8 @@
                 inferContent: state => state.file.content,
                 variableClassifications: state => state.variableClassifications.items,
                 variableClassification: state => state.variableClassifications.wipItem,
-                
+                dataset: state => state.repos.repo
+
             }),
 
             admin: function(){
@@ -835,6 +863,7 @@
                             if (this.versions[0].variable_classification){
                                 this.getVariableClassification({field: '_id', value: this.versions[0].variable_classification});
                             }
+                            console.log("setting version in selected dataset");
                             this.selectedVersion = this.versions[0]._id;
                         }else{
                             this.selectedVersion = "-1";
@@ -867,24 +896,26 @@
             // eslint-disable-next-line no-unused-vars
             upload: async function (newVal, oldVal) {
                 if(newVal && !oldVal) {
-                    
-                        
+
+
                     if (this.enabledPhase >= 2){
                         await this.getSchema({id: this.uploadId});
                         await this.getAllRepos();
                         await this.getBranchesByUpload({uploadId: this.uploadId})
                         if (this.schemaState && this.schemaState.version){
+                            console.log("setting 1 upload")
                             this.selectedVersion = this.schemaState.version
                         }
-                    
-                        if (this.versions && this.versions[0] && this.versions[0].repo_id){
-                            this.selectedDataset = this.versions[0].repo_id;
-                            this.allowSelect = false;
-                            this.selectedVersion = this.versions[0]._id;
-                        }
+
+                        // if (this.versions && this.versions[0] && this.versions[0].repo_id){
+                        //     this.selectedDataset = this.versions[0].repo_id;
+                        //     this.allowSelect = false;
+                        //     console.log("setting 2 upload")
+                        //     this.selectedVersion = this.versions[0]._id;
+                        // }
 
                     }
-                    
+
                     if (this.upload && this.upload.files && this.upload.files.length >= 1){
                         let allGood = true;
                         for (let i=0; i<this.upload.files.length; i++){
@@ -898,7 +929,7 @@
                         }
                     }
                     this.loading = false;
-                    
+
                 }
             },
         },

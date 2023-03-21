@@ -709,6 +709,8 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             }
 
             ckanDataset.name = ckanDataset.title.toLowerCase().replace(/ /g, "-");
+            ckanDataset.name = ckanDataset.name.replace(/\(/g, "");
+            ckanDataset.name = ckanDataset.name.replace(/\)/g, "");
 
             if (!repo.ministry_organization){
                 return res.status(400).json({error: "Dataset Ministry / Organization is required for bcdc publishing"});

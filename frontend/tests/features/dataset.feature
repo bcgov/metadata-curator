@@ -5,13 +5,11 @@ Scenario: Create Dataset
   Given Data approver successfully creates a dataset
 		When Data approver chooses to see the details of the dataset
 		Then Data approver should see information on the characteristics of the dataset
-    And the Data approver logs out
 
 
 Scenario: Edit Dataset
-  Given Data approver successfully creates a dataset
+  Given An open dataset ready browser
     When Data approver chooses to see the details of the dataset
 		Then Data approver edits the dataset information
-    When Data approver chooses to see the details of the dataset
+        When Data approver chooses to see the details of the dataset
 		Then Data approver should see information on the characteristics of the dataset
-      And the Data approver logs out

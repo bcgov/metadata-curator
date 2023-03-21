@@ -77,9 +77,6 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             throw new Error("Not permitted to create a repo");
         }
 
-        if (!fields.ministry_organization){
-            throw new Error("Ministry / Organization is required");
-        }
 
         let originalGroups = JSON.parse(JSON.stringify(user.groups));
         let originalJWT = user.jwt;
@@ -392,7 +389,10 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             for (let i=0; i<fullDPS.length; i++){
                         
                 if (fullDPS[i].version && fullDPS[i].version.topic_id){
-                    let res = JSON.parse(JSON.stringify(fullDPS[i]));
+                    let res = fullDPS[i];
+                    try{
+                        res = JSON.parse(JSON.stringify(fullDPS[i]));
+                    }catch(e){}
                     let topicStr = res.version.topic_id.toString();
                     res.version.author_groups = authorGroupsLookup[topicStr];
                     res.version.providerGroup = authorGroupsLookup[topicStr];
@@ -400,7 +400,10 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
                 }
 
                 if (fullDPS[i].version && fullDPS[i].version.repo_id && fullDPS[i].version.repo_id.topic_id){
-                    let res = JSON.parse(JSON.stringify(fullDPS[i]));
+                    let res = fullDPS[i];
+                    try{
+                        res = JSON.parse(JSON.stringify(fullDPS[i]));
+                    }catch(e){}
                     let topicStr = res.version.repo_id.topic_id.toString();
                     res.version.repo_id.author_groups = authorGroupsLookup[topicStr];
                     res.version.repo_id.providerGroup = authorGroupsLookup[topicStr];
@@ -502,7 +505,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             let repos = await listRepositoriesEditionFull(req.user, req.query);
             res.status(200).json(repos);
         }catch(ex){
-            res.status(500).json({error: ex});
+            res.status(500).json({error: ex.message});
         }
     });
 
@@ -513,9 +516,24 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
         
         let fields = {...req.body};
+        let error = [];
 
+        if(!fields.providerGroup){
+            error.push("Data Provider Group is Required.");
+        }
         if (!fields.name){
-            return res.status(400).json({error: "Name is required"});
+            error.push("Dataset Name is Required.")
+        }
+        if (!fields.ministry_organization){
+            error.push("Ministry / Organization is required");
+        }
+
+        if(!fields.lifecycle_status){
+            error.push("Dataset Lifecycle Status is required");
+        }
+
+        if(error.length > 0){
+            return res.status(400).json({error: error});
         }
     
         try{

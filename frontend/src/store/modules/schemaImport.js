@@ -49,6 +49,9 @@ const actions = {
         if (s && s._id){
             commit('setTableSchemaId', {id: s._id});
             dispatch('getRevisions', {id: s._id});
+            for (let i = 0; i < s.resources.length; i++){
+                s.resources[i].path = s.resources[i].path.join(', ');
+            }
         }
         commit('setTableSchemaM', {schema: s});
         return s;
@@ -65,14 +68,16 @@ const actions = {
                 delete schema.profile;
                 delete schema.__v;
                 delete schema.version;
-                
+                for (let i = 0; i < schema.resources.length; i++){
+                    schema.resources[i].path = schema.resources[i].path.split(/[ ,]+/);
+                }
                 await DSchema.load(schema);
             }else if (schema){
                 let s = schema;
                 if (typeof(s) === "string"){
                     s = JSON.parse(s);
                 }
-                
+
                 await Schema.load(s);
             }
             commit('setTableSchemaM', {schema: schema})
@@ -154,20 +159,17 @@ const actions = {
         });
 
     },
-
     async updateDataPackageSchema({commit, state}){
 
         commit('clearSuccessMsg');
         commit('clearError');
 
-        try{
-            await backend.putDataPackageSchema(state.tableSchemaId, state.tableSchema);
+        await backend.putDataPackageSchema(state.tableSchemaId, state.tableSchema).then(() => {
             commit('setSuccessMsg', {message: "Successfully updated data package schema"});
-        }catch(e){
+        }).catch((e) => {
             commit('setError', {error: e.response.data.error});
-        }
+        });
     }
-
 }
 
 

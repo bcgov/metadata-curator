@@ -37,7 +37,7 @@
                     dense
                     :headers="headers"
                     :items="items"
-                    :items-per-page="-1"
+                    :items-per-page="100"
                 >
                     <template v-slot:item="{ item }">
                         <tr>

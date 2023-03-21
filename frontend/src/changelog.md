@@ -2,14 +2,25 @@
 
 <br />
 
-## Version 1.6.4
-November 18, 2022
- - Fixed bug with supplemental files
+## Version 1.6.6
+March 15, 2023
+ - Created script in util folder that takes parameters to delete files older than a certain date
+ - Changed dataset description field to be a text area instead of a text input so that it can be expanded
+ - Added handling for brackets "()" in the BCDC functionality
+ - Fixed script for noauth to also have cors allowed on files and removed body limit for minio
+ - Fixed large upload issue which was caused by tus-js-client keeping the encrypted file contents in memory
+ - Updated tus-js-client to newest
+ - Create dataset validation error fixed to show field specific errors.
+ - Fixed comments to show beside their corresponding resource when the resource name contains a space.
+ - Prevent edition files and fields from being saved when two resources have the same name.
+ - Added ability to scroll to the top of edition files and fields.
+ - Added ability to denote primary anf foreign keys in resources
+ - Added ability to specify more than one file per resource.
 
 <br />
 
 ## Table Of Contents
-- [Version 1.6.5 (January 2023)](#version-165)
+- [Version 1.6.5 (January 7 2023)](#version-165)
 - [Version 1.6.4 (November 18 2022)](#version-164)
 - [Version 1.6.3 (November 2 2022)](#version-163)
 - [Version 1.6.2 (September 19 2022)](#version-162)
@@ -46,8 +57,17 @@ November 18, 2022
 
 ## Version 1.6.5
 January 7, 2023
+ - Added all files report to dataset which is the same as all fields without the field information from files and fields
+ - Fixed issue preventing dragging fields around for reordering on files and fields after entering a text field
+ - Tentative fix for edition full 500 error
+ - Fixed an issue that allowed uploaders to create an upload without an approver if they did it in a fresh session (incognito)
  - Updated Terraform deployment reference to new updated tusd_py3 docker image
  - Updated syntax in pre-create tusd_py3 hook script
+<br />
+
+## Version 1.6.4
+November 18, 2022
+ - Fixed bug with supplemental files
 
 <br />
 

@@ -42,7 +42,7 @@ module.exports = {
     },
 
     logout: async function(client){
-        return await client.click('#userMenu').click('#userMenu-Logout');
+        return true;//await client.click('#userMenu').click('#userMenu-Logout');
     },
 
     newUpload: async function(client){

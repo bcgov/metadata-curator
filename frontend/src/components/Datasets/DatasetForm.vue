@@ -1,6 +1,5 @@
 <template>
     <v-container fluid>
-        
 
         <v-row v-if="loading">
             <v-col cols=12>
@@ -17,12 +16,21 @@
 
         <v-row v-else>
             <v-col cols="12">
-                <v-alert
-                    :type="alertType"
-                    dismissible
-                    v-model="alert">
+                <v-row v-if="alert">
+                    <v-alert
+                        v-if="typeof(alertText) === 'string'"
+                        :type="alertType"
+                        dismissible>
                         {{alertText}}
-                </v-alert>
+                    </v-alert>
+                    <v-row v-else v-for="a in alertText" :key="a">
+                        <v-alert
+                            :type="alertType"
+                            dismissible>
+                            {{a}}
+                        </v-alert>
+                    </v-row>
+                </v-row>
                 <v-card outlined>
                     <v-card-text>
                         <v-row v-if="creating">
@@ -91,16 +99,17 @@
 
                         <v-row>
                             <v-col cols=12>
-                                <TextInput
+                                <TextArea
                                     :label="$tc('Dataset') + ' ' + $tc('Description')"
                                     :placeholder="$tc('Description')"
                                     name="description"
                                     :large="true"
+                                    :autogrow="false"
                                     :editing="editing"
                                     :value="(dataset) ? dataset.description : ''"
                                     helpPrefix="dataset"
                                     @edited="(newValue) => { updateValues('description', newValue) }"
-                                ></TextInput>
+                                ></TextArea>
                             </v-col>
                         </v-row>
 
@@ -208,7 +217,6 @@
                                     @edited="(newValue) => { updateValues('in_bc_catalogue', newValue) }">
                                 </SimpleCheckbox>
                             </v-col>
-                        
                         </v-row>
 
                         <v-row class="outline">
@@ -365,7 +373,6 @@
                         </v-row>
 
                     </v-card-text>
-                
                     <v-card-actions v-if="editing">
                         <v-btn @click="routeToHome()" class="mt-1">{{$tc('Cancel')}}</v-btn>
                         <v-btn @click="save" id="saveDataset" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
@@ -383,6 +390,7 @@
 <script>
 import {mapActions, mapMutations, mapState} from "vuex";
 import TextInput from '../FormElements/TextInput';
+import TextArea from '../FormElements/TextArea';
 import SimpleCheckbox from '../FormElements/SimpleCheckbox';
 import Select from '../FormElements/Select';
 import Repeating from '../FormElements/Repeating';
@@ -392,6 +400,7 @@ export default {
 
     components:{
         TextInput,
+        TextArea,
         SimpleCheckbox,
         Select,
         Repeating
@@ -430,7 +439,7 @@ export default {
             saveBranch: 'repos/saveBranch',
             getDataPackage: 'schemaImport/getDataPackage',
         }),
-        ...mapMutations({    
+        ...mapMutations({
             editDataset: 'repos/editRepo',
             clearDataset: 'repos/clearRepo',
             editBranch: 'repos/editBranch',
@@ -461,7 +470,14 @@ export default {
 
         save(){
             if (this.creating){
-                this.saveDataset().then( () => {
+                this.saveDataset({repo: this.dataset}).then( async() => {
+                        if((this.datasetError !== null) && (this.datasetError !== "")){
+                            this.alertType = "error"
+                            this.alertText = this.datasetError;
+                            this.alert = true;
+                            window.scrollTo(0,0);
+                            return;
+                        }
                         this.alertType = "success"
                         this.alertText = this.$tc("Sucessfully created dataset");
                         this.alert = true;
@@ -490,7 +506,6 @@ export default {
                         window.scrollTo(0,0);
                     });
             }
-                
         }
     },
     computed: {
@@ -499,12 +514,13 @@ export default {
             dataset: state => state.repos.repo,
             branches: state => state.repos.branches,
             dataPackageSchema: state => state.schemaImport.dataPackageSchema,
+            datasetError: state => state.repos.error,
         }),
     },
     async created() {
         this.clearDataset();
         // console.log("dataUpload id: " + this.$route.params.id);
-        
+
         this.id = this.$route.params.id;
         if (this.idOverride){
             this.id = this.idOverride;
@@ -521,14 +537,12 @@ export default {
                 if (index !== -1){
                     this.selectableGroups.splice(index, 1);
                 }
-                
                 let ignoreGroups = await this.$store.dispatch('config/getItem', {field: 'key', value: 'ignoreGroups', def: {key: 'ignoreGroups', value: []}});
                 ignoreGroups = ignoreGroups.value;
                 for (var i=0; i<ignoreGroups.length; i++){
-                                                 
                     if ( (ignoreGroups[i].indexOf("/") == 0) && (ignoreGroups[i].lastIndexOf("/") === (ignoreGroups[i].length -1)) ){
                         let s = ignoreGroups[i].substring(1, ignoreGroups[i].length-1);
-                        let r = new RegExp(s);      
+                        let r = new RegExp(s);
                         this.selectableGroups = this.selectableGroups.filter( (el) => {
                             //console.log("REGEX match", el, s, r, el.match(r));
                             return el.match(r) === null })
@@ -539,7 +553,6 @@ export default {
                             this.selectableGroups.splice(ignoreIndex, 1);
                         }
                     }
-                    
                 }
 
                 for (let i=0; i<this.selectableGroups.length; i++){

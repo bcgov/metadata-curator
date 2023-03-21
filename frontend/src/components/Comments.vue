@@ -27,7 +27,7 @@
                             >
 
                                 <v-list-item-content>
-                                    
+
                                     <v-list-item-title :class="(expanded[index] ? 'expanded' : '')">
                                         <v-row>
                                             <v-col cols=1 v-if="item.author && user && user._json && user._json.email && item.author !== user._json.email">
@@ -36,7 +36,7 @@
                                             <v-col cols=1 v-else-if="!item.author || !user || !user._json || !user._json.email">
                                                 <v-icon>mdi-account</v-icon>
                                             </v-col>
-                                            
+
                                             <v-col cols=1 v-if="((item.content.length >= 75) && (type !== 'schema'))">
                                                 <v-btn x-small @click="expand(index)">
                                                     <v-icon>{{expanded[index] ? 'mdi-minus' : 'mdi-plus'}}</v-icon>
@@ -101,7 +101,7 @@ import { Backend } from '../services/backend';
 const backend = new Backend();
 
     export default {
-        components: { 
+        components: {
             Markdown,
         },
         props:{
@@ -168,12 +168,12 @@ const backend = new Backend();
                     };
 
                     let anchorRegex = /!([^.]+\.\S+)/g;
-                                
-                    let fieldRef = "!" + self.resource + "." + self.field;
 
+                    let fieldRef = "!" + self.resource + "." + self.field;
+                    fieldRef = fieldRef.replaceAll(' ', '+');
                     if ( (self.type !== 'schema') || ( (fieldRef.length > 2) && (comment.comment.indexOf(fieldRef) !== -1) ) ){
                         item.content = item.content.replace(anchorRegex, "[!$1](#$1)");
-                        
+
                         if (self.commentDisplayItems.length > 0){
                             self.commentDisplayItems.push({ divider: true, inset: true });
                             self.expanded.push(false);
@@ -217,7 +217,7 @@ const backend = new Backend();
                         this.addVarClassComment({id: this.id, comment: this.comment});
                         break;
                 }
-                
+
                 this.comment = "";
                 this.refreshKey++;
             },
@@ -246,7 +246,7 @@ const backend = new Backend();
                     this.getVarClassComments(this.id);
                     break;
             }
-            
+
             this.computeCommentDisplayItems();
         },
         watch: {
@@ -312,7 +312,7 @@ const backend = new Backend();
     }
 
     .from-them{
-        
+
     }
 
 </style>

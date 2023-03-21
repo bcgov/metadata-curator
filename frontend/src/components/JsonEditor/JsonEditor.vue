@@ -94,7 +94,7 @@
                            </v-col>
                             <v-col cols=6>
                             </v-col>
-                            
+
                             <v-col cols=12>
                                 <TextInput
                                     :label="$tc('Resource', 1) + ' ' + $tc('Name')"
@@ -108,7 +108,7 @@
                                     validation-rules="required"
                                     helpPrefix="schema.res"
                                     :focusField="focusProp"
-                                    
+
                                     @blur="(event) => { updateResourceName(key, event) }"
                                 ></TextInput>
                             </v-col>
@@ -133,7 +133,7 @@
                                         @blur="(event) => { updateResourcePath(key, event) }"
                                     ></TextInput>
                                 </v-col>
-                            
+
                             </v-row>
                             <v-row v-if="(resource && resource.description) || editing" class="pb-2">
                                 <v-col cols=12>
@@ -228,17 +228,107 @@
                                     ></TextInput>
                                 </v-col>
                             </v-row>
+                            <v-row v-if="(resource.schema && resource.schema.primaryKey) || editing" class="pb-2">
+                                <v-col cols=12>
+                                    <TextInput
+                                        :label="$tc('Primary Key')"
+                                        placeholder=""
+                                        name="primaryKey"
+                                        :refName="'basicField-' + key + '-primaryKey'"
+                                        :idName="'basicField-' + key + '-primaryKey'"
+                                        :large="true"
+                                        :editing="editing"
+                                        :value="resource.schema.primaryKey"
+                                        helpPrefix="schema"
+                                        :focusField="focusProp"
+                                        @focus="onFocusBasic"
+                                        @blur="(event) => { updateResourcePK(key, 'primaryKey', event) }"
+                                    ></TextInput>
+                                </v-col>
+                            </v-row>
+                            <span v-if="resource.schema && resource.schema.foreignKeys" class="row pb-2" style="width: 100%">
+                                    <v-row
+                                        :id="'foreignKeyHeader-'+key+'-'+fkKey"
+                                        no-gutters
+                                        v-for="(foreignKey, fkKey) in resource.schema.foreignKeys"
+                                        :key="'foreignKey-'+key+'-'+fkKey+'-'+reindexKey"
+                                        :class="pa-0" style="width: 100%">
+                                        <v-container fluid>
+                                            <v-row no-gutters>
+                                                <v-col cols=3>
+                                                    <v-btn x-small class="expandField" @click="toggleExpandedBasicFK(key, fkKey)"><v-icon>{{expandedBasicFK[key][fkKey] ? 'mdi-minus' : 'mdi-plus'}}</v-icon></v-btn>
+                                                </v-col>
+                                                <v-col cols=6></v-col>
+                                                <v-col cols=3></v-col>
+                                                <v-col cols=12 v-if="(foreignKey && foreignKey.fields) || editing" class="py-1">
+                                                    <TextInput
+                                                        :label="$tc('Foreign') + ' ' + $tc('Key') + ' ' + $tc('Fields')"
+                                                        placeholder=""
+                                                        name="foreignKeyFields"
+                                                        :refName="'basicForeignKey-' + key + '-' + fkKey + '-fields'"
+                                                        :idName="'basicForeignKey-' + key + '-' + fkKey + '-fields'"
+                                                        :large="true"
+                                                        :editing="editing"
+                                                        :value="foreignKey.fields"
+                                                        helpPrefix="schema"
+                                                        :focusField="focusProp"
+                                                        @blur="(event) => { updateResourceFK(key, fkKey, 'fields', event) }"
+                                                        @focus="onFocusBasic"
+                                                    ></TextInput>
+                                                </v-col>
+                                                <v-col cols=12 v-if="((foreignKey && foreignKey.reference.resource) || editing) && expandedBasicFK[key][fkKey]" class="py-1">
+                                                    <TextInput
+                                                        :label="$tc('Foreign') + ' ' + $tc('Key') + ' ' + $tc('Reference') + ' ' + $tc('Resource')"
+                                                        placeholder=""
+                                                        name="foreignKeyReferenceResource"
+                                                        :refName="'basicForeignKey-' + key + '-' + fkKey + '-referenceResource'"
+                                                        :idName="'basicForeignKey-' + key + '-' + fkKey + '-referenceResource'"
+                                                        :large="true"
+                                                        :editing="editing"
+                                                        :value="foreignKey.reference.resource"
+                                                        helpPrefix="schema"
+                                                        :focusField="focusProp"
+                                                        @blur="(event) => { updateResourceFKRef(key, fkKey, 'resource', event) }"
+                                                        @focus="onFocusBasic"
+                                                    ></TextInput>
+                                                </v-col>
+                                                <v-col cols=12 v-if="((foreignKey && foreignKey.reference.fields) || editing) && expandedBasicFK[key][fkKey]" class="py-1">
+                                                    <TextInput
+                                                        :label="$tc('Foreign') + ' ' + $tc('Key') + ' ' + $tc('Reference') + ' ' + $tc('Fields')"
+                                                        placeholder=""
+                                                        name="foreignKeyReferenceFields"
+                                                        :refName="'basicForeignKey-' + key + '-' + fkKey + '-referenceFields'"
+                                                        :idName="'basicForeignKey-' + key + '-' + fkKey + '-referenceFields'"
+                                                        :large="true"
+                                                        :editing="editing"
+                                                        :value="foreignKey.reference.fields"
+                                                        helpPrefix="schema"
+                                                        :focusField="focusProp"
+                                                        @blur="(event) => { updateResourceFKRef(key, fkKey, 'fields', event) }"
+                                                        @focus="onFocusBasic"
+                                                    ></TextInput>
+                                                </v-col>
+                                            </v-row>
+                                        </v-container>
+                                    </v-row>
 
-
+                            </span>
+                            <v-row class="pb-4">
+                                <v-col cols=2>
+                                    <v-btn v-if="editing" class="primary" id="addForeignKey" @click="addForeignKey(key)">{{$tc('Add Foreign Key')}}<v-icon>mdi-plus</v-icon></v-btn>
+                                </v-col>
+                                <v-col cols=10>
+                                </v-col>
+                            </v-row>
                             <span v-if="resource.schema && resource.schema.fields" style="width: 100%">
                                 <draggable v-bind:disabled="!editing || inTextField" @end="dragEnd(key, $event)">
-                                    <v-row 
+                                    <v-row
                                         :id="'fieldHeader-'+key+'-'+fKey"
                                         no-gutters
-                                        v-for="(field, fKey) in resource.schema.fields" 
-                                        :key="'field-'+key+'-'+fKey+'-'+reindexKey" 
+                                        v-for="(field, fKey) in resource.schema.fields"
+                                        :key="'field-'+key+'-'+fKey+'-'+reindexKey"
                                         :class="'pa-0 relativePos' + ( (field && field.highlight && !editing) ? ' fieldHighlight': '') + (!filtered(field) ? ' field' : '') + (duplicated(key, field.name) ? ' duplicate' : '')">
-                                        <v-container fluid v-if="!filtered(field)"> 
+                                        <v-container fluid v-if="!filtered(field)">
                                             <v-row>
                                                 <v-col :cols="loggedIn ? 7 : 12">
                                                     <v-row no-gutters>
@@ -262,9 +352,9 @@
                                                                 helpPrefix="schema"
                                                                 :focusField="focusProp"
                                                                 @blur="(event) => { updateResource(key, fKey, 'name', event) }"
-                                                                
+
                                                                 @focus="onFocusBasic"
-                                                                
+
                                                             ></TextInput>
                                                         </v-col>
                                                         <v-col cols=12 v-if="((field && field.title) || editing) && expandedBasic[key][fKey]" class="pt-0 pb-1">
@@ -325,7 +415,7 @@
                                                                 :value="field.description"
                                                                 :editing="editing"
                                                                 :class="expandedBasic[key][fKey] ? '' : 'capWidth'"
-                                                                
+
                                                                 helpPrefix="schema"
                                                                 :focusField="focusProp"
                                                                 @focus="onFocusBasic"
@@ -409,7 +499,7 @@
                                                                 :idName="'basicField-' + key + '-' + fKey + '-notes'"
                                                                 :value="field.notes"
                                                                 :editing="editing"
-                                                                
+
                                                                 helpPrefix="schema"
                                                                 :focusField="focusProp"
                                                                 @focus="onFocusBasic"
@@ -460,7 +550,7 @@
                                                         <v-btn color="success" @click.stop="() => { copyResourceIndex = key; copyFieldIndex = fKey; copyDialog = true; }">Copy to another resource</v-btn>
                                                     </v-row>
                                                 </v-col>
-                                                
+
                                                 <v-col v-if="expandedBasic[key][fKey] && loggedIn" cols=5 class="borderLeft">
                                                     <Comments @setComment="(e) => { $emit('setComment', e) }" :id="commentId" :type="'schema'" :resource="resource.name" :field="field.name" :refable="commentRefs"></Comments>
                                                 </v-col>
@@ -496,13 +586,13 @@
             </v-row>
 
             <v-row v-else-if="editing">
-                <RepeatingObject 
-                    :key="'rootRepeating-'+reindexKey" 
-                    :val="workingVal" 
-                    @update="updatedObj" 
-                    :expanded="expanded" 
-                    @expand="onExpand" 
-                    :focus-prop="focus" 
+                <RepeatingObject
+                    :key="'rootRepeating-'+reindexKey"
+                    :val="workingVal"
+                    @update="updatedObj"
+                    :expanded="expanded"
+                    @expand="onExpand"
+                    :focus-prop="focus"
                     :show-type-prop="showType"
                     @show-type="updateShowType"
                     self-key="_"
@@ -511,7 +601,7 @@
             </v-row>
 
         </v-container>
-        
+
     </v-container>
 </template>
 
@@ -720,6 +810,12 @@ export default{
             this.$forceUpdate();
         },
 
+        toggleExpandedBasicFK: function(key, fkKey){
+            this.expandedBasicFK[key][fkKey] = !this.expandedBasicFK[key][fkKey];
+            this.reindexKey++;
+            this.$forceUpdate();
+        },
+
         updateCopyTo: function(index, newValue){
             while (this.copyTo.length < this.workingVal.resources.length) {
                 this.copyTo.push(false);
@@ -768,7 +864,7 @@ export default{
                     behavior: 'smooth', // smooth scroll
                     block: 'start' // the upper border of the element will be aligned at the top of the visible part of the window of the scrollable area.
                 })
-                
+
             });
         },
 
@@ -782,7 +878,7 @@ export default{
             if (key == 'tag'){
                 key = 'tags';
             }
-            
+
             if (Array.isArray(val)){
                 if (val.length === 0){
                     delete this.filters[key];
@@ -856,13 +952,16 @@ export default{
             this.workingVal.resources[key].schema.fields.splice(e.oldIndex, 1);
             this.workingVal.resources[key].schema.fields.splice(e.newIndex, 0, origElement);
 
+            this.workingVal.resources[key].schema.foreignKeys.splice(e.oldIndex, 1);
+            this.workingVal.resources[key].schema.foreignKeys.splice(e.newIndex, 0, origElement);
+
             let swap = this.expandedBasic[key][e.newIndex];
             this.expandedBasic[key][e.newIndex] = this.expandedBasic[key][e.oldIndex];
             this.expandedBasic[key][e.oldIndex] = swap;
 
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
-            this.$emit('edited', this.workingVal);   
+            this.$emit('edited', this.workingVal);
             this.reindexKey++;
             this.$forceUpdate();
         },
@@ -871,7 +970,7 @@ export default{
             if (!this.workingVal){
                 this.workingVal = {};
             }
-            
+
             if (!this.workingVal.resources){
                 this.workingVal.resources = [];
             }
@@ -879,9 +978,11 @@ export default{
             // if (this.workingVal.resources.length == 0){
             this.workingVal.resources.push({
                 schema: {
-                    fields: []
+                    fields: [],
+                    primaryKey: '',
+                    foreignKeys: []
                 }
-            }); 
+            });
             //}
 
             this.expandedBasic.push([]);
@@ -889,21 +990,21 @@ export default{
 
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
-            this.$emit('edited', this.workingVal);   
+            this.$emit('edited', this.workingVal);
             this.reindexKey++;
             this.$forceUpdate();
         },
 
         removeField: function(key, fKey){
-            
+
             Vue.delete(this.workingVal.resources[key].schema.fields, fKey);
-            
+
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.reindexKey++;
             this.$forceUpdate();
             this.$emit('edited', this.workingVal);
-            
+
         },
 
         addField: function(key){
@@ -911,15 +1012,15 @@ export default{
             if (!this.workingVal.resources[key].schema){
                 this.workingVal.resources[key].schema = {};
             }
-            
+
             if (!this.workingVal.resources[key].schema.fields){
                 this.workingVal.resources[key].schema.fields = [];
             }
             this.workingVal.resources[key].schema.fields.push({
                 name: "",
             });
-            
-            
+
+
             if (!this.expandedBasic[key]){
                 this.expandedBasic[key] = [];
             }
@@ -935,6 +1036,35 @@ export default{
             //this.$forceUpdate();
         },
 
+        addForeignKey: function(key){
+
+            if (!this.workingVal.resources[key].schema){
+                this.workingVal.resources[key].schema = {};
+            }
+
+            if (!this.workingVal.resources[key].schema.foreignKeys){
+                this.workingVal.resources[key].schema.foreignKeys = [];
+            }
+            this.workingVal.resources[key].schema.foreignKeys.push({
+                fields: '',
+                reference: {
+                    resource: '',
+                    fields: ''
+                }
+            });
+
+            if (!this.expandedBasicFK[key]){
+                this.expandedBasicFK[key] = [];
+            }
+
+            this.expandedBasicFK[key].push(true);
+
+            let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
+            this.workingStr = str;
+            this.$emit('edited', this.workingVal);
+            this.$forceUpdate();
+        },
+
         updateResourcePath: function(key, event){
             let newValue = event.target.value;
             if (!this.workingVal.resources[key]){
@@ -948,6 +1078,7 @@ export default{
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.$emit('edited', this.workingVal);
+            this.inTextField = false;
         },
 
         updateResourceName: function(key, event){
@@ -964,6 +1095,7 @@ export default{
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.$emit('edited', this.workingVal);
+            this.inTextField = false;
         },
 
         updateResourceBase: function(key, field, event){
@@ -984,6 +1116,7 @@ export default{
             }
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
+            this.inTextField = false
             this.$emit('edited', this.workingVal);
         },
 
@@ -998,9 +1131,67 @@ export default{
             }else{
                 delete this.workingVal.resources[key].schema.fields[fieldKey][path];
             }
-            
+
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
+            this.inTextField = false;
+            this.$emit('edited', this.workingVal);
+        },
+
+        updateResourcePK: function(key, fieldKey, event){
+
+            let value = event;
+            if (event && event.target && typeof(event.target.value) !== 'undefined'){
+                value = event.target.value;
+            }
+
+            if (value !== ""){
+                this.workingVal.resources[key].schema[fieldKey] = value;
+            }else{
+                delete this.workingVal.resources[key].schema[fieldKey];
+            }
+
+            let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
+            this.workingStr = str;
+            this.inTextField = false;
+            this.$emit('edited', this.workingVal);
+        },
+
+        updateResourceFK: function(key, fieldKey, path, event){
+
+            let value = event;
+            if (event && event.target && typeof(event.target.value) !== 'undefined'){
+                value = event.target.value;
+            }
+
+            if (value !== ""){
+                this.workingVal.resources[key].schema.foreignKeys[fieldKey][path] = value;
+            }else{
+                delete this.workingVal.resources[key].schema.foreignKeys[fieldKey][path];
+            }
+
+            let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
+            this.workingStr = str;
+            this.inTextField = false;
+            this.$emit('edited', this.workingVal);
+        },
+
+        updateResourceFKRef: function(key, fieldKey, path, event){
+
+            let value = event;
+            if (event && event.target && typeof(event.target.value) !== 'undefined'){
+                value = event.target.value;
+            }
+
+            if (value !== ""){
+                this.workingVal.resources[key].schema.foreignKeys[fieldKey].reference[path] = value;
+            }else{
+                delete this.workingVal.resources[key].schema.foreignKeys[fieldKey].reference[path];
+            }
+
+            let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
+            this.workingStr = str;
+            this.inTextField = false;
             this.$emit('edited', this.workingVal);
         },
 
@@ -1010,12 +1201,12 @@ export default{
                 value = event.target.value;
             }
             this.workingVal.resources[key].schema.fields[fieldKey][path] = value;
-            
+
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.$emit('edited', this.workingVal, true);
             this.$emit('editedHighlight', this.editing);
-            
+
         },
 
         updateResourceEnum: function(key, fieldKey, nested, path, event){
@@ -1026,13 +1217,13 @@ export default{
             if (!this.workingVal.resources[key].schema.fields[fieldKey][nested]){
                 this.workingVal.resources[key].schema.fields[fieldKey][nested] = {};
             }
-            
+
             if (value !== ""){
                 this.workingVal.resources[key].schema.fields[fieldKey][nested][path] = arrVal;
             }else{
                 delete this.workingVal.resources[key].schema.fields[fieldKey][nested][path];
             }
-            
+
             let str = JSON.stringify(this.workingVal, this.replacerFunc(), 4);
             this.workingStr = str;
             this.inTextField = false;
@@ -1064,7 +1255,7 @@ export default{
 
         updatedObj: function(info){
             if (typeof(info.newKey) === 'undefined'){
-                
+
                 //let k = Object.keys(this.workingVal);
                 //let newKey = k.indexOf(info.key) === -1;
                 this.workingVal[info.key] = info.val;
@@ -1079,10 +1270,10 @@ export default{
                 //key updated;
                 let k = Object.keys(this.workingVal);
                 let ind = k.indexOf(info.key);
-                
+
                 this.workingVal[info.newKey] = this.workingVal[info.key];
                 delete this.workingVal[info.key];
-                
+
                 let k2 = Object.keys(this.workingVal);
                 let ind2 = k2.indexOf(info.newKey);
 
@@ -1110,7 +1301,6 @@ export default{
     },
 
     data() {
-        
         return {
             workingVal: {},
             workingStr: "",
@@ -1122,17 +1312,17 @@ export default{
             showType: {},
             stateType: this.stateTypeParent,
             fieldTypes: [
-                'string', 
-                'number', 
-                'integer', 
-                'boolean', 
-                'object', 
-                'array', 
-                'date', 
-                'time', 
-                'datetime', 
-                'year', 
-                'yearmonth', 
+                'string',
+                'number',
+                'integer',
+                'boolean',
+                'object',
+                'array',
+                'date',
+                'time',
+                'datetime',
+                'year',
+                'yearmonth',
                 'duration',
                 'geopoint',
                 'geojson',
@@ -1140,6 +1330,7 @@ export default{
             ],
             redrawIndex: 0,
             expandedBasic: [],
+            expandedBasicFK: [],
             filters: {},
             expandedBasicResource: [],
             inTextField: false,
@@ -1156,13 +1347,19 @@ export default{
         if (this.workingVal && this.workingVal.resources && this.workingVal){
             for (let i=0; i<this.workingVal.resources.length; i++){
                 this.expandedBasic[i] = [];
+                this.expandedBasicFK[i] = [];
                 this.expandedBasicResource[i] = false;
-                if (this.workingVal.resources[i] && this.workingVal.resources[i].schema && this.workingVal.resources[i].schema.fields){
-                    for (let j=0; j<this.workingVal.resources[i].schema.fields.length; j++){
-                        this.expandedBasic[i][j] = false;
-                        if (typeof(this.workingVal.resources[i].schema.fields[j].constraints) === 'undefined'){
-                            this.workingVal.resources[i].schema.fields[j].constraints = {};
+                if (this.workingVal.resources[i]) {
+                    if (this.workingVal.resources[i].schema && this.workingVal.resources[i].schema.fields) {
+                        for (let j = 0; j < this.workingVal.resources[i].schema.fields.length; j++) {
+                            this.expandedBasic[i][j] = false;
+                            if (typeof (this.workingVal.resources[i].schema.fields[j].constraints) === 'undefined') {
+                                this.workingVal.resources[i].schema.fields[j].constraints = {};
+                            }
                         }
+                    }
+                    if (this.workingVal.resources[i].path.includes(',')) {
+                        this.workingVal.resources[i].path = this.workingVal.resources[i].path.split(',');
                     }
                 }
             }
@@ -1187,7 +1384,7 @@ export default{
 
         this.redrawIndex++;
         this.$forceUpdate();
-        this.$nextTick(function () {     
+        this.$nextTick(function () {
             if (this.$route.hash){
                 this.openAndScroll(this.$route.hash);
             }
@@ -1216,7 +1413,7 @@ export default{
     .fieldHighlight{
         background: var(--v-textHighlight-base);
     }
-    
+
     .row.my-0{
         /* height: 26px; */
         line-height: 26px;

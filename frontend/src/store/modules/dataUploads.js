@@ -14,6 +14,10 @@ const getters = {
     // eslint-disable-next-line no-unused-vars
     getDataUploadById: (state, getters) => (id) => {
         return state.dataUploads.find(upload => upload._id === id);
+    },
+    // eslint-disable-next-line no-unused-vars
+    getSearchResults: (state, getters) => {
+        return state.dataUploads;
     }
 }
 
@@ -32,6 +36,18 @@ const actions = {
         }
 
     },
+    async getDataUploadsFromResourceFields({ commit }, nameValue) {
+        try {
+            const data = await backend.getDataPackageByResourceField(nameValue);
+            commit('clearDataUploads');
+            commit('setDataUploads', {dataUploads: data});
+            //return data;
+        } catch(e) {
+            console.error("Retrieve comments error: ", e);
+            commit('setError', {error: e.response.data.error});
+        }
+    },
+
     async getDataProviders({ commit }) {
         try {
             const data = await backend.getDataProviders();

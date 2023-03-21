@@ -38,20 +38,20 @@ Given(/^Data provider successfully uploads a data file$/, async function(){
     const client = this.browser;
 
     await client.pause(1000);
-    
+
     await helpers.open(client);
 
     await client.pause(1000);
-    
+
     await helpers.login(client, 'publisher');
     await client.saveScreenshot("./"+path+"/preNewUpload.png");
     client.click('#userMenu').pause(10)
     client.click('#toUserPage').pause(100).saveScreenshot('./'+confGet('screenshotPath')+'/uploadUserInfo.png');
-    
+
     await helpers.newUpload(client);
     await client.pause(10000);
     await client.saveScreenshot("./"+path+"/postNewUpload.png");
-    
+
     for (const property in data1){
         if (data1[property].select){
 
@@ -59,7 +59,7 @@ Given(/^Data provider successfully uploads a data file$/, async function(){
             await client.pause(1000);
             await client.click('xpath', '//div[@class="v-list-item__title"][contains(.,"' + data1[property].value+'")]');
             await client.pause(1000);
-            
+
         }else{
             await client.setValue(data1[property].selector, data1[property].value)
         }
@@ -69,22 +69,22 @@ Given(/^Data provider successfully uploads a data file$/, async function(){
 
     await client.execute('window.scrollTo(0,0);');
     await client.saveScreenshot("./"+path+"/postNext1.png");
-    
+
     await client.pause(3000);
     await client.click('#newDatasetButton');
-    await client.pause(7500);
+    await client.pause(20000);
     await client.click('#newVersionButton');
-    await client.pause(7500);
+    await client.pause(30000);
     await client.saveScreenshot("./"+path+"/preNext2.png");
     await client.click('#next-2');
-    await client.pause(300);
+    await client.pause(3000);
     await client.saveScreenshot("./"+path+"/postNext2.png");
     await client.pause(3000);
-    
+
     let f = require('path').resolve(__dirname + '/sample.csv');
     let el = await client.findElements('#fileForm-reader input[type="file"]');
     await client.executeScript("console.log(arguments[0], arguments[0].style); arguments[0].style['pointer-events']='auto'; arguments[0].style.width='1000px'; arguments[0].style.maxWidth='1000px'; arguments[0].style.opacity=1", el);
-    
+
     await client.pause(500);
     await client.setValue('#fileForm-reader input[type="file"]', f);
     await client.pause(500);
@@ -96,7 +96,7 @@ Given(/^Data provider successfully uploads a data file$/, async function(){
         mo = "0" + mo;
     }
     let da = d.getFullYear() + "-" + mo + "-" + d.getDate()
-    
+
     await client.click('#fileinfo-0-start');
     await client.setValue('#fileinfo-0-start', da);
     await client.click('#fileinfo-0-title');
@@ -150,9 +150,9 @@ When(/^Data provider chooses to see the details of the upload$/, async function(
         await client.click('#tab-uploads');
     }catch(ex){
         //phase 1 only has home
-        await client.click('#tab-home');   
+        await client.click('#tab-home');
     }
-    
+
     //click the upload in the list
     await client.pause(2500);
     await client.saveScreenshot("./"+path+"/checkingForUpload1.png");
@@ -165,8 +165,9 @@ When(/^Data provider chooses to see the details of the upload$/, async function(
 
 Then(/^Data provider should see information on the characteristics of the data upload$/, async function(){
     const client = this.browser;
-    await client.assert.textContains('#uploadDetail-name', data1.name.value);
     await client.pause(5000);
+    await client.saveScreenshot("./"+path+"/uploadSummary1.png");
+    await client.assert.textContains('#uploadDetail-name', data1.name.value);
     //await client.click('#uploadDetail-showInfo');
     await client.waitForElementVisible('#ministry_organization-value', 10000)
     await client.pause(2500);

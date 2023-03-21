@@ -201,6 +201,9 @@ export default {
             if ( (this.user) && (this.user.isAdmin) ){
                 t.push({ id: 14, name: "Admin", route: `/admin`, icon: 'mdi-cog', disabled: false });
             }
+            if ( (this.user) && (this.enabledPhase >= 2) ){
+                t.push({ id: 15, name: "Search", route: `/search`, icon: 'mdi-file-search', disabled: false});
+            }
 
             return t;
         },
@@ -219,7 +222,7 @@ export default {
 
         $route (to){
             this.clearMCNotification();
-            
+
             if (to.params.id){
                 let type = (to.name === "upload_view") ? "upload" : false;
                 type = (!type && to.name === "datasets_form") ? "dataset" : type;
@@ -241,18 +244,36 @@ export default {
                     this.pendingMCMessage = m;
                 }
             }
-            
+
         },
 
         jwt(){
-            if (this.jwt){
-                this.forumApiWS = new WebSocket(this.forumWSUrl, this.jwt);
-                this.forumApiWS.onmessage = this.forumApiMessage;
-                this.forumApiWS.onopen = this.forumWSOpen;
+            this.initSockets();
+        },
 
-                this.mcWS = new WebSocket(this.mcWSUrl, this.jwt);
-                this.mcWS.onmessage = this.mcMessage;
-                this.mcWS.onopen = this.mcWSOpen
+        forumWSUrl(){
+            this.initSockets();
+        },
+
+        mcWSUrl(){
+            this.initSockets();
+        }
+    },
+
+    methods: {
+
+        initSockets: function(){
+            if (this.jwt){
+                if (this.forumWSUrl && !this.forumApiWS){
+                    this.forumApiWS = new WebSocket(this.forumWSUrl, this.jwt);
+                    this.forumApiWS.onmessage = this.forumApiMessage;
+                    this.forumApiWS.onopen = this.forumWSOpen;
+                }
+                if (this.mcWSUrl && !this.mcWS){
+                    this.mcWS = new WebSocket(this.mcWSUrl, this.jwt);
+                    this.mcWS.onmessage = this.mcMessage;
+                    this.mcWS.onopen = this.mcWSOpen
+                }
             }else{
                 if (this.forumApiWS){
                     this.forumApiWS.close();
@@ -263,10 +284,8 @@ export default {
                 this.forumApiWS = null;
                 this.mcWS = null;
             }
-        }
-    },
+        },
 
-    methods: {
         preserveToken: function(){
             let timeOut = 1000 * 60 // 1 minute
             // timeOut *= 5; // 5 minutes
@@ -294,7 +313,7 @@ export default {
         },
 
         keepAlive: async function(){
-            
+
             let tok = await authServ.getToken(this.jwt);
             if (!tok || tok.error){
                 this.showError = true;
@@ -303,14 +322,14 @@ export default {
                 this.showError = false;
                 this.error = "";
             }
-            
+
         },
 
         forumApiMessage: function(event){
-            
+
             this.showNotification = false;
             //this.notificationText = ''
-            
+
             try{
                 let data = JSON.parse(event.data);
 
@@ -351,7 +370,7 @@ export default {
                     this.notificationText += "<a class='tall' href='" + url + "'>New " + this.$tc(type) + " created</a>"
                 }else if(data.comment){
                     //new comment somewhere
-                    this.notificationText += '<a class="tall" href="' + url + '">' + this.$tc("New comment on ") + this.$tc(type) 
+                    this.notificationText += '<a class="tall" href="' + url + '">' + this.$tc("New comment on ") + this.$tc(type)
                     this.notificationText += " - " + data.comment.comment + '</a>'
                 }
                 this.showNotification = true;
@@ -367,7 +386,7 @@ export default {
         },
 
         mcMessage: function(event){
-            
+
             try{
                 let data = JSON.parse(event.data);
 
@@ -422,7 +441,7 @@ export default {
     async mounted(){
         this.dark = this.useDark;
         this.$vuetify.theme.dark = this.dark
-        
+
         let urlConf = await this.$store.dispatch('config/getItem', {field: 'key', value: 'forumApiWS', def: {key: 'forumApiWS', value: ''}});
         this.forumWSUrl = urlConf.value;
         if (this.forumWSUrl !== '' && this.jwt){

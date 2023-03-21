@@ -423,12 +423,13 @@ export default {
         getNextChunk: function(index){
             return new Promise((resolve, reject) => {
 
-                var reader = new FileReader();
+                
                 var self = this;
                 const SparkMD5 = require('spark-md5');
                 if (this.currChunk === 0){
                     this.checksum = new SparkMD5.ArrayBuffer();
                 }
+                var reader = new FileReader();
                 reader.onerror = function(e){
                     reject(e);
                 }
@@ -534,8 +535,9 @@ export default {
                 filename: this.file.name,
                 filetype: this.file.type,
                 overridePatchMethod: true,
-                retryDelays: [0, 1000, 3000, 5000],
-                chunkSize: this.chunkSize*10,
+                retryDelays: [0, 1000, 3000, 5000, 10000, 60000, 100000],
+                //chunkSize: this.chunkSize*10,
+                chunkSize: 710000,
                 onError: error => {
                     // eslint-disable-next-line
                     console.error("Upload error", error)
@@ -567,6 +569,7 @@ export default {
                 },
                 onSuccess: async() => {
                     self.$store.commit('file/setSuccessfullyUploadedChunk', {fing: this.getFinger, index: i, success: true});
+                    self.uploads[i].file = null;
                     i += 1;
                     self.numUploaded += 1;
 
@@ -613,16 +616,20 @@ export default {
                                 let upUrl = self.uploadUrlOverride ? self.uploadUrlOverride : self.uploadUrl;
                                 let concatResponse = await backendApi.concatenateUpload(joinIds, upUrl, self.jwt, "1.0.0", self.file.name, self.file.type, self.checksum.end());
                                 self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
+                                self.$store.commit('file/clearContent');
                                 
                                 let concatLocation = concatResponse.headers.location;
                                 let slashInd = concatLocation.lastIndexOf("/");
                                 let plusInd = concatLocation.lastIndexOf("+");
-                                
+                                self.uploads = [];
+                                self.encContentBlobs = [];
+                                self.checksum = null;
                                 self.$emit('upload-finished', concatLocation.substring(slashInd+1, plusInd), this.file.name, this.file.size);
                                 self.numUploaded += 1;
                                 if (!self.disabledProp){
                                     self.disabled = false;
                                 }
+                                self.file = null;
                                 succeeded = true;
                             }catch(e){
                                 // eslint-disable-next-line
@@ -669,27 +676,27 @@ export default {
             this.uploads.push(u);
 
             //is more than one chunk do parallel work
-            if (size > ((this.chunkSize*2)-1)){
-                this.getNextChunk(1).then( () => {
-                    self.numEncrypted += 1
-                    let chunkIndex = 1;
-                    i += 1;
+            // if (size > ((this.chunkSize*2)-1)){
+            //     this.getNextChunk(1).then( () => {
+            //         self.numEncrypted += 1
+            //         let chunkIndex = 1;
+            //         i += 1;
                     
-                    let u2 = null;
-                    let u2Options = JSON.parse(JSON.stringify(uploadOptions));
-                    u2Options.onProgress = function(byteUp, byteTot){
-                        self.up2Progress = byteUp;
-                        self.up2Size = byteTot;
-                    }
-                    if (this.readFile){
-                        u2 = new tus.Upload(self.blob[chunkIndex], u2Options);
-                    }else{
-                        u2 = new tus.Upload(self.encContentBlobs[chunkIndex], u2Options);
-                    }
-                    u2.start();
-                    self.uploads.push(u2);
-                });
-            }
+            //         let u2 = null;
+            //         let u2Options = JSON.parse(JSON.stringify(uploadOptions));
+            //         u2Options.onProgress = function(byteUp, byteTot){
+            //             self.up2Progress = byteUp;
+            //             self.up2Size = byteTot;
+            //         }
+            //         if (this.readFile){
+            //             u2 = new tus.Upload(self.blob[chunkIndex], u2Options);
+            //         }else{
+            //             u2 = new tus.Upload(self.encContentBlobs[chunkIndex], u2Options);
+            //         }
+            //         u2.start();
+            //         self.uploads.push(u2);
+            //     });
+            // }
             u.start();
         },
         onImportButtonClicked: async function(){
