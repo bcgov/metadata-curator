@@ -1358,8 +1358,10 @@ export default{
                             }
                         }
                     }
-                    if (this.workingVal.resources[i].path.includes(',')) {
-                        this.workingVal.resources[i].path = this.workingVal.resources[i].path.split(',');
+                    if (this.workingVal.resources[i].path){
+                        if (this.workingVal.resources[i].path.includes(',')) {
+                            this.workingVal.resources[i].path = this.workingVal.resources[i].path.split(',');
+                        }
                     }
                 }
             }
