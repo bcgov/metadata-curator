@@ -48,7 +48,7 @@ resource "local_file" "pre_create" {
 }
 
 data "docker_registry_image" "tusd" {
-  name = "tosse/tusd_py3${var.images["tusd"]}"
+  name = "h3brandon/tusd_py3${var.images["tusd"]}"
 }
 
 resource "docker_image" "tusd" {
