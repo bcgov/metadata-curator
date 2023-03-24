@@ -18,10 +18,10 @@
                     </v-tab>
                     <v-tab-item>
                         <FieldValueSearchForm
-                            :title="$tc('Field & Value Search', 2)"
-                            :headers="fieldValueSearchResultHeaders"
+                            :title="$tc('Find Editions By Resource Field & Value', 2)"
+                            :headers="editionHeaders"
                             :filterRequired="$tc('Field Name', 2) + ' ' + $tc('or Value', 2)"
-                            storeName="adminDUploads"
+                            storeName="repos"
                             :showDelete="true"
                             :showEdit="false"
                             :showNew="false"
@@ -44,15 +44,27 @@ export default {
 
     data(){
         return {
-            fieldValueSearchResultHeaders: [
+            editionHeaders: [
                 {
                     text: this.$tc('id', 1),
                     sortable: true,
                     value: '_id',
                 },
                 {
-                    text: this.$tc('Name'),
+                    text: this.$tc('Repo Id'),
                     sortable: true,
+                    value: 'repo_id'
+                },
+                {
+                    text: this.$tc('Topics', 1) + ' ' + this.$tc('id', 1),
+                    value: 'topic_id'
+                },
+                {
+                    text: this.$tc('Type'),
+                    value: 'type'
+                },
+                {
+                    text: this.$tc('Name'),
                     value: 'name'
                 },
                 {
@@ -61,43 +73,52 @@ export default {
                 },
                 {
                     text: this.$tc('Description'),
-                    value: 'description'
-                },
-                {
-                    text: this.$tc('Approver Opened'),
-                    value: 'opened_by_approver'
-                },
-                {
-                    text: this.$tc('Approver Commented'),
                     sortable: false,
-                    value: 'approver_has_commented',
+                    value: 'description',
                 },
                 {
-                    text: this.$tc('Status'),
-                    value: 'status'
+                    text: this.$tc('Upload Id'),
+                    sortable: false,
+                    value: 'data_upload_id',
                 },
                 {
-                    text: this.$tc('Topics', 1) + ' ' + this.$tc('id', 1),
-                    value: 'topic_id'
+                    text: this.$tc('Availability'),
+                    value: 'availability'
                 },
                 {
-                    text: this.$tc('Submissions', 1) + ' ' +  this.$tc('id', 1),
-                    value: 'upload_submission_id'
+                    text: this.$tc('Variable Classification'),
+                    value: 'variable_classification'
                 },
                 {
-                    text: this.$tc('Old Submission'),
-                    value: 'old_submission'
+                    text: this.$tc('Notes'),
+                    value: 'notes'
                 },
                 {
-                    text: this.$tc('Uploader'),
-                    value: 'uploader'
+                    text: this.$tc('Citation'),
+                    value: 'citation'
+                },
+                {
+                    text: this.$tc('Short Title'),
+                    value: 'short_title'
+                },
+                {
+                    text: this.$tc('Published'),
+                    value: 'published'
+                },
+                {
+                    text: this.$tc('Approved'),
+                    value: 'approved'
+                },
+                {
+                    text: this.$tc('FAQ'),
+                    value: 'faq'
                 },
                 {
                     text: this.$tc('Action', 2),
                     value: 'actions',
                     sortable: false
                 }
-            ],
+            ]
         }
     },
 
