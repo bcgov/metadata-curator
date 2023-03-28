@@ -1,3 +1,4 @@
+const log = require("npmlog");
 var buildStatic = function(db, router){
     return router;
 }
@@ -369,6 +370,42 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             throw new Error(e.message)
         }
     }
+
+
+    const getBranchByResourceNameValue = async function (fieldOrValue) {
+        var dataPackages = [];
+        var branches = [];
+
+        var dataPackagesWValueInName = await db.DataPackageSchema.find({'resources.tableSchema.fields.name': {'$regex': fieldOrValue, '$options': 'i'}}).lean().catch(e => {
+            log.error(e);
+            throw new Error(e.message)
+        });
+        dataPackages.push.apply(dataPackages, dataPackagesWValueInName);
+        var dataPackagesWValueInValue = await db.DataPackageSchema.find({'resources.tableSchema.fields.constraints.enum': {'$regex': fieldOrValue, '$options': 'i'}}).lean().catch(e => {
+            log.error(e);
+            throw new Error(e.message)
+        });
+        dataPackages.push.apply(dataPackages, dataPackagesWValueInValue);
+
+        for (const dataPackage of dataPackages){
+            const repo_branch = await db.RepoBranchSchema.findOne({_id: dataPackage.version}).lean().catch(e => {
+                log.error(e);
+                throw new Error(e.message)
+            });
+            branches.push(repo_branch);
+        }
+
+        const seen = new Set();
+        const uniqueBranches = branches.filter(el => {
+            if (el !== null) {
+                const duplicate = seen.has(el.name);
+                seen.add(el.name);
+                return !duplicate;
+            }
+        });
+
+        return uniqueBranches;
+    }
     
     const deleteBranch = async (id) => {
         const branch = await db.RepoBranchSchema.findOne({_id: id});
@@ -479,6 +516,15 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         try{
             let revs = await db.RevisionSchema.find({source_id: mongoose.Types.ObjectId(req.params.branchId), type: 'branch'});
             return res.json({revisions: revs});
+        }catch(ex){
+            res.status(500).json({error: ex});
+        }
+    });
+
+    router.get('/branches/:fieldNameValue', auth.requireLoggedIn, async function(req, res, next){
+        try{
+            const nameOrValue = req.params.fieldNameValue;
+            return res.status(200).json(await getBranchByResourceNameValue(nameOrValue));
         }catch(ex){
             res.status(500).json({error: ex});
         }

@@ -2,7 +2,7 @@
     <v-card>
         <v-card-title>{{title}}</v-card-title>
         <v-card-text>
-            <AlertError v-if="errorText !== ''" :message="errorText"></AlertError>
+            <AlertError v-if="errorText !== '' && errorText !== null" :message="errorText"></AlertError>
             <div v-if="filterRequired !== ''">
                 <span>{{filterRequired}}</span>
                 <v-text-field v-model="searchParam"></v-text-field>
@@ -12,7 +12,7 @@
             <v-data-table
                 dense
                 :headers="headers"
-                :items="dataUploads.dataUploads"
+                :items="repos.branches"
             >
                 <template v-slot:top>
                     <v-toolbar flat>
@@ -23,26 +23,6 @@
                         vertical
                         ></v-divider>
                         <v-spacer></v-spacer>
-                    <!--    <v-dialog v-model="dialog" :max-width="dialogSize">
-                        <template v-slot:activator="{ on }">
-                            <v-btn v-if="showNew" color="primary" dark class="mb-2" v-on="on">{{$tc('New')}} {{$tc('Entry', 1)}}</v-btn>
-                        </template>
-                        <v-card>
-                            <v-card-title>
-                                <span class="headline">{{ formTitle }}</span>
-                            </v-card-title>
-
-                            <v-card-text>
-                                <component :is="formComponent" :item="editedItem" :open="dialog"></component>
-                            </v-card-text>
-
-                            <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn color="blue darken-1" text @click="close">{{$tc('Cancel')}}</v-btn>
-                                <v-btn color="blue darken-1" text @click="save">{{$tc('Save')}}</v-btn>
-                            </v-card-actions>
-                        </v-card>
-                        </v-dialog> -->
                     </v-toolbar>
                 </template>
                 <template v-slot:item.data="{ item }">
@@ -79,7 +59,6 @@
 <script>
 import AlertError from '../AlertError';
 import {mapActions, mapState} from "vuex";
-//import dataUploads from "@/store/modules/dataUploads";
 
     export default {
         components: {
@@ -108,23 +87,6 @@ import {mapActions, mapState} from "vuex";
                 default: false
             },
 
-            formComponent: {
-                type: Object,
-                required: true
-            },
-
-            dialogSize: {
-                type: String,
-                required: false,
-                default: "500px"
-            },
-
-            showNew: {
-                type: Boolean,
-                required: false,
-                default: true
-            },
-
             showEdit: {
                 type: Boolean,
                 required: false,
@@ -141,7 +103,7 @@ import {mapActions, mapState} from "vuex";
                 type: String,
                 required: false,
                 default: "_id"
-            }
+            },
 
         },
 
@@ -174,7 +136,7 @@ import {mapActions, mapState} from "vuex";
                 return this.$store.state[this.storeName].error;
             },
 
-            ...mapState(['dataUploads'])
+            ...mapState(['repos'])
         },
 
         watch: {
@@ -185,32 +147,16 @@ import {mapActions, mapState} from "vuex";
 
         methods: {
             ...mapActions({
-                getDataUploadsFromResourceFields: 'dataUploads/getDataUploadsFromResourceFields',
+                getBranchesByResourceFields: 'repos/getBranchesByResourceFields',
             }),
 
             async searchClick() {
-                if (this.filterRequired === '') {
-                    await this.$store.dispatch(this.storeName + '/getDataUploadsFromResourceFields', {param: false});
-                } else {
-                    //this.$store.dispatch(this.storeName + '/getDataUploadsFromResourceFields', {param: this.searchParam});
-                    var result = await this.getDataUploadsFromResourceFields(this.searchParam);
-                    //this.items[0] = result;
-                    //await this.$store.dispatch(this.storeName + '/setItems', result);
-                    //await this.$store.dispatch(this.storeName + '/setDataUploads', result);
-                    //await this.$store.dispatch('items/setItems', result);
-                    console.log(result);
-                    console.log('items:==');
-                    console.log(this.dataUploads.dataUploads);
-                }
-            },
-        },
+                var result = await this.getBranchesByResourceFields(this.searchParam);
 
-        mounted(){
-            if (this.filterRequired === ''){
-                //this.$store.dispatch(this.storeName + '/getItems', {param: false});
-            }else{
-                //this.$store.dispatch(this.storeName + '/getItems', {param: this.searchParam});
-            }
+                console.log(result);
+                console.log('items:==');
+                console.log(this.repos.branches);
+            },
         }
     };
 </script>

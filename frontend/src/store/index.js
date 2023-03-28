@@ -23,11 +23,11 @@ const permissions = build('getPermissions', 'newPermission', 'putPermission', 'd
 const forms = build('getForms', 'newForm', 'putForm', 'deleteForm');
 const topics = build('getTopics', 'newTopic', 'putTopic', 'deleteTopic');
 const comments = build('getComments', 'newComment', 'putComment', 'deleteComment');
-const adminDUploads = build('getDataUploads', 'postDataUpload', 'putDataUpload', 'deleteDataUpload', 'getDataUploadsFromResourceFields');
+const adminDUploads = build('getDataUploads', 'postDataUpload', 'putDataUpload', 'deleteDataUpload');
 const submissions = build('getFormSubmissions','postFormSubmission', 'putFormSubmission', 'deleteFormSubmission' );
 const config = build('getConfigs','newConfig', 'putConfig', 'deleteConfig', 'getConfig' );
 const adminDatasets = build('getRepos');
-const adminVersions = build('getBranches', 'postRepoBranch', 'putRepoBranch', 'deleteRepoBranch', 'getBranchById');
+const adminVersions = build('getBranches', 'postRepoBranch', 'putRepoBranch', 'deleteRepoBranch', 'getBranchById', 'getBranchesByResourceFields');
 
 const variableClassifications = build('getVariableClassifications', 'newVariableClassification', 'putVariableClassification', 'deleteVariableClassification', 'getVariableClassification');
 

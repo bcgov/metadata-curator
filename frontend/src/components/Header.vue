@@ -201,7 +201,7 @@ export default {
             if ( (this.user) && (this.user.isAdmin) ){
                 t.push({ id: 14, name: "Admin", route: `/admin`, icon: 'mdi-cog', disabled: false });
             }
-            if ( (this.user) && (this.enabledPhase >= 2) ){
+            if ( (this.user) && ( (this.user.isAdmin) || (this.user.isApprover) ) ){
                 t.push({ id: 15, name: "Search", route: `/search`, icon: 'mdi-file-search', disabled: false});
             }
 

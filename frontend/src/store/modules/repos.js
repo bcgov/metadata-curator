@@ -59,6 +59,16 @@ const actions = {
         }
     },
 
+    async getBranchesByResourceFields({ commit }, nameValue) {
+        try {
+            const data = await backend.getEditionsByResourceField(nameValue);
+            commit('clearBranches');
+            commit('setBranches', {branches: data});
+        } catch(e) {
+            commit('setError', {error: e.response.data.error});
+        }
+    },
+
     async getBranch({state, commit, dispatch}, {id}) {
         let b = state.branches.find(branch => branch._id === id);
         commit('setBranch', {branch: b});
@@ -220,6 +230,10 @@ const mutations = {
 
     setBranches(state, {branches}){
         state.branches = branches;
+    },
+
+    clearBranches(state) {
+        state.branches = null;
     },
 
     setBranch(state, {branch}){

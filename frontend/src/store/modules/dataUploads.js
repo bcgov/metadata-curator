@@ -36,17 +36,6 @@ const actions = {
         }
 
     },
-    async getDataUploadsFromResourceFields({ commit }, nameValue) {
-        try {
-            const data = await backend.getDataPackageByResourceField(nameValue);
-            commit('clearDataUploads');
-            commit('setDataUploads', {dataUploads: data});
-            //return data;
-        } catch(e) {
-            console.error("Retrieve comments error: ", e);
-            commit('setError', {error: e.response.data.error});
-        }
-    },
 
     async getDataProviders({ commit }) {
         try {

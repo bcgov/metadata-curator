@@ -74,8 +74,8 @@ export class Backend {
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 
-    getDataPackageByResourceField(name){
-        let url = `/api/v1/datapackages/resource/${name}`;
+    getEditionsByResourceField(name){
+        let url = `/api/v1/repobranches/branches/${name}`;
         return axios.get(url, {withCredentials: true}).then(response => response.data)
     }
 
