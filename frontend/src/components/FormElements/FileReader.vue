@@ -14,7 +14,10 @@
             <v-btn color="success" @click="resumeConfirmed()">{{$tc('Confirm')}}</v-btn>
         </v-row>
         <v-row>
-            <v-col cols=12>
+            <v-col cols=12 v-if="completed">
+                <h2 class="text-center">{{filename}} upload complete!</h2>
+            </v-col>
+            <v-col cols=12 v-else>
                 <v-file-input 
                     v-model="file" 
                     :disabled="disabled" 
@@ -24,12 +27,12 @@
                     class="mt-0 pt-0"></v-file-input>
             </v-col>
         </v-row>
-        <v-row class="my-0 py-0" v-if="admin">
+        <v-row class="my-0 py-0" v-if="admin && !completed">
             <v-col cols=12>
                 <span class="fineText">{{$tc('Using Chunksize for your computer')}}: {{Math.ceil(chunkSize / 1024 / 1024)}}mb</span>
             </v-col>
         </v-row>
-        <v-row>
+        <v-row v-if="!completed">
             <v-col cols=12>
                 <v-btn v-if="showUploadButton" :disabled="disabled" @click="upload">{{$tc('Uploads')}}</v-btn>
                 <v-btn v-if="showImportButton" :disabled="disabled" @click="onImportButtonClicked">{{$tc('Import')}}</v-btn>
@@ -162,6 +165,8 @@ export default {
             encContentBlobs: [],
             error: false,
             key: null,
+            filename: '',
+            completed: false,
 
             numUploaded: 0,
             up1Size: 0,
@@ -517,6 +522,7 @@ export default {
                     options.endpoint
                 ].join("-"));
             }
+            this.filename = this.file.name;
             var uploadOptions = {
                 endpoint: this.uploadUrlOverride ? this.uploadUrlOverride : this.uploadUrl,
                 fingerprint: fing,
@@ -625,6 +631,7 @@ export default {
                                 self.encContentBlobs = [];
                                 self.checksum = null;
                                 self.$emit('upload-finished', concatLocation.substring(slashInd+1, plusInd), this.file.name, this.file.size);
+                                self.completed = true;
                                 self.numUploaded += 1;
                                 if (!self.disabledProp){
                                     self.disabled = false;
@@ -646,6 +653,7 @@ export default {
                         var slashInd = self.uploads[0].url.lastIndexOf("/");
                         var plusInd = self.uploads[0].url.lastIndexOf("+");
                         self.$emit('upload-finished', self.uploads[0].url.substring(slashInd+1, plusInd), this.file.name, this.file.size);
+                        self.completed = true;
                         self.numUploaded += 1;
                         self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
                         if (!self.disabledProp){
