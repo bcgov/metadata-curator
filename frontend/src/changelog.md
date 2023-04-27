@@ -2,15 +2,16 @@
 
 <br />
 
-## Version 1.6.7
-March 21, 2023
- - Disable resume on file upload the logic is complicated and doesn't work properly
+## Version 1.6.8
+March 31, 2023
+ - Change File Uploader to just show upload complete and file name when done
 
  <br />
 
 
 ## Table Of Contents
-- [Version 1.6.7 (March 31 2023)](#version-167)
+- [Version 1.6.8 (March 31 2023)](#version-168)
+- [Version 1.6.7 (March 21 2023)](#version-167)
 - [Version 1.6.6 (March 15 2023)](#version-166)
 - [Version 1.6.5 (January 7 2023)](#version-165)
 - [Version 1.6.4 (November 18 2022)](#version-164)
@@ -44,6 +45,12 @@ March 21, 2023
 - [Version 1.2.4 (February 7 2022)](#version-124)
 - [Version 1.2.3 (February 1 2022)](#version-123)
 - [Version 1.2.2 (January 27 2022)](#version-122)
+
+<br />
+
+## Version 1.6.7
+March 21, 2023
+ - Disable resume on file upload the logic is complicated and doesn't work properly
 
 <br />
 
