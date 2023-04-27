@@ -50,7 +50,9 @@ const actions = {
             commit('setTableSchemaId', {id: s._id});
             dispatch('getRevisions', {id: s._id});
             for (let i = 0; i < s.resources.length; i++){
-                s.resources[i].path = s.resources[i].path.join(', ');
+                if (s.resources[i].path && Array.isArray(s.resources[i].path)){
+                    s.resources[i].path = s.resources[i].path.join(', ');
+                }
             }
         }
         commit('setTableSchemaM', {schema: s});
