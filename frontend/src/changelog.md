@@ -5,7 +5,7 @@
 ## Version 1.7.0
 May 15, 2023
  - Removed Field Notes from BCDC black list (it will now be published)
- - Fixed issue preventing a logged in user with no permissions from viewing a published record
+ - Fixed issue preventing a logged in user with no permissions from viewing a published record (requires forum Api 3.1.6)
  - Added formatting to json resource being published to BCDC (it will now use 4 spaces and new lines)
 
  <br />
