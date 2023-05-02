@@ -2,14 +2,15 @@
 
 <br />
 
-## Version 1.6.9
-April 27, 2023
- - Fix to editions not loading
+## Version 1.7.0
+May 15, 2023
+ - ???
 
  <br />
 
 ## Table Of Contents
-- [Version 1.6.9 (March 31 2023)](#version-168)
+- [Version 1.7.0 (May 15 2023)](#version-170)
+- [Version 1.6.9 (April 27 2023)](#version-169)
 - [Version 1.6.8 (March 31 2023)](#version-168)
 - [Version 1.6.7 (March 21 2023)](#version-167)
 - [Version 1.6.6 (March 15 2023)](#version-166)
@@ -47,6 +48,12 @@ April 27, 2023
 - [Version 1.2.2 (January 27 2022)](#version-122)
 
 <br />
+
+## Version 1.6.9
+April 27, 2023
+ - Fix to editions not loading
+
+ <br />
 
 ## Version 1.6.8
 March 31, 2023
