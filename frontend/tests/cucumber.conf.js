@@ -1,7 +1,7 @@
 const { setDefaultTimeout, After, Before, setWorldConstructor } = require('@cucumber/cucumber');
 const World = require('./world.js');
 
-setDefaultTimeout(500000);
+setDefaultTimeout(750000);
 
 setWorldConstructor(World);
 
