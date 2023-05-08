@@ -152,7 +152,7 @@ jobs:
           node-version: ${{env.NODE_VERSION}}
       - uses: browser-actions/setup-chrome@v1
         with:
-          chrome-version: 112
+          chrome-version: 112.0.5615.196
       - name: terraform
         env:
           TERRAFORM_VERSION: "0.13.6"
