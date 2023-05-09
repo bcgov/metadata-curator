@@ -200,7 +200,7 @@ jobs:
           sudo update-ca-certificates
 
           npm ci
-          npm install chromedriver@latest
+          npm install chromedriver@112
           xvfb-run --auto-servernum npm test | tee test_output
           export OUTPUT=$(cat test_output)
           if [[ $OUTPUT == *"failed"* ]]; then
