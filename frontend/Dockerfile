@@ -1,5 +1,5 @@
 #Build production frontend	
-FROM node:16.20.0 as build-stage	
+FROM node:14.18.1 as build-stage	
 WORKDIR /app	
 COPY ./package*.json ./	
 # RUN apk add --update g++ make py-pip
