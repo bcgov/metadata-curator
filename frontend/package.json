@@ -96,7 +96,7 @@
     "prism-react-renderer": "^0.1.7",
     "prismjs": "^1.28.0",
     "sass": "^1.50.1",
-    "sass-loader": "^8.0.2",
+    "sass-loader": "^13.2.2",
     "selenium-server": "^3.141.59",
     "storybook-dark-mode": "^0.3.1",
     "vue-cli-plugin-vuetify-storybook": "~0.2.0",
