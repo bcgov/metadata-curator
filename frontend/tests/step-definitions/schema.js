@@ -171,9 +171,11 @@ When(/^the user is on the files and fields tab$/, async function(){
     client = this.browser;
     try{
         await client.pause(10000);
+        await client.saveScreenshot('./'+path+'/preClickSchema-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
         await client.waitForElementPresent('#schema-tab', 30000);
         await client.click('#schema-tab');
         await client.pause(3000);
+        await client.saveScreenshot('./'+path+'/postClickSchema-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     }catch(ex){
         await helpers.logout(client);
         throw ex;

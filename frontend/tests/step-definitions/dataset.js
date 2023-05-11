@@ -121,7 +121,7 @@ When(/^Data approver chooses to see the details of the dataset$/, async function
         id += '----' + workingDataset.ministry.value.toLowerCase();
         id = id.replace(/[ :.]/g, '-')
         await client.waitForElementPresent(id, 30000);
-        await client.saveScreenshot('./'+path+'/selectDataSetForDetails.png');
+        await client.saveScreenshot('./'+path+'/selectDataSetForDetails-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
         await client.pause(3000);
         await client.click(id);
         await client.pause(2000);
