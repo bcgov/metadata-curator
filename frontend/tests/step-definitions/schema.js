@@ -189,7 +189,7 @@ Then(/^They should be able to upload a data package$/, async function(){
         // await client.waitForElementPresent("input[type='file'][accept='.json,application/json,application/JSON']", 50000);
         // await client.assert.elementPresent("input[type='file'][accept='.json,application/json,application/JSON']");
         await client.saveScreenshot('./'+path+'/preCreateWithoutImport-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
-        await client.pause(100);
+        await client.pause(10000);
         await client.assert.elementPresent("#create-without-import");
     }catch(ex){
         await helpers.logout(client);
@@ -200,6 +200,7 @@ Then(/^They should be able to upload a data package$/, async function(){
 When(/^they create without import$/, async function(){
     client = this.browser;
     try{
+        await client.pause(5000);
         await client.click("#create-without-import");
         await client.pause(1000)
     }catch(ex){
