@@ -81,6 +81,9 @@ var buildProfile = function(token, refreshToken){
     }
     profile._json['aud'] = config.get('jwtAud');
     
+    let cloneable = JSON.parse(JSON.stringify(token._json));
+    delete cloneable.jwt;
+    
     profile.jwt = jwt.sign(token._json, config.get('jwtSecret'));
     profile.isAdmin = false;
     let idField = config.get('userIdField');
