@@ -71,7 +71,10 @@ const actions = {
                 delete schema.__v;
                 delete schema.version;
                 for (let i = 0; i < schema.resources.length; i++){
-                    schema.resources[i].path = schema.resources[i].path.split(/[ ,]+/);
+                    try{
+                        schema.resources[i].path = schema.resources[i].path.split(/[ ,]+/);
+                    }catch(e){
+                    }
                 }
                 await DSchema.load(schema);
             }else if (schema){
