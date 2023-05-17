@@ -74,6 +74,7 @@ const actions = {
                     try{
                         schema.resources[i].path = schema.resources[i].path.split(/[ ,]+/);
                     }catch(e){
+                        //pass
                     }
                 }
                 await DSchema.load(schema);
