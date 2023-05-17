@@ -1363,6 +1363,7 @@ export default{
                             try{
                                 this.workingVal.resources[i].path = this.workingVal.resources[i].path.split(',');
                             }catch(e){
+                                //pass
                             }
                         }
                     }
