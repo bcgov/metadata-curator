@@ -1360,7 +1360,11 @@ export default{
                     }
                     if (this.workingVal.resources[i].path){
                         if (this.workingVal.resources[i].path.includes(',')) {
-                            this.workingVal.resources[i].path = this.workingVal.resources[i].path.split(',');
+                            try{
+                                this.workingVal.resources[i].path = this.workingVal.resources[i].path.split(',');
+                            }catch(e){
+                                //pass
+                            }
                         }
                     }
                 }

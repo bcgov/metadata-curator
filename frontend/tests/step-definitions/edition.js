@@ -107,10 +107,13 @@ When(/^Data approver makes a new edition$/, async function(){
 
         await client.waitForElementPresent('#dataset-editions-tab', 30000);
         await client.click('#dataset-editions-tab');
-        await client.pause(10000)
+        await client.pause(10000);
+        await client.saveScreenshot('./'+path+'/preAddEdition-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
         await client.waitForElementPresent('#addVersion', 25000);
-        await client.pause(10000)
+        await client.pause(10000);
         await client.click('#addVersion');
+        await client.pause(3000);
+        await client.saveScreenshot('./'+path+'/postAddEdition-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
 
         const groupSel = helpers.confGet('providerGroup');
 
@@ -154,9 +157,11 @@ Then(/^Data approver chooses to see the details of the edition$/, async function
         await client.waitForElementPresent('#dataset-editions-tab', 20000);
         await client.click('#dataset-editions-tab');
         await client.pause(5000);
+        await client.saveScreenshot('./'+path+'/viewEditions-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
         await client.waitForElementPresent('#branch-link-0', 20000);
         await client.click('#branch-link-0');
         await client.pause(5000);
+        await client.saveScreenshot('./'+path+'/viewEdition-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
 
     }catch(ex){
         await helpers.logout(client);

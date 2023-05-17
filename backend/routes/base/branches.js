@@ -347,8 +347,8 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
     const getBranchById = async (id, user) => {
         try {
             let res = await db.RepoBranchSchema.findOne({_id: id});
-            let topicResponse = null;;
-            if (user){
+            let topicResponse = null;
+            if (!res.published && user){
                 topicResponse = await forumClient.getTopics(user, {name: res._id+"branch"});
                 if (!topicResponse || !topicResponse.data || topicResponse.data.length < 1){
                     throw new Error('404');
@@ -924,7 +924,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
 
                 ckanResource.append('isUrl', 'false');
 
-                const tableSchemaBlackList = ['notes', 'highlight'];
+                const tableSchemaBlackList = ['highlight'];
                 
                 if (file.tableSchema && file.tableSchema.fields){
                     for (let j=0; j<file.tableSchema.fields.length; j++){
@@ -935,7 +935,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
                 }
                 
                 
-                let jsonFileString = JSON.stringify(file.tableSchema);
+                let jsonFileString = JSON.stringify(file.tableSchema, null, 4);
                 let jsonFile = Buffer.from(jsonFileString, 'utf8');
                 ckanResource.append('upload', jsonFile, {
                     filename: file.name+"-schema.json",

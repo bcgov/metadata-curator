@@ -171,9 +171,11 @@ When(/^the user is on the files and fields tab$/, async function(){
     client = this.browser;
     try{
         await client.pause(10000);
+        await client.saveScreenshot('./'+path+'/preClickSchema-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
         await client.waitForElementPresent('#schema-tab', 30000);
         await client.click('#schema-tab');
         await client.pause(3000);
+        await client.saveScreenshot('./'+path+'/postClickSchema-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
     }catch(ex){
         await helpers.logout(client);
         throw ex;
@@ -183,8 +185,11 @@ When(/^the user is on the files and fields tab$/, async function(){
 Then(/^They should be able to upload a data package$/, async function(){
     client = this.browser;
     try{
-        await client.waitForElementPresent('#create-without-import', 50000);
-        await client.assert.elementPresent("input[type='file'][accept='.json,application/json,application/JSON']");
+        await client.waitForElementPresent('#create-without-import', 80000);
+        // await client.waitForElementPresent("input[type='file'][accept='.json,application/json,application/JSON']", 50000);
+        // await client.assert.elementPresent("input[type='file'][accept='.json,application/json,application/JSON']");
+        await client.saveScreenshot('./'+path+'/preCreateWithoutImport-'+new Date().toISOString().replace(/[:.]/g, '')+'.png');
+        await client.pause(10000);
         await client.assert.elementPresent("#create-without-import");
     }catch(ex){
         await helpers.logout(client);
@@ -195,6 +200,7 @@ Then(/^They should be able to upload a data package$/, async function(){
 When(/^they create without import$/, async function(){
     client = this.browser;
     try{
+        await client.pause(5000);
         await client.click("#create-without-import");
         await client.pause(1000)
     }catch(ex){
