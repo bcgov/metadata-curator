@@ -171,22 +171,7 @@ jobs:
           terraform apply -var hostRootPath=`pwd`/_tmp -auto-approve
 
       - name: test
-        timeout-minutes: 25
-        run: |
-          docker ps
-          sleep 45
-          docker ps
-          docker logs mc_backend
-          cd frontend
-          cp tests/step-definitions/config.json.example tests/step-definitions/config.json
-          sudo apt-get install xvfb openssl
-          export NODE_ENV='development'
-          
-          sudo cp ../terraform/_tmp/ssl/example.crt /usr/local/share/ca-certificates/example.crt
-          sudo update-ca-certificates
-          npm i -g @testim/testim-cli
-          xvfb-run --auto-servernum testim --token "${{ secrets.TESTIM_TOKEN }}" --project "${{ secrets.TESTIM_PROJECT }}" --use-local-chrome-driver --user ${{ secrets.TESTIM_USER }} --suite "MC test suite" --params-file ./testim/config.json --headless | tee test_output
-          export OUTPUT=$(cat test_output)
-          if [[ $OUTPUT == *"failed"* ]]; then
-            exit 1
-          fi
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: npx testim --token "${{ secrets.TESTIM_TOKEN }}" --project "${{ secrets.TESTIM_PROJECT }}" --use-local-chrome-driver --user ${{ secrets.TESTIM_USER }} --suite "MC test suite" --params-file ./testim/config.json --headless
+          working-directory: ./frontend/testim #optional
