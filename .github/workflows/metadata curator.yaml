@@ -170,8 +170,14 @@ jobs:
           terraform init
           terraform apply -var hostRootPath=`pwd`/_tmp -auto-approve
 
+      - name: testim install
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: npm i -g @testim/testim-cli
+          working-directory: ./frontend/testim #optional
+
       - name: test
         uses: coactions/setup-xvfb@v1
         with:
-          run: npx testim --token "${{ secrets.TESTIM_TOKEN }}" --project "${{ secrets.TESTIM_PROJECT }}" --use-local-chrome-driver --user ${{ secrets.TESTIM_USER }} --suite "MC test suite" --params-file ./testim/config.json --headless
+          run: testim --token "${{ secrets.TESTIM_TOKEN }}" --project "${{ secrets.TESTIM_PROJECT }}" --use-local-chrome-driver --user ${{ secrets.TESTIM_USER }} --suite "MC test suite" --params-file ./testim/config.json --headless
           working-directory: ./frontend/testim #optional
