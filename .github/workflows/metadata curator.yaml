@@ -184,7 +184,7 @@ jobs:
           
           sudo cp ../terraform/_tmp/ssl/example.crt /usr/local/share/ca-certificates/example.crt
           sudo update-ca-certificates
-          npm i -g @testim-cli
+          npm i -g @testim/testim-cli
           xvfb-run --auto-servernum testim --token "${{ secrets.TESTIM_TOKEN }}" --project "${{ secrets.TESTIM_PROJECT }}" --use-local-chrome-driver --user ${{ secrets.TESTIM_USER }} --suite "MC test suite" --params-file ./testim/config.json --headless | tee test_output
           export OUTPUT=$(cat test_output)
           if [[ $OUTPUT == *"failed"* ]]; then
