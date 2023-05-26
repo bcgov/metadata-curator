@@ -179,5 +179,5 @@ jobs:
       - name: test
         uses: coactions/setup-xvfb@v1
         with:
-          run: testim --token "${{ secrets.TESTIM_TOKEN }}" --project "${{ secrets.TESTIM_PROJECT }}" --use-local-chrome-driver --user ${{ secrets.TESTIM_USER }} --suite "MC test suite" --base-url https://mc.example.demo --params-file ./config.json
+          run: testim --token "${{ secrets.TESTIM_TOKEN }}" --project "${{ secrets.TESTIM_PROJECT }}" --use-local-chrome-driver --user ${{ secrets.TESTIM_USER }} --suite "MC test suite" --base-url https://mc-dev.apps.gov.bc.ca --params-file ./config.json
           working-directory: ./frontend/testim #optional
