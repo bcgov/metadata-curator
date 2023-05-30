@@ -1,10 +1,9 @@
 {
-    "ma_usernamedev": "approver_1",
-    "ma_passworddev": "approver_1_password",
-    "dp_usernamedev": "provider_1",
-    "dp_passworddev": "provider_1_password",
+    "ma_username": "approver_1",
+    "ma_password": "approver_1_password",
+    "dp_username": "provider_1",
+    "dp_password": "provider_1_password",
     "org_name": "test", 
-    "dp_groupdev": "group",
-    "dp_group": "moh-mc",
-    "org_name_edit": "Ministry of Silly Walks"
+    "dp_group": "group",
+    "org_name_edit": "test"
 }
