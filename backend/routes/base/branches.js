@@ -361,7 +361,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             res = await db.RepoBranchSchema.findOne({_id: id}).populate('repo_id');
             if (user && (user.isApprover || user.isAdmin) ){
                 res = JSON.parse(JSON.stringify(res));
-                if (topicResponse && topicResponse.data && topicResponse.data.length < 1){
+                if (topicResponse && topicResponse.data && topicResponse.data.length >= 1){
                   res.author_groups = topicResponse.data[0].author_groups;
                   res.providerGroup = topicResponse.data[0].author_groups;
                 }
