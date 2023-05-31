@@ -4,6 +4,6 @@
     "dp_username": "provider_1",
     "dp_password": "provider_1_password",
     "org_name": "test", 
-    "dp_group": "group",
+    "dp_group": "/group",
     "org_name_edit": "test"
 }
