@@ -347,9 +347,8 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
     const getBranchById = async (id, user) => {
         try {
             let res = await db.RepoBranchSchema.findOne({_id: id});
-            let topicResponse = null;
+            let topicResponse = await forumClient.getTopics(user, {name: res._id+"branch"});;
             if (!res.published && user){
-                topicResponse = await forumClient.getTopics(user, {name: res._id+"branch"});
                 if (!topicResponse || !topicResponse.data || topicResponse.data.length < 1){
                     throw new Error('404');
                 }
@@ -361,8 +360,10 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             res = await db.RepoBranchSchema.findOne({_id: id}).populate('repo_id');
             if (user && (user.isApprover || user.isAdmin) ){
                 res = JSON.parse(JSON.stringify(res));
-                res.author_groups = topicResponse.data[0].author_groups;
-                res.providerGroup = topicResponse.data[0].author_groups;
+                if (!topicResponse || !topicResponse.data || topicResponse.data.length < 1){
+                  res.author_groups = topicResponse.data[0].author_groups;
+                  res.providerGroup = topicResponse.data[0].author_groups;
+                }
             }
             return res;
         } catch (e) {
