@@ -352,7 +352,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
               topicResponse = await forumClient.getTopics(user, {name: res._id+"branch"});
             }
 
-            if (!res.published || !topicResponse || !topicResponse.data || topicResponse.data.length < 1){
+            if (!res.published && (!topicResponse || !topicResponse.data || topicResponse.data.length < 1)){
               throw new Error('404');
             }
             res = await db.RepoBranchSchema.findOne({_id: id}).populate('repo_id');
