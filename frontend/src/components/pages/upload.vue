@@ -32,7 +32,7 @@
                         <v-stepper-step :step="steps.step1UploadForm" :complete="step > steps.step1UploadForm" >{{$tc('Upload Info')}}</v-stepper-step>
                         <v-divider></v-divider>
 
-                        <v-stepper-step v-if="enabledPhase >= 2 && (user.isApprover || user.isAdmin || (user._json.preferred_username === TEST_ACCOUNT) )" :step="steps.step2EditionForm" :complete="step > steps.step2EditionForm" >{{$tc('Version') + ' ' +$tc('Information')}}</v-stepper-step>
+                        <v-stepper-step v-if="enabledPhase >= 2 && (user.isApprover || user.isAdmin )" :step="steps.step2EditionForm" :complete="step > steps.step2EditionForm" >{{$tc('Version') + ' ' +$tc('Information')}}</v-stepper-step>
                         <v-divider></v-divider>
 
                         <v-stepper-step :step="steps.step3FileSelection" :complete="step > steps.step3FileSelection" >{{$tc('File Selection')}}</v-stepper-step>
@@ -77,7 +77,7 @@
                             <v-btn text color="primary" @click="stepSaveUploadForm(true)" id="next-1">{{$tc('Save & Next')}}</v-btn>
                         </v-stepper-content>
 
-                        <v-stepper-content :step="steps.step2EditionForm" v-if="enabledPhase >= 2 && (user.isApprover || user.isAdmin || (user._json.preferred_username === TEST_ACCOUNT))">
+                        <v-stepper-content :step="steps.step2EditionForm" v-if="enabledPhase >= 2 && (user.isApprover || user.isAdmin )">
                             <v-card class="mb-12">
                                 <v-row>
                                     <v-col cols=9>
@@ -203,7 +203,6 @@
 
     import JsonEditor from '../JsonEditor/JsonEditor';
 
-    const TEST_ACCOUNT = "provider_1"
     var semanticInfer = require('semantic_infer');
 
     export default {
@@ -305,11 +304,6 @@
                         await this.getVariableClassification({field: '_id', value: this.variableClassifications[0]._id});
                     }
                 }
-            }
-
-            if (this.user._json.preferred_username === TEST_ACCOUNT){
-                this.allowCreate = true;
-                this.allowCreateVersion = true;
             }
 
             this.loading = false;
@@ -514,16 +508,13 @@
                     if (this.user.isApprover || this.user.isAdmin){
                         this.step = (this.enabledPhase >= 2) ? this.steps.step2EditionForm : this.steps.step3FileSelection;
                     }else{
-                        if ( (this.enabledPhase >= 2) && (this.selectedVersion == "-1") && (this.user._json.preferred_username !== TEST_ACCOUNT) ){
+                        if ( (this.enabledPhase >= 2) && (this.selectedVersion == "-1") ){
                             this.errorAlert = true;
                             this.errorText = "You are not allowed to proceed until this upload has been assigned an "+this.$tc('version',1);
                             return false;
                         }
-                        if (this.user._json.preferred_username === TEST_ACCOUNT){
-                            this.step = (this.enabledPhase >= 2) ? this.steps.step2EditionForm : this.steps.step3FileSelection;
-                        }else{
-                            this.step = this.steps.step3FileSelection;
-                        }
+                        
+                        this.step = this.steps.step3FileSelection;
                     }
                 }
             },
@@ -679,9 +670,6 @@
             },
 
             async createVersion(){
-                if (this.user._json.preferred_username !== TEST_ACCOUNT){
-                    return false;
-                }
 
                 if (!this.selectedDataset){
                     this.errorAlert = true;
@@ -710,9 +698,6 @@
             },
 
             async createDataset(){
-                if (this.user._json.preferred_username !== TEST_ACCOUNT){
-                    return false;
-                }
                 this.clearDataset();
                 this.editDataset({name: 'name', value: this.upload.name});
                 this.editDataset({name: 'ministry_organization', value: this.upload.ministry_organization});
@@ -783,7 +768,6 @@
                 warningAlert: false,
                 warningText: '',
                 fileInfoModify: false,
-                TEST_ACCOUNT: TEST_ACCOUNT,
                 fileInfo: {},
                 versionListLoading: false,
                 resetChangeRight: false,
