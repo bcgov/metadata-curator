@@ -483,7 +483,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
     }
     
-    router.get('/', auth.requireLoggedIn, async function(req, res, next) {
+    router.get('/', /*auth.requireLoggedIn,*/ async function(req, res, next) {
         try{
             //version check
             if (!util.phaseCheck(cache, requiredPhase, db)){

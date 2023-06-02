@@ -256,15 +256,15 @@ r.beforeEach(async(to, from, next) => {
     //document.title = i18n.tc(to.meta.title);
     // document.title = "Metadata Curator - " + to.meta.title;
 
-    let requiresAuth = to.meta.requiresAuth;
+    //let requiresAuth = to.meta.requiresAuth;
 
     let requiresNoUser = to.meta.requiresNoUser;
 
     let phase = (to.meta.phase) ? to.meta.phase : 1;
 
-    if ( (requiresAuth) && (!loggedIn) ){
+    /*if ( (requiresAuth) && (!loggedIn) ){
       return next('/login?r='+to.path.substring(1));
-    }else if ( (requiresNoUser) && (loggedIn) ){
+    }else */if ( (requiresNoUser) && (loggedIn) ){
       return next('/');
     }
 

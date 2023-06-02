@@ -2,13 +2,14 @@
 
 <br />
 
-## Version 1.7.1
-June 2 2023
- - Fixed bugs around published editions
+## Version 1.7.2
+June 20 2023
+ - 
 
  <br />
 
 ## Table Of Contents
+- [Version 1.7.2 (June 20 2023)](#version-172)
 - [Version 1.7.1 (June 2 2023)](#version-171)
 - [Version 1.7.0 (May 15 2023)](#version-170)
 - [Version 1.6.9 (April 27 2023)](#version-169)
@@ -49,6 +50,12 @@ June 2 2023
 - [Version 1.2.2 (January 27 2022)](#version-122)
 
 <br />
+
+## Version 1.7.1
+June 2 2023
+ - Fixed bugs around published editions
+
+ <br />
 
 ## Version 1.7.0
 May 15, 2023

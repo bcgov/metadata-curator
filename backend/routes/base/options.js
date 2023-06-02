@@ -6,7 +6,7 @@ var buildStatic = function(db, router){
 var buildDynamic = function(db, router, auth, forumClient){
     const mongoose = require('mongoose');
 
-    router.get('/', auth.requireLoggedIn, async function(req, res, next) {
+    router.get('/', /*auth.requireLoggedIn,*/ async function(req, res, next) {
 
         var q = {};
         try{

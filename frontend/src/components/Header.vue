@@ -21,7 +21,7 @@
                 <span v-if="month===11 && date===25"><v-icon color="green">mdi-string-lights</v-icon></span>
             </v-toolbar-title>
 
-            <div v-show="loggedIn && (tabs.length > 0)">
+            <div v-show="(tabs.length > 0)">
                 <v-tabs v-model="activeTab"
                         icons-and-text
                         centered
@@ -162,6 +162,15 @@ export default {
 
         tabs: function(){
             let t = [];
+            if (!this.user){
+              if (this.enabledPhase >= 2){
+                  t = [
+                      { id: 1, name: "Home", route: `/`, icon: 'mdi-home', disabled: false},
+                      { id: 3, name: "Datasets", route: `/datasets`, icon: 'mdi-folder-open', disabled: false},
+                      { id: 4, name: "Versions", route: `/versions`, icon: 'mdi-source-fork', disabled: false},
+                  ]
+              }
+            }
             if (this.user){
                 if (this.enabledPhase >= 1){
                     t = [
