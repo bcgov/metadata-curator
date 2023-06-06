@@ -1,6 +1,5 @@
 <template>
     <v-container fluid>
-
         <v-row v-if="loading">
             <v-col cols=12>
                     <span>{{$tc('Loading')}}...</span>
@@ -45,7 +44,7 @@
                             <span>{{id}}</span>
                         </v-row>
 
-                        <v-row v-if="user.isApprover || user.isAdmin" :key="'rerender-group-sel'+reRenderGroupSel">
+                        <v-row v-if="user && (user.isApprover || user.isAdmin)" :key="'rerender-group-sel'+reRenderGroupSel">
                             <v-col cols=12>
                                 <Select
                                     :label="creating ? $tc('Select Data Provider Group') : $tc('Data Provider Group')"
@@ -457,6 +456,8 @@ export default {
                 await this.getBranches({repoId: this.id});
             }
             this.loading = false;
+            //eslint-disable-next-line
+            console.log("L", this.loading);
         },
 
         routeToHome() {
@@ -511,6 +512,7 @@ export default {
     computed: {
         ...mapState({
             user: state => state.user.user,
+            loggedIn: state => state.user.loggedIn,
             dataset: state => state.repos.repo,
             branches: state => state.repos.branches,
             dataPackageSchema: state => state.schemaImport.dataPackageSchema,
@@ -528,7 +530,7 @@ export default {
         if (this.id === 'create'){
             this.editing = true;
             this.creating = true;
-            if ( (this.user.isApprover) || (this.user.isAdmin) ){
+            if ( (this.user) && ((this.user.isApprover) || (this.user.isAdmin)) ){
                 let requiredRole = await this.$store.dispatch('config/getItem', {field: 'key', value: 'requiredRoleToCreateRequest', def: {key: 'requiredRoleToCreateRequest', value: false}});
 
                 requiredRole = requiredRole.value;

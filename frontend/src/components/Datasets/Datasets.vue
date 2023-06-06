@@ -17,7 +17,7 @@
             </v-col>
         </v-row>
 
-        <v-row>
+        <v-row v-if="loggedIn">
             <v-col cols=10>
             </v-col>
             <v-col cols=2>
@@ -851,6 +851,7 @@ export default {
     computed: {
         ...mapState({
             user: state => state.user.user,
+            loggedIn: state => state.user.loggedIn,
             dataUploads: state => state.dataUploads.dataUploads,
             repos: state => state.repos.repos,
             reposFull: state => state.repos.reposFull,

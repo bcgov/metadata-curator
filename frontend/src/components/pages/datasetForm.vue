@@ -4,10 +4,10 @@
             <v-tabs v-model="tab">
                 <v-tab key="dataset">{{$tc('Datasets', 1)}}</v-tab>
                 <v-tab key="editions" id="dataset-editions-tab" v-if="!creating">{{$tc('Version', 2)}}</v-tab>
-                <v-tab key="schema" v-if="!creating">{{$tc('Schema', 1)}}</v-tab>
-                <v-tab key="compareS" v-if="!creating">{{$tc('Compare', 1)}} {{$tc('Schema', 1)}}</v-tab>
-                <v-tab key="uploads" v-if="!creating && (uploads.length>0)">{{$tc('Uploads', 2)}}</v-tab>
-                <v-tab key="revisions" v-if="revisionsLoading === false && revisions.length>0">{{$tc('Revisions', 2)}}</v-tab>
+                <v-tab key="schema" v-if="!creating && loggedIn">{{$tc('Schema', 1)}}</v-tab>
+                <v-tab key="compareS" v-if="!creating && loggedIn">{{$tc('Compare', 1)}} {{$tc('Schema', 1)}}</v-tab>
+                <v-tab key="uploads" v-if="!creating && (uploads.length>0) && loggedIn">{{$tc('Uploads', 2)}}</v-tab>
+                <v-tab key="revisions" v-if="revisionsLoading === false && revisions.length>0 && loggedIn">{{$tc('Revisions', 2)}}</v-tab>
             </v-tabs>
             <v-tabs-items v-model="tab" class="fullWidth">
                 <v-tab-item key="dataset">
@@ -170,6 +170,7 @@ export default {
     computed: {
         ...mapState({
             dataset: state => state.repos.repo,
+            loggedIn: state => state.user.loggedIn,
             branches: state => state.repos.branches,
             dataUploads: state => state.dataUploads.dataUploads,
             schema: state => state.schemaImport.tableSchema,

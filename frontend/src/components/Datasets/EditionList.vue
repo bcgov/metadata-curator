@@ -58,7 +58,7 @@
                                 <h2>{{$tc('Versions', 2)}}</h2>
                             </v-col>
                             <v-col cols=9>
-                                <v-btn id="addVersion" color="primary" @click="addVersion">{{$tc('Add')}} {{$tc('Version')}}</v-btn>
+                                <v-btn v-if="loggedIn" id="addVersion" color="primary" @click="addVersion">{{$tc('Add')}} {{$tc('Version')}}</v-btn>
                             </v-col>
 
                             <v-col cols=4>
@@ -80,7 +80,7 @@
                                     - {{branch.type.charAt(0).toUpperCase() + branch.type.slice(1)}} 
                                     - {{$tc('Created')}} {{branch.create_date | formatDate}} 
                                 </span>
-                                <v-btn color="success" @click="copyVersion(branch)">{{$tc('Create')}} {{$tc('Version')}} {{$tc('from this')}}</v-btn>
+                                <v-btn v-if="loggedIn" color="success" @click="copyVersion(branch)">{{$tc('Create')}} {{$tc('Version')}} {{$tc('from this')}}</v-btn>
                             </v-col>
                         </v-row>
 
@@ -240,10 +240,16 @@ export default {
         },
 
         async editVersion(id){
-            // this.branch = id;
-            // this.branchDia = true;
-            let reload = (this.$route.name === 'version_form');
-            await this.$router.push({name: "version_form", params: {id: id}})
+            let reload = false;
+            if (this.user){
+              // this.branch = id;
+              // this.branchDia = true;
+               reload = (this.$route.name === 'version_form');
+              await this.$router.push({name: "version_form", params: {id: id}})
+            }else{
+              reload = true;
+              await this.$router.push({name: "published_version", params: {id: id}});
+            }
             if (reload){
                 window.location.reload();
             }
@@ -252,6 +258,7 @@ export default {
     computed: {
         ...mapState({
             user: state => state.user.user,
+            loggedIn: state => state.user.loggedIn,
             dataset: state => state.repos.repo,
             branches: state => state.repos.branches,
             dataPackageSchema: state => state.schemaImport.dataPackageSchema,

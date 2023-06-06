@@ -6,7 +6,7 @@
             </v-col>
         </v-row>
 
-        <v-row>
+        <v-row v-if="loggedIn">
             <v-col cols=8>
             </v-col>
             <v-col cols=4>
@@ -25,7 +25,7 @@
                 <v-list-item
                     v-else
                     :key="item.id"
-                    :to="{ name: 'variableClassificationForm', params: { id: item.id } }"
+                    :to="loggedIn ? { name: 'variableClassificationForm', params: { id: item.id } } : {name: 'publishedVariableClassification', params: {id: item.id } }"
                 >
                     <v-list-item-content>
                         <v-list-item-title v-html="item.title"></v-list-item-title>
@@ -79,6 +79,7 @@ export default {
     computed: {
         ...mapState({
             user: state => state.user.user,
+            loggedIn: state => state.user.loggedIn,
             variableClassifications: state => state.variableClassifications.items,
         }),
         

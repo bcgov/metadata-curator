@@ -199,7 +199,8 @@ export default {
                     //   { id: 11, name: "Submit", route: `/submit`, icon: 'mdi-send', disabled: true }
             }
 
-            if ( (this.user) && ( (this.user.isAdmin) || (this.user.isApprover) ) && (this.enabledPhase >= 2) ){
+            // if ( (this.user) && ( (this.user.isAdmin) || (this.user.isApprover) ) && (this.enabledPhase >= 2) ){
+            if (this.enabledPhase >= 2){
                 t.push({ id: 12, name: "Classification Indicies", route: `/variable-classifications`, icon: 'mdi-archive-search', disabled: false });
             }
 

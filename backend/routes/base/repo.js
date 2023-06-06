@@ -337,11 +337,14 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
     }
 
     const listRepositoriesEditionFull = async (user, query) => {
+      let topicResponse = false;
+      let repoIds = [];//await publishedRepositories();
         try {
+          // if (user){
             const topicResponse = await forumClient.getTopics(user, {});
             let topics = topicResponse.data.filter(item => item.parent_id);
 
-            const repoIds = topics.map( (item) => {
+            repoIds = repoIds.concat(topics.map( (item) => {
                 let id = item.name;
                 if (!id || id.indexOf("repo") === -1){
                     return;
@@ -353,7 +356,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
 
             }).filter( (item) => { 
                 return (item && item.length > 0)
-            });
+            }));
 
             const branchIds = topics.map( (item) => {
                 let id = item.name;
@@ -420,13 +423,23 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             throw new Error(e.message)
         }
     }
+
+    const publishedRepositories = async () => {
+      let editions = await db.RepoBranchSchema.find({published: true});
+      return editions.map( (item) => {
+        return item.repo_id;
+      });
+    }
     
     const listRepositories = async (user, query) => {
+      let topicResponse = false;
+      let repoIds = await publishedRepositories();
         try {
-            const topicResponse = await forumClient.getTopics(user, {});
+          if (user){
+            topicResponse = await forumClient.getTopics(user, {});
             let topics = topicResponse.data.filter(item => item.parent_id);
 
-            const repoIds = topics.map( (item) => {
+            repoIds = repoIds.concat(topics.map( (item) => {
                 let id = item.name;
                 if (!id || id.indexOf("repo") === -1){
                     return;
@@ -438,12 +451,13 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
 
             }).filter( (item) => { 
                 return (item && String(item).length > 0)
-            });
+            }));
 
             let authorGroupsLookup = {};
             for (let i=0; i<topics.length; i++){
                 authorGroupsLookup[topics[i]._id] = topics[i].author_groups;
             }
+          }
 
             if(query && query.upload_id) {
                 //return await db.RepoSchema.find({data_upload_id: mongoose.Types.ObjectId(query.filterBy)}).sort({ "create_date": 1});
@@ -495,7 +509,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
     });
 
-    router.get('/editionfull', async function(req, res, next) {
+    router.get('/editionfull', auth.requireLoggedIn, async function(req, res, next) {
         //version check
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('GET', 'repos'));
@@ -509,7 +523,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
     });
 
-    router.post('/', async function(req, res, next){
+    router.post('/', auth.requireLoggedIn, async function(req, res, next){
         //version check
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('POST', 'repos'));
@@ -545,7 +559,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
     });
 
-    router.put('/:repoId', async function(req, res, next){
+    router.put('/:repoId', auth.requireLoggedIn, async function(req, res, next){
         //version check
         if (!util.phaseCheck(cache, requiredPhase, db)){
             return res.status(404).send(util.phaseText('PUT', ('repos/'+req.params.repoId)));
@@ -559,7 +573,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
     });
 
-    router.get('/:repoId/revisions', async function(req, res, next){
+    router.get('/:repoId/revisions', auth.requireLoggedIn, async function(req, res, next){
         try{
             let revs = await db.RevisionSchema.find({source_id: mongoose.Types.ObjectId(req.params.repoId), type: 'repo'});
             return res.json({revisions: revs});
@@ -569,7 +583,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
     });
 
-    router.get('/:repoId/comments', async function(req, res, next){
+    router.get('/:repoId/comments', auth.requireLoggedIn, async function(req, res, next){
         try{
             if (req.params.repoId !== 'create'){
                 const comments = await getComments (req.params.repoId, req.user);
@@ -582,7 +596,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
     });
 
-    router.post('/:repoId/comments', async function(req, res, next){
+    router.post('/:repoId/comments', auth.requireLoggedIn, async function(req, res, next){
         try{
             await addComment (req.params.repoId, req.user, req.body.content);
             return res.status(201).json({

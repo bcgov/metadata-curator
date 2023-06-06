@@ -19,7 +19,7 @@
                     </v-col>
                 </v-row>
                 <v-row>
-                    <v-col cols=12>
+                    <v-col cols=12 v-if="loggedIn">
                         <Select
                             :label="$tc('Uploads', 2)"
                             placeholder=""
@@ -131,12 +131,17 @@ export default {
         },
 
         routeToBranch(id) {
-            this.$router.push({ name: 'version_form', params: { id: id } })
+            if (this.loggedIn){
+              this.$router.push({ name: 'version_form', params: { id: id } })
+            }else{
+              this.$router.push({ name: 'published_version', params: { id: id } })
+            }
         },
     },
     computed: {
         ...mapState({
             user: state => state.user.user,
+            loggedIn: state => state.user.loggedIn,
             dataUploads: state => state.dataUploads.dataUploads,
             repos: state => state.repos.repos,
             branches: state => state.repos.branches,

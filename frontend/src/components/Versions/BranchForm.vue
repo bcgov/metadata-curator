@@ -997,6 +997,10 @@ export default {
             //this.branchId = (this.branchId) ? this.branchId : this.$route.params.id;
             this.id = (this.branchId) ? this.branchId : this.$route.params.id;
 
+            if (!this.loggedIn){
+              await this.$router.push({name: "published_version", params: {id: this.id}});
+            }
+
             await this.getDataUploads("team");
             if (this.id === 'create'){
                 this.editing = true;
@@ -1109,6 +1113,7 @@ export default {
     computed: {
         ...mapState({
             user: state => state.user.user,
+            loggedIn: state => state.user.loggedIn,
             branch: state => state.repos.branch,
             dataUploads: state => state.dataUploads.dataUploads,
             dataset: state => state.repos.repo,
@@ -1169,6 +1174,10 @@ export default {
     },
     watch: {
         branchId: async function(){
+            if (!this.loggedIn){
+              await this.$router.push({name: "published_version", params: {id: this.branchId}});
+              window.location.reload();
+            }
             if (this.branchId){
                 await this.load();
             }else{
@@ -1190,7 +1199,7 @@ export default {
 
     },
 
-    created() {
+    async created() {
         this.clearBranch();
         this.clearTableSchema();
         this.clearDataPackageSchema();
