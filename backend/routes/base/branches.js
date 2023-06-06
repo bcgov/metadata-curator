@@ -414,10 +414,10 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
     const listBranches = async (user, repoId) => {
       let topicResponse = false;
       let branchIds = [];
+      let author_groups = {};
       if (user) {
         topicResponse = await forumClient.getTopics(user, {});
         let topics = topicResponse.data.filter(item => item.parent_id);
-        let author_groups = {};
         
         branchIds = branchIds.concat(topics.map( (item) => {
             let id = item.name;

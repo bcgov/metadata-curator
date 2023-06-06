@@ -378,7 +378,7 @@
                     </v-card-actions>
                     <v-card-actions v-else-if="!editing">
                         <v-btn @click="routeToHome()" class="mt-1">{{$tc('Back')}}</v-btn>
-                        <v-btn @click="editing=!editing" id="editDatasetBtn" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
+                        <v-btn v-if="loggedIn" @click="editing=!editing" id="editDatasetBtn" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-col>

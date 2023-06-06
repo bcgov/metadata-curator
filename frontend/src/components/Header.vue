@@ -186,17 +186,6 @@ export default {
                         { id: 4, name: "Versions", route: `/versions`, icon: 'mdi-source-fork', disabled: false},
                     ]
                 }
-
-                    //   { id: 2, name: "Upload", route: `/upload`, icon: 'mdi-upload', disabled: false},
-                    //   { id: 3, name: "Import", route: `/import`, icon: 'mdi-import', disabled: false },
-                    //   { id: 4, name: "Guess", route: `/infer`, icon: 'mdi-file-question-outline', disabled: true},
-                    //   { id: 5, name: "Column", route: `/column`, icon: 'mdi-view-column', disabled: true},
-                    //   { id: 6, name: "Table", route: `/table`, icon: 'mdi-table', disabled: true},
-                    //   { id: 7, name: "Provenance", route: `/provenance`, icon: 'mdi-file-document', disabled: true },
-                    //   { id: 8, name: "Package", route: `/package`, icon: 'mdi-package-variant-closed', disabled: true },
-                    //   { id: 9, name: "Validate", route: `/validate`, icon: 'mdi-checkbox-marked-circle', disabled: true },
-                    //   { id: 10, name: "Find & Replace", route: `/findreplace`, icon: 'mdi-file-find', disabled: true },
-                    //   { id: 11, name: "Submit", route: `/submit`, icon: 'mdi-send', disabled: true }
             }
 
             // if ( (this.user) && ( (this.user.isAdmin) || (this.user.isApprover) ) && (this.enabledPhase >= 2) ){
@@ -454,7 +443,7 @@ export default {
 
         let urlConf = await this.$store.dispatch('config/getItem', {field: 'key', value: 'forumApiWS', def: {key: 'forumApiWS', value: ''}});
         this.forumWSUrl = urlConf.value;
-        if (this.forumWSUrl !== '' && this.jwt){
+        if (this.forumWSUrl !== '' && this.jwt && this.loggedIn){
             this.forumApiWS = new WebSocket(this.forumWSUrl, this.jwt);
             this.forumApiWS.onmessage = this.forumApiMessage;
             this.forumApiWS.onopen = this.forumWSOpen
@@ -462,7 +451,7 @@ export default {
 
         let mcUrlConf = await this.$store.dispatch('config/getItem', {field: 'key', value: 'wsUrl', def: {key: 'wsUrl', value: ''}});
         this.mcWSUrl = mcUrlConf.value;
-        if ( (this.mcWSUrl !== '') ){
+        if ( (this.mcWSUrl !== '' && this.jwt && this.loggedIn) ){
             this.mcWS = new WebSocket(this.mcWSUrl, this.jwt);
             this.mcWS.onmessage = this.mcMessage;
             this.mcWS.onopen = this.mcWSOpen

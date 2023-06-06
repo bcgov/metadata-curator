@@ -339,6 +339,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
     const listRepositoriesEditionFull = async (user, query) => {
       let topicResponse = false;
       let repoIds = [];//await publishedRepositories();
+      let authorGroupsLookup = {};
         try {
           // if (user){
             const topicResponse = await forumClient.getTopics(user, {});
@@ -384,7 +385,6 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
                 return (item && repoIds.indexOf(id) !== -1);
             });
 
-            let authorGroupsLookup = {};
             for (let i=0; i<topics.length; i++){
                 authorGroupsLookup[topics[i]._id] = topics[i].author_groups;
             }
@@ -434,6 +434,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
     const listRepositories = async (user, query) => {
       let topicResponse = false;
       let repoIds = await publishedRepositories();
+      let authorGroupsLookup = {};
         try {
           if (user){
             topicResponse = await forumClient.getTopics(user, {});
@@ -453,7 +454,6 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
                 return (item && String(item).length > 0)
             }));
 
-            let authorGroupsLookup = {};
             for (let i=0; i<topics.length; i++){
                 authorGroupsLookup[topics[i]._id] = topics[i].author_groups;
             }

@@ -5,6 +5,7 @@
 ## Version 2.0.0
 June 20 2023
  - Authentication no longer a requirement and the following sections have been modified to allow access (Datasets, Editions, Variable Classifications, Home). Access is only granted to published things. Datasets are considered published if at least one of their editions is published
+ - Added temporal fields, number of fields and type to resources in edition files and fields
 
  <br />
 
