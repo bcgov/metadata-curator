@@ -17,7 +17,7 @@
             </v-col>
         </v-row>
 
-        <v-row v-if="loggedIn">
+        <v-row v-if="loggedIn && (user.isAdmin || user.isApprover)">
             <v-col cols=10>
             </v-col>
             <v-col cols=2>
@@ -111,7 +111,7 @@
                 </v-list>
             </v-col>
         </v-row>
-        <v-row>
+        <v-row v-if="loggedIn && (user.isAdmin || user.isApprover)">
             <v-col cols=10>
             </v-col>
             <v-col cols=2>

@@ -58,7 +58,7 @@
                                 <h2>{{$tc('Versions', 2)}}</h2>
                             </v-col>
                             <v-col cols=9>
-                                <v-btn v-if="loggedIn" id="addVersion" color="primary" @click="addVersion">{{$tc('Add')}} {{$tc('Version')}}</v-btn>
+                                <v-btn v-if="loggedIn && (user.isAdmin || user.isApprover)" id="addVersion" color="primary" @click="addVersion">{{$tc('Add')}} {{$tc('Version')}}</v-btn>
                             </v-col>
 
                             <v-col cols=4>
@@ -80,7 +80,7 @@
                                     - {{branch.type.charAt(0).toUpperCase() + branch.type.slice(1)}} 
                                     - {{$tc('Created')}} {{branch.create_date | formatDate}} 
                                 </span>
-                                <v-btn v-if="loggedIn" color="success" @click="copyVersion(branch)">{{$tc('Create')}} {{$tc('Version')}} {{$tc('from this')}}</v-btn>
+                                <v-btn v-if="loggedIn && (user.isAdmin || user.isApprover)" color="success" @click="copyVersion(branch)">{{$tc('Create')}} {{$tc('Version')}} {{$tc('from this')}}</v-btn>
                             </v-col>
                         </v-row>
 

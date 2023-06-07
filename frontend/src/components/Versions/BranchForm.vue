@@ -997,7 +997,7 @@ export default {
             //this.branchId = (this.branchId) ? this.branchId : this.$route.params.id;
             this.id = (this.branchId) ? this.branchId : this.$route.params.id;
 
-            if (!this.loggedIn){
+            if (!this.loggedIn || !(this.user.isAdmin || this.user.isApprover)){
               await this.$router.push({name: "published_version", params: {id: this.id}});
             }
 
@@ -1174,7 +1174,7 @@ export default {
     },
     watch: {
         branchId: async function(){
-            if (!this.loggedIn){
+            if (!this.loggedIn || !(this.user.isAdmin || this.user.isApprover)){
               await this.$router.push({name: "published_version", params: {id: this.branchId}});
               window.location.reload();
             }

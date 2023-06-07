@@ -19,7 +19,7 @@
                     </v-col>
                 </v-row>
                 <v-row>
-                    <v-col cols=12 v-if="loggedIn">
+                    <v-col cols=12 v-if="loggedIn && (user.isAdmin || user.isApprover)">
                         <Select
                             :label="$tc('Uploads', 2)"
                             placeholder=""
@@ -131,7 +131,7 @@ export default {
         },
 
         routeToBranch(id) {
-            if (this.loggedIn){
+            if (this.loggedIn && (this.user.isApprover || this.user.isAdmin)){
               this.$router.push({ name: 'version_form', params: { id: id } })
             }else{
               this.$router.push({ name: 'published_version', params: { id: id } })

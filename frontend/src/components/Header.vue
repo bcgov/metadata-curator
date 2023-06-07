@@ -162,7 +162,7 @@ export default {
 
         tabs: function(){
             let t = [];
-            if (!this.user){
+            if (!this.user || !(this.user.isDataProvider || this.user.isAdmin || this.user.isApprover)){
               if (this.enabledPhase >= 2){
                   t = [
                       { id: 1, name: "Home", route: `/`, icon: 'mdi-home', disabled: false},
@@ -171,7 +171,7 @@ export default {
                   ]
               }
             }
-            if (this.user){
+            if (this.user && (this.user.isDataProvider || this.user.isAdmin || this.user.isApprover)){
                 if (this.enabledPhase >= 1){
                     t = [
                         { id: 2, name: "Uploads", route: `/uploads`, icon: 'mdi-cloud-upload', disabled: false},
@@ -189,7 +189,7 @@ export default {
             }
 
             // if ( (this.user) && ( (this.user.isAdmin) || (this.user.isApprover) ) && (this.enabledPhase >= 2) ){
-            if (this.enabledPhase >= 2){
+            if ( (this.enabledPhase >= 2) && (!this.user || !this.user.isDataProvider) ){
                 t.push({ id: 12, name: "Classification Indicies", route: `/variable-classifications`, icon: 'mdi-archive-search', disabled: false });
             }
 
