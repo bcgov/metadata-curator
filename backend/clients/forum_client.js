@@ -2,6 +2,9 @@ const axios = require('axios');
 
 const TOPIC_RES_LIMIT = 250;
 
+const NodeCache = require('node-cache');
+const forumCache = new NodeCache({stdTTL: 0});
+
 const addTopic = async (name, user) => {
     if (user.organization){
         const parentTopicResponse = await createTopicIfDoesNotExist(user.organization, user);

@@ -616,9 +616,11 @@ import DataUploadSelect from '../FormElements/DataUploadSelect';
 import ScrollToTopBottom from "@/components/ScrollToTopBottom";
 
 import { Backend } from '../../services/backend';
+import UpdateUpload from '../../mixins/UpdateUpload';
 
 export default {
     name: "BranchForm",
+    mixins: [UpdateUpload],
 
     components:{
         TextInput,
@@ -1064,7 +1066,10 @@ export default {
 
             if (this.creating){
 
-                this.saveBranch().then( (data) => {
+                this.saveBranch().then( async(data) => {
+                    if (this.branch.data_upload_id){
+                      await this.updateUploadOnEdit();
+                    }
                     this.alertType = "success"
                     this.alertText = this.$tc("Sucessfully created ") + this.$tc("version", 1);
                     this.alert = true;
@@ -1086,13 +1091,16 @@ export default {
                     this.disableSave = false;
                 });
             }else{
-                this.updateBranch().then( () => {
+                this.updateBranch().then( async() => {
                     this.alertType = "success"
                     this.alertText = "Successfully updated edition";
                     this.alert = true;
                     //this.closeOrBack();
                     this.editing = false;
                     this.disableSave = false;
+                    if (this.branch.data_upload_id){
+                      await this.updateUploadOnEdit();
+                    }
 
                 }).catch( err => {
                     this.alertType = "error"

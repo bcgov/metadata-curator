@@ -59,13 +59,13 @@
             </v-autocomplete>
         </v-container>
 
-        <v-container>
+        <!-- <v-container>
             <v-row>
                 <v-col cols="2">
                     <v-btn color="primary" to="/upload" id="newUpload" v-if="canUpload">{{ ( (user.isApprover) ? $tc('Pre-Create') : $tc('New'))}} {{$tc('Uploads')}}</v-btn>
                 </v-col>
             </v-row>
-        </v-container>
+        </v-container> -->
 
         <div v-if="dataUploadDisplayItems.length == 0">
             {{$tc('Looks like there is nothing here why not click New Upload to get started')}}

@@ -9,6 +9,7 @@ const versions = () => import(/* webpackChunkName: "versions" */ "../components/
 const version = () => import(/* webpackChunkName: "version" */ "../components/pages/version");
 const datasets = () => import(/* webpackChunkName: "datasets" */ "../components/pages/datasets");
 const datasetForm = () => import(/* webpackChunkName: "datasetForm" */ "../components/pages/datasetForm");
+const uploadOld = () => import(/* webpackChunkName: "upload" */ "../components/pages/uploadOld");
 const upload = () => import(/* webpackChunkName: "upload" */ "../components/pages/upload");
 const Admin = () => import(/* webpackChunkName: "Admin" */ "../components/pages/Admin");
 const NotFound = () => import(/* webpackChunkName: "NotFound" */ "../components/pages/404");
@@ -70,6 +71,15 @@ let r = new Router({
       component: upload,
       meta: {
           title: "Uploads",
+          requiresAuth: true
+      },
+    },
+    {
+      path: '/upload_old/:id',
+      name: 'old_upload_view',
+      component: uploadOld,
+      meta: {
+          title: "Uploads (Deprecated)",
           requiresAuth: true
       },
     },
@@ -147,6 +157,15 @@ let r = new Router({
       component: upload,
       meta: {
           title: "Upload",
+          requiresAuth: true
+      }
+    },
+    {
+      path: '/upload_old',
+      name: 'upload_old',
+      component: uploadOld,
+      meta: {
+          title: "Upload (Deprecated)",
           requiresAuth: true
       }
     },

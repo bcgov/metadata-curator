@@ -241,21 +241,6 @@
                     return;
                 }
 
-                // if (!this.branch.keywords){
-                //     this.$emit('error', "Keywords are required");
-                //     return;
-                // }
-
-                // if (!dateStart){
-                //     this.$emit('error', "Start date cannot be deduced please set at least one resource temporal start");
-                //     return;
-                // }
-
-                // if (!dateEnd){
-                //     this.$emit('error', "Start date cannot be deduced please set at least one resource temporal start");
-                //     return;
-                // }
-
                 let datasetName = (this.repo.name) ? this.repo.name : "";
                 datasetName = (this.branch.repo_id && this.branch.repo_id.name) ? this.branch.repo_id.name : datasetName;
 
@@ -269,14 +254,32 @@
                     "date_range_end": dateEnd,
                     "information": (this.branch.additional_info) ? this.branch.additional_info : '',
                     "data_create_date": new Date(),
-                    // "keywordsDescribingData": (this.branch.keywords) ? this.branch.keywords : '',
                     "num_files": numFiles
+                }
+                let files = [];
+                if (this.schema && this.schema.resources){
+                  for (let i=0; i<this.schema.resources.length; i++){
+                    let file = {};
+                    file.id = "Not yet uploaded";
+                    file.size = 0;
+                    file.name = this.schema.resources[i].name;
+                    file.data = this.schema.resources[i].type && this.schema.resources[i].type === "Data";
+                    file.start_date = this.schema.resources[i].temporal_start;
+                    file.end_date = this.schema.resources[i].temporal_end;
+                    file.num_records = this.schema.resources[i].num_rows;
+                    file.title = this.schema.resources[i].name;
+                    file.description = this.schema.resources[i].description;
+                    file.type = this.schema.resources[i].type;
+                    file.temporal_fields = this.schema.resources[i].temporal_fields;
+                    files.push(file);
+                  }
                 }
                 
                 try{
                     
                     data.uploader = this.user.email;
                     data.provider_group = this.branch.author_groups[0];
+                    data.files = files;
                     
                     
                     let d = await this.createInitialUpload(data);
@@ -297,8 +300,6 @@
                 }catch(e){
                     this.$emit('error', e);
                 }
-
-
             }
         }
 
