@@ -262,7 +262,7 @@ export default {
     methods: {
 
         initSockets: function(){
-            if (this.jwt){
+            if (this.jwt && this.loggedIn && this.user && (this.user.isAdmin || this.user.isDataProvider || this.user.isApprover)){
                 if (this.forumWSUrl && !this.forumApiWS){
                     this.forumApiWS = new WebSocket(this.forumWSUrl, this.jwt);
                     this.forumApiWS.onmessage = this.forumApiMessage;
@@ -443,19 +443,10 @@ export default {
 
         let urlConf = await this.$store.dispatch('config/getItem', {field: 'key', value: 'forumApiWS', def: {key: 'forumApiWS', value: ''}});
         this.forumWSUrl = urlConf.value;
-        if (this.forumWSUrl !== '' && this.jwt && this.loggedIn){
-            this.forumApiWS = new WebSocket(this.forumWSUrl, this.jwt);
-            this.forumApiWS.onmessage = this.forumApiMessage;
-            this.forumApiWS.onopen = this.forumWSOpen
-        }
 
         let mcUrlConf = await this.$store.dispatch('config/getItem', {field: 'key', value: 'wsUrl', def: {key: 'wsUrl', value: ''}});
         this.mcWSUrl = mcUrlConf.value;
-        if ( (this.mcWSUrl !== '' && this.jwt && this.loggedIn) ){
-            this.mcWS = new WebSocket(this.mcWSUrl, this.jwt);
-            this.mcWS.onmessage = this.mcMessage;
-            this.mcWS.onopen = this.mcWSOpen
-        }
+        this.initSockets();
 
         this.preserveToken();
     }

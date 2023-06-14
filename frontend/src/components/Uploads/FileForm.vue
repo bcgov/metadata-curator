@@ -24,16 +24,16 @@
                         v-if="wait"
                     ></v-progress-circular>
                     <FileReader
-                                :show-encrypt-button="false"
-                                :show-upload-button="false"
-                                :show-import-button="false"
-                                :read-file="true"
-                                :disabled="wait"
-                                :clear-file="clearFile"
-                                @reading-file="wait=true"
-                                :index="files.length"
-                                @file-opened="fileOpened"
-                                id="fileForm-reader"
+                      :show-encrypt-button="false"
+                      :show-upload-button="false"
+                      :show-import-button="false"
+                      :read-file="true"
+                      :disabled="wait"
+                      :clear-file="clearFile"
+                      @reading-file="wait=true"
+                      :index="files.length"
+                      @file-opened="fileOpened"
+                      id="fileForm-reader"
                     >
                     </FileReader>
                 </v-col>

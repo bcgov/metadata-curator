@@ -6,7 +6,7 @@
                     :label="$tc('Ministry / Organization')"
                     placeholder="Ministry or organization the data upload is coming from"
                     name="ministry_organization"
-                    :editing="true"
+                    :editing="!readonly"
                     :value="upload && upload.ministry_organization ? upload.ministry_organization : ''"
                     validation-rules="required"
                     helpPrefix="upload"
@@ -20,7 +20,7 @@
                     :label="$tc('Source System')"
                     placeholder="System of origin of the data being uploaded"
                     name="source"
-                    :editing="true"
+                    :editing="!readonly"
                     :value="upload && upload.source ? upload.source : ''"
                     helpPrefix="upload"
                     
@@ -34,7 +34,7 @@
                     :label="$tc('Human Friendly Name')"
                     placeholder="Human friendly name(s) of the dataset, metadata and/or document"
                     name="name"
-                    :editing="true"
+                    :editing="!readonly"
                     :value="upload && upload.name ? upload.name : ''"
                     validation-rules="required"
                     helpPrefix="upload"
@@ -47,7 +47,7 @@
                     :label="$tc('Important Additional Information')"
                     placeholder="Information relevant for a researcher planning research strategy (e.g., the data files are sorted by date of discharge rather than the date of admission). Purpose of the data (e.g., why it was collected and how?). This may also be provided as separate document files (e.g. PDF)"
                     name="information"
-                    :editing="true"
+                    :editing="!readonly"
                     :value="upload && upload.information ? upload.information : ''"
                     helpPrefix="upload"
                     
@@ -61,7 +61,7 @@
                     :label="$tc('Description')"
                     placeholder="High level description of the dataset, metadata, and/or documentation being uploaded"
                     name="description"
-                    :editing="true"
+                    :editing="!readonly"
                     :value="upload && upload.description ? upload.description : ''"
                     helpPrefix="upload"
                     validation-rules="required"
@@ -73,7 +73,7 @@
                     :label="$tc('Date Range Start')"
                     placeholder="Date range over which the data being uploaded spans"
                     name="date_range_start"
-                    :editing="true"
+                    :editing="!readonly"
                     helpPrefix="upload"
                     :value="upload && upload.date_range_start ? upload.date_range_start : ''"
                     @edited="(newValue) => { updateUploadE('date_range_start', newValue) }">
@@ -85,7 +85,7 @@
                     :label="$tc('Number of files to be uploaded')"
                     placeholder="Total number of files you intend to upload"
                     name="num_files"
-                    :editing="true"
+                    :editing="!readonly"
                     :value="upload && upload.num_files ? upload.num_files : ''"
                     helpPrefix="upload"
                     validation-rules="required|numeric"
@@ -97,7 +97,7 @@
                     :label="$tc('Date Range End')"
                     placeholder="Date range over which the data being uploaded spans"
                     name="date_range_end"
-                    :editing="true"
+                    :editing="!readonly"
                     helpPrefix="upload"
                     :value="upload && upload.date_range_end ? upload.date_range_end : ''"
                     @edited="(newValue) => { updateUploadE('date_range_end', newValue) }">
@@ -109,7 +109,7 @@
                     :label="$tc('Date data was created or updated')"
                     placeholder="Date the data was extracted from the source system"
                     name="data_create_date"
-                    :editing="true"
+                    :editing="!readonly"
                     helpPrefix="upload"
                     validation-rules="required"
                     :value="upload && upload.data_create_date ? upload.data_create_date : ''"
@@ -153,6 +153,11 @@
             Select
         },
         props: {
+          readonly: {
+            default: false,
+            required: false,
+            type: Boolean,
+          }
         },
         mounted() {
             

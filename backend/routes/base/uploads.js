@@ -24,7 +24,7 @@ var buildDynamic = function(db, router, auth, forumClient, notify, formioClient)
 
             if (( (user.isApprover) || (user.isAdmin) ) && !upload.provider_group){
                 throw new Error("Data Approvers must provide a data provider group");
-            }else if ( (user.isApprover) || (user.isAdmin) ){
+            }else if ( user.isApprover ){
                 if (!user.groups.some( (el) => el === upload.provider_group) ){
                     throw new Error("Data Approvers must select a data provider group they belong to");
                 }
@@ -205,7 +205,11 @@ var buildDynamic = function(db, router, auth, forumClient, notify, formioClient)
         }
     
         try{
+          if ((originalStatus !== "submitted") || (user.isAdmin)) {
             return await dataUpload.save();
+          }else{
+            throw new Error("Can't update submitted uploads");
+          }
         }catch(ex){
             log.error(ex);
             throw new Error(ex.message);

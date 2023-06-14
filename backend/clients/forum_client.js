@@ -2,6 +2,9 @@ const axios = require('axios');
 
 const TOPIC_RES_LIMIT = 250;
 
+const NodeCache = require('node-cache');
+const forumCache = new NodeCache({stdTTL: 0});
+
 const addTopic = async (name, user) => {
     if (user.organization){
         const parentTopicResponse = await createTopicIfDoesNotExist(user.organization, user);
@@ -13,6 +16,8 @@ const addTopic = async (name, user) => {
     } else {
         topicResponse = await createTopic(name, null, user)
     }
+    //invalidate cache
+    forumCache.del(forumCache.keys());
     return topicResponse.data;
 }
 
@@ -114,6 +119,10 @@ const getTopics = async (user, query) => {
     let config = require('config');
     const forumApiConfig = config.get("forumApi");
 
+    if (user && forumCache.has('forum-'+user.id)){
+      return forumCache.get('forum-'+user.id);
+    }
+
     const jwt = user.jwt;
     const options = {
         withCredentials: true,
@@ -146,6 +155,7 @@ const getTopics = async (user, query) => {
             x = await axios.get(url+urlAdd, options);
             results.data = results.data.concat(x.data);
         }
+        forumCache.set('forum-'+user.id, results);
         return results;
     }catch(ex){
         console.log("ERROR", ex);
@@ -175,6 +185,8 @@ const createTopic = async function(topicName, parent, user){
         }
     };
 
+    //invalidate cache
+    forumCache.del(forumCache.keys());
     const response = await axios.post(url, topic, options);
     return response;
 }

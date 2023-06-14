@@ -100,12 +100,16 @@
 import {mapActions, mapMutations, mapState} from "vuex";
 import FileReader from '../FormElements/FileReader';
 import SchemaView from '../Schema/SchemaView';
+import UpdateUpload from '../../mixins/UpdateUpload';
 
 export default {
     components:{
         FileReader,
         SchemaView,
     },
+
+    mixins: [UpdateUpload],
+
     props: {
         dialog: {
             type: Boolean,
@@ -265,13 +269,16 @@ export default {
 
                 if (this.creating){
                     this.saveTableSchema();
-                    this.updateBranch().then( () => {
+                    this.updateBranch().then( async() => {
                         if (this.schemaError){
                             this.alertType = "error"
                             this.alertText = (this.schemaError && typeof(this.schemaError) === 'string') ? this.schemaError : JSON.stringify(this.schemaError);
                             this.alert = true;
                             window.scrollTo(0,0);
                         }else {
+                          if (this.branch.data_upload_id){
+                            await this.updateUploadOnEdit();
+                          }
                             this.alertType = "success"
                             this.alertText = this.$tc('Sucessfully updated') + " " + this.$tc('version');
                             this.alert = true;
@@ -294,6 +301,9 @@ export default {
                             this.alert = true;
                             window.scrollTo(0,0);
                         }else{
+                          if (this.branch.data_upload_id){
+                            await this.updateUploadOnEdit();
+                          }
                             this.alertType = "success"
                             this.alertText = this.$tc('Sucessfully updated') + " " + this.$tc('version');
                             this.alert = true;
