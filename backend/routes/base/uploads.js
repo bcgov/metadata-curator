@@ -205,7 +205,11 @@ var buildDynamic = function(db, router, auth, forumClient, notify, formioClient)
         }
     
         try{
+          if ((originalStatus !== "submitted") || (user.isAdmin)) {
             return await dataUpload.save();
+          }else{
+            throw new Error("Can't update submitted uploads");
+          }
         }catch(ex){
             log.error(ex);
             throw new Error(ex.message);

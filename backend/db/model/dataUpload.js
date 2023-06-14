@@ -20,6 +20,7 @@ var dataUploadSchema = new Schema({
         description: {type: String, required: false},
         type: {type: String, required: false},
         temporal_fields: {type: String, required: false},
+        uploaded_name: {type: String, required: false},
     }],
     topic_id: {type: Schema.Types.ObjectId},
     opened_by_approver: {type: Boolean, required: true},

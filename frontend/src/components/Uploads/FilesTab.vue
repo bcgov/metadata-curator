@@ -15,15 +15,15 @@
           >mdi-alert</v-icon>
           <v-icon
             v-else-if="hasDiff(diffH[index]) === 2"
+            size="large"
             color="error"
           >mdi-alpha-x-circle</v-icon>
-          <span>{{ file.name }}</span>
+          <span>&nbsp;{{ file.name }}&nbsp;</span>
           <v-icon
-            v-if="uploaded[index]"
+            v-if="uploaded[index] || (upload && upload.status && upload.status === 'submitted')"
             size="large"
             color="primary"
-            icon="mdi-check-circle"
-          ></v-icon>
+          >mdi-check-circle</v-icon>
         </v-tab>
       </v-tabs>
     </v-col>
