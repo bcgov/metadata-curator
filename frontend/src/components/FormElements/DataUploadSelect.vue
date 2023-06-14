@@ -271,6 +271,9 @@
                     file.description = this.schema.resources[i].description;
                     file.type = this.schema.resources[i].type;
                     file.temporal_fields = this.schema.resources[i].temporal_fields;
+                    if (typeof(file.data) === 'undefined'){
+                      file.data = false;
+                    }
                     files.push(file);
                   }
                 }
@@ -278,7 +281,8 @@
                 try{
                     
                     data.uploader = this.user.email;
-                    data.provider_group = this.branch.author_groups[0];
+                    // data.provider_group = this.branch.author_groups[0];
+                    data.provider_group = this.branch.providerGroup[0];
                     data.files = files;
                     
                     

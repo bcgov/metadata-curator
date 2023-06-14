@@ -119,6 +119,10 @@ const getTopics = async (user, query) => {
     let config = require('config');
     const forumApiConfig = config.get("forumApi");
 
+    if (user && forumCache.has('forum-'+user.id)){
+      return forumCache.get('forum-'+user.id);
+    }
+
     const jwt = user.jwt;
     const options = {
         withCredentials: true,
