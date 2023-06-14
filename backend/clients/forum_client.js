@@ -120,6 +120,7 @@ const getTopics = async (user, query) => {
     const forumApiConfig = config.get("forumApi");
 
     if (user && forumCache.has('forum-'+user.id)){
+      console.log("using cache, ", forumCache.get('forum-'+user.id));
       return forumCache.get('forum-'+user.id);
     }
 

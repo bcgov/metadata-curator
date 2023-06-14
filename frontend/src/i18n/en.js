@@ -240,7 +240,7 @@ export default {
         "Revisions": "Revisions",
         "Revised By": "Revised By",
         "File & Field Level Revisions": "File & Field Level Revisions",
-        "Variable Classification Index": "Variable Classification Index",
+        "Variable Classification Index": "Variable Classification Indexes | Variable Classification Index | Variable Classification Indexes",
         "Field values": "Field values",
 
         "Specific Instructions for appending or linking": "Specific Instructions for appending or linking",
@@ -319,7 +319,7 @@ export default {
         "encoding": "Encoding",
         "source_system": "Source System",
 
-        "Classification Index": "Classification Indicies | Classification Index | Classification Indicies",
+        "Classification Index": "Classification Indexes | Classification Index | Classification Indexes",
 
         "Temporal range verification field(s)": "Temporal range verification field(s)",
         "Temporal range fields are only for data type files": "Temporal range fields are only for data type files",

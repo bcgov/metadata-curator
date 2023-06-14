@@ -189,8 +189,8 @@ export default {
             }
 
             // if ( (this.user) && ( (this.user.isAdmin) || (this.user.isApprover) ) && (this.enabledPhase >= 2) ){
-            if ( (this.enabledPhase >= 2) && (!this.user || !this.user.isDataProvider) ){
-                t.push({ id: 12, name: "Classification Indicies", route: `/variable-classifications`, icon: 'mdi-archive-search', disabled: false });
+            if ( (this.enabledPhase >= 2) && (!this.user || !this.user.isDataProvider || this.user.isAdmin) ){
+                t.push({ id: 12, name: "Classification", route: `/variable-classifications`, icon: 'mdi-archive-search', disabled: false });
             }
 
             if ( (this.user) && ( (this.user.isAdmin) || (this.user.isApprover) ) && (this.enabledPhase >= 3) ){
