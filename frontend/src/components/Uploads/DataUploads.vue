@@ -153,7 +153,8 @@ export default {
                 this.$router.push({ name: 'upload_view', params: { id: dataUploadId } })
             }
             else {
-                this.$router.push({ name: 'data-upload-detail', params: { id: dataUploadId } })
+                // this.$router.push({ name: 'data-upload-detail', params: { id: dataUploadId } })
+                this.$router.push({ name: 'upload_view', params: { id: dataUploadId } })
             }
         },
         getDisplayStatus(status) {
