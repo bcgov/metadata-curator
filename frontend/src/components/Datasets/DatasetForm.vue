@@ -218,7 +218,7 @@
                             </v-col>
                         </v-row>
 
-                        <v-row class="outline">
+                        <v-row class="outline" v-if="this.user && (this.user.isApprover || this.user.isDataProvider || this.user.isAdmin)">
                             <v-col cols=12>
                                 <span class="checkboxGroupHeader">{{$tc('Approval Needed')}}</span>
                             </v-col>

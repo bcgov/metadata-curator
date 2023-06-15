@@ -151,7 +151,7 @@ export default {
       inferContent: state => state.file.content,
     }),
     readyToUpload() {
-      return !(this.inferring || this.files.length !== this.upload.files.length || this.uploading || this.wait)
+      return !(this.inferring || Object.keys(this.files).length !== this.upload.files.length || this.uploading || this.wait)
     }
   },
 
