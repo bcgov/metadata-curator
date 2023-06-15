@@ -1,6 +1,6 @@
 <template>
   <v-row v-if="upload">
-    <v-col cols="2">
+    <v-col cols="3">
       <v-tabs v-model="tab" vertical style="width: 100%" :disabled="uploading" :key="`fileTabs-${diffH ? JSON.stringify(diffH) : ''}`">
         <v-tab v-for="(file, index) in upload.files" style="width: 100%" :key="`${file.name}-${index}-${diffH && diffH[index] ? JSON.stringify(diffH[index]) : ''}-${uploaded[index]}`" :disabled="uploading">
           <v-icon
@@ -18,7 +18,7 @@
             size="large"
             color="error"
           >mdi-alpha-x-circle</v-icon>
-          <span class="text-wrap" style="word-break: break-all">&nbsp;{{ file.name }}&nbsp;</span>
+          <span class="text-wrap" style="word-break: break-all; text-transform: none;">&nbsp;{{ file.name }}&nbsp;</span>
           <v-icon
             v-if="uploaded[index] || (upload && upload.status && upload.status === 'submitted')"
             size="large"
@@ -28,7 +28,7 @@
       </v-tabs>
     </v-col>
 
-    <v-col cols="10">
+    <v-col cols="9">
       <v-tabs-items v-model="tab">
         <v-tab-item v-for="(file, index) in upload.files" :key="file.name" class="pl-1">
           <v-row v-if="upload && upload.status && upload.status !== 'submitted'">

@@ -40,7 +40,7 @@
 
             <v-row class="mt-0">
               <v-col cols="12" class="pa-0">
-                <v-tabs-items v-model="topTab">
+                <v-tabs-items v-model="topTab" class="pt-3">
                   <v-tab-item key="info">
                     <UploadForm ref="uploadForm" :readonly="true" />
                   </v-tab-item>
