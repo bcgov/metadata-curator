@@ -40,13 +40,13 @@
 
         </v-row>
         
-        <v-row v-if="!creating">
+        <v-row v-if="!creating && this.user && (this.user.isApprover || this.user.isDataProvider || this.user.isAdmin)">
             <v-col cols=12>
                 <h3>Discussion</h3>
             </v-col>
         </v-row>
 
-        <v-row v-if="!creating">
+        <v-row v-if="!creating && this.user && (this.user.isApprover || this.user.isDataProvider || this.user.isAdmin)">
             <v-col cols=12>
                 <Comments :id="id" :type="'repo'"></Comments>
             </v-col>
@@ -176,6 +176,7 @@ export default {
             schema: state => state.schemaImport.tableSchema,
             revisions: state => state.repos.revisions,
             revisionsLoading: state => state.repos.revisionsLoading,
+            user: state => state.user.user,
         }),
     },
     created() {

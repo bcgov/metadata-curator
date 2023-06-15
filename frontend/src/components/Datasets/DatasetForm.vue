@@ -157,7 +157,7 @@
                             </v-col>
                         </v-row>
 
-                        <v-row>
+                        <v-row v-if="this.user && (this.user.isApprover || this.user.isDataProvider || this.user.isAdmin)">
                             <v-col cols=12>
                                 <TextInput
                                     :label="$tc('Restrictions Comments')"
@@ -172,7 +172,7 @@
                             </v-col>
                         </v-row>
 
-                        <v-row class="outline">
+                        <v-row class="outline" v-if="this.user && (this.user.isApprover || this.user.isDataProvider || this.user.isAdmin)">
                             <v-col cols=12>
                                 <span class="checkboxGroupHeader">{{$tc('Allow Publish')}}</span>
                             </v-col>
@@ -251,7 +251,7 @@
                             </v-col>
                         </v-row>
 
-                        <v-row>
+                        <v-row v-if="this.user && (this.user.isApprover || this.user.isDataProvider || this.user.isAdmin)">
                             <v-col cols=12>
                                 <Repeating
                                     name="contact"

@@ -41,6 +41,9 @@
           </v-row>
 
           <v-row class="mb-3">
+            <v-col cols="12" class="py-0" v-if="file && file.id && user && user.isAdmin && upload && upload.status && upload.status === 'submitted'">
+              {{ $tc('File Id') }}: {{ file.id }}
+            </v-col>
             <v-col cols="12" class="py-0">
               {{ $tc('Title') }}: {{ file.title }}
             </v-col>
@@ -74,7 +77,7 @@
                 :trigger-upload="startUpload[index]"
                 @upload-finished="uploadFinished"
                 :index="files.length"
-                @file-opened="(index, file, sig) => fileOpened(tab, index, file, sig)"
+                @file-opened="(i, file, sig) => fileOpened(index, i, file, sig)"
                 id="fileForm-reader"
               >
               </FileReader>
@@ -148,7 +151,7 @@ export default {
       inferContent: state => state.file.content,
     }),
     readyToUpload() {
-      return !(this.inferring || this.files.length < this.upload.files.length || this.uploading)
+      return !(this.inferring || this.files.length !== this.upload.files.length || this.uploading || this.wait)
     }
   },
 
@@ -221,8 +224,8 @@ export default {
       this.spanKey++;
       // this.clearFile = true;
       //this.fileReaders[this.fileReaders.length] = {}
-      this.files[index] = file;
-      this.files[index].sig = sig;
+      this.files[tab] = file;
+      this.files[tab].sig = sig;
       this.$emit('changed', tab);
       this.spanKey++;
       this.tabToContentOrder[tab] = index;
@@ -303,8 +306,12 @@ export default {
           }
 
           var formatDate = function(dateStr){
-            let ind = dateStr.indexOf("T");
-            return `${ind !== 0 ? dateStr.substring(0, ind) : dateStr}`;
+            try{
+              let ind = dateStr.indexOf("T");
+              return `${ind !== 0 ? dateStr.substring(0, ind) : dateStr}`;
+            }catch(e){
+              return "";
+            }
           }
 
           let index = this.files[i].name.lastIndexOf('.');
@@ -361,7 +368,9 @@ export default {
 
   watch: {
     inferContent: function(){
-      this.infer();
+      if (!this.uploading){
+        this.infer();
+      }
     }
   }
 }
