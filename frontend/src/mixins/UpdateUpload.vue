@@ -74,6 +74,9 @@ export default {
           file.description = this.schema.resources[i].description;
           file.type = this.schema.resources[i].type;
           file.temporal_fields = this.schema.resources[i].temporal_fields;
+          if (typeof(file.data) === 'undefined'){
+            file.data = false;
+          }
           files.push(file);
         }
       }
