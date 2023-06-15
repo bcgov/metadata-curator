@@ -76,8 +76,8 @@
                 @reading-file="wait=true"
                 :trigger-upload="startUpload[index]"
                 @upload-finished="uploadFinished"
-                :index="files.length"
-                @file-opened="(i, file, sig) => fileOpened(index, i, file, sig)"
+                :index="index"
+                @file-opened="(i, file, sig) => fileOpened(i, file, sig)"
                 id="fileForm-reader"
               >
               </FileReader>
@@ -91,7 +91,11 @@
             </v-col>
 
             <v-col cols="12" v-else-if="inferredSchema && inferredSchema.resources && inferredSchema.resources[tabToContentOrder[index]] ">
-              <BasicComparison @compared="d => {diff(index, d)}" key="comparisonObj" :left-side-text="getOneResourceSchema(inferredSchema, tabToContentOrder[index])" :right-side-text="getOneResourceSchema(schemaState, tabToContentOrder[index])" :diff-json="true" />
+              <BasicComparison @compared="d => {diff(index, d)}" key="comparisonObj" :left-side-text="getOneResourceSchema(inferredSchema, tabToContentOrder[index])" :right-side-text="getOneResourceSchema(schemaState, tab)" :diff-json="true" />
+            </v-col>
+
+            <v-col cols="12">
+              {{ `i: ${index} ttcoi: ${tabToContentOrder[index]} j: ${JSON.stringify(inferredSchema.resources)}`}}
             </v-col>
           </v-row>
         </v-tab-item>
@@ -134,6 +138,7 @@ export default {
       inferredSchema: {},
       inferring: false,
       tabToContentOrder: {},
+      contentToTabOrder: {},
       uploading: false,
       startUpload: [],
       uploadIndex: 0,
@@ -218,17 +223,22 @@ export default {
       return level;
     },
 
-    fileOpened(tab, index, file, sig){
+    fileOpened(index, file, sig){
       // this.clearFile = false;
       this.wait = false;
       this.spanKey++;
       // this.clearFile = true;
       //this.fileReaders[this.fileReaders.length] = {}
-      this.files[tab] = file;
-      this.files[tab].sig = sig;
-      this.$emit('changed', tab);
+      //this.tabToContentOrder[index] = this.files.length;
+      this.tabToContentOrder[index] = this.inferContent.length;
+      this.contentToTabOrder[this.inferContent.length] = index;
+      this.files[index] = file;
+      this.files[index].sig = sig;
+      this.$emit('changed', index);
       this.spanKey++;
-      this.tabToContentOrder[tab] = index;
+      
+      
+      console.log("fo", index, file, sig);
     },
 
     async updateFormSubmission(done, start){
@@ -314,11 +324,13 @@ export default {
             }
           }
 
-          let index = this.files[i].name.lastIndexOf('.');
-          let name = index >= 0 ? this.files[i].name.substring(0,index).toLowerCase() : this.files[i].name.toLowerCase();
+          let fileIndex = this.contentToTabOrder[i];
+
+          let index = this.files[fileIndex].name.lastIndexOf('.');
+          let name = index >= 0 ? this.files[fileIndex].name.substring(0,index).toLowerCase() : this.files[fileIndex].name.toLowerCase();
           inferredSchema.resources.push({
             name: name,
-            saved_path: "./"+this.files[i].name,
+            saved_path: "./"+this.files[fileIndex].name,
             data: rows,
             description: this.upload.files[i].description,
             temporal_start: formatDate(this.upload.files[i].start_date),
