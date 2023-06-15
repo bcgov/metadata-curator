@@ -114,7 +114,7 @@ export default {
         "Filter by": "Filter by",
         "Team": "Team",
         "Select": "Select",
-        "Looks like there is nothing here why not click New Upload to get started": "Looks like there is nothing here why not click New Upload to get started",
+        "Looks like there is nothing here why not click New Upload to get started": "Looks like there is nothing here",
         "by": "by",
         "Draft": "Drafts | Draft | Drafts",
         "Upload in progress": "Upload in progress",
