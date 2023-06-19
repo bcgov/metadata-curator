@@ -163,7 +163,9 @@ const getTopics = async (user, query) => {
             x = await axios.get(url+urlAdd, options);
             results.data = results.data.concat(x.data);
         }
-        forumCache.set('forum-'+user.id, results);
+        if (user){
+          forumCache.set('forum-'+user.id, results);
+        }
         return results;
     }catch(ex){
         console.log("ERROR", ex);
