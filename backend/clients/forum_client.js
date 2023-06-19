@@ -122,6 +122,11 @@ const getTopics = async (user, query) => {
     if (user && forumCache.has('forum-'+user.id)){
       const cacheRes = forumCache.get('forum-'+user.id);
       if (cacheRes.data.length > 0){
+        const cacheFetching = forumCache.has('forumFetching-'+user.id) && forumCache.get('forumFetching-'+user.id);
+        if (!cacheFetching){
+          forumCache.set('forumFetching-'+user.id, true);
+          getTopicsNoCache(user, query);
+        }
         return cacheRes;
       }
     }
@@ -165,6 +170,51 @@ const getTopics = async (user, query) => {
         return {data: []};
     }
     
+}
+
+const getTopicsNoCache = async (user, query) => {
+  let config = require('config');
+  const forumApiConfig = config.get("forumApi");
+
+  const jwt = user.jwt;
+  const options = {
+      withCredentials: true,
+      headers: {
+          'Authorization': `Bearer ${jwt}`
+      }
+  };
+
+  let url = forumApiConfig.baseUrl;
+
+  let queryKeys = [];
+  query.limit=TOPIC_RES_LIMIT;
+  if (typeof(query) === "object"){
+      queryKeys = Object.keys(query);
+      for (let i=0; i<queryKeys.length; i++){
+          url += (i==0) ? "?" : "&";
+          url += queryKeys[i] + "=" + query[queryKeys[i]];
+      }
+  }
+
+  try{
+      let results = {data: []};
+      let x = await axios.get(url, options);
+      results.data = results.data.concat(x.data);
+      let page = 1;
+      while (x.data.length >= TOPIC_RES_LIMIT){
+          let urlAdd = (queryKeys.length > 0) ? "&" : "?";
+          urlAdd += "page=" + page;
+          page += 1;
+          x = await axios.get(url+urlAdd, options);
+          results.data = results.data.concat(x.data);
+      }
+      forumCache.set('forum-'+user.id, results);
+  }catch(ex){
+      console.log("ERROR", ex);
+  }
+  forumCache.set('forumFetching-'+user.id, false);
+  forumCache.del('forumFetching-'+user.id);
+  
 }
 
 const createTopic = async function(topicName, parent, user){

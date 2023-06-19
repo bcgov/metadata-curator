@@ -94,9 +94,6 @@
               <BasicComparison @compared="d => {diff(index, d)}" key="comparisonObj" :left-side-text="getOneResourceSchema(inferredSchema, tabToContentOrder[index])" :right-side-text="getOneResourceSchema(schemaState, tab)" :diff-json="true" />
             </v-col>
 
-            <v-col cols="12">
-              {{ `i: ${index} ttcoi: ${tabToContentOrder[index]} j: ${JSON.stringify(inferredSchema.resources)}`}}
-            </v-col>
           </v-row>
         </v-tab-item>
       </v-tabs-items>
@@ -236,9 +233,6 @@ export default {
       this.files[index].sig = sig;
       this.$emit('changed', index);
       this.spanKey++;
-      
-      
-      console.log("fo", index, file, sig);
     },
 
     async updateFormSubmission(done, start){
