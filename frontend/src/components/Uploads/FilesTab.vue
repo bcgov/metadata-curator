@@ -187,7 +187,6 @@ export default {
     }),
 
     diff(index, d){
-      console.log('diff?', index, d);
       if (index === this.tab){
         Vue.set(this.diffH, index, d);
       }
