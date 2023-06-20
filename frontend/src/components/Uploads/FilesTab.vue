@@ -4,17 +4,17 @@
       <v-tabs v-model="tab" vertical style="width: 100%" :disabled="uploading" :key="`fileTabs-${diffH ? JSON.stringify(diffH) : ''}`">
         <v-tab v-for="(file, index) in upload.files" style="width: 100%" :key="`${file.name}-${index}-${diffH && diffH[index] ? JSON.stringify(diffH[index]) : ''}-${uploaded[index]}`" :disabled="uploading">
           <v-icon
-            v-if="hasDiff(diffH[index]) === 0"
+            v-if="hasDiff[index] === 0"
             size="large"
             color="success"
           >mdi-check-circle</v-icon>
           <v-icon
-            v-else-if="hasDiff(diffH[index]) === 1"
+            v-else-if="hasDiff[index] === 1"
             size="large"
             color="warning"
           >mdi-alert</v-icon>
           <v-icon
-            v-else-if="hasDiff(diffH[index]) === 2"
+            v-else-if="hasDiff[index] === 2"
             size="large"
             color="error"
           >mdi-alpha-x-circle</v-icon>
@@ -154,7 +154,27 @@ export default {
     }),
     readyToUpload() {
       return !(this.inferring || Object.keys(this.files).length !== this.upload.files.length || this.uploading || this.wait)
-    }
+    },
+    hasDiff(){
+      let rv = [];
+      for (let j=0; j<this.diffH.length; j++){
+        let level = 0;
+        try {
+          let d = this.diffH[j];
+          let k = Object.keys(d);
+        
+          for (let i=0; i<k.length; i++){
+            if (d[k[i]] > level){
+              level = d[k[i]];
+            }
+          }
+        }catch(e){
+          level = -1;
+        }
+      rv[j] = level;
+      }
+      return rv
+    },
   },
 
   methods: {
@@ -167,7 +187,10 @@ export default {
     }),
 
     diff(index, d){
-      Vue.set(this.diffH, index, d);
+      console.log('diff?', index, d);
+      if (index === this.tab){
+        Vue.set(this.diffH, index, d);
+      }
       // this.$forceUpdate();
     },
 
@@ -202,22 +225,6 @@ export default {
           this.uploading = true;
           Vue.set(this.startUpload, 0, true);
         }
-    },
-
-    hasDiff(d){
-      let level = 0;
-      try {
-        let k = Object.keys(d);
-        
-        for (let i=0; i<k.length; i++){
-          if (d[k[i]] > level){
-            level = d[k[i]];
-          }
-        }
-      }catch(e){
-        level = -1;
-      }
-      return level;
     },
 
     fileOpened(index, file, sig){
