@@ -375,8 +375,14 @@ export default {
             let leftResources = parsedL.resources && parsedL.resources[0] && parsedL.resources[0].schema && parsedL.resources[0].schema.fields ? parsedL.resources[0].schema.fields : [];
             let rightResources = parsedR.resources && parsedR.resources[0] && parsedR.resources[0].schema && parsedR.resources[0].schema.fields ? parsedR.resources[0].schema.fields : [];
 
+            leftResources.forEach(element => {
+              element.name = element.name.trim();
+            });
+            rightResources.forEach(element => {
+              element.name = element.name.trim();
+            });
             for (let i=0; i<rightResources.length; i++){
-              let name = rightResources[i].name;
+              let name = rightResources[i].name.trim();
               let lIndex = leftResources.findIndex(e => e.name === name);
               if (lIndex === -1){
                 this.fieldChanges[name] = 1
