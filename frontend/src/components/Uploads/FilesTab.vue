@@ -91,7 +91,15 @@
             </v-col>
 
             <v-col cols="12" v-else-if="inferredSchema && inferredSchema.resources && inferredSchema.resources[tabToContentOrder[index]] ">
-              <BasicComparison @compared="d => {diff(index, d)}" key="comparisonObj" :left-side-text="getOneResourceSchema(inferredSchema, tabToContentOrder[index])" :right-side-text="getOneResourceSchema(schemaState, tab)" :diff-json="true" />
+              <BasicComparison 
+                @compared="d => {diff(index, d)}"
+                key="comparisonObj"
+                left-header="Current Metadata"
+                right-header="Expected Metadata"
+                :left-side-text="getOneResourceSchema(inferredSchema, tabToContentOrder[index])"
+                :right-side-text="getOneResourceSchema(schemaState, tab)"
+                :diff-json="true"
+              />
             </v-col>
 
           </v-row>

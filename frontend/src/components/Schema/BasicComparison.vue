@@ -21,6 +21,16 @@
                   </v-alert>
                 </v-col>
               </v-row>
+
+              <span v-for="(changed, cIndex) in fieldChanges" :key="`changedField-${index}-${cIndex}`">
+                <v-row v-if="changed !== 0">
+                  <v-col cols="12">
+                    <v-alert type="warning">
+                      Field {{ cIndex }} {{ changedText(changed) }}
+                    </v-alert>
+                  </v-col>
+                </v-row>
+              </span>
             </span>
           </span>
           <!-- <v-row>
@@ -94,11 +104,11 @@
 
 
                     <v-col cols=6>
-                        <ResourceDisplay :resources="leftResources" :other="rightResources" :diff="basicDiff" compare-type="left"></ResourceDisplay>
+                        <ResourceDisplay :fieldsCollapsedByDefault="true" :resources="leftResources" :other="rightResources" :diff="basicDiff" compare-type="left"></ResourceDisplay>
                     </v-col>
 
                     <v-col cols=6>
-                        <ResourceDisplay :resources="rightResources" :other="leftResources" :diff="basicDiff" compare-type="right"></ResourceDisplay>
+                        <ResourceDisplay :fieldsCollapsedByDefault="true" :resources="rightResources" :other="leftResources" :diff="basicDiff" compare-type="right"></ResourceDisplay>
                     </v-col>
                 </v-row>
               </v-expansion-panel-content>
@@ -163,6 +173,7 @@ export default {
             workingLeftSideText: this.leftSideText ? this.leftSideText : "",
             workingRightSideText: this.rightSideText ? this.rightSideText : "",
             previouslyMovedtoEnd: 0,
+            fieldChanges: {}
 
         }
     },
@@ -179,6 +190,18 @@ export default {
         }
     },
     methods: {
+
+      changedText(changed){
+        if (changed < 0){
+          return "is not expected";
+        }else if (changed === 1){
+          return "is expected but not present";
+        }else if (changed > 1){
+          return "is moved";
+        }
+        return "";
+        
+      },
 
       hasResourceDiff(resourceInd, fieldName){
         let rv = this.basicDiff && this.basicDiff.resources && this.basicDiff.resources[resourceInd]
@@ -344,9 +367,41 @@ export default {
                 }
             });
 
+            this.fieldChanges = {};
+            let fieldChangeLevel = 0;
+            let parsedL = JSON.parse(this.leftSideText);
+            let parsedR = JSON.parse(this.rightSideText);
+            // let keys = [];
+            let leftResources = parsedL.resources && parsedL.resources[0] && parsedL.resources[0].schema && parsedL.resources[0].schema.fields ? parsedL.resources[0].schema.fields : [];
+            let rightResources = parsedR.resources && parsedR.resources[0] && parsedR.resources[0].schema && parsedR.resources[0].schema.fields ? parsedR.resources[0].schema.fields : [];
+
+            for (let i=0; i<rightResources.length; i++){
+              let name = rightResources[i].name;
+              let lIndex = leftResources.findIndex(e => e.name === name);
+              if (lIndex === -1){
+                this.fieldChanges[name] = 1
+                fieldChangeLevel = 1;
+              }else if (lIndex === i){
+                this.fieldChanges[name] = 0
+              }else{
+                this.fieldChanges[name] = 2
+                fieldChangeLevel = 1;
+              }
+            }
+
+            //catch the ones on the left that aren't on the right
+            for (let i=0; i<leftResources.length; i++){
+              let name = leftResources[i].name;
+              if (typeof(this.fieldChanges[name]) === 'undefined'){
+                this.fieldChanges[name] = -1
+                fieldChangeLevel = 1;
+              }
+            }
+
             let highlights = {
               name: this.hasResourceDiff(0, 'name') ? 1 : 0,
               fields: this.hasFieldCountDiff(0).diff ? 1 : 0,
+              fieldChanges: fieldChangeLevel,
             }
             this.$emit('compared', highlights);
             return this.diff;
