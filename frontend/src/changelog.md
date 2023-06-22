@@ -3,7 +3,7 @@
 <br />
 
 ## Version 2.0.0
-June 20 2023
+June 22 2023
  - Authentication no longer a requirement and the following sections have been modified to allow access (Datasets, Editions, Variable Classifications, Home). Access is only granted to published things. Datasets are considered published if at least one of their editions is published
  - Added temporal fields, number of fields and type to resources in edition files and fields
  - Made logged in user with no permissions have the same view as public
@@ -21,12 +21,12 @@ June 20 2023
       - Left of the file there is a space for another icon
       - Green check -- no extracted highlighted differences
       - Yellow caution -- has extracted highlighted differences that won't block upload
-      - Red error -- has extracted highlighted differences that will block upload -- non currently exist
+      - Red error -- has extracted highlighted differences that will block upload -- none currently exist
 
  <br />
 
 ## Table Of Contents
-- [Version 2.0.0 (June 20 2023)](#version-200)
+- [Version 2.0.0 (June 22 2023)](#version-200)
 - [Version 1.7.1 (June 2 2023)](#version-171)
 - [Version 1.7.0 (May 15 2023)](#version-170)
 - [Version 1.6.9 (April 27 2023)](#version-169)
