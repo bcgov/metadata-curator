@@ -129,9 +129,10 @@ var buildProfile = function(token, refreshToken){
     }
 
     if(profile.organization) {
-        const alwaysNotifyList = new Map(Object.entries(config.get("alwaysNotifyList")));
+        // const alwaysNotifyList = new Map(Object.entries(config.get("alwaysNotifyList")));
         // console.log("alwaysNotifyList: ", alwaysNotifyList);
-        profile.isDataProvider = alwaysNotifyList.has(profile.organization) ? true : false;
+        // profile.isDataProvider = alwaysNotifyList.has(profile.organization) ? true : false;
+        profile.isDataProvider = !profile.isApprover && !profile.isAdmin && (token.groups.indexOf(config.get('requiredRoleToCreateRequest')) !== -1);
     }
 
     return profile;

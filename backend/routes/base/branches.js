@@ -412,11 +412,14 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
     }
 
     const listBranches = async (user, repoId) => {
-        const topicResponse = await forumClient.getTopics(user, {});
+      let topicResponse = false;
+      let branchIds = [];
+      let author_groups = {};
+      if (user) {
+        topicResponse = await forumClient.getTopics(user, {});
         let topics = topicResponse.data.filter(item => item.parent_id);
-        let author_groups = {};
         
-        const branchIds = topics.map( (item) => {
+        branchIds = branchIds.concat(topics.map( (item) => {
             let id = item.name;
             if (!id || id.indexOf("branch") === -1){
                 return;
@@ -430,11 +433,12 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
     
         }).filter( (item) => { 
             return (item && String(item).length > 0)
-        });
+        }));
+      }
 
         let id = mongoose.Types.ObjectId(repoId);
         try {
-            let r = await db.RepoBranchSchema.find({_id: {$in: branchIds}, repo_id: id}).sort({ "create_date": -1});
+            let r = await db.RepoBranchSchema.find({$or: [{_id: {$in: branchIds}}, {published: true}], repo_id: id}).sort({ "create_date": -1});
             if (user && (user.isAdmin || user.isApprover) ){
                 for (let i=0; i<r.length; i++){
                     r[i] = JSON.parse(JSON.stringify(r[i]));
@@ -483,7 +487,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
     }
     
-    router.get('/', auth.requireLoggedIn, async function(req, res, next) {
+    router.get('/', /*auth.requireLoggedIn,*/ async function(req, res, next) {
         try{
             //version check
             if (!util.phaseCheck(cache, requiredPhase, db)){

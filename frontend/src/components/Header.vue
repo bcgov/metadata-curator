@@ -21,7 +21,7 @@
                 <span v-if="month===11 && date===25"><v-icon color="green">mdi-string-lights</v-icon></span>
             </v-toolbar-title>
 
-            <div v-show="loggedIn && (tabs.length > 0)">
+            <div v-show="(tabs.length > 0)">
                 <v-tabs v-model="activeTab"
                         icons-and-text
                         centered
@@ -162,7 +162,16 @@ export default {
 
         tabs: function(){
             let t = [];
-            if (this.user){
+            if (!this.user || !(this.user.isDataProvider || this.user.isAdmin || this.user.isApprover)){
+              if (this.enabledPhase >= 2){
+                  t = [
+                      { id: 1, name: "Home", route: `/`, icon: 'mdi-home', disabled: false},
+                      { id: 3, name: "Datasets", route: `/datasets`, icon: 'mdi-folder-open', disabled: false},
+                      { id: 4, name: "Versions", route: `/versions`, icon: 'mdi-source-fork', disabled: false},
+                  ]
+              }
+            }
+            if (this.user && (this.user.isDataProvider || this.user.isAdmin || this.user.isApprover)){
                 if (this.enabledPhase >= 1){
                     t = [
                         { id: 2, name: "Uploads", route: `/uploads`, icon: 'mdi-cloud-upload', disabled: false},
@@ -177,21 +186,11 @@ export default {
                         { id: 4, name: "Versions", route: `/versions`, icon: 'mdi-source-fork', disabled: false},
                     ]
                 }
-
-                    //   { id: 2, name: "Upload", route: `/upload`, icon: 'mdi-upload', disabled: false},
-                    //   { id: 3, name: "Import", route: `/import`, icon: 'mdi-import', disabled: false },
-                    //   { id: 4, name: "Guess", route: `/infer`, icon: 'mdi-file-question-outline', disabled: true},
-                    //   { id: 5, name: "Column", route: `/column`, icon: 'mdi-view-column', disabled: true},
-                    //   { id: 6, name: "Table", route: `/table`, icon: 'mdi-table', disabled: true},
-                    //   { id: 7, name: "Provenance", route: `/provenance`, icon: 'mdi-file-document', disabled: true },
-                    //   { id: 8, name: "Package", route: `/package`, icon: 'mdi-package-variant-closed', disabled: true },
-                    //   { id: 9, name: "Validate", route: `/validate`, icon: 'mdi-checkbox-marked-circle', disabled: true },
-                    //   { id: 10, name: "Find & Replace", route: `/findreplace`, icon: 'mdi-file-find', disabled: true },
-                    //   { id: 11, name: "Submit", route: `/submit`, icon: 'mdi-send', disabled: true }
             }
 
-            if ( (this.user) && ( (this.user.isAdmin) || (this.user.isApprover) ) && (this.enabledPhase >= 2) ){
-                t.push({ id: 12, name: "Classification Indicies", route: `/variable-classifications`, icon: 'mdi-archive-search', disabled: false });
+            // if ( (this.user) && ( (this.user.isAdmin) || (this.user.isApprover) ) && (this.enabledPhase >= 2) ){
+            if ( (this.enabledPhase >= 2) && (!this.user || !this.user.isDataProvider || this.user.isAdmin) ){
+                t.push({ id: 12, name: "Classification", route: `/variable-classifications`, icon: 'mdi-archive-search', disabled: false });
             }
 
             if ( (this.user) && ( (this.user.isAdmin) || (this.user.isApprover) ) && (this.enabledPhase >= 3) ){
@@ -263,7 +262,7 @@ export default {
     methods: {
 
         initSockets: function(){
-            if (this.jwt){
+            if (this.jwt && this.loggedIn && this.user && (this.user.isAdmin || this.user.isDataProvider || this.user.isApprover)){
                 if (this.forumWSUrl && !this.forumApiWS){
                     this.forumApiWS = new WebSocket(this.forumWSUrl, this.jwt);
                     this.forumApiWS.onmessage = this.forumApiMessage;
@@ -444,19 +443,10 @@ export default {
 
         let urlConf = await this.$store.dispatch('config/getItem', {field: 'key', value: 'forumApiWS', def: {key: 'forumApiWS', value: ''}});
         this.forumWSUrl = urlConf.value;
-        if (this.forumWSUrl !== '' && this.jwt){
-            this.forumApiWS = new WebSocket(this.forumWSUrl, this.jwt);
-            this.forumApiWS.onmessage = this.forumApiMessage;
-            this.forumApiWS.onopen = this.forumWSOpen
-        }
 
         let mcUrlConf = await this.$store.dispatch('config/getItem', {field: 'key', value: 'wsUrl', def: {key: 'wsUrl', value: ''}});
         this.mcWSUrl = mcUrlConf.value;
-        if ( (this.mcWSUrl !== '') ){
-            this.mcWS = new WebSocket(this.mcWSUrl, this.jwt);
-            this.mcWS.onmessage = this.mcMessage;
-            this.mcWS.onopen = this.mcWSOpen
-        }
+        this.initSockets();
 
         this.preserveToken();
     }

@@ -9,6 +9,7 @@ const versions = () => import(/* webpackChunkName: "versions" */ "../components/
 const version = () => import(/* webpackChunkName: "version" */ "../components/pages/version");
 const datasets = () => import(/* webpackChunkName: "datasets" */ "../components/pages/datasets");
 const datasetForm = () => import(/* webpackChunkName: "datasetForm" */ "../components/pages/datasetForm");
+const uploadOld = () => import(/* webpackChunkName: "upload" */ "../components/pages/uploadOld");
 const upload = () => import(/* webpackChunkName: "upload" */ "../components/pages/upload");
 const Admin = () => import(/* webpackChunkName: "Admin" */ "../components/pages/Admin");
 const NotFound = () => import(/* webpackChunkName: "NotFound" */ "../components/pages/404");
@@ -70,6 +71,15 @@ let r = new Router({
       component: upload,
       meta: {
           title: "Uploads",
+          requiresAuth: true
+      },
+    },
+    {
+      path: '/upload_old/:id',
+      name: 'old_upload_view',
+      component: uploadOld,
+      meta: {
+          title: "Uploads (Deprecated)",
           requiresAuth: true
       },
     },
@@ -147,6 +157,15 @@ let r = new Router({
       component: upload,
       meta: {
           title: "Upload",
+          requiresAuth: true
+      }
+    },
+    {
+      path: '/upload_old',
+      name: 'upload_old',
+      component: uploadOld,
+      meta: {
+          title: "Upload (Deprecated)",
           requiresAuth: true
       }
     },
@@ -256,15 +275,15 @@ r.beforeEach(async(to, from, next) => {
     //document.title = i18n.tc(to.meta.title);
     // document.title = "Metadata Curator - " + to.meta.title;
 
-    let requiresAuth = to.meta.requiresAuth;
+    //let requiresAuth = to.meta.requiresAuth;
 
     let requiresNoUser = to.meta.requiresNoUser;
 
     let phase = (to.meta.phase) ? to.meta.phase : 1;
 
-    if ( (requiresAuth) && (!loggedIn) ){
+    /*if ( (requiresAuth) && (!loggedIn) ){
       return next('/login?r='+to.path.substring(1));
-    }else if ( (requiresNoUser) && (loggedIn) ){
+    }else */if ( (requiresNoUser) && (loggedIn) ){
       return next('/');
     }
 

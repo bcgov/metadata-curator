@@ -82,14 +82,14 @@ describe("Branch Routes", function() {
     });
 
     describe('GET /', async function () {
-        it('should get unauthorized', function(done){
-            chai.request(server)
-            .get(basePath)
-            .end(function(err, res){
-                res.should.have.status(401);
-                done();
-            })
-        })
+        // it('should get unauthorized', function(done){
+        //     chai.request(server)
+        //     .get(basePath)
+        //     .end(function(err, res){
+        //         res.should.have.status(401);
+        //         done();
+        //     })
+        // })
 
         await util.setEnabledPhase(1);
 

@@ -210,6 +210,24 @@
                                 </v-col>
                             </v-row>
 
+                            <v-row v-if="(resource && resource.type) || editing" class="pb-2">
+                              <v-col cols=12>
+                                <Select
+                                    :label="$tc('File Type')"
+                                    :placeholder="$tc('File Type')"
+                                    name="type"
+                                    :id="'basicField-'+ key + '-type'"
+                                    :large="true"
+                                    :editing="true"
+                                    :value="resource.type"
+                                    :items="typeOptions"
+                                    helpPrefix="schema"
+                                    :refName="'basicField-'+ key + '-type'"
+                                    @edited="(newValue) => { updateResourceBase(key, 'type', newValue) }"
+                                ></Select>
+                              </v-col>
+                            </v-row>
+
                             <v-row v-if="(resource && resource.source_system) || editing" class="pb-2">
                                 <v-col cols=12>
                                     <TextInput
@@ -243,6 +261,42 @@
                                         :focusField="focusProp"
                                         @focus="onFocusBasic"
                                         @blur="(event) => { updateResourcePK(key, 'primaryKey', event) }"
+                                    ></TextInput>
+                                </v-col>
+                            </v-row>
+                            <v-row v-if="(resource && resource.temporal_fields) || editing" class="pb-2">
+                                <v-col cols=12>
+                                    <TextInput
+                                        :label="$tc('Temporal range verification field(s)')"
+                                        placeholder="create_date, modified"
+                                        name="temporal_fields"
+                                        :refName="'basicField-' + key + '-temporal_fields'"
+                                        :idName="'basicField-' + key + '-temporal_fields'"
+                                        :large="true"
+                                        :editing="editing"
+                                        :value="resource.temporal_fields"
+                                        helpPrefix="schema"
+                                        :focusField="focusProp"
+                                        @focus="onFocusBasic"
+                                        @blur="(event) => { updateResourceBase(key, 'temporal_fields', event) }"
+                                    ></TextInput>
+                                </v-col>
+                            </v-row>
+                            <v-row v-if="(resource && resource.temporal_fields) || editing" class="pb-2">
+                                <v-col cols=12>
+                                    <TextInput
+                                        :label="$tc('Number of Records')"
+                                        placeholder="2022"
+                                        name="num_rows"
+                                        :refName="'basicField-' + key + '-num_rows'"
+                                        :idName="'basicField-' + key + '-num_rows'"
+                                        :large="true"
+                                        :editing="editing"
+                                        :value="resource.num_rows"
+                                        helpPrefix="schema"
+                                        :focusField="focusProp"
+                                        @focus="onFocusBasic"
+                                        @blur="(event) => { updateResourceBase(key, 'num_rows', event) }"
                                     ></TextInput>
                                 </v-col>
                             </v-row>
@@ -308,6 +362,7 @@
                                                         @focus="onFocusBasic"
                                                     ></TextInput>
                                                 </v-col>
+                                                
                                             </v-row>
                                         </v-container>
                                     </v-row>
@@ -1311,6 +1366,7 @@ export default{
             focus: "",
             showType: {},
             stateType: this.stateTypeParent,
+            typeOptions: ['Metadata', 'Documentation', 'Data', 'Other'],
             fieldTypes: [
                 'string',
                 'number',

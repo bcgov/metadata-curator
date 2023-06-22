@@ -181,6 +181,9 @@ export default {
         }),
 
         async loadSections() {
+            if (!this.loggedIn){
+              await this.$router.push({name: "publishedVariableClassification", params: {id: this.id}});
+            }
             await this.clearVariableClassifications();
             await this.getVariableClassification({field: '_id', value: this.id});
         },
@@ -270,6 +273,7 @@ export default {
     computed: {
         ...mapState({
             user: state => state.user.user,
+            loggedIn: state => state.user.loggedIn,
             variableClassification: state => state.variableClassifications.wipItem,
             variableClassificationError: state => state.variableClassifications.error,
         }),

@@ -9,6 +9,7 @@ server {
 
   ssl_certificate           ${sslCertificate};
   ssl_certificate_key       ${sslCertificateKey};
+  ssl_protocols TLSv1.2 TLSv1.3;
 
   location = / {
     return 301 /auth;

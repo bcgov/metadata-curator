@@ -21,6 +21,7 @@
                 <v-file-input 
                     v-model="file" 
                     :disabled="disabled" 
+                    :clearable="false"
                     show-size 
                     :accept="accept"
                     :label="$tc('File input')" 

@@ -11,7 +11,7 @@
             </v-col>
         </v-row>
 
-        <v-row wrap>
+        <v-row wrap v-if="user && loggedIn">
             <v-col cols=12>
                 <h2>Recent Activity</h2>
             </v-col>
@@ -62,6 +62,7 @@ export default {
     computed: {
         ...mapState({
             user: state => state.user.user,
+            loggedIn: state => state.user.loggedIn,
             userLoading: state => state.user.loading,
         }),
         noUpdates: function(){

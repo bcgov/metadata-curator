@@ -67,7 +67,7 @@ module.exports = (router, cache) => {
     var repoRouter = new Router();
     repoRouter = repositoriesRoutes.buildStatic(db, repoRouter);
     repoRouter = repositoriesRoutes.buildDynamic(db, repoRouter, auth, forumClient, cache);
-    router.use('/repos', auth.requireLoggedIn, repoRouter);
+    router.use('/repos', repoRouter);
 
     var repoBranchesRoutes = require('../base/branches');
     var branchRouter = new Router();

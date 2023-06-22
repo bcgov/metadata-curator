@@ -83,26 +83,29 @@ var buildDynamic = function(db, router, auth, forumClient){
         }
     }
 
-    router.get('/', auth.requireLoggedIn, async function(req, res, next) {
+    router.get('/', async function(req, res, next) {
 
         var q = {};
+        let varClassIds = []
         try{
-            const topicResponse = await forumClient.getTopics(req.user, {});
-            topics = topicResponse.data.filter(item => item.parent_id);
+            if (req.user){
+              const topicResponse = await forumClient.getTopics(req.user, {});
+              topics = topicResponse.data.filter(item => item.parent_id);
 
-            const varClassIds = topics.map( (item) => {
-                let id = item.name;
-                if (!id || id.indexOf("varClass") === -1){
-                    return;
-                }
-                
-                id = id.substring(0,id.length-8);
-                let oid = mongoose.Types.ObjectId(id);
-                return oid;
+              varClassIds = topics.map( (item) => {
+                  let id = item.name;
+                  if (!id || id.indexOf("varClass") === -1){
+                      return;
+                  }
+                  
+                  id = id.substring(0,id.length-8);
+                  let oid = mongoose.Types.ObjectId(id);
+                  return oid;
 
-            }).filter( (item) => { 
-                return (item && String(item).length > 0)
-            });
+              }).filter( (item) => { 
+                  return (item && String(item).length > 0)
+              });
+            }
 
             const varClass = await db.VariableClassification.find({$or: [{_id: {$in: varClassIds}}, {published: true}] });
 

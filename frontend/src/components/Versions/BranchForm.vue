@@ -616,9 +616,11 @@ import DataUploadSelect from '../FormElements/DataUploadSelect';
 import ScrollToTopBottom from "@/components/ScrollToTopBottom";
 
 import { Backend } from '../../services/backend';
+import UpdateUpload from '../../mixins/UpdateUpload';
 
 export default {
     name: "BranchForm",
+    mixins: [UpdateUpload],
 
     components:{
         TextInput,
@@ -997,6 +999,10 @@ export default {
             //this.branchId = (this.branchId) ? this.branchId : this.$route.params.id;
             this.id = (this.branchId) ? this.branchId : this.$route.params.id;
 
+            if (!this.loggedIn || !(this.user.isAdmin || this.user.isApprover)){
+              await this.$router.push({name: "published_version", params: {id: this.id}});
+            }
+
             await this.getDataUploads("team");
             if (this.id === 'create'){
                 this.editing = true;
@@ -1060,7 +1066,10 @@ export default {
 
             if (this.creating){
 
-                this.saveBranch().then( (data) => {
+                this.saveBranch().then( async(data) => {
+                    if (this.branch.data_upload_id){
+                      await this.updateUploadOnEdit();
+                    }
                     this.alertType = "success"
                     this.alertText = this.$tc("Sucessfully created ") + this.$tc("version", 1);
                     this.alert = true;
@@ -1082,13 +1091,16 @@ export default {
                     this.disableSave = false;
                 });
             }else{
-                this.updateBranch().then( () => {
+                this.updateBranch().then( async() => {
                     this.alertType = "success"
                     this.alertText = "Successfully updated edition";
                     this.alert = true;
                     //this.closeOrBack();
                     this.editing = false;
                     this.disableSave = false;
+                    if (this.branch.data_upload_id){
+                      await this.updateUploadOnEdit();
+                    }
 
                 }).catch( err => {
                     this.alertType = "error"
@@ -1109,6 +1121,7 @@ export default {
     computed: {
         ...mapState({
             user: state => state.user.user,
+            loggedIn: state => state.user.loggedIn,
             branch: state => state.repos.branch,
             dataUploads: state => state.dataUploads.dataUploads,
             dataset: state => state.repos.repo,
@@ -1169,6 +1182,10 @@ export default {
     },
     watch: {
         branchId: async function(){
+            if (!this.loggedIn || !(this.user.isAdmin || this.user.isApprover)){
+              await this.$router.push({name: "published_version", params: {id: this.branchId}});
+              window.location.reload();
+            }
             if (this.branchId){
                 await this.load();
             }else{
@@ -1190,7 +1207,7 @@ export default {
 
     },
 
-    created() {
+    async created() {
         this.clearBranch();
         this.clearTableSchema();
         this.clearDataPackageSchema();

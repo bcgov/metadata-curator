@@ -9,6 +9,7 @@ server {
 
   ssl_certificate           ${sslCertificate};
   ssl_certificate_key       ${sslCertificateKey};
+  ssl_protocols TLSv1.2 TLSv1.3;
   
   location /minio/ {
     resolver 127.0.0.11 valid=30s;
