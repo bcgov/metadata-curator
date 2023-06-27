@@ -2,30 +2,14 @@
 
 <br />
 
-## Version 2.0.0
-June 22 2023
- - Authentication no longer a requirement and the following sections have been modified to allow access (Datasets, Editions, Variable Classifications, Home). Access is only granted to published things. Datasets are considered published if at least one of their editions is published
- - Added temporal fields, number of fields and type to resources in edition files and fields
- - Made logged in user with no permissions have the same view as public
- - Topics from the forum api are now cached per user server side, this greatly increases speed on sites where there are thousands of topics. (Additionally the cache is invalidated for all users when any user makes a topic)
- - Reworked upload flow:
-    - The upload screen is now readonly except for file select
-    - Uploads can only be created from editions
-    - Editing an edition updates it's linked upload (if there is one and it isn't submitted already)
-    - Uploads screen now has 2 tabs, Info (the old first page) and Files (a new thing)
-    - The files tab has vertical tabs for each file. You are tasked to select the corresponding file for each file tab
-    - Inferrence is now done on a file by file basis without reordering fields to the best of it's ability, this greatly increases the speed at which it happens at a cost of providing best possible comparisons
-    - Detailed inferrence is now collapsed by default and instead highlighted differences are extracted above the collapsed bar
-    - When all files are selected the upload button is enabled, and it will navigate you across the tabs as it uploads each file
-    - Files succesfully uploaded are noted with a blue check to the RIGHT of the file name in the tab
-      - Left of the file there is a space for another icon
-      - Green check -- no extracted highlighted differences
-      - Yellow caution -- has extracted highlighted differences that won't block upload
-      - Red error -- has extracted highlighted differences that will block upload -- none currently exist
+## Version 2.0.1
+June 28 2023
+ - Fixed an issue with caching topics
 
  <br />
 
 ## Table Of Contents
+- [Version 2.0.1 (June 28 2023)](#version-201)
 - [Version 2.0.0 (June 22 2023)](#version-200)
 - [Version 1.7.1 (June 2 2023)](#version-171)
 - [Version 1.7.0 (May 15 2023)](#version-170)
@@ -67,6 +51,29 @@ June 22 2023
 - [Version 1.2.2 (January 27 2022)](#version-122)
 
 <br />
+
+## Version 2.0.0
+June 22 2023
+ - Authentication no longer a requirement and the following sections have been modified to allow access (Datasets, Editions, Variable Classifications, Home). Access is only granted to published things. Datasets are considered published if at least one of their editions is published
+ - Added temporal fields, number of fields and type to resources in edition files and fields
+ - Made logged in user with no permissions have the same view as public
+ - Topics from the forum api are now cached per user server side, this greatly increases speed on sites where there are thousands of topics. (Additionally the cache is invalidated for all users when any user makes a topic)
+ - Reworked upload flow:
+    - The upload screen is now readonly except for file select
+    - Uploads can only be created from editions
+    - Editing an edition updates it's linked upload (if there is one and it isn't submitted already)
+    - Uploads screen now has 2 tabs, Info (the old first page) and Files (a new thing)
+    - The files tab has vertical tabs for each file. You are tasked to select the corresponding file for each file tab
+    - Inferrence is now done on a file by file basis without reordering fields to the best of it's ability, this greatly increases the speed at which it happens at a cost of providing best possible comparisons
+    - Detailed inferrence is now collapsed by default and instead highlighted differences are extracted above the collapsed bar
+    - When all files are selected the upload button is enabled, and it will navigate you across the tabs as it uploads each file
+    - Files succesfully uploaded are noted with a blue check to the RIGHT of the file name in the tab
+      - Left of the file there is a space for another icon
+      - Green check -- no extracted highlighted differences
+      - Yellow caution -- has extracted highlighted differences that won't block upload
+      - Red error -- has extracted highlighted differences that will block upload -- none currently exist
+
+ <br />
 
 ## Version 1.7.1
 June 2 2023

@@ -115,6 +115,19 @@ const getVersion = async (user) => {
     return await axios.get(url);
 }
 
+const filterResults = function(results, query){
+  let res = results;
+  if (typeof(query) === "object"){
+    let keys = Object.keys(query);
+    for (let i=0; i<keys.length; i++){
+      res.data = res.data.filter(t => {
+        return t[keys[i]] && t[keys[i]] === query[keys[i]];
+      })
+    }
+  }
+  return res;
+}
+
 const getTopics = async (user, query) => {
     let config = require('config');
     const forumApiConfig = config.get("forumApi");
@@ -127,7 +140,7 @@ const getTopics = async (user, query) => {
           forumCache.set('forumFetching-'+user.id, true);
           getTopicsNoCache(user, query);
         }
-        return cacheRes;
+        return filterResults(cacheRes, query);
       }
     }
 
@@ -143,13 +156,6 @@ const getTopics = async (user, query) => {
 
     let queryKeys = [];
     query.limit=TOPIC_RES_LIMIT;
-    if (typeof(query) === "object"){
-        queryKeys = Object.keys(query);
-        for (let i=0; i<queryKeys.length; i++){
-            url += (i==0) ? "?" : "&";
-            url += queryKeys[i] + "=" + query[queryKeys[i]];
-        }
-    }
 
     try{
         let results = {data: []};
@@ -166,7 +172,7 @@ const getTopics = async (user, query) => {
         if (user){
           forumCache.set('forum-'+user.id, results);
         }
-        return results;
+        return filterResults(results, query);
     }catch(ex){
         console.log("ERROR", ex);
         return {data: []};
