@@ -188,7 +188,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
     
     const updateBranch = async function(branchId, type, name, description, upload_id, fields, user) {
         let repoBranchSchema = await getBranchById(branchId, user);
-        const topicResponse = await forumClient.getTopics(user, (repoBranchSchema.topic_id+"branch"));
+        const topicResponse = await forumClient.getTopics(user, {name: repoBranchSchema.topic_id+"branch"});
         if (!topicResponse || topicResponse.length < 1){
             throw new Error('404');
         }
