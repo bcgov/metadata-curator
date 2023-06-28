@@ -120,6 +120,7 @@ const filterResults = function(results, query){
   if (typeof(query) === "object"){
     delete query.limit;
     delete query.page;
+    delete query.filterBy;
     let keys = Object.keys(query);
     for (let i=0; i<keys.length; i++){
       res.data = res.data.filter(t => {
