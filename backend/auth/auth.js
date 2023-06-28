@@ -60,9 +60,9 @@ passport.use('jwt', new JWTStrategy({
         if (decodedJWT.email){
           db.User.updateOne({email: decodedJWT.email}, user, {upsert: true, setDefaultsOnInsert: true}, function(e,r){
             if (e){
-              console.log("Error updating user info", e);
+              logger.error("Error updating user info", e);
             }else{
-              console.log("Updated user info jwt");
+              logger.verbose("Updated user info jwt");
             }
       
           });

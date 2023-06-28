@@ -118,6 +118,8 @@ const getVersion = async (user) => {
 const filterResults = function(results, query){
   let res = results;
   if (typeof(query) === "object"){
+    delete query.limit;
+    delete query.page;
     let keys = Object.keys(query);
     for (let i=0; i<keys.length; i++){
       res.data = res.data.filter(t => {
@@ -174,7 +176,7 @@ const getTopics = async (user, query) => {
         }
         return filterResults(results, query);
     }catch(ex){
-        console.log("ERROR", ex);
+        console.error("ERROR", ex);
         return {data: []};
     }
     
@@ -218,7 +220,7 @@ const getTopicsNoCache = async (user, query) => {
       }
       forumCache.set('forum-'+user.id, results);
   }catch(ex){
-      console.log("ERROR", ex);
+      console.error("ERROR", ex);
   }
   forumCache.set('forumFetching-'+user.id, false);
   forumCache.del('forumFetching-'+user.id);
