@@ -49,6 +49,7 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         let revision = new db.RevisionSchema();
         
         if (descriptor.inferred){
+            delete descriptor.typeName;
             let preInferred = await db.DataPackageSchema.findOne({inferred: true, version: descriptor.version});
             if (preInferred){
                 let dataPackageSchema = await buildDataPackageSchema(descriptor, true, revision);
@@ -135,11 +136,8 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
             }
         }
 
-        console.log("about to transform");
-
         data.resources = transformResources(descriptor.resources);
         revision.revise('resources', oldRecord.resources, data.resources);
-        console.log("post to transform");
         
         let branchQ = {};
         if (descriptor.version){
@@ -151,8 +149,6 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
             let branchId = mongoose.Types.ObjectId(oldRecord.version);
             branchQ = {_id: branchId}
         }
-
-        console.log("PUT ABOUT TO FIND, data", branchQ);
         
         const branch = await db.RepoBranchSchema.findOne(branchQ);
         if (!branch){
@@ -161,14 +157,10 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
             throw new Error("The branch is approved no metadata changes")
         }
 
-        console.log("PUT ABOUT TO SAVE, data", data);
-
         let newRecord = await db.DataPackageSchema.findOneAndUpdate(filter, data, {new: true}).catch (e => {
             log.error(e);
             throw new Error(e.message)
         });
-
-        console.log("PUT AFTER SAVE, data", data);
 
         const util = require('util')
 
@@ -200,10 +192,18 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         return current;
     }
 
-    const getDataPackageByBranchId = async function (id, user, inferred) {
+    const getDataPackageByBranchId = async function (id, user, inferred, typeName) {
         // Return a lean() object - simple javascript object, rather than the Model
         // so we can transform the document into a valid data package
         inferred = (typeof(inferred) !== 'undefined') ? inferred : false;
+        typeName = (typeof(typeName) !== 'undefined') ? typeName : false;
+        if (typeof(typeName) === 'string'){
+          typeName = typeName.toLowerCase() === 'true' ? true : typeName;
+        }
+        //can't combine might no longer be a string
+        if (typeof(typeName) === 'string'){
+          typeName = typeName.toLowerCase() === 'false' ? false : typeName;
+        }
         const branch = await db.RepoBranchSchema.findOne({_id: id});
         id = mongoose.Types.ObjectId(id);
 
@@ -219,11 +219,24 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         }
         let q = {version: id, inferred: inferred}
         try{
-            current = await db.DataPackageSchema.findOne(q).lean()
-            if (!current){
-                return current;
+          if (!typeName){
+            q.typeName = null;
+            current = await db.DataPackageSchema.findOne(q).lean();
+            if (current && current.resources){
+              current.resources = transformResourcesToFrictionless(current.resources);
             }
-            current.resources = transformResourcesToFrictionless(current.resources);
+          }else{
+            q.typeName = typeName;
+            if ((typeof(typeName) === 'boolean') && (typeName)){
+              q.typeName = { $ne: null };
+            }
+            
+            current = await db.DataPackageSchema.find(q).lean();
+            for (let i=0; i<current.length; i++){
+              current[i].resources = transformResourcesToFrictionless(current[i].resources);
+            }
+          } 
+            
         }catch(e){
             throw e
         }
@@ -231,12 +244,13 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         return current;
     }
 
-    const listDataPackages = async function (query) {
+    const listDataPackagesFull = async function (query) {
         // Return a lean() object - simple javascript object, rather than the Model
         // so we can transform the document into a valid data package
 
         let q = {
             inferred: false,
+            typeName: null,
         };
         if (query.upload_id){
             try{
@@ -258,6 +272,12 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
 
         if (query.inferred){
             q.inferred = query.inferred;
+        }
+
+        if ((typeof(query.typeName) === 'boolean') && (query.typeName) ){
+          q.typeName = { $ne: null };
+        }else if (typeof(query.typeName) === 'string'){
+          q.typeName = query.typeName;
         }
 
         const list = await db.DataPackageSchema.find(q).lean().catch (e => {
@@ -351,7 +371,6 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
             const pkg = await updateDataPackage(req.params.id, descriptor, req.user)
             res.status(200).json({id: pkg._id.toString()});
         }catch(ex){
-            console.log("PUT dp", ex);
             res.status(500).json({error: ex.message});
         }
     });
@@ -394,8 +413,9 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
     router.get('/branch/:branchId', async function(req, res, next){
         const id = req.params.branchId;
         const inferred = (req.query && req.query.inferred) ? req.query.inferred : false;
+        const typeName = (req.query && req.query.typeName) ? req.query.typeName : false;
         try{
-            return res.status(200).json(await getDataPackageByBranchId(id, req.user, inferred));
+            return res.status(200).json(await getDataPackageByBranchId(id, req.user, inferred, typeName));
         }catch(ex){
             if (ex.message === "404"){
                 return res.status(404).json({error: "Not found"});

@@ -19,7 +19,12 @@ var dataPackageSchema = new Schema({
         type: String, 
         required: true,
         default: false,
-    }, 
+    },
+    typeName: {
+      type: String,
+      required: false,
+      default: null,
+    },
     profile: {type:String, required: true},
     version: {
         type: Schema.Types.ObjectId,
