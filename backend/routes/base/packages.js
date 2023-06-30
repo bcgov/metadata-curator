@@ -244,7 +244,7 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         return current;
     }
 
-    const listDataPackagesFull = async function (query) {
+    const listDataPackages = async function (query) {
         // Return a lean() object - simple javascript object, rather than the Model
         // so we can transform the document into a valid data package
 
@@ -274,10 +274,19 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
             q.inferred = query.inferred;
         }
 
-        if ((typeof(query.typeName) === 'boolean') && (query.typeName) ){
+        let typeName = query.typeName;
+        if (typeof(typeName) === 'string'){
+          typeName = typeName.toLowerCase() === "true" ? true : typeName;
+        }
+
+        if (typeof(typeName) === 'string'){
+          typeName = typeName.toLowerCase() === "false" ? false : typeName;
+        }
+
+        if ((typeof(typeName) === 'boolean') && (typeName) ){
           q.typeName = { $ne: null };
-        }else if (typeof(query.typeName) === 'string'){
-          q.typeName = query.typeName;
+        }else if (typeof(typeName) === 'string'){
+          q.typeName = typeName;
         }
 
         const list = await db.DataPackageSchema.find(q).lean().catch (e => {
