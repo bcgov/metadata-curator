@@ -127,12 +127,10 @@ const actions = {
               schema.__v = v;
               schema.version = version;
           }else if (schema){
-            console.log("SET TYPE SCHEMA", schema);
               let s = schema;
               if (typeof(s) === "string"){
                   s = JSON.parse(s);
               }
-              console.log("SET TYPE SCHEMA", s);
               await Schema.load(s);
           }
           commit('setTypeSchemaM', {schema: schema})
@@ -196,6 +194,9 @@ const actions = {
 
       backend.postTableSchema(state.typeSchema).then(() => {
           commit('setSuccessMsg', {message: "Successfully saved typed schema"});
+          backend.getTableSchema(state.typeSchema.version, false, false, true).then(res => {
+            commit('setTypedSchemas', {schemas: res});
+          });
       }).catch((e) => {
           commit('setError', {error: e.response.data.error});
       });
