@@ -450,12 +450,12 @@
                     <v-tab-item key="compare" v-if="!creating && (inferredSchema || (typedSchemas && typedSchemas.length > 0))">
                       <v-select :items="versionDrop" v-model="leftSchema"></v-select>
                       <v-select :items="versionDrop" v-model="rightSchema"></v-select>
-                        <Comparison 
+                        <BasicComparison 
                           :left-side-text="JSON.stringify(leftSideCompare)" 
                           :right-side-text="JSON.stringify(rightSideCompare)" 
                           :leftHeader="leftHeader"
                           :rightHeader="rightHeader"
-                          :diff-json="true"></Comparison>
+                          :diff-json="true"></BasicComparison>
                         <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
                     </v-tab-item>
 
@@ -613,7 +613,7 @@ import Repeating from '../FormElements/Repeating';
 import MetadataForm from './MetadataForm';
 import SupplementalInformation from './SupplementalInformation';
 import Comments from '../Comments';
-import Comparison from '../Schema/Comparison';
+import BasicComparison from '../Schema/BasicComparison';
 import Revisions from '../Revisions';
 import { ValidationObserver } from "vee-validate";
 
@@ -638,7 +638,7 @@ export default {
         Repeating,
         Markdown,
         Comments,
-        Comparison,
+        BasicComparison,
         DataUploadSelect,
         DatasetForm: () => import('../Datasets/DatasetForm'),
         Revisions,
