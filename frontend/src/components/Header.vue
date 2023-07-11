@@ -197,11 +197,15 @@ export default {
                 t.push({ id: 13, name: "Options", route: `/options`, icon: 'mdi-clipboard-list', disabled: false });
             }
 
-            if ( (this.user) && (this.user.isAdmin) ){
-                t.push({ id: 14, name: "Admin", route: `/admin`, icon: 'mdi-cog', disabled: false });
+            if ( (this.user) && ( (this.user.isAdmin) || (this.user.isApprover) ) ){
+                t.push({ id: 14, name: "Project", route: `/projects`, icon: 'mdi-book-open', disabled: false});
             }
             if ( (this.user) && ( (this.user.isAdmin) || (this.user.isApprover) ) ){
                 t.push({ id: 15, name: "Search", route: `/search`, icon: 'mdi-file-search', disabled: false});
+            }
+
+            if ( (this.user) && (this.user.isAdmin) ){
+                t.push({ id: 16, name: "Admin", route: `/admin`, icon: 'mdi-cog', disabled: false });
             }
 
             return t;

@@ -24,6 +24,9 @@ const variableClassification = () => import(/* webpackChunkName: "variableClassi
 const publishedVariableClassificationForm = () => import(/* webpackChunkName: "publishedVariableClassification" */ "../components/pages/publishedVariableClassification");
 const Search = () => import(/* webpackChunkName: "Search" */ "../components/pages/Search");
 
+const projects = () => import(/* webpackChunkName: "projects" */ "../components/pages/projects");
+const project = () => import(/* webpackChunkName: "projectForm" */ "../components/pages/projectForm");
+
 Vue.use(Router)
 let r = new Router({
   mode: "history",
@@ -245,7 +248,27 @@ let r = new Router({
             title: "Search",
             requiresAuth: true
         }
-      },
+    },
+    {
+      path: '/projects',
+      name: 'projects',
+      component: projects,
+      meta: {
+          title: "Projects",
+          requiresAuth: true,
+          phase: 2
+      }
+    },
+    {
+      path: '/project/:id',
+      name: 'projectForm',
+      component: project,
+      meta: {
+          title: "Project",
+          requiresAuth: true,
+          phase: 2
+      }
+    },
     {
       path: '*',
       component: NotFound,

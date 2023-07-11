@@ -499,4 +499,54 @@ export class Backend {
         return axios.post(url, option,{withCredentials: true}).then(response => response.data)
     }
 
+    getProjects(){
+      const url = `/api/v1/project`
+      return axios.get(url, {withCredentials: true}).then( (response) => {
+          let data = response.data;
+          return data;
+      })
+    }
+
+  getProject(key){
+      const url = `/api/v1/project/${key}`
+      return axios.get(url, {withCredentials: true}).then( (response) => {
+          let data = response.data;
+          return data;
+      })
+  }
+
+  putProject(id, editedForm){
+      const url = `/api/v1/project/${id}`;
+      return axios.put(url, editedForm, {withCredentials: true}).then(response => response.data)
+  }
+
+  newProject(newForm){
+      const url = `/api/v1/project`;
+      return axios.post(url, newForm, {withCredentials: true}).then(response => response.data)
+  }
+
+  deleteProject(id){
+      const url = `/api/v1/project/${id}`;
+      return axios.delete(url, {}, {withCredentials: true}).then(response => response.data)
+  }
+
+  getCommentsByProject(projectid){
+      const url = '/api/v1/project/' + projectid + '/comments';
+      return axios.get(url, {withCredentials: true}).then(response => response.data)
+  }
+
+  postCommentByProject(projectid, comment){
+      const url = '/api/v1/project/' + projectid + '/comments';
+      const body = { content: comment};
+      return axios.post(url, body,{withCredentials: true}).then(response => response.data)
+  }
+
+  getUsers(){
+    const url = `/api/v1/user`;
+    return axios.get(url, {withCredentials: true}).then( (response) => {
+        let data = response.data;
+        return data;
+    });
+  }
+
 }

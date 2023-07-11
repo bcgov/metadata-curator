@@ -332,6 +332,8 @@ export default {
 
         "Compare Inferred": "Compare Inferred",
 
+        "Project": "Projects | Project | Projects",
+
         "help.upload.temporal_fields": "Field(s) for verifying the date range.  Fields should be comma separated e.g., field1,field2.",
 
         "help.dataset.name": "The name of the dataset",

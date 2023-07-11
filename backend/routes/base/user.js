@@ -52,6 +52,15 @@ var buildDynamic = function(db, router, auth, cache){
         }
     });
 
+    router.get('/', auth.requireLoggedIn, auth.isApprover, async function(req, res, next){
+      if (!util.phaseCheck(cache, requiredPhase, db)){
+        return res.status(404).send(util.phaseText('GET', 'user'));
+      }
+
+      let users = await db.User.find({});
+      res.status(200).json({users: users});
+    });
+
     return router;
 }
 
