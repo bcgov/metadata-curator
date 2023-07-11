@@ -231,7 +231,7 @@ export default {
               await this.$router.push({name: "projects"});
             }
             await this.clearProjects();
-            if (this.id){
+            if (this.id && this.id !== 'create'){
               await this.getProject({field: '_id', value: this.id});
             }
             let usersResp = await backend.getUsers();
@@ -252,7 +252,7 @@ export default {
               return newR;
             })
             
-            if (this.id){
+            if (this.id && this.id !== 'create'){
               this.selectedBranches = this.branches.filter(b => {
                 return this.project.editions.indexOf(b._id) !== -1;
               });
