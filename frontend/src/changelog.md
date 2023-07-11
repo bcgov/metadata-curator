@@ -9,6 +9,8 @@ July 11 2023
    - Users added to the project will be able to see those datasets and editions, but not discussion related to the datasets/editions (comments are visible)
  - Fixed a bug with filtering by highlight on files and fields
 
+ <br />
+
 ## Table Of Contents
 - [Version 2.0.2 (July 11 2023)](#version-202)
 - [Version 2.0.1a (July 18 2023)](#version-201a)
