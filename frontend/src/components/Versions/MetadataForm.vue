@@ -165,6 +165,7 @@ export default {
             typeName: "",
             addedSchema: {},
             updatedCount: 0,
+            typeSchemaId: -1,
         }
     },
     methods: {
@@ -288,9 +289,10 @@ export default {
         async save(){
             if (this.schemaObj){
               if ( (this.viewSchemaType !== 'Inferred') && (this.viewSchemaType !== 'Provided') ){
-                this.schemaObj.typeName = this.typeName
+                this.schemaObj.typeName = this.typeName;
                 this.schemaObj.inferred = false;
                 this.schemaObj.version = this.id;
+                this.schemaObj._id = this.typeSchemaId;
                 await this.setTypeSchema({schema: this.schemaObj});
               }else{
                 await this.setTableSchema({schema: this.schemaObj});
@@ -303,8 +305,9 @@ export default {
                     return;
                 }
 
-                if ( (this.creating) || ((this.viewSchemaType != "Provided") && (this.viewSchemaType != "Inferred")) ){
+                if ( this.creating ){
                   if ( (this.viewSchemaType !== 'Inferred') && (this.viewSchemaType !== 'Provided') ){
+                    console.log("new type schema");
                     await this.saveTypeSchema();
                   }else{
                     this.saveTableSchema();
@@ -438,6 +441,8 @@ export default {
               return f.typeName === this.viewSchemaType;
             });
             if (s){
+              Vue.set(this, 'schemaObj', s);
+              Vue.set(this, 'typeSchemaId', s._id);
               return s;
             }
           }

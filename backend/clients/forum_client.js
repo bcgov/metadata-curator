@@ -187,6 +187,10 @@ const getTopicsNoCache = async (user, query) => {
   let config = require('config');
   const forumApiConfig = config.get("forumApi");
 
+  if (typeof(query) === 'undefined'){
+    query = {};
+  }
+
   const jwt = user.jwt;
   const options = {
       withCredentials: true,
