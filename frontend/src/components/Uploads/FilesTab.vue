@@ -241,6 +241,9 @@ export default {
       // this.clearFile = true;
       //this.fileReaders[this.fileReaders.length] = {}
       //this.tabToContentOrder[index] = this.files.length;
+      if (!file){
+        console.warn("File coming through empty", index, file, sig);
+      }
       this.tabToContentOrder[index] = this.inferContent.length;
       this.contentToTabOrder[this.inferContent.length] = index;
       this.files[index] = file;
