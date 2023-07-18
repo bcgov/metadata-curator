@@ -73,6 +73,7 @@
 
     import ValidationRules from "../../mixins/ValidationRules";
     import { mapActions, mapState, mapMutations } from 'vuex';
+    import moment from 'moment';
 
     export default {
         mixins: [ValidationRules],
@@ -169,7 +170,7 @@
                 branch: state => state.repos.branch,
                 schema: state => state.schemaImport.tableSchema,
                 user: state => state.user.user,
-                uploadError: 'upload/error',
+                uploadError: state => state.upload.error,
             }),
 
             displayLabel: function () {
@@ -264,8 +265,20 @@
                     file.size = 0;
                     file.name = this.schema.resources[i].name;
                     file.data = this.schema.resources[i].type && this.schema.resources[i].type === "Data";
-                    file.start_date = this.schema.resources[i].temporal_start;
-                    file.end_date = this.schema.resources[i].temporal_end;
+                    try{
+                      if (moment(file.start_date, null, true).isValid()){
+                        file.start_date = this.schema.resources[i].temporal_start;
+                      }
+                    }catch(e){
+                      console.log("error converting date", e);
+                    }
+                    try{
+                      if (moment(file.start_date, null, true).isValid()){
+                        file.end_date = this.schema.resources[i].temporal_end;
+                      }
+                    }catch(e){
+                      console.log("error converting date", e);
+                    }
                     file.num_records = this.schema.resources[i].num_rows;
                     file.title = this.schema.resources[i].name;
                     file.description = this.schema.resources[i].description;
@@ -289,8 +302,8 @@
                     let d = await this.createInitialUpload(data);
 
                     if (!d || !d._id){
-                        this.$emit('error', "Error creating upload, "+d);
-                        return;
+                      this.$emit('error', "Error creating upload, "+this.uploadError);
+                      return;
                     }
 
                     this.editBranch({name: 'data_upload_id', value: d._id});

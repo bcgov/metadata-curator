@@ -381,8 +381,11 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             });
             
             fullDPS = fullDPS.filter( (item) => {
-                let id = String(item.version.repo_id._id);
-                return (item && repoIds.indexOf(id) !== -1);
+              if (item && item.version && item.version.repo_id && item.version.repod_id._id){
+                  let id = String(item.version.repo_id._id);
+                  return (item && repoIds.indexOf(id) !== -1);
+              }
+              return false;
             });
 
             for (let i=0; i<topics.length; i++){
