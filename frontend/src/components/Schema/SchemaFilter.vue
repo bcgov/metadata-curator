@@ -111,7 +111,7 @@ import TextInput from '../FormElements/TextInput';
                 }else{
                     v = ( (newValue === 'true') ? true : (newValue === 'false') ? false : '' );
                 }
-                this.$emit('filter', 'highlight', newValue);
+                this.$emit('filter', 'highlight', v);
             },
 
             fieldNameFilter(newValue){

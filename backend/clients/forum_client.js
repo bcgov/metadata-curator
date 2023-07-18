@@ -3,7 +3,8 @@ const axios = require('axios');
 const TOPIC_RES_LIMIT = 250;
 
 const NodeCache = require('node-cache');
-const forumCache = new NodeCache({stdTTL: 0});
+const cacheTTL = 60 * 60; // 1 hour
+const forumCache = new NodeCache({stdTTL: cacheTTL});
 
 const addTopic = async (name, user) => {
     if (user.organization){
@@ -186,6 +187,10 @@ const getTopics = async (user, query) => {
 const getTopicsNoCache = async (user, query) => {
   let config = require('config');
   const forumApiConfig = config.get("forumApi");
+
+  if (typeof(query) === 'undefined'){
+    query = {};
+  }
 
   const jwt = user.jwt;
   const options = {

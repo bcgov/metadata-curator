@@ -340,10 +340,12 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
       let topicResponse = false;
       let repoIds = [];//await publishedRepositories();
       let authorGroupsLookup = {};
+      let topics = [];
         try {
-          // if (user){
-            const topicResponse = await forumClient.getTopics(user, {});
-            let topics = topicResponse.data.filter(item => item.parent_id);
+          if (user) {
+            topicResponse = await forumClient.getTopics(user, {});
+            topics = topicResponse.data.filter(item => item.parent_id);
+          }
 
             repoIds = repoIds.concat(topics.map( (item) => {
                 let id = item.name;
@@ -381,8 +383,11 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             });
             
             fullDPS = fullDPS.filter( (item) => {
-                let id = String(item.version.repo_id._id);
-                return (item && repoIds.indexOf(id) !== -1);
+              if (item && item.version && item.version.repo_id && item.version.repo_id._id){
+                  let id = String(item.version.repo_id._id);
+                  return (item && repoIds.indexOf(id) !== -1);
+              }
+              return false;
             });
 
             for (let i=0; i<topics.length; i++){
