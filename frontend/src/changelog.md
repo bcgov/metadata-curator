@@ -9,11 +9,9 @@ July 11 2023
    - Users added to the project will be able to see those datasets and editions, but not discussion related to the datasets/editions (comments are visible)
  - Fixed a bug with filtering by highlight on files and fields
 
-
- <br />
-
 ## Table Of Contents
 - [Version 2.0.2 (July 11 2023)](#version-202)
+- [Version 2.0.1a (July 18 2023)](#version-201a)
 - [Version 2.0.1 (June 28 2023)](#version-201)
 - [Version 2.0.0 (June 22 2023)](#version-200)
 - [Version 1.7.1 (June 2 2023)](#version-171)
@@ -56,6 +54,17 @@ July 11 2023
 - [Version 1.2.2 (January 27 2022)](#version-122)
 
 <br />
+
+## Version 2.0.1a
+July 18 2023
+ - Fixed an issue with refetching cached topics
+ - Fixed an issue with recent update list
+ - Fixed an issue affecting reports in production
+ - Fixed some issues creating new uploads from editions
+ - Fixed an issue filtering schema by highlight
+ - Fixed an issue with uploads
+
+ <br />
 
 ## Version 2.0.1
 June 28 2023

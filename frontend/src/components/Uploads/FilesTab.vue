@@ -260,8 +260,14 @@ export default {
 
       let f = JSON.parse(JSON.stringify(this.upload));
       for (let i=0; i<this.files.length; i++){
+        let name = this.files[i] && this.files[i].name ? this.files[i].name : false;
+        name = !name && this.files[i] && this.files[i].title ? this.files[i].title : name;
+        name = !name ? this.fileIds[i] : name;
         f.files[i].id = this.fileIds[i];
-        f.files[i].uploaded_name = this.files[i].name;
+        f.files[i].uploaded_name = name;
+        if (!this.files[i]){
+          console.warn('updating form submission with a null file', f.files[i], i);
+        }
       }
 
       if (start){
