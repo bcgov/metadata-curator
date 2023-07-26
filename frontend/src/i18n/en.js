@@ -331,6 +331,14 @@ export default {
         "References to research that uses this data": "References to research that uses this data",
 
         "Compare Inferred": "Compare Inferred",
+        "Classification": "Classifications | Classification | Classifications",
+        "Sort By": "Sort By",
+        "Please select file matching this description": "Please select file matching this description",
+        "Inferring...": "Inferring...",
+        "Uploaded file name": "Uploaded file name",
+        "Please wait reading file": "Please wait reading file",
+        "File Id": "File Id",
+        "Temporal Fields": "Temporal Fields",
 
         "help.upload.temporal_fields": "Field(s) for verifying the date range.  Fields should be comma separated e.g., field1,field2.",
 

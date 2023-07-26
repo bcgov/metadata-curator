@@ -2,19 +2,21 @@
 
 <br />
 
-## Version 2.0.1a
+## Version 2.0.2
 July 18 2023
- - Fixed an issue with refetching cached topics
- - Fixed an issue with recent update list
- - Fixed an issue affecting reports in production
- - Fixed some issues creating new uploads from editions
- - Fixed an issue filtering schema by highlight
- - Fixed an issue with uploads
+ - Fixed new upload wizard not creating inferred schema
+ - Added an upload button at the top of the file reader on new upload wizard to reduce need to scroll
+ - Changed how the new upload wizard handles files to speed up inferrence and reduce inferrence errors (one at a time)
+ - Prevented tab change on new upload wizard while file reading/inferrence is happening
+ - Added a please wait inferring message while inferrring in new upload wizard
+ - Added more error handling in new upload wizard
+ - Prevented file open processing on new upload wizard while uploading which could cause the file to be blank
 
  <br />
 
 ## Table Of Contents
-- [Version 2.0.2 (July 18 2023)](#version-201a)
+- [Version 2.0.2 (July 26 2023)](#version-202)
+- [Version 2.0.1a (July 18 2023)](#version-201a)
 - [Version 2.0.1 (June 28 2023)](#version-201)
 - [Version 2.0.0 (June 22 2023)](#version-200)
 - [Version 1.7.1 (June 2 2023)](#version-171)
@@ -57,6 +59,17 @@ July 18 2023
 - [Version 1.2.2 (January 27 2022)](#version-122)
 
 <br />
+
+## Version 2.0.1a
+July 18 2023
+ - Fixed an issue with refetching cached topics
+ - Fixed an issue with recent update list
+ - Fixed an issue affecting reports in production
+ - Fixed some issues creating new uploads from editions
+ - Fixed an issue filtering schema by highlight
+ - Fixed an issue with uploads
+
+ <br />
 
 ## Version 2.0.1
 June 28 2023
