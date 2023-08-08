@@ -329,7 +329,7 @@ export default {
                 this.encContentBlobs[index] = new Blob([cipherText])
             }
             if (index <= 0){
-                this.$emit("encrypted", this.index);
+                this.$emit("encrypted", this.index, this.file, this.getFinger);
             }
             // }).catch( (e)=> {
             //     console.error("Error encrypting", e);
@@ -376,7 +376,7 @@ export default {
                 }
                 this.pleaseWait = false;
             }else if ((!this.file) && (this.readFile)){
-                this.$store.commit('file/clearContent');
+                //this.$store.commit('file/clearContent');
             }
 
         },
@@ -422,7 +422,7 @@ export default {
                 });
 
             }else if ((!this.file) && (this.readFile)){
-                this.$store.commit('file/clearContent');
+                //this.$store.commit('file/clearContent');
             }
         },
 
@@ -442,8 +442,7 @@ export default {
 
                 reader.onload = async function(e){
                     let content = new Uint8Array(e.target.result);
-                    
-                    
+                           
                     await self.checksum.append(e.target.result);
 
                     if (self.readFile === true){
@@ -472,13 +471,13 @@ export default {
 
                         self.$store.dispatch('file/encryptContent', {clear: self.offset === 0, index: index, content: content}).then( () => {
                             resolve(e.target.result);
-                            self.$emit('encrypted', self.index, index);
+                            self.$emit('encrypted', self.index, self.file, self.getFinger);
                         });
 
                     }else{
                         self.encrypt(content, index).then ( () => {
                             resolve(e.target.result);
-                            self.$emit('encrypted', self.index, index);
+                            self.$emit('encrypted', self.index, self.file, self.getFinger);
                         })
 
                     }
@@ -623,7 +622,7 @@ export default {
                                 let upUrl = self.uploadUrlOverride ? self.uploadUrlOverride : self.uploadUrl;
                                 let concatResponse = await backendApi.concatenateUpload(joinIds, upUrl, self.jwt, "1.0.0", self.file.name, self.file.type, self.checksum.end());
                                 self.$store.commit('file/clearFileSig', {fileSig: self.getFinger});
-                                self.$store.commit('file/clearContent');
+                                //self.$store.commit('file/clearContent');
                                 
                                 let concatLocation = concatResponse.headers.location;
                                 let slashInd = concatLocation.lastIndexOf("/");

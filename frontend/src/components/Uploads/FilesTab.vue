@@ -2,7 +2,7 @@
   <v-row v-if="upload">
     <v-col cols="3">
       <v-tabs v-model="tab" vertical style="width: 100%" :disabled="uploading" :key="`fileTabs-${diffH ? JSON.stringify(diffH) : ''}`">
-        <v-tab v-for="(file, index) in upload.files" style="width: 100%" :key="`${file.name}-${index}-${diffH && diffH[index] ? JSON.stringify(diffH[index]) : ''}-${uploaded[index]}`" :disabled="uploading">
+        <v-tab v-for="(file, index) in upload.files" style="width: 100%" :key="`${file.name}-${index}-${diffH && diffH[index] ? JSON.stringify(diffH[index]) : ''}-${uploaded[index]}`" :disabled="uploading || wait || inferring">
           <v-icon
             v-if="hasDiff[index] === 0"
             size="large"
@@ -65,6 +65,13 @@
           </v-row>
 
           <v-row v-if="upload && upload.status && upload.status !== 'submitted'">
+            <v-col cols="10"></v-col>
+            <v-col cols="2">
+              <v-btn color="primary" id="topUploadBtn" @click="startUploads" :disabled="!readyToUpload">{{ $tc('Upload') }}</v-btn>
+            </v-col>
+          </v-row>
+
+          <v-row v-if="upload && upload.status && upload.status !== 'submitted'">
             <v-col cols="12">
               <FileReader
                 :show-encrypt-button="false"
@@ -77,10 +84,14 @@
                 :trigger-upload="startUpload[index]"
                 @upload-finished="uploadFinished"
                 :index="index"
-                @file-opened="(i, file, sig) => fileOpened(i, file, sig)"
+                @encrypted="(i, file, sig) => fileOpened(index, file, sig)"
                 id="fileForm-reader"
               >
               </FileReader>
+            </v-col>
+            <v-col cols="12" v-if="wait">
+              <v-progress-circular indeterminate></v-progress-circular>
+              {{$tc('Please wait reading file')}}...
             </v-col>
           </v-row>
 
@@ -90,13 +101,22 @@
               {{ $tc('Inferring...') }}
             </v-col>
 
-            <v-col cols="12" v-else-if="inferredSchema && inferredSchema.resources && inferredSchema.resources[tabToContentOrder[index]] ">
+            <v-col cols="12" v-else-if="errorInferring[index]">
+              <div>
+                {{ $tc("Error inferring for this file, comparison not shown") }}
+              </div>
+              <div>
+                {{ errorInferring[index] }}
+              </div>
+            </v-col>
+
+            <v-col cols="12" v-else-if="inferredSchema[index] && inferredSchema[index].resources && inferredSchema[index].resources[0] ">
               <BasicComparison 
                 @compared="d => {diff(index, d)}"
                 key="comparisonObj"
                 left-header="Current Metadata"
                 right-header="Expected Metadata"
-                :left-side-text="getOneResourceSchema(inferredSchema, tabToContentOrder[index])"
+                :left-side-text="getOneResourceSchema(inferredSchema[index], 0)"
                 :right-side-text="getOneResourceSchema(schemaState, tab)"
                 :diff-json="true"
               />
@@ -108,7 +128,7 @@
       <v-row v-if="upload && upload.status && upload.status !== 'submitted'">
         <v-col cols="10"></v-col>
         <v-col cols="2">
-          <v-btn color="primary" @click="startUploads" :disabled="!readyToUpload">{{ $tc('Upload') }}</v-btn>
+          <v-btn color="primary" id="bottomUploadBtn" @click="startUploads" :disabled="!readyToUpload">{{ $tc('Upload') }}</v-btn>
         </v-col>
       </v-row>
     </v-col>
@@ -140,16 +160,16 @@ export default {
       fileReaders: [],
       wait: false,
       clearFile: false,
-      inferredSchema: {},
+      inferredSchema: [],
       inferring: false,
-      tabToContentOrder: {},
-      contentToTabOrder: {},
+      contentToTabOrder: [],
       uploading: false,
       startUpload: [],
       uploadIndex: 0,
       diffH: [],
       uploaded: [],
       fileIds: [],
+      errorInferring: [],
     }
   },
 
@@ -159,6 +179,7 @@ export default {
       upload: state => state.upload.upload,
       schemaState: state => state.schemaImport.dataPackageSchema,
       inferContent: state => state.file.content,
+      versions: state => state.repos.branches,
     }),
     readyToUpload() {
       return !(this.inferring || Object.keys(this.files).length !== this.upload.files.length || this.uploading || this.wait)
@@ -189,9 +210,12 @@ export default {
     ...mapActions({
       modifyStoreUpload: 'upload/modifyStoreUpload',
       updateUpload: 'upload/updateUpload',
+      createDataPackageSchemaInferred: 'schemaImport/createDataPackageSchemaInferred',
+      getBranchesByUpload: "repos/getBranchesByUpload",
     }),
     ...mapMutations({
       clearContent: 'file/clearContent',
+      setDataPackageSchema: 'schemaImport/setDataPackageSchema',
     }),
 
     diff(index, d){
@@ -213,15 +237,23 @@ export default {
       this.fileIds[this.uploadIndex] = id;
       this.uploaded[this.uploadIndex] = true;
       this.uploadIndex++;
-      this.tab = this.uploadIndex;
       
       if (this.uploadIndex >= this.upload.files.length){
           await this.updateFormSubmission(true);
           await this.updateUpload(this.upload);
+          let actualInferred = JSON.parse(JSON.stringify(this.inferredSchema[0]));
+          for (let i=1; i<this.inferredSchema.length; i++){
+            actualInferred.resources.push(JSON.parse(JSON.stringify(this.inferredSchema[i].resources[0])));
+          }
+          if (this.versions && this.versions[0] && this.versions[0]._id){
+            actualInferred.version = this.versions[0]._id;
+          }
+          this.setDataPackageSchema({schema: actualInferred});
+          await this.createDataPackageSchemaInferred();
           this.uploading = false;
       }else{
+          this.tab = this.uploadIndex;
           Vue.set(this.startUpload, this.uploadIndex, true);
-          
       }
     },
 
@@ -236,20 +268,22 @@ export default {
 
     fileOpened(index, file, sig){
       // this.clearFile = false;
-      this.wait = false;
       this.spanKey++;
       // this.clearFile = true;
       //this.fileReaders[this.fileReaders.length] = {}
-      //this.tabToContentOrder[index] = this.files.length;
       if (!file){
         console.warn("File coming through empty", index, file, sig);
+      }else{
+        if (!this.uploading){
+          this.contentToTabOrder[index] = this.inferContent.length - 1;
+          this.files[index] = file;
+          this.files[index].sig = sig;
+          this.infer(index);
+          this.wait = false;
+          this.$emit('changed', index);
+          this.spanKey++;
+        }
       }
-      this.tabToContentOrder[index] = this.inferContent.length;
-      this.contentToTabOrder[this.inferContent.length] = index;
-      this.files[index] = file;
-      this.files[index].sig = sig;
-      this.$emit('changed', index);
-      this.spanKey++;
     },
 
     async updateFormSubmission(done, start){
@@ -263,13 +297,15 @@ export default {
 
       let f = JSON.parse(JSON.stringify(this.upload));
       for (let i=0; i<this.files.length; i++){
+        if (!this.files[i]){
+          console.warn('updating form submission with a null file', f.files[i], i);
+        }
         let name = this.files[i] && this.files[i].name ? this.files[i].name : false;
         name = !name && this.files[i] && this.files[i].title ? this.files[i].title : name;
         name = !name ? this.fileIds[i] : name;
         f.files[i].id = this.fileIds[i];
-        f.files[i].uploaded_name = name;
-        if (!this.files[i]){
-          console.warn('updating form submission with a null file', f.files[i], i);
+        if (name){
+          f.files[i].uploaded_name = name;
         }
       }
 
@@ -283,12 +319,27 @@ export default {
       await this.modifyStoreUpload(f);
     },
 
-    async infer(){
+    async infer(index){
+      let optUrl = '/js/semantic_infer.json';
+      let opt = await (await fetch(optUrl)).json();
       this.inferring = true;
-      let inferredSchema = {resources: []}
-      for (let i=0; ( (i<this.inferContent.length) && (i<this.upload.files.length) ); i++){
+      
+      let maxIndex = false;
+      if (typeof(index) === 'undefined' || index === 0){
+        index = 0;
+        this.inferredSchema = [];
+        this.errorInferring = [];
+      }else{
+        maxIndex = index;
+      }
+
+      
+
+      for (let i=index; ( (typeof(this.contentToTabOrder[i]) !== 'undefined') && (i<this.upload.files.length) ); i++){
+        let fileIndex = this.contentToTabOrder[i];
+        let workingInferred = {resources: []};
         try{
-          let string = new TextDecoder().decode(this.inferContent[i]);
+          let string = new TextDecoder().decode(this.inferContent[fileIndex]);
           let rows = string.split("\n");
 
           let delim = ",";
@@ -321,8 +372,8 @@ export default {
             }
           }
           //cap at 1000 semantic infer isn't happy with files of 1mb in size
-          for (let i=0; i<rows.length; i++){
-            rows[i] = rows[i].split(delim);
+          for (let j=0; j<rows.length; j++){
+            rows[j] = rows[j].split(delim);
           }
           let headers = rows.shift();
           rows.unshift(headers);
@@ -341,65 +392,42 @@ export default {
             }
           }
 
-          let fileIndex = this.contentToTabOrder[i];
-
-          let index = this.files[fileIndex].name.lastIndexOf('.');
-          let name = index >= 0 ? this.files[fileIndex].name.substring(0,index).toLowerCase() : this.files[fileIndex].name.toLowerCase();
-          inferredSchema.resources.push({
+          let dotIndex = this.files[i].name.lastIndexOf('.');
+          let name = dotIndex >= 0 ? this.files[i].name.substring(0,dotIndex).toLowerCase() : this.files[i].name.toLowerCase();
+          workingInferred.resources.push({
             name: name,
-            saved_path: "./"+this.files[fileIndex].name,
+            saved_path: "./"+this.files[i].name,
             data: rows,
             description: this.upload.files[i].description,
             temporal_start: formatDate(this.upload.files[i].start_date),
             temporal_end: formatDate(this.upload.files[i].end_date),
           });
+          let r = await semanticInfer.datapackage_infer.infer_datapackage(workingInferred, false, opt);
+          delete r.resources[0].saved_path;
+          delete r.resources[0].data;
+          this.inferredSchema[i] = r;
+          this.errorInferring[i] = (false);
 
         }catch(ex){
+          this.inferredSchema[i] = {};
+          this.errorInferring[i] = (ex);
           console.error("Error inferring:", ex);
         }
-      }
-      
-      try{
-        let optUrl = '/js/semantic_infer.json';
-        let opt = await (await fetch(optUrl)).json();
-
-        let r = await semanticInfer.datapackage_infer.infer_datapackage(inferredSchema, false, opt);
-        this.inferredSchema = r;
-        for (let i=0; i<this.inferredSchema.resources.length; i++){
-          delete this.inferredSchema.resources[i].saved_path
-          delete this.inferredSchema.resources[i].data;
+        if (maxIndex !== false && index >= maxIndex){
+          break;
         }
-      }catch(e){
-        this.inferredSchema = inferredSchema;
-        for (let i=0; i<this.inferredSchema.resources.length; i++){
-          this.inferredSchema.resources[i].path = this.inferredSchema.resources[i].saved_path;
-          delete this.inferredSchema.resources[i].saved_path
-          delete this.inferredSchema.resources[i].data;
-        }
-        console.error(e);
       }
 
-      this.showDiff = false;
-      if (Object.keys(this.schemaState).length >= 1){
-        this.showDiff = JSON.stringify(this.inferredSchema) !== JSON.stringify(this.schemaState);
-      }
       this.inferring = false;
     },
   },
 
-  created(){
+  async created(){
     this.clearContent();
+    await this.getBranchesByUpload({uploadId: this.upload._id})
     for (let i=0; i<this.upload.files.length; i++){
       this.startUpload.push(false);
       this.uploaded.push(false);
-    }
-  },
-
-  watch: {
-    inferContent: function(){
-      if (!this.uploading){
-        this.infer();
-      }
     }
   }
 }
