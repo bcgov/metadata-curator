@@ -245,7 +245,7 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         return current;
     }
 
-    const listDataPackagesFull = async function (query) {
+    const listDataPackages = async function (query) {
         // Return a lean() object - simple javascript object, rather than the Model
         // so we can transform the document into a valid data package
 
