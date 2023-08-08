@@ -67,7 +67,7 @@
           <v-row v-if="upload && upload.status && upload.status !== 'submitted'">
             <v-col cols="10"></v-col>
             <v-col cols="2">
-              <v-btn color="primary" @click="startUploads" :disabled="!readyToUpload">{{ $tc('Upload') }}</v-btn>
+              <v-btn color="primary" id="topUploadBtn" @click="startUploads" :disabled="!readyToUpload">{{ $tc('Upload') }}</v-btn>
             </v-col>
           </v-row>
 
@@ -128,7 +128,7 @@
       <v-row v-if="upload && upload.status && upload.status !== 'submitted'">
         <v-col cols="10"></v-col>
         <v-col cols="2">
-          <v-btn color="primary" @click="startUploads" :disabled="!readyToUpload">{{ $tc('Upload') }}</v-btn>
+          <v-btn color="primary" id="bottomUploadBtn" @click="startUploads" :disabled="!readyToUpload">{{ $tc('Upload') }}</v-btn>
         </v-col>
       </v-row>
     </v-col>

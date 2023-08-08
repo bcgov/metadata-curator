@@ -6,7 +6,7 @@
             v-if="showError">
             {{error}}
         </v-alert>
-        <v-app-bar>
+        <v-toolbar dense>
             <v-toolbar-title class="font-weight-light">
                 <span>{{title}}</span>
                 <span v-if="month===0 && date===1">&nbsp;<v-icon color="yellow">mdi-party-popper</v-icon></span>
@@ -20,28 +20,46 @@
                 <span v-if="month===11 && date===25">&nbsp;<v-icon color="red">mdi-string-lights</v-icon></span>
                 <span v-if="month===11 && date===25"><v-icon color="green">mdi-string-lights</v-icon></span>
             </v-toolbar-title>
-
-            <div v-show="(tabs.length > 0)">
-                <v-tabs v-model="activeTab"
-                        icons-and-text
-                        centered
-                        class="noBack"
-                        grow>
-                    <v-tabs-slider style="opacity: 0;"></v-tabs-slider>
-                    <v-tab v-for="tab of tabs" :key="tab.id" :to="tab.route" exact :disabled="tab.disabled" :id="'tab-'+tab.name.toLowerCase()">
-                        {{ $tc(tab.name, 2) }}
-                        <v-icon>{{tab.icon}}</v-icon>
-                    </v-tab>
-                </v-tabs>
-            </div>
+            <v-spacer></v-spacer>
+            <v-btn
+              v-for="tab in tabs"
+              :key="tab.id"
+              :to="tab.route"
+              class="flexcol d-none d-lg-block toolbutton"
+              text
+              :disabled="tab.disabled"
+              :id="'tab-'+tab.name.toLowerCase()">
+                <v-icon>{{tab.icon}}</v-icon>
+                <span>{{ $tc(tab.name, 2) }}</span>
+            </v-btn>
 
             <v-spacer></v-spacer>
+
+            <v-menu
+              bottom
+              :close-on-click="true">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-app-bar-nav-icon v-bind="attrs" v-on="on" class="d-block d-lg-none"></v-app-bar-nav-icon>
+                </template>
+                <v-list>
+                  <v-list-item
+                    v-for="tab in tabs"
+                    :key="tab.id+'-list'"
+                    :to="tab.route"
+                    :disabled="tab.disabled"
+                    :id="'list-'+tab.name.toLowerCase()"
+                  >
+                    <v-list-item-title><v-icon>{{ tab.icon }}</v-icon>{{ tab.name }}</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+            </v-menu>
+
 
             <User class="mr-4"></User>
 
             <v-switch v-model="dark" :label="$tc('Dark Mode')" :class="(this.setTheme ? 'pt-4' : 'pt-4')"></v-switch>
 
-        </v-app-bar>
+        </v-toolbar>
         <v-snackbar
             v-model="showNotification"
             top
@@ -459,6 +477,10 @@ export default {
     background: none;
 }
 
+.flexcol .v-btn__content {
+  flex-direction: column;
+}
+
 .tall{
     line-height: 50px;
     vertical-align: top;
@@ -474,6 +496,10 @@ div.v-alert.v-sheet{
 html{
     overflow: visible;
     height: auto;
+}
+
+.toolbutton{
+  height: 42px;
 }
 
 </style>
