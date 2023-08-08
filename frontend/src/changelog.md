@@ -12,8 +12,12 @@ July 11 2023
  <br />
 
 ## Table Of Contents
+<<<<<<< HEAD
 - [Version 2.0.2 (July 11 2023)](#version-202)
 - [Version 2.0.1a (July 18 2023)](#version-201a)
+=======
+- [Version 2.0.2 (July 18 2023)](#version-201a)
+>>>>>>> main
 - [Version 2.0.1 (June 28 2023)](#version-201)
 - [Version 2.0.0 (June 22 2023)](#version-200)
 - [Version 1.7.1 (June 2 2023)](#version-171)
