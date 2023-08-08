@@ -248,7 +248,7 @@ var buildDynamic = function(db, router, auth, forumClient, notify, formioClient)
     
             const uploadIds = topics.map( (item) => {
                 
-                if ( (item) && (item.name) && (String(item.name).indexOf("repo") === -1) && (String(item.name).indexOf("branch") ===-1) && (String(item.name).indexOf("varClass") === -1)){
+                if ( (item) && (item.name) && (String(item.name).indexOf("repo") === -1) && (String(item.name).indexOf("branch") ===-1) && (String(item.name).indexOf("varClass") === -1) && (String(item.name).indexOf("project") === -1)){
                     return item.name
                 }
 

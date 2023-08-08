@@ -380,7 +380,7 @@ export default {
       }
 
       this.showDiff = false;
-      if (Object.keys(this.schemaState).length >= 1){
+      if (this.schemaState && Object.keys(this.schemaState).length >= 1){
         this.showDiff = JSON.stringify(this.inferredSchema) !== JSON.stringify(this.schemaState);
       }
       this.inferring = false;
