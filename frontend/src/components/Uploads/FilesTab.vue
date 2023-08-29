@@ -304,8 +304,12 @@ export default {
         name = !name && this.files[i] && this.files[i].title ? this.files[i].title : name;
         name = !name ? this.fileIds[i] : name;
         f.files[i].id = this.fileIds[i];
+
         if (name){
           f.files[i].uploaded_name = name;
+        }
+        if (!this.files[i]){
+          console.warn('updating form submission with a null file', f.files[i], i);
         }
       }
 
