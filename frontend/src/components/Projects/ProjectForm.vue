@@ -19,7 +19,7 @@
                             <h1 class="colorText display-1 font-weight-thin ml-3 my-3">{{creating ? $tc("New") + " " + $tc("Project") : $tc("Project") + " " + project.name}}</h1>
                         </v-row>
 
-                        <v-row v-if="!creating && editable">
+                        <v-row v-if="!creating">
                             <label>ID:</label>
                             <span>{{id}}</span>
                         </v-row>
@@ -45,7 +45,7 @@
                             <h3 class="colorText">Users</h3>
                           </v-col>
                           <v-col cols="12">
-                            <v-list class="scrollbox">
+                            <v-list class="scrollbox" disabled="!editing">
                               <v-list-item-group
                                 v-model="selectedUsers"
                                 multiple
@@ -64,10 +64,16 @@
                         </v-row>
                         <v-row>
                           <v-col cols="10">
-                            <v-text-field
-                                v-model="email"
-                                label="User email"
-                              ></v-text-field>
+                            <TextInput
+                                label=""
+                                :placeholder="'User email'"
+                                name="email"
+                                :large="true"
+                                :editing="editing"
+                                value=""
+                                helpPrefix="project"
+                                @edited="(newValue) => { email = newValue; }"
+                            ></TextInput>
                             </v-col>
                             <v-col cols="2">
                               <v-btn 
@@ -97,12 +103,16 @@
                           <v-col cols="6">
                             <v-row>
                               <v-col cols="12">
-                                <v-text-field
-                                  v-model="search"
-                                  label="Search Datasets"
-                                  clearable
-                                  clear-icon="mdi-close-circle-outline"
-                                ></v-text-field>
+                                <TextInput
+                                  :label="$tc('Search Datasets')"
+                                  placeholder=""
+                                  name="search"
+                                  :large="true"
+                                  value=""
+                                  :editing="true"
+                                  helpPrefix="project"
+                                  @edited="(newValue) => { search = newValue; }"
+                              ></TextInput>
                               </v-col>
                             </v-row>
                             <v-row>
@@ -112,6 +122,7 @@
                                   selectable
                                   :search="search"
                                   return-object
+                                  :disabled="!editing"
                                   :value="selectedBranches"
                                   @input="updateBranches"
                                 >
@@ -133,7 +144,7 @@
                     <v-btn @click="routeToHome()" class="mt-1">{{$tc('Cancel')}}</v-btn>
                     <v-btn @click="save" class="mt-1" color="primary">{{$tc('Save')}}</v-btn>
                 </v-card-actions>
-                <v-card-actions v-else-if="editable && !allLoading" class="fixed">
+                <v-card-actions v-else-if="!allLoading" class="fixed">
                     <v-btn @click="routeToHome()" class="mt-1">{{$tc('Back')}}</v-btn>
                     <v-btn @click="editing=!editing" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                 </v-card-actions>
@@ -151,11 +162,6 @@ const backend = new Backend();
 
 export default {
     props: {
-        editable: {
-            type: Boolean,
-            required: false,
-            default: true,
-        }
     },
     components:{
         TextInput,
@@ -345,10 +351,8 @@ export default {
         // console.log("dataUpload id: " + this.$route.params.id);
         this.id = this.$route.params.id;
         if (this.id === 'create'){
-            if (this.editable){
-                this.editing = true;
-                this.creating = true;
-            }
+            this.editing = true;
+            this.creating = true;
         }
         this.loadSections();
     },
@@ -373,7 +377,7 @@ export default {
 .fixed{
   position: fixed;
   right: 0;
-  bottom: 0;
+  bottom: 50px;
 }
 
 </style>

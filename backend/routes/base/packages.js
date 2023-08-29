@@ -130,9 +130,10 @@ var buildDynamic = function(db, router, auth, ValidationError, cache){
         for (let i=0; i<k.length; i++){
             let key = k[i];
             if (dontSet.indexOf(key) === -1){
-                revision.revise(key, data[key], descriptor[key]);
-
-                data[key] = descriptor[key].replace(/\//g, '\/');
+              revision.revise(key, data[key], descriptor[key]);
+                if (descriptor[key]){
+                  data[key] = descriptor[key].replace(/\//g, '\/');
+                }
             }
         }
 
