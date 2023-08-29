@@ -29,7 +29,7 @@
                     <v-tab key="version" id="version-tab">{{$tc('Version')}}</v-tab>
                     <v-tab v-if="dataset && !creating" key="dataset" id="dataset-tab">{{$tc('Dataset')}}</v-tab>
                     <v-tab key="schema" v-if="!creating" id="schema-tab">{{$tc('Schema')}}</v-tab>
-                    <v-tab key="compare" v-if="!creating && inferredSchema" id="compare-tab">{{$tc('Compare Inferred')}}</v-tab>
+                    <v-tab key="compare" v-if="!creating && (inferredSchema || (typedSchemas && typedSchemas.length > 0))" id="compare-tab">{{$tc('Compare')}}</v-tab>
                     <v-tab key="revisions" v-if="revisionsLoading === false && revisions.length>0" id="revisions-tab">{{$tc('Revisions', 2)}}</v-tab>
                     <v-tab key="schemaRevisions" v-if="schemaRevisionsLoading === false && schemaRevisions.length>0" id="schema-revisions-tab">{{$tc('Schema Revisions', 2)}}</v-tab>
                     <v-tab key="supplemental" v-if="!creating" id="supplemental-tab">{{$tc('Supplemental Information', 1)}}</v-tab>
@@ -447,8 +447,15 @@
                             :dialog="dialog"></MetadataForm>
                     </v-tab-item>
 
-                    <v-tab-item key="compare" v-if="!creating && inferredSchema">
-                        <Comparison :left-side-text="JSON.stringify(inferredSchema)" :right-side-text="JSON.stringify(schema)" :diff-json="true"></Comparison>
+                    <v-tab-item key="compare" v-if="!creating && (inferredSchema || (typedSchemas && typedSchemas.length > 0))">
+                      <v-select :items="versionDrop" v-model="leftSchema"></v-select>
+                      <v-select :items="versionDrop" v-model="rightSchema"></v-select>
+                        <Comparison 
+                          :left-side-text="JSON.stringify(leftSideCompare)" 
+                          :right-side-text="JSON.stringify(rightSideCompare)" 
+                          :leftHeader="leftHeader"
+                          :rightHeader="rightHeader"
+                          :diff-json="true"></Comparison>
                         <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
                     </v-tab-item>
 
@@ -683,7 +690,9 @@ export default {
             leftRevision: null,
             rightRevision: null,
             disableSave: false,
-            reRenderGroupSel: 0
+            reRenderGroupSel: 0,
+            leftSchema: "",
+            rightSchema: "",
         }
     },
     methods: {
@@ -1133,10 +1142,83 @@ export default {
             revisionsLoading: state => state.repos.branchRevisionsLoading,
             schemaRevisions: state => state.schemaImport.revisions,
             schemaRevisionsLoading: state => state.schemaImport.revisionsLoading,
+            typedSchemas: state => state.schemaImport.typedSchemas,
         }),
         enabledPhase(){
             let en = this.$store.state.config.items.find(item => item['key'] === 'enabledPhase');
             return (en) ? parseInt(en.value) : 1;
+        },
+
+        versionDrop(){
+          let v = [];
+          if (this.schema){
+            v.push("Provided");
+          }
+          if (this.inferredSchema){
+            v.push("Inferred");
+          }
+          for (let i=0; i<this.typedSchemas.length; i++){
+            v.push(this.typedSchemas[i].typeName);
+          }
+          // eslint-disable-next-line
+          this.leftSchema = this.leftSchema ? this.leftSchema : v[0];
+          if ((this.rightSchema === "") && (v.length>1)){
+            // eslint-disable-next-line
+            this.rightSchema = v[1];
+          }
+          return v;
+        },
+
+        leftSideCompare(){
+          if (this.leftSchema === "Provided"){
+            return this.schema;
+          }
+          if (this.leftSchema === "Inferred"){
+            return this.inferredSchema;
+          }
+          let typed = this.typedSchemas.find(f =>{
+            return f.typeName === this.leftSchema;
+          });
+          if (typed){
+            return typed;
+          }
+          return {}
+        },
+
+        rightSideCompare(){
+          if (this.rightSchema === "Provided"){
+            return this.schema;
+          }
+          if (this.rightSchema === "Inferred"){
+            return this.inferredSchema;
+          }
+          let typed = this.typedSchemas.find(f =>{
+            return f.typeName === this.rightSchema;
+          });
+          if (typed){
+            return typed;
+          }
+          return {}
+        },
+
+        leftHeader(){
+          if (this.leftSchema === "Provided"){
+            return "Edition Metadata";
+          }
+          if (this.leftSchema === "Inferred"){
+            return "Inferred Metadata";
+          }
+          return this.leftSchema;
+        },
+
+        rightHeader(){
+          if (this.rightSchema === "Provided"){
+            return "Edition Metadata";
+          }
+          if (this.rightSchema === "Inferred"){
+            return "Inferred Metadata";
+          }
+          return this.rightSchema;
         },
 
         schemaRevisionsDrop: function(){
