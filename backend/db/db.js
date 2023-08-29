@@ -38,6 +38,7 @@ db.init = async function (_connString = null) {
     db.ConfigSchema = require('./model/config');
     db.VariableClassification = require('./model/variableClassification');
     db.Options = require('./model/option');
+    db.Project = require('./model/project');
 };
 
 module.exports = db;

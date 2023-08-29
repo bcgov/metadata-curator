@@ -3,7 +3,6 @@
 <br />
 
 ## Version 2.0.2
-<<<<<<< HEAD
 July 18 2023
  - Fixed new upload wizard not creating inferred schema
  - Added an upload button at the top of the file reader on new upload wizard to reduce need to scroll
@@ -12,20 +11,18 @@ July 18 2023
  - Added a please wait inferring message while inferrring in new upload wizard
  - Added more error handling in new upload wizard
  - Prevented file open processing on new upload wizard while uploading which could cause the file to be blank
-=======
-July 10 2023
+
+July 11 2023
  - Added support for any amount of schema types provided is still the first class citizen
->>>>>>> 5cccd14 (new stuff)
+ - Added projects, users (by email) can be assigned to a project which has a name and a set of datasets/editions
+   - Users added to the project will be able to see those datasets and editions, but not discussion related to the datasets/editions (comments are visible)
+ - Fixed a bug with filtering by highlight on files and fields
 
  <br />
 
 ## Table Of Contents
-<<<<<<< HEAD
 - [Version 2.0.2 (July 26 2023)](#version-202)
 - [Version 2.0.1a (July 18 2023)](#version-201a)
-=======
-- [Version 2.0.2 (July 10 2023)](#version-202)
->>>>>>> 5cccd14 (new stuff)
 - [Version 2.0.1 (June 28 2023)](#version-201)
 - [Version 2.0.0 (June 22 2023)](#version-200)
 - [Version 1.7.1 (June 2 2023)](#version-171)
@@ -69,7 +66,6 @@ July 10 2023
 
 <br />
 
-<<<<<<< HEAD
 ## Version 2.0.1a
 July 18 2023
  - Fixed an issue with refetching cached topics
@@ -81,8 +77,6 @@ July 18 2023
 
  <br />
 
-=======
->>>>>>> 5cccd14 (new stuff)
 ## Version 2.0.1
 June 28 2023
  - Fixed an issue with caching topics

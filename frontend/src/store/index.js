@@ -30,6 +30,7 @@ const adminDatasets = build('getRepos');
 const adminVersions = build('getBranches', 'postRepoBranch', 'putRepoBranch', 'deleteRepoBranch', 'getBranchById', 'getBranchesByResourceFields');
 
 const variableClassifications = build('getVariableClassifications', 'newVariableClassification', 'putVariableClassification', 'deleteVariableClassification', 'getVariableClassification');
+const projects = build('getProjects', 'newProject', 'putProject', 'deleteProject', 'getProject');
 
 Vue.use(Vuex)
 
@@ -59,6 +60,7 @@ export default new Vuex.Store({
     adminVersions,
     variableClassifications,
     options,
+    projects
   },
   plugins: [createPersistedState({
     paths: [

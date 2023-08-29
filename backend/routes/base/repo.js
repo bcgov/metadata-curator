@@ -459,6 +459,8 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
                 return (item && String(item).length > 0)
             }));
 
+            repoIds = await util.userProjectsAccess(db, user, repoIds, false);
+
             for (let i=0; i<topics.length; i++){
                 authorGroupsLookup[topics[i]._id] = topics[i].author_groups;
             }

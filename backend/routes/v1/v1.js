@@ -100,5 +100,11 @@ module.exports = (router, cache) => {
     uRouter = userRoutes.buildDynamic(db, uRouter, auth, cache);
     router.use('/user', uRouter);
 
+    var projectRoutes = require('../base/project');
+    var projRouter = new Router();
+    projRouter = projectRoutes.buildStatic(db, projRouter);
+    projRouter = projectRoutes.buildDynamic(db, projRouter, auth, forumClient);
+    router.use('/project', projRouter);
+
     return router;
 }

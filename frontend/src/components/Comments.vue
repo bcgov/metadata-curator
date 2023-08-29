@@ -142,6 +142,7 @@ const backend = new Backend();
             commentFocused: false,
             commentDisplayItems: [],
             varClassComments: [],
+            projectComments: [],
         }),
         methods: {
             ...mapActions({
@@ -196,8 +197,15 @@ const backend = new Backend();
                 await backend.postCommentByVarClass(id, comment);
                 await this.getVarClassComments(id);
             },
+            async addProjectComment({id, comment}){
+                await backend.postCommentByProject(id, comment);
+                await this.getProjectComments(id);
+            },
             async getVarClassComments(id){
                 this.varClassComments = await backend.getCommentsByVarClass(id)
+            },
+            async getProjectComments(id){
+              this.projectComments = await backend.getCommentsByProject(id);
             },
             calcMd5(val){
                 return md5(val);
@@ -215,6 +223,9 @@ const backend = new Backend();
                         break;
                     case 'variableClassification':
                         this.addVarClassComment({id: this.id, comment: this.comment});
+                        break;
+                    case 'project':
+                        this.addProjectComment({id: this.id, comment: this.comment});
                         break;
                 }
 
@@ -244,6 +255,9 @@ const backend = new Backend();
                     break;
                 case 'variableClassification':
                     this.getVarClassComments(this.id);
+                    break;
+                case 'project':
+                    this.getProjectComments(this.id);
                     break;
             }
 
@@ -284,6 +298,8 @@ const backend = new Backend();
                         return this.$store.state.repos.branchComments;
                     case 'variableClassification':
                         return this.varClassComments;
+                    case 'project':
+                        return this.projectComments;
                 }
                 return []
             },
