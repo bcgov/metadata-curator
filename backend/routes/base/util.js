@@ -25,5 +25,20 @@ module.exports = {
 
     phaseText: function(method, route){
         return '<pre>Cannot '+method+' /api/v1/'+route+'</pre>';
+    },
+
+    userProjectsAccess: async function(db, user, ids, edition){
+      if (typeof(edition) === 'undefined'){
+        edition = false;
+      }
+      const projects = await db.Project.find({users: user.email});
+      let s = new Set([...ids]);
+      const projectKey = edition ? 'editions' : 'datasets';
+      for (let i=0; i<projects.length; i++){
+        for (let j=0; j<projects[i][projectKey].length; j++){
+          s.add(projects[i][projectKey][j]);
+        }
+      }
+      return Array.from(s);
     }
 }

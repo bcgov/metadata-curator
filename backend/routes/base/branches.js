@@ -434,6 +434,8 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }).filter( (item) => { 
             return (item && String(item).length > 0)
         }));
+
+        branchIds = await util.userProjectsAccess(db, user, branchIds, true);
       }
 
         let id = mongoose.Types.ObjectId(repoId);

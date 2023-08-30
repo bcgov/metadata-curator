@@ -21,7 +21,7 @@
                 </div>
                 <div class="fixed" v-else>
                     <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
-                    <v-btn v-if="canEdit" @click="editing=!editing; viewSchemaType = 'Provided'" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
+                    <v-btn v-if="canEdit && viewSchemaType != 'Inferred'" @click="editing=!editing" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                 </div>
                 <v-card outlined>
                     <v-card-text>
@@ -31,13 +31,31 @@
                         </v-row>
                         <v-row v-else>
                             <v-btn @click="closeOrBack()" class="mt-1">{{dialog ? $tc('Close') : $tc('Back')}}</v-btn>
-                            <v-btn v-if="canEdit" @click="editing=!editing; viewSchemaType = 'Provided'" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
+                            <v-btn v-if="canEdit && viewSchemaType != 'Inferred'" @click="editing=!editing" class="mt-1" color="primary">{{$tc('Edit')}}</v-btn>
                         </v-row>
                         <v-row>
                             <h1 class="display-1 font-weight-thin ml-3 my-3">{{$tc('Metadata')}}</h1>
                         </v-row>
-                        <v-row v-if="!loading && schema && schema !== {}" key="">
-                            <v-select v-if="inferredSchema && !editing" :items="['Provided', 'Inferred']" v-model="viewSchemaType"></v-select>
+                        <v-row>
+                          <v-col cols="12">
+                            <v-select v-if="!editing" :items="viewSchemaItems" v-model="viewSchemaType"></v-select>
+                          </v-col>
+                          <v-col cols="12" v-if="viewSchemaType != 'Inferred' && viewSchemaType != 'Provided' ">
+                            <TextInput
+                                :label="$tc('Schema Type Name')"
+                                placeholder="Validation Report"
+                                name="typeName"
+                                refName="schemaTypeName"
+                                idName="schemaTypeName"
+                                :large="true"
+                                :editing="editing"
+                                :value="typeName"
+                                helpPrefix="schema"
+                                @blur="(event) => { typeName = event.target.value }"
+                            ></TextInput>
+                          </v-col>
+                        </v-row>
+                        <v-row v-if="!loading && schema && schema !== {}" :key="`schema-${viewSchemaType}`">
                             <SchemaView
                                 @commentRefs="(e) => $emit('commentRefs', e)"
                                 @setComment="(e) => { $emit('setComment', e) }"
@@ -46,7 +64,7 @@
                                 @edited="updatedObj"
                                 @filter="(k, v) => { filter(k,v) }"
                                 @editedHighlight="editedHighlight"
-                                :schema=" (viewSchemaType === 'Provided') ? schema : inferredSchema">
+                                :schema="activeSchema">
                             </SchemaView>
                         </v-row>
                         <v-row v-else-if="loading" key="">
@@ -96,16 +114,17 @@
 </template>
 
 <script>
-
+import Vue from "vue";
 import {mapActions, mapMutations, mapState} from "vuex";
 import FileReader from '../FormElements/FileReader';
 import SchemaView from '../Schema/SchemaView';
 import UpdateUpload from '../../mixins/UpdateUpload';
-
+import TextInput from '../FormElements/TextInput';
 export default {
     components:{
         FileReader,
         SchemaView,
+        TextInput
     },
 
     mixins: [UpdateUpload],
@@ -128,6 +147,7 @@ export default {
     data () {
         let st = this.$tc('Standard');
         let re = this.$tc('Reserve');
+          
         return {
             id: null,
             creating: false,
@@ -142,6 +162,10 @@ export default {
             viewSchemaType: "Provided",
             skipClose: false,
             filters: {},
+            typeName: "",
+            addedSchema: {},
+            updatedCount: 0,
+            typeSchemaId: -1,
         }
     },
     methods: {
@@ -152,11 +176,14 @@ export default {
             getBranch: 'repos/getBranch',
             getDataUploads: 'dataUploads/getDataUploads',
             createTableSchema: 'schemaImport/createTableSchema',
+            saveTypeSchema: 'schemaImport/createTypeSchema',
             updateDataPackageSchema: 'schemaImport/updateDataPackageSchema',
             createDataPackageSchema: 'schemaImport/createDataPackageSchema',
             getSchema: 'schemaImport/getTableSchema',
             getInferredSchema: 'schemaImport/getInferredSchema',
             setTableSchema: 'schemaImport/setTableSchema',
+            setTypeSchema: 'schemaImport/setTypeSchema',
+            updateDataPackageTypeSchema: 'schemaImport/updateDataPackageTypeSchema'
         }),
         ...mapMutations({
             editBranch: 'repos/editBranch',
@@ -233,6 +260,8 @@ export default {
                 this.skipClose = true;
             }
             this.schemaObj = newVal;
+            this.updatedCount++
+            this.$forceUpdate();
         },
 
         editedHighlight: async function(){
@@ -240,6 +269,7 @@ export default {
                 this.skipClose = true;
                 await this.save();
             }
+            this.updatedCount++
         },
 
         updateValues(name, value){
@@ -258,7 +288,15 @@ export default {
 
         async save(){
             if (this.schemaObj){
+              if ( (this.viewSchemaType !== 'Inferred') && (this.viewSchemaType !== 'Provided') ){
+                this.schemaObj.typeName = this.typeName;
+                this.schemaObj.inferred = false;
+                this.schemaObj.version = this.id;
+                this.schemaObj._id = this.typeSchemaId;
+                await this.setTypeSchema({schema: this.schemaObj});
+              }else{
                 await this.setTableSchema({schema: this.schemaObj});
+              }
                 if (this.schemaError){
                     this.alertType = "error"
                     this.alertText = this.schemaError;
@@ -267,8 +305,13 @@ export default {
                     return;
                 }
 
-                if (this.creating){
+                if ( this.creating ){
+                  if ( (this.viewSchemaType !== 'Inferred') && (this.viewSchemaType !== 'Provided') ){
+                    console.log("new type schema");
+                    await this.saveTypeSchema();
+                  }else{
                     this.saveTableSchema();
+                  }
                     this.updateBranch().then( async() => {
                         if (this.schemaError){
                             this.alertType = "error"
@@ -293,7 +336,11 @@ export default {
 
                 }else{
                     try{
+                      if ( (this.viewSchemaType !== 'Inferred') && (this.viewSchemaType !== 'Provided') ){
+                        await this.updateDataPackageTypeSchema();
+                      }else{
                         await this.updateDataPackageSchema();
+                      }
                         // this.updateBranch().then( () => {
                         if (this.schemaError){
                             this.alertType = "error"
@@ -356,11 +403,51 @@ export default {
             dataUploads: state => state.dataUploads.dataUploads,
             schema: state => state.schemaImport.tableSchema,
             inferredSchema: state => state.schemaImport.inferredSchema,
-            schemaError: state => state.schemaImport.error
+            typedSchemas: state => state.schemaImport.typedSchemas,
+            schemaError: state => state.schemaImport.error,
         }),
         canEdit: function(){
             return this.branchApproved ? this.user.isAdmin : true;
-        }
+        },
+        viewSchemaItems: function(){
+          let vsi = ["Provided"];
+          if (this.inferredSchema){
+            vsi.push("Inferred");
+          }
+          if (this.typedSchemas){
+            for (let i=0; i<this.typedSchemas.length; i++){
+              vsi.push(this.typedSchemas[i].typeName);
+            }
+          }
+          if (this.canEdit){
+            vsi.push("Add");
+          }
+          return vsi;
+
+        },
+        activeSchema: function(){
+          if (this.viewSchemaType === "Provided"){
+            return this.schema;
+          }else if (this.viewSchemaType === "Inferred"){
+            return this.inferredSchema;
+          }else if (this.viewSchemaType === "Add"){
+            //eslint-disable-next-line
+            Vue.set(this, 'addedSchema', {});
+            //eslint-disable-next-line
+            Vue.set(this, 'schemaObj', {});
+            return this.addedSchema;
+          }else{
+            let s = this.typedSchemas.find(f => {
+              return f.typeName === this.viewSchemaType;
+            });
+            if (s){
+              Vue.set(this, 'schemaObj', s);
+              Vue.set(this, 'typeSchemaId', s._id);
+              return s;
+            }
+          }
+          return this.schema;
+        },
     },
     watch: {
         // rawSchema: function(){
@@ -369,7 +456,20 @@ export default {
 
         branchId: function(){
             this.load();
-        }
+        },
+
+        viewSchemaType: function(){
+          if (this.viewSchemaType === "Add"){
+            if (this.canEdit){
+              this.editing = true;
+            }else{
+              this.viewSchemaType = "Provided";
+            }
+          }
+          if ( (this.viewSchemaType !== 'Provided') && (this.viewSchemaType != "Inferred") && (this.viewSchemaType != 'Add') ){
+            this.typeName = this.viewSchemaType;
+          }
+        },
     },
 
     created() {

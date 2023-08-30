@@ -4,38 +4,43 @@
           <v-col cols="12">
             <h3>Difference Highlights</h3>
           </v-col>
-          <span style="width: 90%" v-for="(_, index) in basicDiff.resources" :key="'diffHighlight-'+index">
-            <span style="width: 100%;" v-if="index === parseInt(index).toString()">
-              <v-row v-if="hasResourceDiff(index, 'name')">
-                <v-col cols="12">
-                  <v-alert type="warning">
-                    File name {{ JSON.parse(leftSideText).resources[index].name }} does not equal {{ JSON.parse(rightSideText).resources[index].name }}
-                  </v-alert>
-                </v-col>
-              </v-row>
-
-              <v-row v-if="hasFieldCountDiff(index).diff">
-                <v-col cols="12">
-                  <v-alert type="warning">
-                    Columns count {{ hasFieldCountDiff(index).left }} in provided file does not match expected {{ hasFieldCountDiff(index).right }}
-                  </v-alert>
-                </v-col>
-              </v-row>
-
-              <span v-for="(changed, cIndex) in fieldChanges" :key="`changedField-${index}-${cIndex}`">
-                <v-row v-if="changed !== 0">
+          <span style="width: 100%" v-for="(_, index) in basicDiff.resources" :key="'diffHighlight-'+index+'-'+(showAll && showAll[index] ? showAll[index].toString() : '')">
+            <v-row class="bordered mb-15 pa-2" v-if="index === parseInt(index).toString()">
+              <span style="width: 100%;">
+                <v-row v-if="hasResourceDiff(index, 'name')">
                   <v-col cols="12">
                     <v-alert type="warning">
-                      Field {{ cIndex }} {{ changedText(changed) }}
+                      File name {{ JSON.parse(leftSideText).resources[index].name }} does not equal {{ JSON.parse(rightSideText).resources[index].name }}
                     </v-alert>
                   </v-col>
                 </v-row>
+
+                <v-row v-if="hasFieldCountDiff(index).diff">
+                  <v-col cols="12">
+                    <v-alert type="warning">
+                      Columns count {{ hasFieldCountDiff(index).left }} in provided file does not match expected {{ hasFieldCountDiff(index).right }}
+                    </v-alert>
+                  </v-col>
+                </v-row>
+
+                <span v-for="(changed, cKey, cIndex) in fieldChanges[index]" :key="`changedField-${index}-${cIndex}-${showAll[index].toString()}`">
+                  <v-row v-if="changed !== 0 && (cIndex < 5 || showAll[index])">
+                    <v-col cols="12">
+                      <v-alert type="warning">
+                        Field {{ cKey }} {{ changedText(changed) }}
+                      </v-alert>
+                    </v-col>
+                  </v-row>
+                </span>
               </span>
-            </span>
+              <v-row v-if="numDiffs[index] >= 5 && !showAll[index]">
+                <v-col cols="4"></v-col>
+                <v-col cols="4"><v-btn text @click="showAllFunc(index)">Show All</v-btn></v-col>
+                <v-col cols="4"></v-col>
+              </v-row>
+            </v-row>
           </span>
-          <!-- <v-row>
-            {{ JSON.stringify(basicDiff) }}
-          </v-row> -->
+
         </v-row>
 
         <v-row>
@@ -173,8 +178,9 @@ export default {
             workingLeftSideText: this.leftSideText ? this.leftSideText : "",
             workingRightSideText: this.rightSideText ? this.rightSideText : "",
             previouslyMovedtoEnd: 0,
-            fieldChanges: {}
-
+            fieldChanges: [],
+            numDiffs: [],
+            showAll: [],
         }
     },
     watch: {
@@ -190,6 +196,11 @@ export default {
         }
     },
     methods: {
+
+      showAllFunc(index){
+        this.showAll[index] = true;
+        this.$forceUpdate();
+      },
 
       changedText(changed){
         if (changed < 0){
@@ -367,49 +378,68 @@ export default {
                 }
             });
 
-            this.fieldChanges = {};
+            this.fieldChanges = [];
             let fieldChangeLevel = 0;
             let parsedL = JSON.parse(this.leftSideText);
             let parsedR = JSON.parse(this.rightSideText);
-            // let keys = [];
-            let leftResources = parsedL.resources && parsedL.resources[0] && parsedL.resources[0].schema && parsedL.resources[0].schema.fields ? parsedL.resources[0].schema.fields : [];
-            let rightResources = parsedR.resources && parsedR.resources[0] && parsedR.resources[0].schema && parsedR.resources[0].schema.fields ? parsedR.resources[0].schema.fields : [];
 
-            leftResources.forEach(element => {
-              element.name = element.name.trim();
-            });
-            rightResources.forEach(element => {
-              element.name = element.name.trim();
-            });
-            for (let i=0; i<rightResources.length; i++){
-              let name = rightResources[i].name.trim();
-              let lIndex = leftResources.findIndex(e => e.name === name);
-              if (lIndex === -1){
-                this.fieldChanges[name] = 1
-                fieldChangeLevel = 1;
-              }else if (lIndex === i){
-                this.fieldChanges[name] = 0
-              }else{
-                this.fieldChanges[name] = 2
-                fieldChangeLevel = 1;
+            let largerLen = parsedL.resources.length > parsedR.resources.length ? parsedL.resources.length : parsedR.resources.length;
+            for (let i=0; i<largerLen; i++){
+              this.fieldChanges[i] = {}
+              this.numDiffs[i] = 0;
+              this.showAll[i] = false;
+            }
+
+            let smallerLen = parsedL.resources.length > parsedR.resources.length ? parsedR.resources.length : parsedL.resources.length;
+
+            for (let j=0; j<smallerLen; j++){
+              let leftResources = parsedL.resources && parsedL.resources[j] && parsedL.resources[j].schema && parsedL.resources[j].schema.fields ? parsedL.resources[j].schema.fields : [];
+              let rightResources = parsedR.resources && parsedR.resources[j] && parsedR.resources[j].schema && parsedR.resources[j].schema.fields ? parsedR.resources[j].schema.fields : [];
+
+              leftResources.forEach(element => {
+                element.name = element.name.trim();
+              });
+              rightResources.forEach(element => {
+                element.name = element.name.trim();
+              });
+ 
+              for (let i=0; i<rightResources.length; i++){
+                let name = rightResources[i].name.trim();
+                let lIndex = leftResources.findIndex(e => e.name === name);
+                if (lIndex === -1){
+                  this.fieldChanges[j][name] = 1
+                  this.numDiffs[j] += 1;
+                  console.log("nd increment");
+                  fieldChangeLevel = 1;
+                }else if (lIndex === i){
+                  //this.fieldChanges[name] = 0
+                }else{
+                  this.fieldChanges[j][name] = 2
+                  this.numDiffs[j] += 1;
+                  console.log("nd increment");
+                  fieldChangeLevel = 1;
+                }
               }
-            }
 
-            //catch the ones on the left that aren't on the right
-            for (let i=0; i<leftResources.length; i++){
-              let name = leftResources[i].name;
-              if (typeof(this.fieldChanges[name]) === 'undefined'){
-                this.fieldChanges[name] = -1
-                fieldChangeLevel = 1;
+              //catch the ones on the left that aren't on the right
+              for (let i=0; i<leftResources.length; i++){
+                let name = leftResources[i].name;
+                if (typeof(this.fieldChanges[j][name]) === 'undefined'){
+                  this.fieldChanges[j][name] = -1
+                  fieldChangeLevel = 1;
+                  this.numDiffs[j] += 1;
+                  console.log("nd increment");
+                }
               }
-            }
 
-            let highlights = {
-              name: this.hasResourceDiff(0, 'name') ? 1 : 0,
-              fields: this.hasFieldCountDiff(0).diff ? 1 : 0,
-              fieldChanges: fieldChangeLevel,
+              let highlights = {
+                name: this.hasResourceDiff(0, 'name') ? 1 : 0,
+                fields: this.hasFieldCountDiff(0).diff ? 1 : 0,
+                fieldChanges: fieldChangeLevel,
+              }
+              this.$emit('compared', highlights, j);
             }
-            this.$emit('compared', highlights);
+            console.log("nd", this.numDiffs);
             return this.diff;
         },
     },
@@ -484,5 +514,10 @@ export default {
 
     .yellow{
         color: black;
+    }
+
+    .bordered{
+      width: 100%;
+      border: 1px solid;
     }
 </style>

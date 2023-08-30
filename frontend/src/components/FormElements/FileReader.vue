@@ -1,74 +1,74 @@
 <template>
-    <v-container fluid>
-        <v-alert
-            type="error"
-            v-if="error">
-            {{error}}
-        </v-alert>
-        <v-row v-if="confirmChange" class="mb-2">
-            <span>{{$tc('FileUploadProgressWarn')}}</span>
-            <v-btn color="warning" @click="changeConfirmed()">{{$tc('Confirm')}}</v-btn>
-        </v-row>
-        <v-row v-if="confirmResume" class="mb-2">
-            <span>{{$tc('FileUploadResume')}}</span>
-            <v-btn color="success" @click="resumeConfirmed()">{{$tc('Confirm')}}</v-btn>
-        </v-row>
-        <v-row>
-            <v-col cols=12 v-if="completed">
-                <h2 class="text-center">{{filename}} upload complete!</h2>
-            </v-col>
-            <v-col cols=12 v-else>
-                <v-file-input 
-                    v-model="file" 
-                    :disabled="disabled" 
-                    :clearable="false"
-                    show-size 
-                    :accept="accept"
-                    :label="$tc('File input')" 
-                    class="mt-0 pt-0"></v-file-input>
-            </v-col>
-        </v-row>
-        <v-row class="my-0 py-0" v-if="admin && !completed">
-            <v-col cols=12>
-                <span class="fineText">{{$tc('Using Chunksize for your computer')}}: {{Math.ceil(chunkSize / 1024 / 1024)}}mb</span>
-            </v-col>
-        </v-row>
-        <v-row v-if="!completed">
-            <v-col cols=12>
-                <v-btn v-if="showUploadButton" :disabled="disabled" @click="upload">{{$tc('Uploads')}}</v-btn>
-                <v-btn v-if="showImportButton" :disabled="disabled" @click="onImportButtonClicked">{{$tc('Import')}}</v-btn>
-                <!-- <div v-if="pleaseWait">
-                    <v-progress-circular
-                        indeterminate
-                    ></v-progress-circular>
-                    <span>Please wait while the first bit of the file is encrypted...</span>
-                </div> -->
-                <div v-if="showProgress">
-                    <div>
-                        {{$tc('FileUploadNote')}}
-                    </div>
-                    <span>
-                        {{progressMessage1}}
-                    </span>
-                    <br />
-                    <span>
-                        {{progressMessage2}}
-                    </span>
-                    <br />
-                    <span>
-                        {{progressMessage3}}
-                        <v-progress-linear :value="(up1Progress/up1Size)*100"></v-progress-linear>
-                    </span>
-                    <br />
-                    <span>
-                        {{progressMessage4}}
-                        <v-progress-linear :value="(up2Progress/up2Size)*100"></v-progress-linear>
-                    </span>
-                    <br />
-                </div>
-            </v-col>
-        </v-row>
-    </v-container>
+  <v-container fluid>
+      <v-alert
+          type="error"
+          v-if="error">
+          {{error}}
+      </v-alert>
+      <v-row v-if="confirmChange" class="mb-2">
+          <span>{{$tc('FileUploadProgressWarn')}}</span>
+          <v-btn color="warning" @click="changeConfirmed()">{{$tc('Confirm')}}</v-btn>
+      </v-row>
+      <v-row v-if="confirmResume" class="mb-2">
+          <span>{{$tc('FileUploadResume')}}</span>
+          <v-btn color="success" @click="resumeConfirmed()">{{$tc('Confirm')}}</v-btn>
+      </v-row>
+      <v-row>
+          <v-col cols=12 v-if="completed">
+              <h2 class="text-center">{{filename}} upload complete!</h2>
+          </v-col>
+          <v-col cols=12 v-else>
+              <v-file-input 
+                  v-model="file" 
+                  :disabled="disabled" 
+                  :clearable="false"
+                  show-size 
+                  :accept="accept"
+                  :label="$tc('File input')" 
+                  class="mt-0 pt-0"></v-file-input>
+          </v-col>
+      </v-row>
+      <v-row class="my-0 py-0" v-if="admin && !completed">
+          <v-col cols=12>
+              <span class="fineText">{{$tc('Using Chunksize for your computer')}}: {{Math.ceil(chunkSize / 1024 / 1024)}}mb</span>
+          </v-col>
+      </v-row>
+      <v-row v-if="!completed">
+          <v-col cols=12>
+              <v-btn v-if="showUploadButton" :disabled="disabled" @click="upload">{{$tc('Uploads')}}</v-btn>
+              <v-btn v-if="showImportButton" :disabled="disabled" @click="onImportButtonClicked">{{$tc('Import')}}</v-btn>
+              <!-- <div v-if="pleaseWait">
+                  <v-progress-circular
+                      indeterminate
+                  ></v-progress-circular>
+                  <span>Please wait while the first bit of the file is encrypted...</span>
+              </div> -->
+              <div v-if="showProgress">
+                  <div>
+                      {{$tc('FileUploadNote')}}
+                  </div>
+                  <span>
+                      {{progressMessage1}}
+                  </span>
+                  <br />
+                  <span>
+                      {{progressMessage2}}
+                  </span>
+                  <br />
+                  <span>
+                      {{progressMessage3}}
+                      <v-progress-linear :value="(up1Progress/up1Size)*100"></v-progress-linear>
+                  </span>
+                  <br />
+                  <span>
+                      {{progressMessage4}}
+                      <v-progress-linear :value="(up2Progress/up2Size)*100"></v-progress-linear>
+                  </span>
+                  <br />
+              </div>
+          </v-col>
+      </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -80,7 +80,6 @@ let backendApi = new Backend();
 const openpgp = require('openpgp');
 
 export default {
-
     props: {
         label: {
             type: String,
@@ -720,7 +719,7 @@ export default {
 <style scoped>
 
 .fineText{
-    font-size: 8px;
+  font-size: 8px;
 }
 
 </style>

@@ -12,6 +12,8 @@ const state = {
     tableSchemaId: -1,
     revisions: [],
     revisionsLoading: false,
+    typedSchemas: [],
+    typeSchema: {},
 };
 
 const getters = {
@@ -55,6 +57,10 @@ const actions = {
                 }
             }
         }
+        //get typed ones
+        backend.getTableSchema(id, false, false, true).then(res => {
+          commit('setTypedSchemas', {schemas: res});
+        })
         commit('setTableSchemaM', {schema: s});
         return s;
     },
@@ -91,6 +97,47 @@ const actions = {
             commit('setError', {error: "Invalid schema: " + ex.message});
         }
     },
+    
+
+    async setTypeSchema({commit}, {schema}){
+      try{
+          commit('clearSuccessMsg');
+          commit('clearError');
+          const Schema = require('tableschema').Schema;
+          const DSchema = require('datapackage').Package
+          if (schema && schema.resources && schema.resources[0] && schema.resources[0].schema){
+              let id = schema._id;
+              delete schema._id;
+              let prof = schema.profile;
+              delete schema.profile;
+              let v = schema.__v;
+              delete schema.__v;
+              let version = schema.version;
+              delete schema.version;
+              for (let i = 0; i < schema.resources.length; i++){
+                  try{
+                      schema.resources[i].path = schema.resources[i].path.split(/[ ,]+/);
+                  }catch(e){
+                      //pass
+                  }
+              }
+              await DSchema.load(schema);
+              schema._id = id;
+              schema.profile = prof;
+              schema.__v = v;
+              schema.version = version;
+          }else if (schema){
+              let s = schema;
+              if (typeof(s) === "string"){
+                  s = JSON.parse(s);
+              }
+              await Schema.load(s);
+          }
+          commit('setTypeSchemaM', {schema: schema})
+      }catch(ex){
+          commit('setError', {error: "Invalid schema: " + ex.message});
+      }
+  },
 
     async getRevisions({commit}, {id}){
         commit('setRevisionsLoading', {loading: true});
@@ -140,6 +187,20 @@ const actions = {
             commit('setError', {error: e.response.data.error});
         });
     },
+    createTypeSchema({ commit, state }) {
+      // console.log("createSchema action: ", state.tableSchema);
+      commit('clearSuccessMsg');
+      commit('clearError');
+
+      backend.postTableSchema(state.typeSchema).then(() => {
+          commit('setSuccessMsg', {message: "Successfully saved typed schema"});
+          backend.getTableSchema(state.typeSchema.version, false, false, true).then(res => {
+            commit('setTypedSchemas', {schemas: res});
+          });
+      }).catch((e) => {
+          commit('setError', {error: e.response.data.error});
+      });
+  },
     createDataPackageSchema({ commit, state }) {
         // console.log("createSchema action: ", state.tableSchema);
         commit('clearSuccessMsg');
@@ -175,7 +236,18 @@ const actions = {
         }).catch((e) => {
             commit('setError', {error: e.response.data.error});
         });
-    }
+    },
+    async updateDataPackageTypeSchema({commit, state}){
+
+      commit('clearSuccessMsg');
+      commit('clearError');
+
+      await backend.putDataPackageSchema(state.typeSchema._id, state.typeSchema).then(() => {
+          commit('setSuccessMsg', {message: "Successfully updated data package schema"});
+      }).catch((e) => {
+          commit('setError', {error: e.response.data.error});
+      });
+  }
 }
 
 
@@ -184,6 +256,14 @@ const mutations = {
         // console.log("setSchema: ", schema);
         Vue.set(state, 'tableSchema', schema);
     },
+
+    setTypeSchemaM(state, {schema}){
+      Vue.set(state, 'typeSchema', schema);
+    },
+
+    setTypedSchemas(state, {schemas}){
+      Vue.set(state, 'typedSchemas', schemas);
+  },
     setTableSchemaId(state, {id}){
         // console.log("setSchema: ", schema);
         Vue.set(state, 'tableSchemaId', id);

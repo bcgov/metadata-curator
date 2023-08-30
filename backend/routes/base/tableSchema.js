@@ -47,8 +47,12 @@ var buildDynamic = function(db, router, auth, cache){
         let r = transformResources([...resources]);
         dataPackageSchema.resources = r;
         dataPackageSchema.version = schema.version;
+        if (schema.typeName && (typeof(schema.typeName) === 'string')){
+          dataPackageSchema.typeName = schema.typeName;
+        }
 
         return await dataPackageSchema.save().catch (e => {
+            console.error("DPS error", e, console.log(dataPackageSchema));
             throw e;
         });
     }
