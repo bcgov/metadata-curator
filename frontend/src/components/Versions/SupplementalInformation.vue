@@ -64,13 +64,16 @@
         </v-row>
 
         <v-row>
-            <v-col cols=12>
+            <v-col cols=6>
                 <h4>Attached files</h4>
+            </v-col>
+            <v-col cols=2>
+                <h4>Public</h4>
             </v-col>
         </v-row>
 
         <v-row v-for="(file, index) in branch.supplemental_files" :key="'supp-file-'+index">
-            <v-col cols=8>
+            <v-col cols=6>
                 <v-icon>
                     {{ 
                         (fileType(file.name) === 'csv') ? 'mdi-file-delimited' : (
@@ -79,6 +82,18 @@
                     }}
                 </v-icon>
                 {{file.name}}
+            </v-col>
+            <v-col cols=2 class="text-right">
+              <SimpleCheckbox
+                  label=""
+                  :name="`${index}-public`"
+                  
+                  :editing="user.isApprover || user.isAdmin"
+                  :disabled="!(user.isApprover || user.isAdmin)"
+                  :checked="(file) ? file.public : ''"
+                  helpPrefix="edition"
+                  @edited="(newValue) => { setFilePublic(file, newValue) }">
+              </SimpleCheckbox>
             </v-col>
             <v-col cols=4 class="text-right">
                 <v-btn text :disabled="disabled" v-if="previewable(file)" @click="getFile(file)"><v-icon>mdi-eye</v-icon></v-btn>
@@ -110,6 +125,7 @@ import { mapState, mapActions, mapMutations } from 'vuex';
 
 import BasicFileReader from '../FormElements/BasicFileReader';
 import ConfirmButton from '../FormElements/ConfirmButton';
+import SimpleCheckbox from '../FormElements/SimpleCheckbox';
 
 export default {
     mixins: [],
@@ -117,7 +133,8 @@ export default {
     components:{
         BasicFileReader,
         pdf: pdfvuer,
-        ConfirmButton: ConfirmButton
+        ConfirmButton: ConfirmButton,
+        SimpleCheckbox: SimpleCheckbox,
     },
 
     props: {
@@ -152,6 +169,34 @@ export default {
         ...mapMutations({    
             editBranch: 'repos/editBranch',
         }),
+
+        //eslint-disable-next-line
+        setFilePublic: function(file, newValue){
+          //file.public = newValue;
+          let newSupp = this.branch.supplemental_files ? JSON.parse(JSON.stringify(this.branch.supplemental_files)) : [];
+          let index = newSupp.findIndex( e => { return e.id === file.id});
+          newSupp[index] = JSON.parse(JSON.stringify(file));
+          newSupp[index].public = newValue;
+
+          this.editBranch({name: 'supplemental_files', value: newSupp});
+            
+          this.updateBranch().then( () => {
+              this.alertType = "success"
+              this.alertText = "Successfully updated edition";
+              this.alert = true;
+              //this.closeOrBack();
+              this.editing = false;
+
+          }).catch( err => {
+              this.alertType = "error"
+              if (err.response && err.response.data && err.response.data.error){
+                  this.alertText = "Error: " + err.response.data.error;
+              }else{
+                  this.alertText = err.message;
+              }
+              this.alert = true;
+          });
+        },
 
         previewable: function(file){
             let type = this.fileType(file.name);

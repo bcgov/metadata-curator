@@ -183,6 +183,18 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
               foreignField: '_id',
               as: 'repo'
             }}, {$sort: { create_date: -1 }}])
+        
+        if (!user || !(user.isAdmin || user.isApprover)){
+          for (let j=0; j<res.length; j++){
+            let newSupp = [];
+              for (let i=0; i<res[j].supplemental_files.length; i++){
+                if (res[j].supplemental_files[i].public){
+                  newSupp.push(res[j].supplemental_files[i]);
+                }
+              }
+              res[j].supplemental_files = newSupp;
+          }
+        }
         return res;
     }
     
@@ -362,6 +374,14 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
                   res.author_groups = topicResponse.data[0].author_groups;
                   res.providerGroup = topicResponse.data[0].author_groups;
                 }
+            }else{
+              let newSupp = [];
+              for (let i=0; i<res.supplemental_files.length; i++){
+                if (res.supplemental_files[i].public){
+                  newSupp.push(res.supplemental_files[i]);
+                }
+              }
+              res.supplemental_files = newSupp;
             }
             return res;
         } catch (e) {
@@ -1110,41 +1130,38 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
     });
 
-    router.get('/:branchId/file/:fileId', auth.requireLoggedIn, auth.isApprover, async function(req, res, next){
+    router.get('/:branchId/file/:fileId', async function(req, res, next){
         //version check
         if (!util.phaseCheck(cache, bcdcPhase, db)){
             return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.branchId+"/file/"+req.params.fileId)));
         }
 
+        let branch = await db.RepoBranchSchema.findOne({_id: req.params.branchId});
+        const fIndex = branch.supplemental_files.findIndex(e => { return e.id === req.params.fileId})
+
         let topicResponse = null;;
         if (req.user){
             topicResponse = await forumClient.getTopics(req.user, {name: req.params.branchId+"branch"});
             if (!topicResponse || !topicResponse.data || topicResponse.data.length < 1){
+              if ((fIndex === -1) || (!branch.supplemental_files[fIndex].public)){
                 return res.status(404).json({error: '404'})
+              }
             }
         }else{
-            return res.status(404).json({error: '404'})
+            if ((fIndex === -1) || (!branch.supplemental_files[fIndex].public)){
+              return res.status(404).json({error: '404'})
+            }
         }
 
-        let branch = await db.RepoBranchSchema.findOne({_id: req.params.branchId});
-
         if (!branch){
-            return res.status(400).json({error: "No such edition " + req.params.branchId});
+            return res.status(404).json({error: "No such edition " + req.params.branchId});
         }
 
         if (!branch.supplemental_files){
             return res.status(400).json({error: "Incorrect edition " + req.params.branchId});
         }
 
-        let foundId = false;
-        for (let i=0; i<branch.supplemental_files.length; i++){
-            if (branch.supplemental_files[i].id === req.params.fileId){
-                foundId = true;
-                break;
-            }
-        }
-
-        if (!foundId){
+        if (fIndex === -1){
             return res.status(400).json({error: "Not Found"});
         }
 

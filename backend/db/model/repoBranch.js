@@ -33,7 +33,8 @@ var repoBranchSchema = new Schema({
     supplemental_files: {
         type: [{
             name: {type: String},
-            id: {type: String}
+            id: {type: String},
+            public: {type: Boolean, required: false, default: false},
         }],
         required: false,
         default: [],

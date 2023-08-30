@@ -52,28 +52,6 @@
               </v-list>
           </v-menu>
 
-            <v-menu
-              bottom
-              :close-on-click="true">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-app-bar-nav-icon v-bind="attrs" v-on="on" class="d-block d-lg-none"></v-app-bar-nav-icon>
-                </template>
-                <v-list>
-                  <v-list-item
-                    v-for="tab in tabs"
-                    :key="tab.id+'-list'"
-                    :to="tab.route"
-                    :disabled="tab.disabled"
-                    :id="'list-'+tab.name.toLowerCase()"
-                  >
-                    <v-list-item-title><v-icon>{{ tab.icon }}</v-icon>{{ tab.name }}</v-list-item-title>
-                  </v-list-item>
-                </v-list>
-            </v-menu>
-
-
-            <User class="mr-4"></User>
-
           <User class="mr-4"></User>
 
         </v-toolbar>
@@ -84,16 +62,6 @@
             timeout="-1"
             class="mt-14"
         >
-            <span v-html="notificationText"></span>
-
-      </v-toolbar>
-      <v-snackbar
-          v-model="showNotification"
-          top
-          right
-          timeout="-1"
-          class="mt-14"
-      >
           <span v-html="notificationText"></span>
 
           <template v-slot:action="{ attrs }">
