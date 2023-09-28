@@ -107,7 +107,7 @@ var buildDynamic = function(db, router, auth, forumClient){
               });
             }
 
-            const project = await db.Project.find({$or: [{_id: {$in: projectIds}}, {published: true}] });
+            const project = await db.Project.find({_id: {$in: projectIds}});
 
             res.status(200).json(project);
         }catch(ex){

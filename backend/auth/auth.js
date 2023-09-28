@@ -6,79 +6,18 @@ var config = require('config');
 var logger = require('npmlog');
 var jwt = require('jsonwebtoken');
 let OidcStrategy = require('passport-openidconnect').Strategy;
+const mongoose = require('mongoose');
 
 
 var secret = config.get("jwtSecret");
 
-passport.use('jwt', new JWTStrategy({
-        jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-        secretOrKey: secret,
-        passReqToCallback: true,
-    }, async function(req, jwtPayload, cb) {
+const buildProfile = (token, refreshToken) => {
+    let profile = {...token};
 
-        var originalJwt = req.headers['authorization'].substring("Bearer ".length);
-        var encodedJWT = originalJwt;
-        if (!encodedJWT){
-            cb("No JWT", null);
-        }
-        var decodedJWT = null;
-
-        // invalid token - synchronous
-        try {
-            decodedJWT = jwt.verify(originalJwt, secret);
-            decodedJWT.aud = config.get('jwtAud');
-            decodedJWT._json = JSON.parse(JSON.stringify(decodedJWT));
-            decodedJWT = buildProfile(decodedJWT, 'a');
-            var db = require('../db/db');
-  
-            if (process.env.NODE_ENV !== "test" && decodedJWT.email){
-              try{
-                var u = await db.User.findOne({email: decodedJWT.email});
-                decodedJWT.lastLogin = u.lastLogin;
-                decodedJWT.bcdcSet = u.bcdc_apiKey && u.bcdc_accessKey;
-                decodedJWT = await buildActivity(decodedJWT);
-              }catch(ex){
-                console.log("No previous user info", ex);
-              }
-            }
-        } catch(err) {
-            console.log("Error resigning", err);
-            return cb(err, null);
-        }
-        //var userConf = config.get('user');
-        if (!decodedJWT){
-            cb("No JWT", null);
-        }
-
-        var user = {
-          email: decodedJWT.email,
-          name: decodedJWT.displayName,
-          groups: decodedJWT.groups,
-          lastLogin: new Date()
-        }
-      
-        if (decodedJWT.email){
-          db.User.updateOne({email: decodedJWT.email}, user, {upsert: true, setDefaultsOnInsert: true}, function(e,r){
-            if (e){
-              logger.error("Error updating user info", e);
-            }else{
-              logger.verbose("Updated user info jwt");
-            }
-      
-          });
-        }
-            
-        logger.verbose('user ' + decodedJWT.jwt + ' authenticated successfully');
-        
-        cb(null, decodedJWT);
+    if (!profile._json) {
+        profile._json = {...token};
     }
-));
 
-var buildProfile = function(token, refreshToken){
-    let profile = token;
-    if (!profile._json){
-      profile._json = {};
-    }
     profile._json['aud'] = config.get('jwtAud');
     
     let cloneable = JSON.parse(JSON.stringify(token._json));
@@ -90,125 +29,95 @@ var buildProfile = function(token, refreshToken){
   
     profile.isDataProvider = false;
     profile.isApprover = false;
-    profile.groups = [];
+    profile.groups = token._json?.groups || [];
 
-    if ((typeof(token._json) !== "undefined") && (typeof(token._json.groups) !== "undefined")){
-        profile.groups = token._json.groups;
-    }
+    profile.id = profile.email = profile._json?.email || profile._json?.[idField];
 
-    if ((typeof(token._json) !== "undefined") && (typeof(token._json.email) !== "undefined")){
-        profile.id =  token._json.email;
-        profile.email = token._json.email;
+    if (config.has('adminGroup')) {
+        profile.isAdmin = token.groups.includes(config.get('adminGroup'));
     }
 
-    if ((typeof(token._json) !== "undefined") && (typeof(token._json[idField]) !== "undefined")){
-      profile.id = token._json[idField];
-    }
-    
-    if (config.has('adminGroup')){
-        profile.isAdmin = (token.groups.indexOf(config.get('adminGroup')) !== -1);
+    if (config.has('orgAttribute') && profile._json?.[config.get('orgAttribute')]) {
+        profile.organization = profile._json[config.get('orgAttribute')];
     }
 
-    if ( (config.has('orgAttribute')) && (token._json[config.get('orgAttribute')]) ){
-        profile.organization = token._json[config.get('orgAttribute')];
+    if (config.has('requiredRoleToCreateRequest') && profile.groups.length > 0) {
+        profile.canUpload = profile.groups.includes(config.get('requiredRoleToCreateRequest'));
     }
-
-    if ((config.has('requiredRoleToCreateRequest')) && (profile.groups.length>0)){
-      profile.canUpload = (profile.groups.indexOf(config.get('requiredRoleToCreateRequest')) !== -1);
-    }
-    
-    
-    profile.refreshToken = refreshToken;
 
     const approverGroups = config.get("approverGroups");
-    
-    const foundApprover = token.groups.some(group => approverGroups.includes(group));
-    
-    if(foundApprover) {
-        profile.isApprover = true; 
-    }
+    profile.isApprover = token.groups.some(group => approverGroups.includes(group));
 
-    if(profile.organization) {
-        // const alwaysNotifyList = new Map(Object.entries(config.get("alwaysNotifyList")));
-        // console.log("alwaysNotifyList: ", alwaysNotifyList);
-        // profile.isDataProvider = alwaysNotifyList.has(profile.organization) ? true : false;
-        profile.isDataProvider = !profile.isApprover && !profile.isAdmin && (token.groups.indexOf(config.get('requiredRoleToCreateRequest')) !== -1);
+    profile.refreshToken = refreshToken;
+
+    if (profile.organization) {
+        profile.isDataProvider = !profile.isApprover && !profile.isAdmin && profile.groups.includes(config.get('requiredRoleToCreateRequest'));
     }
 
     return profile;
 }
 
-var buildActivity = async function(profile){
-
+const buildActivity = async function(profile){
   if (!profile.activity){
     profile.activity = {}
-    // profile.lastLogin = new Date("01/01/1900");
     if (profile.lastLogin){  
-      var db = require('../db/db');
-      var forumClient = require('../clients/forum_client');
+      const db = require('../db/db');
+      const forumClient = require('../clients/forum_client');
       const mongoose = require('mongoose');
 
-      let topics = [];
-              
-      let currentData = await forumClient.getTopics(profile, {});
+      const currentData = await forumClient.getTopics(profile, {});
       
-      let topicResponse = {data: []};
-      topicResponse.data = topicResponse.data.concat(currentData.data);
+      const topicResponse = {data: [...currentData.data]};
 
-      topics = topicResponse.data.filter(item => item.parent_id);
+      const topics = topicResponse.data.filter(item => item.parent_id);
       
-      const uploadIds = topics.map( (item) => {
-          if ( (item) && (item.name) && (String(item.name).indexOf("repo") === -1) && (String(item.name).indexOf("branch") ===-1) && (String(item.name).indexOf("varClass") === -1) && (String(item.name).indexOf("project") === -1)){
-              return item.name
-          }
-          return ""
-      }).filter( (item) => {
-          return (item && String(item).length > 0)
-      });
+      const uploadIds = topics
+        .map(item => mongoose.isValidObjectId(item.name) ? item.name : "")
+        .filter(item => item && String(item).length > 0);
 
-      let ups = await db.DataUploadSchema.find({_id: {$in: uploadIds}, upload_date: {$gt: profile.lastLogin}}).sort({ "upload_date": -1});;
+      const ups = await db.DataUploadSchema
+        .find({_id: {$in: uploadIds}, upload_date: {$gt: profile.lastLogin}})
+        .sort({ "upload_date": -1});
+      
       profile.activity.uploads = ups;
 
-      let currentComments = await forumClient.getAllComments(profile, profile.lastLogin);
+      const currentComments = await forumClient.getAllComments(profile, profile.lastLogin);
       
-      let cs = currentComments.filter ( item => {
-        return item.author_user !== profile.id
-      });
+      const cs = currentComments.filter(item => item.author_user !== profile.id)
+        .map(async item => {
+          let type = item.topic_name.substring(24);
+          let record = null;
+          let itemId = item.topic_name.substring(0,24)
+          switch(type){
+            case 'branch':
+              record = await db.RepoBranchSchema.findOne({_id: itemId});
+              break;
 
-      for (key in cs){
-        item = cs[key];
-        let type = item.topic_name.substring(24);
-        let record = null;
-        let itemId = item.topic_name.substring(0,24)
-        switch(type){
-          case 'branch':
-            record = await db.RepoBranchSchema.findOne({_id: itemId});
-            break;
+            case 'repo':
+              record = await db.RepoSchema.findOne({_id: itemId});
+              break;
 
-          case 'repo':
-            record = await db.RepoSchema.findOne({_id: itemId});
-            break;
+            case 'varClass':
+              record = await db.VariableClassification.findOne({_id: itemId});
+              break;
 
-          case 'varClass':
-            record = await db.VariableClassification.findOne({_id: itemId});
-            break;
+            default:
+              //upload
+              record = await db.DataUploadSchema.findOne({_id: itemId});
+              break;
+          }
+          if (record){
+            item.name = record.name;
+          }
+          item.type = type;
+          item.item_id = itemId
+          return item;
+        });
 
-          default:
-            //upload
-            record = await db.DataUploadSchema.findOne({_id: itemId});
-            break;
-        }
-        if (record){
-          item.name = record.name;
-        }
-        item.type = type;
-        item.item_id = itemId
-      }
+      profile.activity.comments = await Promise.all(cs);
 
-      profile.activity.comments = cs
-
-
-      const repoIds = topics.map( (item) => {
+      const repoIds = topics
+        .map(item => {
           let id = item.name;
           if (!id || id.indexOf("repo") === -1){
               return;
@@ -218,13 +127,17 @@ var buildActivity = async function(profile){
           let oid = mongoose.Types.ObjectId(id);
           return oid;
 
-      }).filter( (item) => { 
-          return (item && String(item).length > 0)
-      });
-      let rs = await db.RepoSchema.find({_id: {$in: repoIds}, create_date: {$gt: profile.lastLogin}}).sort({ "create_date": -1});;
+        })
+        .filter(item => item && String(item).length > 0);
+
+      const rs = await db.RepoSchema
+        .find({_id: {$in: repoIds}, create_date: {$gt: profile.lastLogin}})
+        .sort({ "create_date": -1});
+      
       profile.activity.repos = rs;
       
-      const branchIds = topics.map( (item) => {
+      const branchIds = topics
+        .map(item => {
           let id = item.name;
           if (!id || id.indexOf("branch") === -1){
               return;
@@ -234,40 +147,52 @@ var buildActivity = async function(profile){
           let oid = mongoose.Types.ObjectId(id);
           return oid;
 
-      }).filter( (item) => { 
-          return (item && String(item).length > 0)
-      });
-      let bs = await db.RepoBranchSchema.find({_id: {$in: branchIds}, create_date: {$gt: profile.lastLogin}}).sort({ "create_date": -1});;
-      profile.activity.branches = bs;
+        })
+        .filter(item => item && String(item).length > 0);
 
+      const bs = await db.RepoBranchSchema
+        .find({_id: {$in: branchIds}, create_date: {$gt: profile.lastLogin}})
+        .sort({ "create_date": -1});
+      
+      profile.activity.branches = bs;
     }
   }
 
   return profile;
 }
 
-let oidcConfig = {passReqToCallback: false, ...config.get('oidc')};
+let oidcConfig = {passReqToCallback: true, ...config.get('oidc')};
 
-var strategy = new OidcStrategy(oidcConfig, async function(issuer, sub, profile, accessToken, refreshToken, done){
-    
-    if ( (typeof(accessToken) === "undefined") || (accessToken === null) || (typeof(refreshToken) === "undefined") || (refreshToken === null) ){
-      console.log("No token");
-      return done("No access token", null);
+//req, claims.iss, uiProfile, idProfile, context, idToken, accessToken, refreshToken, params, verified
+var strategy = new OidcStrategy(oidcConfig, async function(req, issuer, uiProfile, idProfile, context, accessToken, refreshToken, params, done){
+    if (req.user){
+      return done(null, req.user);
     }
 
-    profile = buildProfile(profile, refreshToken);
+    if ( (typeof(idProfile) === "undefined") || (idProfile === null) ) {
+      return done("No idProfile", null);
+    }
+
+    let decodedJWT = jwt.decode(accessToken);
+    decodedJWT._json = JSON.parse(JSON.stringify(decodedJWT));
+
+    let profile = buildProfile(decodedJWT, refreshToken);
   
     var db = require('../db/db');
-  
     if (profile.email){
       try{
         var u = await db.User.findOne({email: profile.email});
         profile.lastLogin = u.lastLogin;
         profile.bcdcSet = u.bcdc_apiKey && u.bcdc_accessKey;
+      }catch(ex){
+        console.log("No previous user info oidc", ex);
+      }
+      try{
         profile = await buildActivity(profile);
       }catch(ex){
-        console.log("No previous user info", ex);
+        console.log("fail building activity", ex);
       }
+      
       
     }
   
@@ -289,14 +214,86 @@ var strategy = new OidcStrategy(oidcConfig, async function(issuer, sub, profile,
       });
     }
     
-  
-    console.log("setting profile", profile);
+    req.user = profile;
     done(null, profile);
 });
   
   
 // set up passport
 passport.use('oidc', strategy);
+
+passport.use('jwt', new JWTStrategy({
+  jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+  secretOrKey: secret,
+  passReqToCallback: true,
+  ignoreExpiration: true
+}, async function(req, jwtPayload, cb) {
+  if (req.user){
+    return cb(null, req.user);
+  }
+
+  var originalJwt = req.headers['authorization'].substring("Bearer ".length);
+  var encodedJWT = originalJwt;
+  if (!encodedJWT){
+      cb("No JWT", null);
+  }
+  var decodedJWT = null;
+
+  // invalid token - synchronous
+  try {
+      decodedJWT = jwt.verify(originalJwt, secret, {clockTolerance: 10000});
+      decodedJWT.aud = config.get('jwtAud');
+      decodedJWT._json = JSON.parse(JSON.stringify(decodedJWT));
+      decodedJWT = buildProfile(decodedJWT, 'a');
+  } catch(err) {
+    console.log("Error resigning", err);
+    return cb(err, null);
+  }
+    var db = require('../db/db');
+
+    if (process.env.NODE_ENV !== "test" && decodedJWT.email){
+      try{
+        var u = await db.User.findOne({email: decodedJWT.email});
+        decodedJWT.lastLogin = u.lastLogin;
+        decodedJWT.bcdcSet = u.bcdc_apiKey && u.bcdc_accessKey;
+      }catch(ex){
+        console.log("No previous user info jwt", ex);
+      }
+      try{
+        decodedJWT = await buildActivity(decodedJWT);
+      }catch(ex){
+        console.log("fail building activity", ex);
+      }
+      
+    }
+  //var userConf = config.get('user');
+  if (!decodedJWT){
+      cb("No JWT", null);
+  }
+
+  var user = {
+    email: decodedJWT.email,
+    name: decodedJWT.displayName,
+    groups: decodedJWT.groups,
+    lastLogin: new Date()
+  }
+
+  if (decodedJWT.email){
+    db.User.updateOne({email: decodedJWT.email}, user, {upsert: true, setDefaultsOnInsert: true}, function(e,r){
+      if (e){
+        logger.error("Error updating user info", e);
+      }else{
+        logger.verbose("Updated user info jwt");
+      }
+
+    });
+  }
+      
+  logger.verbose('user ' + decodedJWT.jwt + ' authenticated successfully');
+  
+  cb(null, decodedJWT);
+}
+));
 
 module.exports = {
   passport: passport,

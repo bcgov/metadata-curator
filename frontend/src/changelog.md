@@ -8,6 +8,7 @@ September 5 2023
  - Added projects, users (by email) can be assigned to a project which has a name and a set of datasets/editions
    - Users added to the project will be able to see those datasets and editions, but not discussion related to the datasets/editions (comments are visible)
  - Fixed a bug with filtering by highlight on files and fields
+ - Added private, public and project permission levels to supplemental files and added supplemental files to public page
 
  <br />
 

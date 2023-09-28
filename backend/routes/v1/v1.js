@@ -25,14 +25,6 @@ module.exports = (router, cache) => {
 
     router.use('/forum', auth.requireLoggedIn, forumRouter);
 
-    router.use('/token', function(req, res){
-        if (req.user && req.user.jwt && req.user.refreshToken) {
-            res.json(req.user);
-        }else{
-            res.json({error: "Not logged in"});
-        }
-    });
-
     var forumClient = require('./clients/forum_client');
     var formioClient = require('./clients/formio_client');
     var notify = require('./notify/notify')(db);

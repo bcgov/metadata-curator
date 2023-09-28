@@ -45,7 +45,7 @@
                             <h3 class="colorText">Users</h3>
                           </v-col>
                           <v-col cols="12">
-                            <v-list class="scrollbox" disabled="!editing">
+                            <v-list class="scrollbox" :disabled="!editing">
                               <v-list-item-group
                                 v-model="selectedUsers"
                                 multiple

@@ -160,7 +160,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             topics = topicResponse.data.filter(item => item.parent_id);
         }
         
-        const branchIds = topics.map( (item) => {
+        let branchIds = topics.map( (item) => {
             let id = item.name;
             
             if (id.indexOf("branch") === -1){
@@ -183,11 +183,37 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
               foreignField: '_id',
               as: 'repo'
             }}, {$sort: { create_date: -1 }}])
+        
+        if (user && user.email) {
+          branchIds = await util.userProjectsAccess(db, user, branchIds, true);
+          branchIds = branchIds.map( branchId => branchId.toString());
+        }
+        for (let i=0; i<res.length; i++){
+          if (res[i].supplemental_files && res[i].supplemental_files.length > 0){
+            res[i].supplemental_files = JSON.parse(JSON.stringify(res[i].supplemental_files));
+            var newSupp = res[i].supplemental_files.filter(file => {
+              if ( (file.privacy === db.RepoBranchSchema.PRIVATE) && (!user || (!user.isAdmin && !user.isApprover))){
+                return false;
+              }
+              if ( (file.privacy === db.RepoBranchSchema.PROJECT) && (!user || (!user.isAdmin && !user.isApprover))){
+                if (!user){
+                  return false;
+                }
+                
+                if (branchIds.indexOf(res[i]._id) === -1){
+                  return false;
+                }
+              }
+              return true;
+            });
+            res[i].supplemental_files = newSupp;
+          }
+        }
         return res;
     }
     
-    const updateBranch = async function(branchId, type, name, description, upload_id, fields, user) {
-        let repoBranchSchema = await getBranchById(branchId, user);
+    const updateBranch = async function(branchId, type, name, description, upload_id, fields, user, req) {
+        let repoBranchSchema = await getBranchById(branchId, user, req);
         const topicResponse = await forumClient.getTopics(user, {name: repoBranchSchema.topic_id+"branch"});
         if (!topicResponse || topicResponse.length < 1){
             throw new Error('404');
@@ -344,7 +370,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         return repoBranchSchema;
     }
     
-    const getBranchById = async (id, user) => {
+    const getBranchById = async (id, user, req) => {
         try {
             let res = await db.RepoBranchSchema.findOne({_id: id});
             let topicResponse = false
@@ -363,6 +389,30 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
                   res.providerGroup = topicResponse.data[0].author_groups;
                 }
             }
+            let branchIds = [];
+            if (user && user.email){
+              branchIds = await util.userProjectsAccess(db, user, [res._id], true);
+              for (let i=0; i<branchIds.length; i++){
+                branchIds[i] = branchIds[i].toString();
+              }
+            }
+            res.supplemental_files = JSON.parse(JSON.stringify(res.supplemental_files));
+            var newSupp = res.supplemental_files.filter(file => {
+              if ( (file.privacy === db.RepoBranchSchema.PRIVATE) && (!req.user || (!req.user.isAdmin && !req.user.isApprover))){
+                return false;
+              }
+              if ( (file.privacy === db.RepoBranchSchema.PROJECT) && (!req.user || (!req.user.isAdmin && !req.user.isApprover))){
+                if (!req.user){
+                  return false;
+                }
+              
+                if (branchIds.indexOf(req.params.branchId) === -1){
+                  return false;
+                }
+              }
+              return true;
+            });
+            res.supplemental_files = newSupp;
             return res;
         } catch (e) {
             log.error(e);
@@ -454,9 +504,9 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
     }
 
-    const addComment = async (branchId, user, comment) => {
+    const addComment = async (branchId, user, comment, req) => {
         try {
-            let branch = await getBranchById(branchId, user);
+            let branch = await getBranchById(branchId, user, req);
 
             if (branch == null) {
                 throw new Error("Invalid branch ID")
@@ -471,13 +521,13 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
     }
     
-    const getComments = async (branchId, user) => {
+    const getComments = async (branchId, user, req) => {
         try {
             if ( (branchId == null) || (typeof(branchId) === "undefined") || (branchId === "undefined") ) {
                 throw new Error("Invalid branch ID")
             }
             
-            let branch = await getBranchById(branchId, user);
+            let branch = await getBranchById(branchId, user, req);
             if (branch == null) {
                 throw new Error("Invalid branch ID")
             }
@@ -510,7 +560,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             return res.status(404).send(util.phaseText('GET', ('repobranches/'+req.params.branchId)));
         }
         try{
-            const branch = await getBranchById(req.params.branchId, req.user);
+            const branch = await getBranchById(req.params.branchId, req.user, req);
            res.status(200).json(branch);
         }catch(e){
             res.status(500).json(e);
@@ -567,7 +617,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
         }
         let f = {...req.body};
         try{
-            const result = await updateBranch(req.params.branchId, f.type, f.name, f.description, f.data_upload_id, f, req.user);
+            const result = await updateBranch(req.params.branchId, f.type, f.name, f.description, f.data_upload_id, f, req.user, req);
             res.status(200).json(result);
         }catch(ex){
             if (ex.message === 'approved'){
@@ -647,7 +697,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
     router.get('/:branchId/comments', async function(req, res, next){
         try{
             if (req.params.branchId !== 'create'){
-                const comments = await getComments (req.params.branchId, req.user);
+                const comments = await getComments (req.params.branchId, req.user, req);
                 return res.json(comments);
             }
         }catch(e){}
@@ -658,7 +708,7 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
     router.post('/:branchId/comments', async function(req, res, next){
         try{
             if (req.params.branchId !== 'create'){
-                await addComment (req.params.branchId, req.user, req.body.content);
+                await addComment (req.params.branchId, req.user, req.body.content, req);
                 return res.status(201).json({
                     message: 'Comment saved successfully.'
                 });
@@ -1136,17 +1186,23 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
             return res.status(400).json({error: "Incorrect edition " + req.params.branchId});
         }
 
-        let foundId = false;
-        for (let i=0; i<branch.supplemental_files.length; i++){
-            if (branch.supplemental_files[i].id === req.params.fileId){
-                foundId = true;
-                break;
-            }
-        }
+        let foundId = branch.supplemental_files.find(f => f.id === req.params.fileId);
 
         if (!foundId){
             return res.status(400).json({error: "Not Found"});
         }
+
+        if ( (foundId.privacy === db.RepoBranchSchema.PRIVATE) && (!req.user || (!req.user.isAdmin && !req.user.isApprover))){
+            return res.status(404).json({error: "Not Found"});
+        }
+
+        if ( (foundId.privacy === db.RepoBranchSchema.PROJECT) && (!req.user || (!req.user.isAdmin && !req.user.isApprover))){
+          let branchIds = await util.userProjectsAccess(db, user, branchIds, true);
+          branchIds = branchIds.map(branchId => branchId.toString());
+          if (branchIds.indexOf(req.params.branchId) === -1){
+            return res.status(404).json({error: "Not Found"});
+          }
+      }
 
         if (!config.has('minio')){
             return res.status(500).json({error: "Not configured"});
@@ -1244,7 +1300,6 @@ var buildDynamic = function(db, router, auth, forumClient, cache){
                 revision.create_date = new Date();
                 revision.revise('supplemental_files', branch.supplemental_files, newSupp);
                 branch.supplemental_files = newSupp;
-                console.log("remove?", x);
                 await db.RepoBranchSchema.updateOne({_id: mongoose.Types.ObjectId(branch._id)}, branch);
                 await revision.save();
                 res.status(202).json({success: "ok"});

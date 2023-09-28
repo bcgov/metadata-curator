@@ -2,11 +2,37 @@ let auth = {};
 let atob = require('atob');
 let bent = require('bent');
 let passport = require('passport');
-
+const logger = require('npmlog');
 let env = process.env.NODE_ENV || 'development';
+const buildProfile = require('../auth/auth').buildProfile;
+const config = require('config')
+const jwt = require('jsonwebtoken');
+
+auth.validToken = function(req){
+  if (!config.has('jwtSecret')){
+    throw new Error("Invalid Token, not configured");
+  }
+
+  if (!req.headers['authorization']){
+    throw new Error("Invalid Token, no auth header");
+  }
+  var secret = config.get("jwtSecret");
+  const originalJwt = req.headers['authorization'].substring("Bearer ".length);
+  decodedJWT = jwt.verify(originalJwt, secret);
+  decodedJWT.aud = config.get('jwtAud');
+  decodedJWT._json = JSON.parse(JSON.stringify(decodedJWT));
+  decodedJWT = buildProfile(decodedJWT, 'a');
+  req.user = decodedJWT;
+  return decodedJWT;
+}
 
 auth.requireLoggedIn = async function(req, res, next){
     if (!req.user){
+        logger.debug('No user, checking token');
+        try{
+          const token = auth.validToken(req);
+          return next();
+        }catch(e){}
         res.status(401);
         return res.json({error: "Not Authorized"});
     }
@@ -18,8 +44,6 @@ auth.requireAdmin = async function(req, res, next){
         res.status(401);
         return res.json({error: "Not Authorized"});
     }
-
-    const config = require('config');
     let adminGroup = config.get('adminGroup');
 
     if ( (!req.user.groups) || (req.user.groups.indexOf(adminGroup) === -1) ){
@@ -43,7 +67,6 @@ auth.requireGroup = async function(groupName){
 }
 
 auth.isApprover = function(req, res, next){
-    let config = require('config');
     let approverGroups = config.get('approverGroups');
     let adminGroup = config.get('adminGroup');
     if ( (!req.user) || (!req.user.groups) ){
@@ -91,7 +114,6 @@ auth.isRenewable = function(token){
 
 
 auth.renew = async function(jwt, token, cb){
-    let config = require('config');
 
     let refresh = config.get('oidc.tokenURL')
     let scope = config.get('oidc.scope')
@@ -114,6 +136,8 @@ auth.renew = async function(jwt, token, cb){
         "content-type": "application/x-www-form-urlencoded",
         "Authorization": "Bearer " + jwt
     };
+
+    console.log("renew headers", headers);
 
     const post = bent('POST')
     let response = null;
