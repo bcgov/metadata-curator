@@ -2,10 +2,10 @@ let passport = require('passport');
 let auth = require('../../modules/auth');
 
 let env = process.env.NODE_ENV || 'development';
-// let strategy = 'oidc';
-//if (env === "test"){
-let strategy = ['oidc', 'jwt'];
-//}
+let strategy = 'oidc';
+if (env === "test"){
+    strategy = ['oidc', 'jwt'];
+}
 
 module.exports = (router) => {
 
@@ -54,29 +54,22 @@ module.exports = (router) => {
     });
 
     router.get('/token', auth.removeExpired, async function(req, res){
-        if (req.user){
+        if (req.user && req.user.jwt && req.user.refreshToken) {
             return res.json(req.user);
+        }else if (req.headers.authorization){
+            passport.authenticate('jwt', { session: true }, function(err, user, info){
+                if (!err && user){
+                    req.user = user;
+                    req.session.passport = {};
+                    req.session.passport.user = JSON.parse(JSON.stringify(user));
+                    res.json(req.user);
+                }else{
+                    res.json({error: "Not logged in"});
+                }
+            })(req, res, function(){});
         }else{
-          const authFunc = passport.authenticate('jwt', {clockTolerance: 2000}, function(err, user, info){
-            if (!user){
-              return;
-            }
-            if (!req.session){
-              req.session = {};
-            }
-            if (!req.session.passport){
-              req.session.passport = {};
-            }
-            req.session.passport.user = user;
-            return;
-          });
-          
-          await authFunc(req, res);
-          
-          if (!req || !req.session || !req.session.passport || !req.session.passport.user){
-            return res.json({error: "Not logged in"});
-          }
-          return res.json(req.session.passport.user);
+            req.user =  null;
+            res.json({error: "Not logged in"});
         }
     });
     
