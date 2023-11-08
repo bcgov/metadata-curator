@@ -21,7 +21,7 @@
                     @edited="(newValue) => { $emit('filter', 'var_class', newValue) }"
                 ></Select>
             </v-col>
-            <v-col cols=6>
+            <v-col cols=6 v-if="loggedIn">
                 <Select
                     :label="$tc('Highlight')"
                     placeholder=""
@@ -48,7 +48,7 @@
                     @keydown="(event) => { fieldNameFilterOnEnter(event) }"
                 ></TextInput>
             </v-col>
-            <v-col cols=6>
+            <v-col cols=6 v-if="loggedIn">
                 <Select
                     :editing="true"
                     name="tags"
@@ -84,6 +84,7 @@ import TextInput from '../FormElements/TextInput';
 
             ...mapState({
                 variableClassification: state => state.variableClassifications.wipItem,
+                loggedIn: state => state.user.loggedIn
             }),
 
             variableClassificationValues: function(){
