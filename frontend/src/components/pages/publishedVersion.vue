@@ -6,6 +6,7 @@
                     <v-tab key="version">{{$tc('Version')}}</v-tab>
                     <v-tab key="schema" v-if="schema">{{$tc('Schema')}}</v-tab>
                     <v-tab key="faq" v-if="branch && branch.faq">{{$tc('FAQ')}}</v-tab>
+                    <v-tab key="supplemental" v-if="branch && branch.supplemental_files">{{$tc('Supplemental Files')}}</v-tab>
                 </v-tabs>
                 <v-tabs-items v-model="tab" class="fullWidth">
                     <v-tab-item key="version">
@@ -161,6 +162,9 @@
                             :editing="false"
                         ></Markdown>
                     </v-tab-item>
+                    <v-tab-item key="supplemental" v-if="branch && branch.supplemental_files">
+                      <SupplementalInformation :branch="branch"></SupplementalInformation>
+                    </v-tab-item>
                 </v-tabs-items>
             </v-col>
         </v-row>
@@ -173,6 +177,7 @@ import Markdown from '../FormElements/Markdown';
 import SimpleCheckbox from '../FormElements/SimpleCheckbox';
 import Composite from '../FormElements/Composite';
 import Repeating from '../FormElements/Repeating';
+import SupplementalInformation from '../Versions/SupplementalInformation';
 
 
 export default {
@@ -183,6 +188,7 @@ export default {
         SimpleCheckbox,
         Composite,
         Repeating,
+        SupplementalInformation,
     },
 
     data(){

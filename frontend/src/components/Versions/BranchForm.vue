@@ -925,7 +925,7 @@ export default {
             }
 
             let download = require('downloadjs');
-            download(JSON.stringify(json, null, 4), "export.json", "application/json");
+            download(new Blob([JSON.stringify(json, null, 4)]), "export.json", "application/json");
 
         },
 

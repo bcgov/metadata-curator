@@ -70,7 +70,7 @@
         </v-row>
 
         <v-row v-for="(file, index) in branch.supplemental_files" :key="'supp-file-'+index">
-            <v-col cols=8>
+            <v-col cols=6>
                 <v-icon>
                     {{ 
                         (fileType(file.name) === 'csv') ? 'mdi-file-delimited' : (
@@ -80,14 +80,25 @@
                 </v-icon>
                 {{file.name}}
             </v-col>
-            <v-col cols=4 class="text-right">
+            <v-col cols="4" class="text-right">
+              <Select v-if="user && (user.isApprover || user.isAdmin)"
+                label=""
+                name="privacy"
+                :editing="true"
+                :value="file.privacy"
+                :items="privacyOpts"
+                helpPrefix="supplemental"
+                @edited="(newValue) => { file.privacy = newValue; updateFilePrivacy() }"
+              ></Select>
+            </v-col>
+            <v-col cols=2 class="text-right">
                 <v-btn text :disabled="disabled" v-if="previewable(file)" @click="getFile(file)"><v-icon>mdi-eye</v-icon></v-btn>
                 <v-btn text :disabled="disabled" :href="`/api/v1/repobranches/${branch._id}/file/${file.id}`"><v-icon>mdi-download</v-icon></v-btn>
                 <ConfirmButton :text="true" color="error" :disabled="disabled" v-if="deleteable()" @click="deleteFile(file)" :useIcon="true" icon='mdi-delete' label="Delete"></ConfirmButton>
             </v-col>
         </v-row>
 
-        <v-row v-if="user.isApprover || user.isAdmin">
+        <v-row v-if="user && (user.isApprover || user.isAdmin)">
             <v-col cols=12>
                 <h4>Add new file</h4>
                 <BasicFileReader
@@ -110,6 +121,7 @@ import { mapState, mapActions, mapMutations } from 'vuex';
 
 import BasicFileReader from '../FormElements/BasicFileReader';
 import ConfirmButton from '../FormElements/ConfirmButton';
+import Select from '../FormElements/Select';
 
 export default {
     mixins: [],
@@ -117,7 +129,8 @@ export default {
     components:{
         BasicFileReader,
         pdf: pdfvuer,
-        ConfirmButton: ConfirmButton
+        ConfirmButton: ConfirmButton,
+        Select: Select,
     },
 
     props: {
@@ -135,6 +148,7 @@ export default {
             page: 1,
             numPages: 0,
             viewType: '',
+            privacyOpts: [{text: "Private", value: "private"}, {text: "Public", value: "public"}, {text: "Project", value: "project"}],
         }
     },
 
@@ -153,6 +167,29 @@ export default {
             editBranch: 'repos/editBranch',
         }),
 
+        updateFilePrivacy: function(){
+          let newSupp = this.branch.supplemental_files ? JSON.parse(JSON.stringify(this.branch.supplemental_files)) : [];
+
+          this.editBranch({name: 'supplemental_files', value: newSupp});
+          
+          this.updateBranch().then( () => {
+              this.alertType = "success"
+              this.alertText = "Successfully updated edition";
+              this.alert = true;
+              //this.closeOrBack();
+              this.editing = false;
+
+          }).catch( err => {
+              this.alertType = "error"
+              if (err.response && err.response.data && err.response.data.error){
+                  this.alertText = "Error: " + err.response.data.error;
+              }else{
+                  this.alertText = err.message;
+              }
+              this.alert = true;
+          });
+        },
+
         previewable: function(file){
             let type = this.fileType(file.name);
             const previewableTypes = ['pdf', 'csv', 'jpg', 'jpeg', 'png', 'gif', 'bmp'];
@@ -160,7 +197,7 @@ export default {
         },
 
         deleteable: function(){
-            return this.user.isApprover || this.user.isAdmin;
+            return this.user && (this.user.isApprover || this.user.isAdmin);
         },
 
         fileType: function(filename){

@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const PRIVATE = "private";
+const PUBLIC = "public";
+const PROJECT = "project";
+
 var lifecycleDateSchema = mongoose.Schema({
     date: {
         type: Date,
@@ -33,6 +37,12 @@ var repoBranchSchema = new Schema({
     supplemental_files: {
         type: [{
             name: {type: String},
+            privacy: {
+              type: String,
+              required: false,
+              default: "private",
+              enum: ["private", "project", "public"],
+            },
             id: {type: String}
         }],
         required: false,
@@ -165,6 +175,10 @@ var repoBranchSchema = new Schema({
 
 
 var model = mongoose.model('repoBranch', repoBranchSchema, 'repo_branch');
+
+model.PUBLIC = PUBLIC;
+model.PRIVATE = PRIVATE;
+model.PROJECT = PROJECT;
 
 module.exports = {
     model,
